@@ -1,0 +1,422 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Declaración Jurada Del Reclamo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid >
+    <ion-row>
+      <!-- <ion-col size="6">
+        <ion-item lines="none" class="ion-no-padding  input">
+          <ion-label class="text-size-sm">No. Atención {{expediente.Id}}</ion-label>
+        </ion-item>
+      </ion-col> -->
+      <ion-col size="6">
+        <ion-item lines="none" class="ion-no-padding  input">
+          <ion-label class="text-size-sm">No. Expediente {{formulario.RefAtencionId}}</ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+
+      <ion-row>
+        <!-- Descripcion grafica de los hechos  maps-->
+        <ion-col size="12">
+          <ion-item lines="none" (click)="hiddenMenu(1)" style="--background: #0090D0;"  class="ion-no-padding  input">
+            <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Descripción Grafica Del Reclamo (Geolocalización)</ion-label>
+          </ion-item>
+          <ion-item *ngIf="menu[1]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Latitud</ion-label>
+            <ion-input type="text" disabled="true" [(ngModel)]="formulario.Latitud" ></ion-input>
+          </ion-item>
+          <ion-item *ngIf="menu[1]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Longitud</ion-label>
+            <ion-input type="text" disabled="true" [(ngModel)]="formulario.Longitud" ></ion-input>
+          </ion-item>
+        </ion-col>
+        <!-- Datos de Poliza -->
+        <ion-col size="12">
+          <ion-item lines="none" (click)="hiddenMenu(2)" style="--background: #0090D0;"  class="ion-no-padding  input">
+            <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos De La Póliza</ion-label>
+          </ion-item>
+          <ion-item *ngIf="menu[2]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Póliza</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.Poliza" ></ion-input>
+          </ion-item>
+          <!-- <ion-item *ngIf="menu[2]"class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Certificado No.</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario." ></ion-input>
+          </ion-item> -->
+          <ion-item  *ngIf="menu[2]"class="ion-no-padding  input">
+            <ion-label (click)="showpicker=!showpicker" class="text-size-sm" position="floating">
+              Vigencia Póliza</ion-label>
+            <ion-input (click)="showpicker=!showpicker" type="text" [(ngModel)]="vigencia" ></ion-input>
+          </ion-item>
+        </ion-col>
+        <!-- Datos del asegurado -->
+        <ion-col size="12">
+          <ion-item lines="none" (click)="hiddenMenu(3)" style="--background: #0090D0;"  class="ion-no-padding  input">
+            <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos Del Asegurado</ion-label>
+          </ion-item>
+          <ion-item *ngIf="menu[3]"class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Nombre y Apellido y/o Empresa</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.Nombre"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="menu[3]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Correo</ion-label>
+            <ion-input type="email" [(ngModel)]="formulario.Correo"></ion-input>
+          </ion-item>
+        </ion-col>
+        <!-- Datos del conductor  -->
+        <ion-col size="12">
+          <ion-item lines="none" (click)="hiddenMenu(4)" style="--background: #0090D0;"  class="ion-no-padding  input">
+            <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos Del Conductor</ion-label>
+          </ion-item>
+          <ion-item *ngIf="menu[4]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Nombre y Apellido</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.NombreConductor"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="menu[4]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              NIT</ion-label>
+            <ion-input type="text"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="menu[4]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              DPI/Pasaporte</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.DPI_Pasaporte"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="menu[4]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Teléfono</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.TelefonoConductor"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="menu[4]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Edad</ion-label>
+            <ion-input type="number" [(ngModel)]="formulario.Edad"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="menu[4]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              No. Licencia</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.Licencia"></ion-input>
+          </ion-item>
+          <!-- un select list o radio button -->
+          <ion-item *ngIf="menu[4]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Tipo</ion-label>
+              <ion-select class="text-size-xs" [(ngModel)]="formulario.TipoLicencia" multiple="false" >
+                <ion-select-option [value]="1">A
+                </ion-select-option>
+                <ion-select-option [value]="2">B
+                </ion-select-option>
+                <ion-select-option [value]="3">C
+                </ion-select-option>
+                <ion-select-option [value]="4">M
+                </ion-select-option>
+              </ion-select>
+          </ion-item>
+          <!-- <ion-item *ngIf="menu[4]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Vigencia</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.Vigencia"></ion-input>
+          </ion-item> -->
+          <!-- radio button para el sexo here  -->
+          <ion-item *ngIf="menu[4]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Sexo</ion-label>
+              <ion-select class="text-size-xs" [(ngModel)]="formulario.Sexo" multiple="false" >
+                <ion-select-option [value]="1">Masculino
+                </ion-select-option>
+                <ion-select-option [value]="2">Femenino
+                </ion-select-option>
+              </ion-select>
+          </ion-item>
+          <ion-item *ngIf="menu[4]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Celular</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.CelularConductor"></ion-input>
+          </ion-item>
+        </ion-col>
+        <!-- Datos del Vehiculo -->
+        <ion-col size="12">
+          <ion-item lines="none" (click)="hiddenMenu(5)" style="--background: #0090D0;"  class="ion-no-padding  input">
+            <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos Del Vehículo</ion-label>
+          </ion-item>
+          <ion-item *ngIf="menu[5]"  class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Marca</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.MarcaVehiculo"></ion-input>
+          </ion-item>
+          <!-- <ion-item *ngIf="menu[5]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Línea</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.LineaVehiculo"></ion-input>
+          </ion-item> -->
+          <!-- <ion-item *ngIf="menu[5]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Tipo</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.TipoVehiculo"></ion-input>
+          </ion-item> -->
+          <ion-item *ngIf="menu[5]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Modelo</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.ModeloVehiculo"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="menu[5]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Año</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.AnioVehiculo"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="menu[5]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Placa</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.PlacaVehiculo"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="menu[5]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Color</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.ColorVehiculo"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="menu[5]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Chasis</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.ChasisVehiculo"></ion-input>
+          </ion-item>
+          <!-- <ion-item *ngIf="menu[5]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Motor</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.MotorVehiculo"></ion-input>
+          </ion-item> -->
+        </ion-col>
+        <!-- Datos de los Hechos -->
+        <ion-col size="12">
+          <ion-item lines="none" (click)="hiddenMenu(6)" style="--background: #0090D0;"  class="ion-no-padding  input">
+            <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos De Los Hechos</ion-label>
+          </ion-item>
+          <ion-item *ngIf="menu[6]"  class="ion-no-padding  input">
+            <ion-label class="text-size-sm">
+              ¿Es el tercero responsable?</ion-label>
+              <ion-radio-group value="1" [(ngModel)]="formulario.TerceroResponsable">
+                <ion-item lines="none" style="display: inline-block;">
+                  <ion-label>No</ion-label>
+                  <ion-radio value="2"></ion-radio>
+                </ion-item>
+                <ion-item lines="none"  style="display: inline-block;">
+                  <ion-label>Si</ion-label>
+                  <ion-radio value="1"></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+          </ion-item>
+          <ion-item *ngIf="menu[6]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Dirección</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.DireccionConductor"></ion-input>
+          </ion-item>
+          <!-- <ion-item *ngIf="menu[6]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Departamento</ion-label>
+            <ion-input type="text" [(ngModel)]="formulario.Departamento"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="menu[6]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Fecha de Registro</ion-label>
+            <ion-input type="text"  value="{{expediente.FechaRegistro | date:'shortDate'}}"></ion-input>
+          </ion-item> -->
+          <ion-item *ngIf="menu[6]" class="ion-no-padding  input" (click)="showFecha= !showFecha">
+            <ion-label  class="text-size-sm" position="floating">
+              Fecha y Hora </ion-label>
+            <ion-input type="text"  value="{{formulario.FechaHora | date:'short'}}"></ion-input>
+          </ion-item>
+          <!-- <ion-item *ngIf="menu[6]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Hora</ion-label>
+            <ion-input type="text"  value="{{expediente.FechaRegistroAjuste | date:'shortTime'}}"></ion-input>
+          </ion-item> -->
+          <!-- hacer select o radio button here  -->
+          <ion-item *ngIf="menu[6]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Conducido Por</ion-label>
+              <ion-select class="text-size-xs" [(ngModel)]="formulario.RefTipoConductorId" multiple="false" >
+                <ion-select-option [value]="1">Propietario
+                </ion-select-option>
+                <ion-select-option [value]="2">Conyugue
+                </ion-select-option>
+                <ion-select-option [value]="3">Hijo
+                </ion-select-option>
+                <ion-select-option [value]="4">Chofer
+                </ion-select-option>
+                <ion-select-option [value]="5">Otro
+                </ion-select-option>
+              </ion-select>
+          </ion-item>
+          <!-- text area -->
+          <ion-item *ngIf="menu[6]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Descripción Del Reclamo</ion-label>
+              <ion-textarea rows="10%" cols="1"  [(ngModel)]="formulario.DescripcionAudiencia">
+              </ion-textarea>
+          </ion-item>
+        </ion-col>
+        <!-- tipo siniestros  -->
+        <ion-col size="12">
+          <ion-item lines="none" (click)="hiddenMenu(7)" style="--background: #0090D0;"  class="ion-no-padding  input">
+            <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Tipo de Siniestro</ion-label>
+          </ion-item>
+            <ion-searchbar style="padding-left: 0px;" *ngIf="menu[7]"  placeholder="Buscar Tipo de Siniestro" inputmode="string" type="string" [(ngModel)]="buscar" [debounce]="250"></ion-searchbar>
+            <div  *ngIf="menu[7]"  style="max-height: 300px; overflow-y: scroll; padding-right: 10px;">
+              <ion-radio-group *ngIf="menu[7]">
+                <ion-item class="ion-no-padding  input"  lines="none" *ngFor="let entry of tiposSiniestros" >
+                  <ion-label class="text-size-xs">{{entry.DESCRIPCION}}</ion-label>
+                  <ion-radio slot="end" [value]="entry.CODIGO"></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+            </div>
+        </ion-col>
+        <!-- Danos del Vehiculo -->
+        <ion-col size="12">   
+          <ion-item lines="none" (click)="hiddenMenu(8)" style="--background: #0090D0;"  class="ion-no-padding  input">
+            <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Daños Del Vehículo</ion-label>
+          </ion-item>
+          <ion-row *ngIf="menu[8]">
+            <ion-col size="6" (click)="damagePosition(1)">
+              <div [ngClass]="{'card-header-image': formulario.DanioLataralIzquierdo,
+              'card-header-image-inactive': !formulario.DanioLataralIzquierdo}">
+                <ion-img class="images-filter" src="../../assets/img/Carroleft.png"></ion-img>
+              </div>
+            </ion-col>
+            <ion-col size="6" (click)="damagePosition(2)">
+              <div [ngClass]="{'card-header-image': formulario.DanioLateralDerecho,
+              'card-header-image-inactive': !formulario.DanioLateralDerecho}">
+                <ion-img class="images-filter" src="../../assets/img/carroright.png"></ion-img>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row *ngIf="menu[8]">
+            <ion-col size="6" (click)="damagePosition(3)">
+              <div [ngClass]="{'card-header-image': formulario.VehiculoVolcado,
+              'card-header-image-inactive': !formulario.VehiculoVolcado}">
+                <ion-img class="images-filter" src="../../assets/img/carrotop.png"></ion-img>
+              </div>
+            </ion-col>
+            <ion-col size="3" (click)="damagePosition(4)">
+              <div [ngClass]="{'card-header-image': formulario.DanioFrontal,
+              'card-header-image-inactive': !formulario.DanioFrontal}">
+                <ion-img class="images-filter" src="../../assets/img/carrofront.png"></ion-img>
+              </div>
+            </ion-col>
+            <ion-col size="3" (click)="damagePosition(5)">
+              <div [ngClass]="{'card-header-image': formulario.DanioTrasero,
+              'card-header-image-inactive': !formulario.DanioTrasero}">
+                <ion-img class="images-filter" src="../../assets/img/carroback.png"></ion-img>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-item *ngIf="menu[8]" class="ion-no-padding  input">
+            <ion-label class="text-size-sm" position="floating">
+              Descripción Del daño</ion-label>
+              <ion-textarea rows="10%" cols="1"  [(ngModel)]="formulario.DescripcionDanio">
+              </ion-textarea>
+          </ion-item>
+        </ion-col>
+        <!-- datos de la firma -->
+        <ion-col size="12">
+          <ion-item lines="none" (click)="hiddenMenu(11)" style="--background: #0090D0;"  class="ion-no-padding  input">
+            <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Firma Del Asegurado </ion-label>
+          </ion-item>
+          <ion-item *ngIf="menu[11]" style="white-space: break-spaces;">
+            <ion-label style="white-space: break-spaces;">Declaro firmemente que todos los datos relativos al accidente y a mi reclamación, han sido escritos y registrados fielmente. Estoy dispuesto a facilitar
+              toda la información que Ficohsa Seguros, S.A. me solicite en relación al accidente y a cualquier indemnización.
+              Hago el compromiso de no aceptar ninguna responsabilidad sin la autorización escrita de Ficohsa Seguros, S.A. y enviar inmediatamente cualquier
+              notificación o reclamación que reciba como consecuencia de este accidente.
+              </ion-label>
+          </ion-item>
+          <ion-item *ngIf="menu[11]" style="white-space: break-spaces;">
+            <ion-label style="white-space: break-spaces;">Nota: 1. Ficohsa Seguros, S.A. podrá solicitar documentos adicionales que sean necesarios para la evaluación y trámite de este Siniestro.
+              
+              2. Por este medio autorizo a todos los prestadores de servicios, incluyendo, pero no limitado a Talleres, Médicos, Hospitales, Autor idades de
+              Tránsito a suministrar a Ficonhsa Seguros, S.A. cualquier información necesaria para la debida evaluación y análisis.</ion-label>
+          </ion-item>
+          <ion-item [ngStyle]="{display: menu[11] ? 'unset' : 'none'}">
+            <canvas [ngStyle]="{display: menu[11] ? 'unset' : 'none'}" #canvas width="700px" height="300px"></canvas>
+          </ion-item>
+          <ion-item   *ngIf="menu[11]" lines="none">
+              <ion-button style="color: white; width: 40%;" shape="round" (click)="clear()">
+                Limpiar Firma
+              </ion-button>
+              <ion-button style="color: white; width: 55%; padding-left: 15%;" shape="round"  (click)="saveFirma()">
+                Guardar Firma
+              </ion-button>
+          </ion-item>
+          
+        </ion-col>
+      </ion-row>
+      </ion-row>
+      
+  </ion-grid>
+  <ion-button style="color: white;left: 0px;top: 90%;position: sticky; width: 50%; margin-left: 25%;margin-right: 25%;right: 0px;" (click)="next()" shape="round">
+    Continuar
+  </ion-button>
+</ion-content>
+
+<!-- Fecha de vencimiento de Poliza -->
+<ion-modal class="calendar" [isOpen]="showpicker"><!-- trigger="open-modal"> -->
+  <ng-template>
+    <ion-content >
+      <ion-datetime 
+        presentation="date"
+        locale="es-HN" 
+        #datetime 
+        [min]="fechaMin"
+        [max]="fechaMax"
+        [value]="formulario.Vigencia" 
+        size="cover"
+        (ionChange)=" dateChange(datetime.value)">
+        <ion-buttons slot="buttons">
+          <ion-button (click)="close()" >
+            Cerrar
+          </ion-button>
+          <ion-button (click)="select()" color="=primary">
+            Ok
+          </ion-button>
+        </ion-buttons>
+      </ion-datetime>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Fecha y hora del incidente -->
+<ion-modal class="calendar" [isOpen]="showFecha"><!-- trigger="open-modal"> -->
+  <ng-template>
+    <ion-content >
+      <ion-datetime
+        locale="es-HN" 
+        hourCycle="12rh"
+        [value]="formulario.FechaHora" 
+        size="cover"
+        #datetime
+        (ionChange)=" fechaChange(datetime.value)"> 
+        <span slot="time-label">Hora</span>
+        <ion-buttons slot="buttons">
+          <ion-button (click)="close()" >
+            Cerrar
+          </ion-button>
+          <ion-button (click)="select()" color="=primary">
+            Ok
+          </ion-button>
+        </ion-buttons>
+      </ion-datetime>
+    </ion-content>
+  </ng-template>
+</ion-modal>

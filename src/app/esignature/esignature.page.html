@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer id="spinFooter" *ngIf="isLoading == true"></ion-footer>
+  <ion-fab id="button-back" style="position: fixed;top: 0;left: 0;" vertical="top" horizontal="start" (click)="goBack()">
+    <ion-fab-button (click)="'confirmar()'">
+      <ion-icon name="arrow-back"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ion-toolbar>
+    <ion-title>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="3"></ion-col>
+          <ion-col size="6">Firma Asegurado o Conductor Atención # {{idAtencion}}</ion-col>
+          <ion-col size="3" style="float: right;color:blue;"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="10">
+        <img alt="Ficohsa Seguros" src="{{fsLogo}}" style="width: 281px; height: 61px; margin-left: 15px; margin-top: 15px;" />
+      </ion-col>
+      <ion-col size="2">
+        <!--ion-icon class="impresora" name="eye" (click)="this.modalPdf.present()" id="open-modal-pdf" style="margin-right: 25%;"></!--ion-icon>
+        <ion-icon class="impresora" name="print" (click)="this.modalPdf.present()" id="open-modal-pdf"></ion-icon -->
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div id="ele" style="width: 99%;padding: 3%;text-align: justify;font-size: 1rem;white-space: normal;color: #3171e0;overflow-y: scroll;height: 39%;">
+    El Congreso Nacional de la República de Honduras, reunido en asamblea general aprobó la LEY SOBRE FIRMAS  ELECTRÓNICAS mediante el Decreto № 149-2103 emitido el 11  de diciembre del mismo año.
+
+    La LEY SOBRE FIRMAS ELECTRÓNICAS y su Reglamento procuran establecer la regulación de uso y eficacia jurídica y prevé el régimen aplicable a los Prestadores de Servicios de Certificación. Igualmente de conformidad al Capítulo V, Artículo № 24 de la Ley, nomina a la DIRECCIÓN GENERAL DE PROPIEDAD INTELECTUAL (DIGEPIH) como AUTORIDAD ACREDITADORA y desarrollar las actividades administrativas para el REGISTRO en el que habrán de inscribirse estos Prestadores de Servicios de Certificación, regular la expedición y pérdida de vigencia de las acreditaciones.
+    <br><br><br>
+  </div>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="4"></ion-col>
+      <ion-col size="4"></ion-col>
+      <ion-col offset="10" size="2">
+        <ion-button size="small" (click)="scrollToElement()" style="float: right;margin-right:9%">Ver Más</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-footer style="position: fixed; bottom: 0;left:0;height:50%; background: white;">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" style="color: #3171e0;">
+          <ion-label style="margin-left: 19px;"> Guardar Firma</ion-label>
+        </ion-col>
+        <ion-col size="12" style="margin-top: -10px;">
+          <ion-card id="cardAseguradoFinal">
+            <ion-card-content>
+              <canvas id="canvasAseguradoFinal" width="{{deviceWidth}}" [height]="150"  #canvas6 style="border: 6px dashed #ede9e9"></canvas>
+            </ion-card-content>
+            <ion-grid>
+              <ion-row>
+                <ion-col size="6">
+                  <ion-button expand="block" (click)="clear()">Limpiar Firma</ion-button>
+                </ion-col>
+                <ion-col size="6">
+                  <ion-button expand="block" (click)="saveSignatureAsegurado(idAtencion)">Guardar Firma</ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-footer>
+</ion-content>

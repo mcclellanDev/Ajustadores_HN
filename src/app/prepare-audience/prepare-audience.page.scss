@@ -1,0 +1,122 @@
+ion-spinner{
+	position: fixed;
+    top: 28%;
+    left: 40%;
+    z-index: 999;
+    width: 20%;
+    height: 20%;
+	//background-color: #00213f;
+}
+
+#spinFooter{
+	position: fixed;
+    background: black;
+    opacity: 0.6;
+    height: 100vh;
+    width: 100vw;
+    z-index: 900;
+    bottom: 0;
+}
+
+ion-accordion {
+    margin: 0 auto;
+    --width: 100% !important;
+  }
+
+  ion-accordion-group {
+    width: 100%;
+  }
+  
+  ion-accordion.accordion-expanding,
+  ion-accordion.accordion-expanded {
+    width: calc(100% - 32px);
+  
+    margin: 16px auto;
+  }
+  
+  ion-accordion.accordion-collapsing ion-item[slot='header'],
+  ion-accordion.accordion-collapsed ion-item[slot='header'] {
+    --background: var(--ion-color-light);
+    --color: var(--ion-color-light-contrast);
+
+  }
+  
+  ion-accordion.accordion-expanding ion-item[slot='header'],
+  ion-accordion.accordion-expanded ion-item[slot='header'] {
+    --background: #7da1c4;//var(--ion-color-primary);
+    --color: white;//var(--ion-color-primary-contrast);
+  }
+
+  ion-input.custom {
+    text-transform: uppercase !important;
+  }
+
+  .select-label{
+    text-transform: uppercase;
+  }
+
+  ion-chip:not(.button-chip){
+    margin-top: 0%;
+    width: 100%;
+    height: 60px;
+    border-radius: 30px;
+  }
+
+  ion-avatar{
+    width: 45px;
+    height: 45px;
+    margin-top: -3px;
+    margin-left: 5px;
+  }
+
+  ion-icon.dis-icon {
+    font-size: 2rem;
+    position: absolute;
+    right: 15px;
+  }
+
+  ion-icon.da-icon {
+    font-size: 2rem;
+  }
+
+  #closeAbogadosSearchButton {
+    --background: #ef5a22;
+    --background-activated: #a8462a;
+    --background-hover: #f66e48;
+    --border-radius: 15px;
+    --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    --color: white;
+  }
+
+  ion-input.abogado-nombre-no {
+    --background: #0090d0;
+    --color: #fff;
+    --placeholder-color: #ddd;
+    --placeholder-opacity: 0.8;
+  
+    --padding-bottom: 10px;
+    --padding-end: 10px;
+    --padding-start: 10px;
+    --padding-top: 10px;
+    border-radius: 15px;
+  }
+
+  ion-input.abogado-dato {
+    --background: #fff;
+    --color: black;
+    --placeholder-color: #ddd;
+    --placeholder-opacity: 0.8;
+  
+    --padding-bottom: 10px;
+    --padding-end: 10px;
+    --padding-start: 10px;
+    --padding-top: 10px;
+    border: 1px solid lightgray;
+    border-radius: 15px;
+  }
+
+  ion-datetime{
+    width: 100%;
+    max-width: 100%;
+    height: 69%;
+  }

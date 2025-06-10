@@ -1,0 +1,7 @@
+{
+  "name": "HELP Ajustadores",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

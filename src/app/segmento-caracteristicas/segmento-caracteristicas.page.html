@@ -1,0 +1,373 @@
+<ion-header>
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer *ngIf="isLoading == true"></ion-footer>
+  
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+      
+    </ion-buttons>
+    <ion-title>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="3"></ion-col>
+          <ion-col size="6">{{segmentoTitulo}} - Atención # {{idAtencion}} - {{miMoneda}}</ion-col>
+          <ion-col size="3" style="float: right;color:blue;"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col id="segmentInfoAju" size="12">
+
+        <ion-item lines="none" class="ion-no-padding  input">
+          <ion-label class="text-size-lg" style="padding-left: 5px;">
+            <ion-badge color="tertiary">
+              {{segmentoTitulo}}
+            </ion-badge> 
+          </ion-label>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Fue el vehículo Trasladado En Grúa?
+                </ion-row>
+            <ion-row>
+              <ion-col size="9"></ion-col>
+              <ion-col size="3" style="text-align: right;">
+                <ion-radio-group [(ngModel)]="esTraslado" (ionChange)="entraTraslado($event)">
+                  <ion-item lines="none" style="display: inline-block;">
+                    <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                    <ion-radio [value]="2"></ion-radio>
+                  </ion-item>
+                  <ion-item lines="none"  style="display: inline-block;">
+                    <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                    <ion-radio [value]="1"></ion-radio>
+                  </ion-item>
+                </ion-radio-group>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Tipo de Grúa
+                </ion-row>
+            <ion-row style="float: right;">
+              <ion-radio-group [(ngModel)]="tipoGrua" (ionChange)="entraGrua($event)">
+                <ion-item lines="none" style="display: inline-block;">
+                  <ion-label color="tertiary">Ninguna</ion-label>&nbsp;<ion-radio [value]="0"></ion-radio>
+                </ion-item>
+                <ion-item lines="none" style="display: inline-block;">
+                  <ion-label color="tertiary">Liviana</ion-label>&nbsp;<ion-radio [value]="2"></ion-radio>
+                </ion-item>
+                <ion-item lines="none"  style="display: inline-block;">
+                  <ion-label color="tertiary">Pesada (Mayor de 3.5 toneladas)</ion-label>&nbsp;<ion-radio [value]="1"></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Vehículo es Equipo Pesado?
+                </ion-row>
+            <ion-row>
+              <ion-col size="9"></ion-col>
+              <ion-col size="3" style="text-align: right;">
+                <ion-radio-group [(ngModel)]="esPesado" (ionChange)="entraPesado($event)">
+                  <ion-item lines="none" style="display: inline-block;">
+                    <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                    <ion-radio [value]="2"></ion-radio>
+                  </ion-item>
+                  <ion-item lines="none"  style="display: inline-block;">
+                    <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                    <ion-radio [value]="1"></ion-radio>
+                  </ion-item>
+                </ion-radio-group>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Si el vehículo se encuentra en un taller, seleccione uno.
+            </ion-row>
+            <ion-row>
+              <ion-col id="tallerDisplay" size="9" class="select-label">{{tallerNombreDisplay}}</ion-col>
+              <ion-col size="3">
+                <ion-select #tallerSelect class="text-size-xs" [(ngModel)]="datos.TallerMecanicoId" multiple="false" 
+                style="float: right;color: white;" (ionChange)="entraTaller($event)">
+                  <ion-select-option *ngFor="let taller of talleresFiltrados" [value]="taller.Id">
+                    <strong> {{taller.NombreTaller}} </strong>, Categoría {{taller.Categoria}}
+                  </ion-select-option>
+                </ion-select>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+              
+          <ion-grid style="width: 100%;">
+            <ion-row>
+              <ion-col size="6">
+                <ion-grid>
+                  <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                    Taller/Agencia no registrado o Lugar donde se trasladó el vehículo.
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size="12">
+                      <ion-input type="text" [(ngModel)]="tallerOtro" (ionBlur)="entraTallerOtro(tallerOtro)" class="select-label"></ion-input>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-col>
+              <ion-col size="6">
+                <ion-grid>
+                  <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                    Ubicación del taller.
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size="12">
+                      <ion-input type="text" [(ngModel)]="tallerOtroDireccion" (ionChange)="entraTallerOtroDireccion($event)" class="select-label"></ion-input>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Observaciones Para el Taller
+            </ion-row>
+            <ion-row>
+              <ion-col size="12">
+                <ion-input [(ngModel)]="datos.ObservacionesTaller" (ionChange)="entraObservacionesTaller($event)" class="select-label"></ion-input>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Tipo de combustible
+            </ion-row>
+            <ion-row>
+              <ion-col id="tipoCombustibleDisplay" size="9" class="select-label">{{tipoDeCombustible}}</ion-col>
+              <ion-col size="3">
+                <ion-select class="text-size-xs required-data" [(ngModel)]="ajustador.TipoCombustible" multiple="false" (ionChange)="entraTipoCombustible($event)"
+                style="float: right;color: white;">
+                  <ion-select-option *ngFor="let tipo of tipoCombustible"  [value]="tipo.Id" style="color: white;">{{tipo.TipoCombustible}}
+                  </ion-select-option>
+                </ion-select>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+              
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Aire Acondicionado
+                </ion-row>
+            <ion-row style="float: right;">
+              <ion-radio-group [(ngModel)]="ajustador.AC" (ionChange)="entraAC($event)" class="required-data">
+                <ion-item lines="none" style="display: inline-block;">
+                  <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                  <ion-radio [value]="2"></ion-radio>
+                </ion-item>
+                <ion-item lines="none"  style="display: inline-block;">
+                  <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                  <ion-radio [value]="1"></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+              
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Bolsas de Aire
+                </ion-row>
+            <ion-row style="float: right;">
+              <ion-radio-group [(ngModel)]="ajustador.BolsasAire" (ionChange)="entraBolsaAire($event)" class="required-data">
+                <ion-item lines="none" style="display: inline-block;">
+                  <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                  <ion-radio [value]="2"></ion-radio>
+                </ion-item>
+                <ion-item lines="none"  style="display: inline-block;">
+                  <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                  <ion-radio [value]="1"></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+              
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Cierre centralizado
+                </ion-row>
+            <ion-row style="float: right;">
+              <ion-radio-group [(ngModel)]="ajustador.CierreCentralizado" (ionChange)="entraCierreCentralizado($event)"
+            class="required-data">
+              <ion-item lines="none" style="display: inline-block;">
+                <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                <ion-radio [value]="2"></ion-radio>
+              </ion-item>
+              <ion-item lines="none"  style="display: inline-block;">
+                <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                <ion-radio [value]="1"></ion-radio>
+              </ion-item>
+            </ion-radio-group>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Tipo de transmisión
+            </ion-row>
+            <ion-row>
+              <ion-col id="tiposTransmisionDisplay" size="9" class="select-label">{{tipotransmision}}</ion-col>
+              <ion-col size="3">
+                <ion-select class="text-size-xs" [(ngModel)]="ajustador.Transmicion" multiple="false" (ionChange)="entraMecanico($event)"
+                class="required-data" style="float: right;color: white;">
+                  <ion-select-option *ngFor="let transmision of tiposTransmision" [value]="transmision.id">{{transmision.nombre}}</ion-select-option>
+                  
+                </ion-select>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+              
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Retrovisores eléctricos
+                </ion-row>
+            <ion-row style="float: right;">
+              <ion-radio-group [(ngModel)]="ajustador.Retrovisor" (ionChange)="entraRetrovisorElectronico($event)">
+                <ion-item lines="none" style="display: inline-block;">
+                  <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                  <ion-radio [value]="2"></ion-radio>
+                </ion-item>
+                <ion-item lines="none"  style="display: inline-block;">
+                  <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                  <ion-radio [value]="1"></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+              
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Overfenders
+                </ion-row>
+            <ion-row style="float: right;">
+              <ion-radio-group [(ngModel)]="ajustador.Overfenders" (ionChange)="entraOverfenders($event)">
+                <ion-item lines="none" style="display: inline-block;">
+                  <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                  <ion-radio [value]="2"></ion-radio>
+                </ion-item>
+                <ion-item lines="none"  style="display: inline-block;">
+                  <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                  <ion-radio [value]="1"></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+              
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Cola de pato
+                </ion-row>
+            <ion-row style="float: right;">
+              <ion-radio-group [(ngModel)]="ajustador.ColaPato" (ionChange)="entraColaPato($event)">
+                <ion-item lines="none" style="display: inline-block;">
+                  <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                  <ion-radio [value]="2"></ion-radio>
+                </ion-item>
+                <ion-item lines="none"  style="display: inline-block;">
+                  <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                  <ion-radio [value]="1"></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Cinta decorativa
+                </ion-row>
+            <ion-row style="float: right;">
+              <ion-radio-group [(ngModel)]="ajustador.CintaDecorativa" (ionChange)="entraCintaDecorativa($event)">
+                <ion-item lines="none" style="display: inline-block;">
+                  <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                  <ion-radio [value]="2"></ion-radio>
+                </ion-item>
+                <ion-item lines="none"  style="display: inline-block;">
+                  <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                  <ion-radio [value]="1"></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item class="ion-no-padding  input">
+              
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Rines
+                </ion-row>
+            <ion-row style="float: right;">
+              <ion-radio-group [(ngModel)]="rinesId" (ionChange)="entraRines($event)">
+                <ion-item lines="none" style="display: inline-block;">
+                  <ion-label color="tertiary" style="margin-left:5px">Convencionales</ion-label>&nbsp;
+                  <ion-radio [value]="2"></ion-radio>
+                </ion-item>
+                <ion-item lines="none"  style="display: inline-block;">
+                  <ion-label color="tertiary" style="margin-left:5px">De Lujo</ion-label>&nbsp;
+                  <ion-radio [value]="1"></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

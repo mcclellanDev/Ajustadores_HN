@@ -1,0 +1,225 @@
+<ion-header>
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer *ngIf="isLoading == true"></ion-footer>
+  
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+      
+    </ion-buttons>
+    <ion-title>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="3"></ion-col>
+          <ion-col size="6">{{segmentoTitulo}} - Atención # {{idAtencion}} - {{miMoneda}}</ion-col>
+          <ion-col size="3" style="float: right;color:blue;"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col id="segmentRequestAju" size="12">
+        <ion-item lines="none" class="ion-no-padding  input">
+          <ion-label class="text-size-lg" style="padding-left: 5px;">
+            <ion-badge color="tertiary">
+              {{segmentoTitulo}}
+            </ion-badge>
+          </ion-label>
+        </ion-item>
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Tipo de solicitante
+            </ion-row>
+            <ion-row>
+              <ion-col #TipoSolicitanteDisplay id="TipoSolicitanteDisplay" size="8" class="select-label">{{solicitanteDisplayName}}</ion-col>
+              <ion-col size="4" style="text-align: left;">
+                <ion-select id="tipoSolicitante" class="text-size-xs" [(ngModel)]="ajustador.TipoSolicitante" multiple="false" (ionChange)="setTipoSolicitante($event)" style="float: right;">
+                  <ion-select-option *ngFor="let tipo of tipoSolicitante"  [value]="tipo.Id">{{tipo.TipoSolicitante}} 
+                  </ion-select-option>
+                </ion-select>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Tipo de Cobertura
+            </ion-row>
+            <ion-row>
+              <ion-col #TipoAcuerdoDisplay id="TipoAcuerdoDisplay" size="8">{{coberturaDisplayName}}</ion-col>
+              <ion-col size="4" style="text-align: rigth;">
+                <ion-select class="text-size-xs" (ionChange)="seleccionarTipoCobertura($event)" [(ngModel)]="datos.TipoAcuerdoFicohsa" multiple="false" 
+                style="float: right;">
+                  <ion-select-option *ngFor="let tipoC of tiposdeCobertura;let i = index"  [value]="tipoC.Descripcion"
+                  style="color: white;">{{tipoC.Descripcion}}
+                  </ion-select-option>
+                </ion-select>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Nombre del asegurado
+            </ion-row>
+            <ion-row>
+              <ion-col *ngIf="isNombreCliente" #NombreClienteDisplay id="NombreClienteDisplay" size="12" style="margin-top: 9px;">{{nombreCliente}}</ion-col>
+              
+              <ion-col *ngIf="!isNombreCliente" size="11" style="text-align: rigth;">
+                <ion-input [(ngModel)]="nombreCliente" (ionBlur)="setNombre()"></ion-input>
+                <!--ion-input id="nombreInput" *ngIf="nombreCliente == null || nombreCliente == ''" type="text" (ionChange)="entraNombre($event)" (ionBlur)="setNombre()" class="required-data"></!--ion-input -->
+              </ion-col>
+              <ion-col  *ngIf="!isNombreCliente" size="1" style="text-align: rigth;" (click)="editarNombre()">
+                <ion-img src="../../assets/img/lapiz.svg" style="width: 25px; float: right;"></ion-img>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+        <ion-item  class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Número de identidad
+            </ion-row>
+            <ion-row>
+              <ion-col *ngIf="isIdCliente" #IdentidadClienteDisplay id="IdentidadClienteDisplay" size="12">{{identidadCliente}}</ion-col>
+              <!--ion-col  *ngIf="isIdCliente" size="1" style="text-align: rigth;" (click)="editarIdentidad()">
+                <ion-img src="../../assets/img/lapiz.svg" style="width: 25px; float: right;"></ion-img>
+              </!--ion-col -->
+              <ion-col *ngIf="!isIdCliente" size="12" style="text-align: rigth;">
+                <ion-input [(ngModel)]="identidadCliente" (ionBlur)="setIdentidad()" maxlength="13" class="required-data"></ion-input>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Tipo de licencia
+            </ion-row>
+            <ion-row>
+              <ion-col id="tipoLicenciaDisplay" size="9">{{elTipoDeLicencia}}</ion-col>
+              <ion-col size="3" style="text-align: rigth;">
+                <ion-select id="tipoLicenciaId" class="text-size-xs required-data" [(ngModel)]="elTipoLicencia" multiple="false" (ionChange)="getElTipoLicencia($event)"
+                style="float: right;">
+                  <ion-select-option *ngFor="let licencia of tipoLicencia" [value]="licencia.Id">
+                    {{licencia.TipoLicencia}}
+                  </ion-select-option>
+                </ion-select>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Tipo de género
+            </ion-row>
+            <ion-row>
+              <ion-col id="tipoDeGeneroDisplay" size="9" class="select-label">{{elGenero}}</ion-col>
+              <ion-col size="3" style="text-align: rigth;">
+                <ion-select id="tipoGeneroId" class="text-size-xs required-data" [(ngModel)]="elTipoGenero" multiple="false" (ionChange)="getElTipoGenero($event)"
+                style="float: right;">
+                  <ion-select-option *ngFor="let genero of tipoGeneros" [value]="genero.Id">
+                    {{genero.Genero}}
+                  </ion-select-option>
+                </ion-select>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Tipo de parentesco
+            </ion-row>
+            <ion-row>
+              <ion-col id="parentescoDisplay" size="9">{{elParentesco}}</ion-col>
+              <ion-col size="3" style="text-align: rigth;">
+                <ion-select class="text-size-xs required-data" [(ngModel)]="elTipoParentesco" multiple="false" (ionChange)="getElTipoParentesco($event)"
+                style="float: right;">
+                  <ion-select-option *ngFor="let parentesco of tipoParentescos" [value]="parentesco.CODIGO">
+                    {{parentesco.DESCRIPCION}}
+                  </ion-select-option>
+                </ion-select>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+        <ion-item class="ion-no-padding  input" (click)="identificarPais()">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Teléfono
+            </ion-row>
+            <ion-row>
+              <ion-col *ngIf="isTelCliente" #telefonoClienteDisplay id="telefonoClienteDisplay" size="11">{{elTelefonoOrigen}}</ion-col>
+              <ion-col  *ngIf="isTelCliente" size="1" style="text-align: rigth;" (click)="editarTelefono()">
+                <ion-img src="../../assets/img/lapiz.svg" style="width: 25px; float: right;"></ion-img>
+              </ion-col>
+              <ion-col *ngIf="!isTelCliente" size="12" style="text-align: rigth;">
+                <ion-input [(ngModel)]="elTelefonoOrigen" (ionBlur)="setTelefono()" class="required-data"></ion-input>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+        <ion-item  class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Correo electrónico
+            </ion-row>
+            <ion-row>
+              <ion-col *ngIf="isMailCliente" #elCorreoClienteDisplay id="elCorreoClienteDisplay" size="11" class="select-label">{{elCorreoElectronico}}</ion-col>
+              <ion-col  *ngIf="isMailCliente" size="1" style="text-align: rigth;" (click)="editarCorreo()">
+                <ion-img src="../../assets/img/lapiz.svg" style="width: 25px; float: right;"></ion-img>
+              </ion-col>
+              <ion-col *ngIf="!isMailCliente" size="12" style="text-align: rigth;">
+                <ion-input #email="ngModel" type="email" email name="email" placeholder="Ingrese un correo válido" 
+            errorText="Correo Inválido" [(ngModel)]="elCorreoElectronico" [ngClass]="{'is-invalid': email.touched && email.invalid, 'is-valid': email.touched && email.valid}"
+            (ionBlur)="validateEmail(email.status, $event)" class="required-data select-label"></ion-input>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <!--ion-item  class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Fecha y hora del siniestro
+            </ion-row>
+            <ion-row style="padding-top: 6px;">
+              <ion-col offset='6' size="3">
+                <ion-badge class="required-data">{{formateadaSiniestro}}</ion-badge>
+              </ion-col>
+              <ion-col size="3">
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+          
+        </!--ion-item>
+
+        <ion-item  class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Fecha de inspección
+            </ion-row>
+            <ion-row style="padding-top: 6px;">
+              <ion-col offset='6' size="3">
+                <ion-badge class="required-data">{{formateadaInspeccion}}</ion-badge>
+              </ion-col>
+              <ion-col size="3">
+                <ion-button id="open-modal-inspeccion" expand="block">Seleccionar Fecha</ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item -->
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

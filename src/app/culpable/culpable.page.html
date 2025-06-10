@@ -1,0 +1,577 @@
+<ion-header>
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer id="spinFooter" *ngIf="isLoading == true"></ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <!--ion-back-button></!--ion-back-button -->
+      <ion-button id="submitClaim" style="position: relative;width: 40px;height: 30px; z-index: 999;--background: transparent;
+          --background-activated: transparent;
+          --background-hover: transparent;
+          --border-radius: 15px;
+          --color: white;" vertical="bottom" horizontal="end" (click)="handleBack()">
+            <ion-icon style="font-size: 2rem; color: white;" name="chevron-back"></ion-icon>
+          </ion-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">Atención # {{idAtencion}} - {{miMoneda}}</ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="isSearchCulpable" class="ion-padding">
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size="10">
+        <ion-badge>
+          Daños Comunes A Vehículos
+        </ion-badge>
+      </ion-col>
+      <ion-col size="2">
+        <ion-button class="close-search" style="float: right ;" (click)="closeDanioSearch()">
+          <ion-icon name="return-up-back"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  
+  <ion-searchbar animated="true" placeholder="Escribe un Daño de Vehículo" show-clear-button="focus" show-cancel-button="focus" cancel-button-text="Cancelar"
+  cancel-button-icon="trash-bin" [debounce]="1000" (ionInput)="handleInput($event)"></ion-searchbar>
+
+  <ion-content color="light">
+    <ion-list [inset]="true" style="width: 97%;">
+      <ion-item *ngFor="let result of resultsCulpable; let i = index" (click)="entraDanioCulpable(danioId.value, posicion.value)" style="padding-left: 10px;border-radius:9px;"
+      class="danio-item-culpa">
+        {{ result.Descripcion }}
+        <ion-input [hidden]="true" #danioId [value]="result.Id" class="danio-entrada"></ion-input>
+        <ion-input [hidden]="true" #posicion [value]="i"></ion-input>
+      </ion-item>
+      <ion-item style="color: white;">Ajustadores Ficohsa por Porsalud</ion-item>
+      <br><br><br>
+    </ion-list>
+  </ion-content>
+</ion-content>
+
+<ion-content *ngIf="!isSearchCulpable">
+
+    <ion-list style="width: 95%; margin-left:2%;margin-top: 3%;">
+
+<ion-label class="text-size-lg" style="padding-left: 5px;">
+              <ion-badge color="tertiary">
+                Datos Culpable
+              </ion-badge>
+            </ion-label>
+    
+            <ion-item class="ion-no-padding  input">
+              <ion-grid class="ion-no-grid">
+                <ion-row>
+                  <ion-col offset="4" size="8" style="text-align: right;">
+                    <ion-button size="default" (click)="modalDanioCulpa.present()">
+                      Agregar Tipo de Daño.
+                    <ion-icon class="icono-buscar" name="add-circle" style="margin-left: 6px;"></ion-icon>
+                    </ion-button>
+                    <ion-button size="default" (click)="openDanioSearch()">
+                      Buscar Tipos de Daño.
+                    <ion-icon class="icono-buscar" name="search-outline" style="margin-left: 6px;"></ion-icon>
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+
+                <ion-accordion-group #accordionGroupXX id="accordionGroupXX" [multiple]="false" [value]="['first']">
+                  <ion-accordion #danioAccordion value="first" (click)="closeOtrosDanios()">
+                    <ion-item slot="header">
+                      <ion-label>Daños Seleccionados Implicado</ion-label>
+                    </ion-item>
+                    <div class="ion-padding" slot="content">
+                      <ion-row *ngIf="daniosSelectCulpa.length > 0">
+                        <ion-card style="margin: 0;padding: 0;width: 100%;">
+                          <ion-card-header>
+                            <ion-card-title>Lista de Daños Seleccionados Implicado</ion-card-title>
+                          </ion-card-header>
+
+                          <ion-card-content>
+                            <ion-grid class="ion-no-padding">
+                              <ion-row>
+                                <ion-col size="3" *ngFor="let dannio of daniosSelectCulpa;let i = index">
+                                  <ion-card>
+                                    <ion-input #selectedId [hidden]="true" [value]="dannio.Id" class="danio-input"></ion-input>
+                                    <input #danioInput [value]="dannio.Descripcion" hidden>
+                                    <input #danioIdInput [value]="i" class="input-index" hidden>
+                                    <input #danioId [value]="dannio.Id" class="danio-id" hidden>
+
+                                    <ion-grid>
+                                      <ion-row>
+                                        <ion-col size="10" style="color: gray;">
+                                          {{dannio.Descripcion}}
+                                        </ion-col>
+                                        <ion-col size="2">
+                                          <ion-icon color="danger" name="trash-bin" style="font-size: 2rem;" (click)="eliminaDanio(danioId.value, i, danioInput.value)"></ion-icon>
+                                        </ion-col>
+                                      </ion-row>
+                                      <br>
+                                      <ion-row style="width: 100%;">
+                                        <ion-col size="2"></ion-col>
+                                        <ion-col size="5">
+                                          <ion-button size="small" fill="outline" class="action-change-culpable" style="color: #10069f;width: 100%;" (click)="setReparacion(dannio.Id, 2, i, 1)">Cambio</ion-button>
+                                        </ion-col>
+                                        <ion-col size="5">
+                                          <ion-button size="small" fill="outline" class="action-repair-culpable" style="color: #7da1c4;width: 100%;" (click)="setReparacion(dannio.Id, 1, i, 1)">Repara</ion-button>
+                                        </ion-col>
+                                      </ion-row>
+                                    </ion-grid>
+
+                                  </ion-card>
+                                </ion-col>
+                              </ion-row>
+                            </ion-grid>
+                          </ion-card-content>
+                        </ion-card>
+                      </ion-row>
+                    </div>
+                  </ion-accordion>
+
+                  <ion-accordion #danioAccordionXX value="second" (click)="isXXOpen = true">
+                    <ion-item slot="header">
+                      <ion-label>Daños Otros Implicado</ion-label>
+                    </ion-item>
+                    <div class="ion-padding" slot="content">
+                      <ion-row *ngIf="daniosSelectOtroCulpa.length > 0"> 
+                        <ion-card style="margin: 0;padding: 0;width: 100%;">
+                          <ion-card-header>
+                            <ion-card-title>Lista de Daños Otros Seleccionados</ion-card-title>
+                          </ion-card-header>
+
+                          <ion-card-content>
+                            <ion-grid class="ion-no-padding">
+                              <ion-row>
+                                <ion-col size="3" *ngFor="let dannioX of daniosSelectOtroCulpa;let i = index">
+                                  <ion-card>
+                                    <ion-input #selectedIdXX [hidden]="true" [value]="dannioX.Id" class="danio-input-xx"></ion-input>
+                                    <input #danioInputXX [value]="dannioX.DescripcionDeDanio" hidden>
+                                    <input #danioIdInputXX [value]="i" class="input-index-xx" hidden>
+                                    <input #danioIdXX [value]="dannioX.Id" class="danio-id-xx" hidden>
+                                    <input #danioCodigoXX [value]="dannioX.CodigoDanioFicohsa" class="danio-code-xx" hidden>
+                                    <input #danioTipoXX [value]="dannioX.TipoReparacion" class="danio-tipo-xx" hidden>
+                                    <ion-grid>
+                                      <ion-row>
+                                        <ion-col size="10" style="color: gray;">
+                                          {{dannioX.DescripcionDeDanio}}
+                                        </ion-col>
+                                        <ion-col size="2">
+                                          <ion-icon color="danger" name="trash-bin" style="font-size: 2rem;" (click)="eliminaDanioX(danioIdXX.value, i, danioTipoXX.value, danioCodigoXX.value)"></ion-icon>
+                                        </ion-col>
+                                      </ion-row>
+                                      <br>
+                                      <ion-row style="width: 100%;">
+                                        <ion-col size="2"></ion-col>
+                                        <ion-col size="5">
+                                          <ion-button size="small" [fill]="dannioX.TipoReparacion == 1 ? 'outline' : 'solid'" class="action-change-xx" color="primary" style="color: #10069f;width: 100%;" (click)="setReparacionX(danioIdXX.value, 2, i, 1)">Cambio</ion-button>
+                                        </ion-col>
+                                        <ion-col size="5">
+                                          <ion-button size="small" [fill]="dannioX.TipoReparacion == 2 ? 'outline' : 'solid'" class="action-repair-xx" color="tertiary" style="color: #7da1c4;width: 100%;" (click)="setReparacionX(danioIdXX.value, 1, i, 1)">Repara</ion-button>
+                                        </ion-col>
+                                      </ion-row>
+                                    </ion-grid>
+                                  </ion-card>
+                                </ion-col>
+                              </ion-row>
+                            </ion-grid>
+                          </ion-card-content>
+                        </ion-card>
+                      </ion-row>
+                    </div>
+                  </ion-accordion>
+                </ion-accordion-group>
+
+                <!--ion-row *ngIf="daniosSelectCulpa.length > 0" style="margin:0;padding:0;"> 
+                  <ion-card class="ion-no-grid" style="margin: 0;padding: 0;width: 100%;">
+                    <ion-card-header>
+                      <ion-card-title>Lista de Daños Seleccionados</ion-card-title>
+                    </ion-card-header>
+                  
+                    <ion-card-content>
+                    <ion-grid class="ion-no-padding">
+                      <ion-row>
+                        <ion-col size="3" *ngFor="let dannio of daniosSelectCulpa;let i = index">
+                          <ion-card>
+                          <ion-input #selectedId [hidden]="true" [value]="dannio.Id" class="danio-input"></ion-input>
+                          
+                              <ion-input #danioInputId [hidden]="true" [value]="dannio.Id" class="danio-input"></ion-input>
+                              <input #danioInput [value]="dannio.Descripcion" hidden class="danio-descripcion-input">
+                              <input #danioIdInput [value]="i" class="input-index" hidden>
+                              <input #danioId [value]="dannio.Id" class="danio-id" hidden>
+                              <ion-grid>
+                                <ion-row>
+                                  <ion-col size="10" style="color: gray;">
+                                    {{dannio.Descripcion}}
+                                  </ion-col>
+                                  <ion-col size="2">
+                                    <ion-icon color="danger" name="trash-bin" style="font-size: 2rem;" (click)="eliminaDanio(danioInputId.value, i, danioInput.value)"></ion-icon>
+                                  </ion-col>
+                                </ion-row>
+                                <br>
+                                <ion-row style="width: 100%;">
+                                  <ion-col size="2"></ion-col>
+                                  <ion-col size="5">
+                                    <ion-button size="small" fill="outline" class="action-change-culpable" style="color: #10069f;width: 100%;" (click)="setReparacion(dannio.Id, 2, i, 1)">Cambio</ion-button>
+                                  </ion-col>
+                                  <ion-col size="5">
+                                    <ion-button size="small" fill="outline" class="action-repair-culpable" style="color: #7da1c4;width: 100%;" (click)="setReparacion(dannio.Id, 1, i, 1)">Repara</ion-button>
+                                  </ion-col>
+                                </ion-row>
+                              </ion-grid>
+                            </ion-card>
+                               
+                        </ion-col>
+                      </ion-row>
+                    </ion-grid>
+                    </ion-card-content>
+                  </ion-card>
+  
+                  
+                </!--ion-row -->
+              </ion-grid>
+            </ion-item>
+
+            
+
+            <ion-list>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="text" [(ngModel)]="culpable.NombreCulpable" (ionChange)="guardaCache(0); entraNombreCulpable($event)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Nombre del conductor</ion-label>
+                </ion-input>
+              </ion-item>
+              
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="text" [(ngModel)]="culpableIdentidad" (ionChange)="guardaCache(1); entraIdentidadCulpable($event)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Identidad Número</ion-label>
+                </ion-input>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="text" [(ngModel)]="culpable.DireccionCulpable" (ionChange)="guardaCache(2);"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Dirección</ion-label>
+                </ion-input>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="text" [(ngModel)]="culpable.TelefonoFijoCulpable" (ionChange)="guardaCache(3);"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Teléfono</ion-label>
+                </ion-input>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="text" [(ngModel)]="culpable.CelularCulpable" (ionChange)="guardaCache(4);"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Celular</ion-label>
+                </ion-input>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="text" [maskito]="yearMask" [maskitoElement]="predicateCliente" [(ngModel)]="EdadCulpable" (ionChange)="guardaCache(5);"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Edad (Años)</ion-label>
+                </ion-input>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="email" [(ngModel)]="culpableCorreo" (ionChange)="guardaCache(6);entraCorreoCulpable($event)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Correo electrónico</ion-label>
+                </ion-input>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="email" [(ngModel)]="culpableTrabajo" (ionChange)="guardaCache(7);"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Lugar De Trabajo</ion-label>
+                </ion-input>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -28px;" class="input">
+                <ion-grid>
+                  <ion-row>
+                    <ion-col size="3">
+                      <ion-label class="text-size-sm" style="margin-left: 0px;" color="tertiary">Tipo de licencia</ion-label>
+                    </ion-col>
+                    <ion-col size="9">
+                      <ion-grid>
+                        <ion-row>
+                          <ion-col size="8">
+                            {{TipoDeLicencia}}
+                          </ion-col>
+                          <ion-col size="4">
+                            <ion-select class="text-size-xs" [(ngModel)]="culpable.LicenciaTipoCulpable" multiple="false" (ionChange)="guardaCache(8)"  style="float: right;color: white;">
+                              <ion-select-option *ngFor="let licencia of tipoLicencia" [value]="licencia.Id">
+                                {{licencia.TipoLicencia}}
+                              </ion-select-option>
+                            </ion-select>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="text" [(ngModel)]="culpable.NumeroLicenciaCulpable" (ionChange)="guardaCache(9)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Licencia</ion-label>
+                </ion-input>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input id="vigenciaInput" labelPlacement="stacked" label="Nombre" placeholder=":DD/MM/AA" 
+                type="text" [maskito]="idMaskFechaVencimiento" [maskitoElement]="predicateCliente" [(ngModel)]="culpable.FechaVencimientoLicenciaCulpable"
+                (ionChange)="entraVencimiento($event);guardaCache(10)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" [color]="colorVigente ? 'tertiary' : 'danger'" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Fecha de vencimiento</ion-label>
+                </ion-input>
+                <ion-icon slot="start" [hidden]="isVisible==false" [name]="vigente ? 'checkmark-circle-sharp' : 'alert-circle-sharp'" aria-hidden="true" [color]="vigente ? 'success' : 'danger'" 
+              style="float: right; right: 0%;font-size: 2rem;z-index: 1090;position: absolute;"
+                            (click)="'toggleVisual()'">
+                          </ion-icon>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -28px;" class="input">
+                <ion-grid>
+                  <ion-row>
+                    <ion-col size="3">
+                      <ion-label class="text-size-sm" style="margin-left: 0px;" color="tertiary">Marca</ion-label>
+                    </ion-col>
+                    <ion-col size="9">
+                      <ion-grid>
+                        <ion-row>
+                          <ion-col size="8">
+                            {{culpable.MarcaCulpable}}
+                          </ion-col>
+                          <ion-col size="4">
+                            <ion-select class="text-size-xs data-input-select" [(ngModel)]="culpable.MarcaCulpable" multiple="false" (ionChange)="seleccionarMarcaCulpable($event);guardaCache(11)" multiple="false" style="float: right;color: white;">
+                              <ion-select-option *ngFor="let marca of marcasVehiculos" [value]="marca.Id">
+                                {{marca.nombre}}
+                              </ion-select-option>
+                            </ion-select>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input *ngIf="modelosMarca.length == 0" labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="email" [(ngModel)]="culpable.ModeloCulpable" (ionChange)="guardaCache(12)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Modelo</ion-label>
+                </ion-input>
+                <ion-select *ngIf="modelosMarca.length > 0" class="text-size-xs data-input-select" [(ngModel)]="culpable.ModeloCulpable" multiple="false" (ionChange)="seleccionarModeloCulpable($event);guardaCache(12)">
+                  <ion-select-option *ngFor="let modelo of modelosMarca"  [value]="modelo">{{modelo}}
+                  </ion-select-option>
+                </ion-select>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                [maskito]="yearMask" [maskitoElement]="predicateCliente" [(ngModel)]="culpable.AnioCulpable" (ionChange)="guardaCache(13)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Año</ion-label>
+                </ion-input>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="text" [(ngModel)]="culpable.MotorNoCulpable" (ionChange)="guardaCache(14)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Motor No.</ion-label>
+                </ion-input>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="text" [(ngModel)]="culpable.Chasis" (ionChange)="guardaCache(15)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Chasis No.</ion-label>
+                </ion-input>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="text" [(ngModel)]="culpable.NoPlacaCulpable" (ionChange)="guardaCache(16)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    No. de placa</ion-label>
+                </ion-input>
+              </ion-item>
+              <ion-item style="border: none;" no-lines>
+                <br>
+                <ion-checkbox color="tertiary" slot="end" [ngModel]="culpableEsPropietario" (ionChange)="cambiarPropietario($event)" labelPlacement="end"></ion-checkbox>
+                <span color="tertiary" style="position: absolute;right: 4%;top: 4px;color: #7da1c4;">
+                  El conductor es el propietario?</span>
+              </ion-item>
+              
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                *ngIf="culpableEsPropietario == true" type="text" [(ngModel)]="culpable.NombreCulpable" readonly (ionChange)="guardaCache(17)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Nombre del propietario</ion-label>
+                </ion-input>
+
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                *ngIf="culpableEsPropietario == false" type="text" [(ngModel)]="NombrePropietario" (ionChange)="entraNombrePropietarioCulpable($event);guardaCache(17)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Nombre del propietario</ion-label>
+                </ion-input>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                *ngIf="culpableEsPropietario == true" type="text" [(ngModel)]="culpable.DireccionCulpable" readonly (ionChange)="guardaCache(18)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Dirección del propietario</ion-label>
+                </ion-input>
+
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                *ngIf="culpableEsPropietario == false" type="text" [(ngModel)]="DireccionPropietario" (ionChange)="guardaCache(18)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Dirección del propietario</ion-label>
+                </ion-input>
+              </ion-item>
+
+              <br>
+              <ion-label class="text-size-sm" color="tertiary">
+                ¿Hay compromiso de pago?</ion-label>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-radio-group [(ngModel)]="culpable.CompromisoPago" (ngModelChange)="print(culpable.CompromisoPago);guardaCache(19)"
+                style="float: right; position: absolute; right: 0;">
+                  <ion-item lines="none" style="display: inline-block;">
+                    <ion-label color="tertiary">No</ion-label>
+                    <ion-radio value="2"></ion-radio>
+                  </ion-item>
+
+                  <ion-item lines="none"  style="display: inline-block;">
+                    <ion-label color="tertiary">Si</ion-label>
+                    <ion-radio value="1"></ion-radio>
+                  </ion-item>
+
+                </ion-radio-group>  
+              </ion-item>
+
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="text" [(ngModel)]="culpableContacto" (ionChange)="entraContactoCulpable($event);guardaCache(20)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Nombre De Contacto</ion-label>
+                </ion-input>
+              </ion-item>
+              <br>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-input labelPlacement="stacked" label="Nombre" placeholder=":" 
+                type="text" [(ngModel)]="culpableContactoNumero" (ionChange)="entraContactoMNumeroCulpable($event);guardaCache(21)"
+                class="data-input">
+                  <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                    Numero De Contacto</ion-label>
+                </ion-input>
+              </ion-item>
+
+              <br>
+              <ion-label slot="start" class="text-size-sm" color="tertiary" style="max-width: 100%;width: 25%;" color="tertiary">
+                Descripción de los Daños</ion-label>
+              <ion-item style="margin-left: -18px;" class="input">
+                <ion-textarea class="data-input" rows="5" columns="1" style="width: 100%;" type="text" [(ngModel)]="culpable.ObservacionesCulpable" (ionChange)="guardaCache(22)"></ion-textarea>
+              </ion-item>
+            </ion-list> <!-- Acá -->
+            <br>
+            <ion-grid style="color: white;">
+              <ion-row>
+                <ion-col size="12">Ajustadores Por Salud</ion-col>
+              </ion-row>
+            </ion-grid>
+            <br><br><br>
+
+    </ion-list>
+
+    <ion-footer style="position: fixed; bottom: 0;left:0;height:auto;">
+      <ion-fab *ngIf="true" style="position: fixed;" vertical="bottom" horizontal="end">
+        <ion-fab-button [disabled]="deudaSent==true" (click)="goAdeuda()">
+          <ion-icon name="chevron-forward"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ion-footer>
+
+</ion-content>
+
+<ion-modal trigger="modal-danio-culpa" #modalDanioCulpa class="danio-otro">
+  <ng-template>
+    <ion-content>
+      
+
+      <ion-grid fixed>
+        <ion-row>
+          <ion-col size="12">
+            <ion-item  lines="none" style="--background: #7da1c4;" class="ion-no-padding  input">
+              <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Agregue Un Daño </ion-label>
+            </ion-item>
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-label class="text-size-sm" color="tertiary" >
+                Describa el daño</ion-label>
+              <ion-input #inputDanio type="text"></ion-input>
+            </ion-item>
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-col size="12">
+              <ion-button style="color: white;" (click)="entraDanioOtro(inputDanio.value);modalDanioCulpa.dismiss()" expand="block" shape="round">
+                Agregar
+              </ion-button>
+            </ion-col>
+            
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+  </ng-template>
+</ion-modal>

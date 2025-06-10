@@ -1,0 +1,150 @@
+<ion-header>
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer id="spinFooter" *ngIf="isLoading == true"></ion-footer>
+
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">Audiencia Atención # {{idAtencion}}</ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-accordion-group id="abogadosDatos" [value]="['first']">
+    <ion-accordion value="first">
+      <ion-item slot="header">
+        <ion-label>Datos de Abogado</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">
+        <!--ion-select placeholder="Seleccionar Abogado">
+          <div slot="label">HELP Legal</div>
+          <ion-select-option *ngFor="let abogado of abogadosAudiencias" [value]=abogado.IdAjustador>{{abogado.AgenteNombre}}</ion-select-option>
+        </!--ion-select -->
+        <ion-chip (click)="goSearch()">
+          <ion-avatar>
+            <img src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+          </ion-avatar>
+          <ion-label>{{abogadoNombre}}</ion-label>
+          <ion-icon name="chevron-down" class="dis-icon"></ion-icon>
+        </ion-chip>
+      </div>
+    </ion-accordion>
+    <ion-accordion value="second">
+      <ion-item slot="header">
+        <ion-label>Lugar de la Audiencia</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">
+        <ion-grid>
+          <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+            Lugar y Observaciones
+          </ion-row>
+          <ion-row>
+            
+            <ion-col size="12" style="width: 100%;">
+              <ion-input [(ngModel)]="lugarAudiencia" class="abogado-dato"></ion-input>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ion-accordion>
+    <ion-accordion value="third">
+      <ion-item slot="header">
+        <ion-label>Fecha de la Audiencia</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <ion-chip style="margin-top: 10%;">
+                <ion-icon name="calendar" color="tertiary" class="da-icon"></ion-icon>
+                <ion-label>Fecha seleccionada {{formateadaAudiencia}}</ion-label>
+                <ion-icon name="time" class="dis-icon"></ion-icon>
+              </ion-chip>
+              
+            </ion-col>
+            <ion-col size="6">
+              <ion-label class="text-size-lg" style="padding-left: 10px;color: #7da1c4;">
+                Seleccionar Fecha de Audiencia
+              </ion-label>
+              <ion-card style="height: 465px;">
+                <ion-card-header>
+                </ion-card-header>
+                <ion-card-content>
+                  <!--ion-datetime [(ngModel)]="mydateAjustador" (ionChange)="marcarFechaAjustador(mydateAjustador)"></!--ion-datetime -->
+                  <ion-datetime [(ngModel)]="fechaAudiencia" (ionChange)="marcarFechaAudiencia(fechaAudiencia)"></ion-datetime>
+                </ion-card-content>
+              </ion-card>
+              
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+
+  <ion-grid id="abogadosLista" class="ion-no-padding" style="padding-top: 2px;height: 100%;overflow: hidden;display: none;">
+    <ion-row style="height: 100%;">
+      <ion-col size="12">
+        <ion-grid style="margin-top: 15px;">
+          <ion-row>
+            <ion-col size="10">
+              <ion-badge>
+                Abogados en Sistema
+              </ion-badge>
+            </ion-col>
+            <ion-col size="2">
+              <ion-button id="closeAbogadosSearchButton" class="close-search" style="float: right ;" (click)="closeAbogadosSearch()">
+                <ion-icon name="return-up-back"></ion-icon>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        
+        <ion-searchbar animated="true" placeholder="Buscar Abogado" show-clear-button="focus" show-cancel-button="never" cancel-button-text="Cancelar"
+        cancel-button-icon="trash-bin" [debounce]="400" (ionChange)="handleInput($event)"></ion-searchbar>
+        
+        <ion-grid style="width:95%;">
+          <ion-row>
+            <ion-col class="abogado-id-head" size="6">Nombre de abogado(a)</ion-col>
+            <ion-col class="abogado-id-head" size="6"></ion-col>
+          </ion-row>
+        </ion-grid>
+        
+
+        <ion-content color="light">
+          <ion-list [inset]="true" style="width: 97%;">
+            <ion-item *ngFor="let abogado of results; let i = index;" (click)="selectAbogado(i, abogadoId.value)" style="padding-left: 10px;border-radius:9px;">
+            <!--ion-item *ngFor="let atencion of results; let i = index;" (click)="verExpedienteBusqueda(atencion.IdAtencion, indexInput.value)" style="padding-left: 10px;border-radius:9px;" -->
+              <ion-grid style="width:100%;">
+                <ion-row>
+                  <ion-col class="abogado-id" size="12" >{{ abogado.AgenteNombre }}</ion-col>
+                </ion-row>
+              </ion-grid>
+              <ion-input #abogadoId [hidden]="true" [value]="abogado.IdAjustador" class="index-input"></ion-input>
+            </ion-item>
+            <ion-item style="color: white;">Ajustadores Ficohsa por Porsalud</ion-item>
+            <br><br><br><br><br>
+          </ion-list>
+        </ion-content>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-button id="submitAudience" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: #f14f23;
+--background-activated: #a8462a;
+--background-hover: #f66e48;
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;" vertical="bottom" horizontal="end" (click)="audienceSave()">
+  <ion-icon name="chevron-forward"></ion-icon>
+</ion-button>
+</ion-content>

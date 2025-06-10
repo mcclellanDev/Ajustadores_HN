@@ -1,0 +1,39 @@
+<ion-content>
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer id="spinFooter" *ngIf="isLoading == true"></ion-footer>
+  <br><br><br>
+ <ion-grid>
+  <ion-row style="text-align: center;">
+    <ion-col size="12">
+      <ion-item lines="none" >
+        <ion-badge color="tertiary" style="height: 120px;width: 100%;text-align: left;font-size: 1.1rem;">
+          <ion-grid style="width: 100%;">
+            <ion-row style="width: 100%;">
+              <ion-col size="12">Atención {{idAtencion}} finalizada correctamente!</ion-col>
+              <ion-col size="2">Código BPM</ion-col>
+              <ion-col size="8">{{codigoBPMFicohsa}}</ion-col>
+            </ion-row>
+            <ion-row style="width: 100%;">
+              <ion-col size="2">Código Reclamo</ion-col>
+              <ion-col size="8">{{codigoReclamoFicohsa}}</ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-badge>
+      </ion-item>
+    </ion-col>
+    <ion-col size="12">
+      <br><br><br><br><br><br><br>
+     <img style="width: 180px; height:180px" src="../../assets/img/oficina-en-casa.gif" />
+      <!--ion-icon name="eye" style="font-size: 2rem; margin: 15px; color: #f14f23;" id="open-modal-sign-aju" (click)="recargarFirma()"></!--ion-icon -->
+    </ion-col>
+    
+  </ion-row>
+  <ion-row>
+    <ion-col size="4"></ion-col>
+    <ion-col size="4">
+      <ion-button (click)="goHome()" style="float: right;" size="large">Volver a Inicio</ion-button>
+    </ion-col>
+    <ion-col size="4"></ion-col>
+  </ion-row>
+ </ion-grid>
+</ion-content>

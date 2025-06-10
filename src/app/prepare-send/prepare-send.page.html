@@ -1,0 +1,210 @@
+<ion-header>
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer id="spinFooter" *ngIf="isLoading == true"></ion-footer>
+  <!--ion-fab id="button-back" style="position: fixed;" vertical="top" horizontal="start" (click)="goBack()">
+    <ion-fab-button (click)="'confirmar()'">
+      <ion-icon name="arrow-back"></ion-icon>
+    </ion-fab-button>
+  </!--ion-fab -->
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">Atención # {{idAtencion}}</ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-accordion-group #accordionGroup id="accordionGroup" [multiple]="true" [value]="['third']">
+    <ion-accordion value="first">
+      <ion-item slot="header">
+        <ion-label>Utilización de póliza</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">
+        <ion-item  class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              ¿Porqué no se utilizará la póliza para esta atención? (Opcional)
+                </ion-row>
+            <ion-row>
+              <ion-col size="12">
+                <ion-input type="text" [(ngModel)]="cliente.PorqueNoUsoServicioAsistencia" (ionChange)="entraPorqueNoUso($event)"
+                class="custom"></ion-input>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+        
+      </div>
+    </ion-accordion>
+    <ion-accordion value="second">
+      <ion-item slot="header">
+        <ion-label>Datos de Siniestralidad</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;" class="data-label">
+              Tipo de Cobertura
+            </ion-row>
+            <ion-row>
+              <ion-col #TipoAcuerdoDisplay id="TipoAcuerdoDisplay" size="8" class="required-data select-label">{{coberturaDisplayName}}</ion-col>
+              <ion-col size="4" style="text-align: rigth;">
+                <ion-select class="text-size-xs" (ionChange)="seleccionarTipoCobertura($event)" [(ngModel)]="datos.TipoAcuerdoFicohsa" multiple="false" 
+                style="float: right;color: white;">
+                  <ion-select-option *ngFor="let tipoC of tiposdeCobertura;let i = index"  [value]="tipoC.Descripcion"
+                  style="color: white;">{{tipoC.Descripcion}}
+                  </ion-select-option>
+                </ion-select>
+              </ion-col>
+            </ion-row>
+            <ion-row class="ion-no-padding">
+              <ion-col size="12" class="ion-no-padding">
+                <ion-item class="ion-no-padding  input">
+                  <ion-grid class="ion-no-padding">
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;" class="data-label">
+                      Nombre y Apellido del Conductor
+                        </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input type="text" [(ngModel)]="cliente.NombreConductor" (ionChange)="entraNombreConductor($event)" class="required-data custom"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+        <ion-item class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;" class="data-label">
+              Tipo de género
+            </ion-row>
+            <ion-row>
+              <ion-col id="tipoDeGeneroDisplay" size="9" class="select-label">{{elGenero}}</ion-col>
+              <ion-col size="3" style="text-align: rigth;">
+                <ion-select id="tipoGeneroId" class="text-size-xs required-data" [(ngModel)]="elTipoGenero" multiple="false" (ionChange)="getElTipoGenero($event)"
+                style="float: right;color: white;">
+                  <ion-select-option *ngFor="let genero of tipoGeneros" [value]="genero.Id">
+                    {{genero.Genero}}
+                  </ion-select-option>
+                </ion-select>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+      </div>
+    </ion-accordion>
+    <ion-accordion value="third" *ngFor="let item of cliente">
+      <ion-item slot="header">
+        <ion-label>Datos de Expediente</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="4">
+              <strong>Afiliado: {{item.Cliente| titlecase}}</strong><br><br>
+                Telefono: {{item.TelefonoOrigen}}<br>
+                Poliza: {{item.PolizaExterna| titlecase}}<br>
+                Moneda: {{miMoneda}}<br>
+                Identidad : {{identidadAsegurado}}<br>
+                Conductor : {{nombreConductor}}<br>
+                Fecha del Siniestro : {{formateadaSiniestro}}<br>
+            </ion-col>
+            <ion-col size="4">
+              <strong> Marca: {{item.Marca| titlecase}}</strong><br><br>
+                Modelo: {{item.Modelo| titlecase}}<br>
+                Color: {{item.Color || "N/D"| titlecase}}<br>
+                Año: {{item.Year || "N/D"}}<br>
+                Chasis: {{item.Chasis || "N/D"}}<br>
+                Motor: {{item.Motor || "N/D"}}<br>
+                Placa: {{item.NumeroPlaca || "N/D"}}
+            </ion-col>
+            <ion-col size="4">
+              <strong>Lugar del siniestro: {{item.Direccion}}</strong><br><br>
+                Ciudad: {{item.Ciudad | titlecase}}
+                Zona: {{item.Zona | titlecase}}<br>
+                Dirección: {{item.Direccion  | titlecase}}<br>
+                Direción Destino: {{item.DireccionDestino | titlecase}}<br>
+                Servicio: {{item.Servicio | titlecase}}<br>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12">
+              <ion-label class="text-size-lg" style="padding-left: 10px;color: #7da1c4;">
+                 Firma Asegurado o conductor
+              </ion-label>
+                <ion-card style="height:202px">
+                  <img #firmaAsegurado id="firmaAsegurado" alt="Firmar" src="{{firmaPrecargada}}" onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'"
+                  style="    border: 6px dashed rgb(237, 233, 233);margin-top: 1%; width: 98%; height: 150px; margin-left: 1%;"/>
+                
+                  <ion-card-content style="padding: 0; margin-bottom: 6px;padding-left: 1%;">
+                    {{cliente.Cliente}}
+                  </ion-card-content>
+                </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+
+  <ion-button id="signButton" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 13%; z-index: 999;--background: #f14f23;
+--background-activated: #a8462a;
+--background-hover: #f66e48;
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;" vertical="bottom" horizontal="end" (click)="firmar()">
+  <ion-icon name="refresh"></ion-icon>
+</ion-button>
+
+    <ion-button id="goSignButton" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 7%; z-index: 999;--background: #f14f23;
+--background-activated: #a8462a;
+--background-hover: #f66e48;
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;" vertical="bottom" horizontal="end" (click)="goESignature()">
+  <ion-icon name="pencil"></ion-icon>
+</ion-button>
+
+<ion-button id="submitClaim" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: #f14f23;
+--background-activated: #a8462a;
+--background-hover: #f66e48;
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;" vertical="bottom" horizontal="end" (click)="testSave();">
+  <ion-icon name="chevron-forward"></ion-icon>
+</ion-button>
+
+</ion-content>
+
+<ion-button id="open-modal-success" expand="block" hidden></ion-button>
+  <ion-modal #modalSuccess trigger="open-modal-success" [enterAnimation]="enterAnimation" [leaveAnimation]="leaveAnimation">
+    <ng-template>
+      <ion-header style="display: none;">
+        <ion-toolbar>
+          <ion-title>HELP</ion-title>
+          <ion-buttons slot="end">
+            <ion-button id="closeSuccessButton" (click)="modalSuccess.dismiss()" hidden>Close</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-card style="margin-top: 12%; border: none; box-shadow: none;">
+          <img alt="Eeeexittoooo!" [src]="sucessIcon" style="width: 180px; margin-left: 15%; margin-bottom: -18px;"/>
+          <h3> <strong> Registro guardado con éxito! BPM actualizado. </strong> </h3>
+        </ion-card>
+      </ion-content>
+    </ng-template>
+  </ion-modal>

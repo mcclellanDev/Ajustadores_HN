@@ -1,0 +1,2100 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>help_ajustadores documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  AdeudaPage</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/adeuda/adeuda.page.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnInit</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-adeuda</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./adeuda.page.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./adeuda.page.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#acuerdoDeuda" >acuerdoDeuda</a>
+                            </li>
+                            <li>
+                                <a href="#adeudaCompleta" >adeudaCompleta</a>
+                            </li>
+                            <li>
+                                <a href="#anio" >anio</a>
+                            </li>
+                            <li>
+                                <a href="#anioPie" >anioPie</a>
+                            </li>
+                            <li>
+                                <a href="#anySignature" >anySignature</a>
+                            </li>
+                            <li>
+                                <a href="#atencionId" >atencionId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#canvas5" >canvas5</a>
+                            </li>
+                            <li>
+                                <a href="#deviceHeight" >deviceHeight</a>
+                            </li>
+                            <li>
+                                <a href="#deviceWidth" >deviceWidth</a>
+                            </li>
+                            <li>
+                                <a href="#dia" >dia</a>
+                            </li>
+                            <li>
+                                <a href="#diaPie" >diaPie</a>
+                            </li>
+                            <li>
+                                <a href="#emptySignature" >emptySignature</a>
+                            </li>
+                            <li>
+                                <a href="#emptySignatureWhite" >emptySignatureWhite</a>
+                            </li>
+                            <li>
+                                <a href="#expediente" >expediente</a>
+                            </li>
+                            <li>
+                                <a href="#fechaParrafo" >fechaParrafo</a>
+                            </li>
+                            <li>
+                                <a href="#fechaPie" >fechaPie</a>
+                            </li>
+                            <li>
+                                <a href="#firmaDemoAjustador" >firmaDemoAjustador</a>
+                            </li>
+                            <li>
+                                <a href="#fsLogo" >fsLogo</a>
+                            </li>
+                            <li>
+                                <a href="#idAtencion" >idAtencion</a>
+                            </li>
+                            <li>
+                                <a href="#isLoading" >isLoading</a>
+                            </li>
+                            <li>
+                                <a href="#isSigned" >isSigned</a>
+                            </li>
+                            <li>
+                                <a href="#laPoliza" >laPoliza</a>
+                            </li>
+                            <li>
+                                <a href="#mes" >mes</a>
+                            </li>
+                            <li>
+                                <a href="#meses" >meses</a>
+                            </li>
+                            <li>
+                                <a href="#mesPie" >mesPie</a>
+                            </li>
+                            <li>
+                                <a href="#miMoneda" >miMoneda</a>
+                            </li>
+                            <li>
+                                <a href="#moneda" >moneda</a>
+                            </li>
+                            <li>
+                                <a href="#now" >now</a>
+                            </li>
+                            <li>
+                                <a href="#openModal" >openModal</a>
+                            </li>
+                            <li>
+                                <a href="#sig5" >sig5</a>
+                            </li>
+                            <li>
+                                <a href="#telFijo" >telFijo</a>
+                            </li>
+                            <li>
+                                <a href="#ya" >ya</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#clear" >clear</a>
+                            </li>
+                            <li>
+                                <a href="#guardarDeuda" >guardarDeuda</a>
+                            </li>
+                            <li>
+                                <a href="#hasNonDigit" >hasNonDigit</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#previewPdf" >previewPdf</a>
+                            </li>
+                            <li>
+                                <a href="#printPdf" >printPdf</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(platform: Platform, api: <a href="../injectables/ApiService.html" target="_self">ApiService</a>, toaster: <a href="../injectables/ToastService.html" target="_self">ToastService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/app/adeuda/adeuda.page.ts:29</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>platform</td>
+                                                  
+                                                        <td>
+                                                                    <code>Platform</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>api</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ApiService.html" target="_self" >ApiService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>toaster</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ToastService.html" target="_self" >ToastService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="clear"></a>
+                    <span class="name">
+                        <span ><b>clear</b></span>
+                        <a href="#clear"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>clear()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="109"
+                                    class="link-to-prism">src/app/adeuda/adeuda.page.ts:109</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="guardarDeuda"></a>
+                    <span class="name">
+                        <span ><b>guardarDeuda</b></span>
+                        <a href="#guardarDeuda"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>guardarDeuda()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="114"
+                                    class="link-to-prism">src/app/adeuda/adeuda.page.ts:114</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hasNonDigit"></a>
+                    <span class="name">
+                        <span ><b>hasNonDigit</b></span>
+                        <a href="#hasNonDigit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>hasNonDigit(str)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="105"
+                                    class="link-to-prism">src/app/adeuda/adeuda.page.ts:105</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>str</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">src/app/adeuda/adeuda.page.ts:70</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="previewPdf"></a>
+                    <span class="name">
+                        <span ><b>previewPdf</b></span>
+                        <a href="#previewPdf"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>previewPdf()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="170"
+                                    class="link-to-prism">src/app/adeuda/adeuda.page.ts:170</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="printPdf"></a>
+                    <span class="name">
+                        <span ><b>printPdf</b></span>
+                        <a href="#printPdf"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>printPdf()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="156"
+                                    class="link-to-prism">src/app/adeuda/adeuda.page.ts:156</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="acuerdoDeuda"></a>
+                    <span class="name">
+                        <span ><b>acuerdoDeuda</b></span>
+                        <a href="#acuerdoDeuda"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/app/adeuda/adeuda.page.ts:22</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="adeudaCompleta"></a>
+                    <span class="name">
+                        <span ><b>adeudaCompleta</b></span>
+                        <a href="#adeudaCompleta"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/adeuda/adeuda.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="anio"></a>
+                    <span class="name">
+                        <span ><b>anio</b></span>
+                        <a href="#anio"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/adeuda/adeuda.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="anioPie"></a>
+                    <span class="name">
+                        <span ><b>anioPie</b></span>
+                        <a href="#anioPie"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/adeuda/adeuda.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="anySignature"></a>
+                    <span class="name">
+                        <span ><b>anySignature</b></span>
+                        <a href="#anySignature"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>anySignature</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/app/adeuda/adeuda.page.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="atencionId"></a>
+                    <span class="name">
+                        <span ><b>atencionId</b></span>
+                        <a href="#atencionId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/adeuda/adeuda.page.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="canvas5"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>canvas5</b></span>
+                        <a href="#canvas5"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ElementRef</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ViewChild(&#x27;canvas5&#x27;, {static: true})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/adeuda/adeuda.page.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deviceHeight"></a>
+                    <span class="name">
+                        <span ><b>deviceHeight</b></span>
+                        <a href="#deviceHeight"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/adeuda/adeuda.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deviceWidth"></a>
+                    <span class="name">
+                        <span ><b>deviceWidth</b></span>
+                        <a href="#deviceWidth"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/adeuda/adeuda.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dia"></a>
+                    <span class="name">
+                        <span ><b>dia</b></span>
+                        <a href="#dia"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/adeuda/adeuda.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="diaPie"></a>
+                    <span class="name">
+                        <span ><b>diaPie</b></span>
+                        <a href="#diaPie"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/adeuda/adeuda.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="emptySignature"></a>
+                    <span class="name">
+                        <span ><b>emptySignature</b></span>
+                        <a href="#emptySignature"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>emptySignature</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/adeuda/adeuda.page.ts:19</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="emptySignatureWhite"></a>
+                    <span class="name">
+                        <span ><b>emptySignatureWhite</b></span>
+                        <a href="#emptySignatureWhite"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>emptySignatureWhite</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/app/adeuda/adeuda.page.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="expediente"></a>
+                    <span class="name">
+                        <span ><b>expediente</b></span>
+                        <a href="#expediente"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/adeuda/adeuda.page.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fechaParrafo"></a>
+                    <span class="name">
+                        <span ><b>fechaParrafo</b></span>
+                        <a href="#fechaParrafo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/app/adeuda/adeuda.page.ts:22</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fechaPie"></a>
+                    <span class="name">
+                        <span ><b>fechaPie</b></span>
+                        <a href="#fechaPie"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/app/adeuda/adeuda.page.ts:22</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="firmaDemoAjustador"></a>
+                    <span class="name">
+                        <span ><b>firmaDemoAjustador</b></span>
+                        <a href="#firmaDemoAjustador"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>firmaDemoAjustador</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/adeuda/adeuda.page.ts:19</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fsLogo"></a>
+                    <span class="name">
+                        <span ><b>fsLogo</b></span>
+                        <a href="#fsLogo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/adeuda/adeuda.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="idAtencion"></a>
+                    <span class="name">
+                        <span ><b>idAtencion</b></span>
+                        <a href="#idAtencion"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/adeuda/adeuda.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isLoading"></a>
+                    <span class="name">
+                        <span ><b>isLoading</b></span>
+                        <a href="#isLoading"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/app/adeuda/adeuda.page.ts:22</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isSigned"></a>
+                    <span class="name">
+                        <span ><b>isSigned</b></span>
+                        <a href="#isSigned"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/adeuda/adeuda.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="laPoliza"></a>
+                    <span class="name">
+                        <span ><b>laPoliza</b></span>
+                        <a href="#laPoliza"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/adeuda/adeuda.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mes"></a>
+                    <span class="name">
+                        <span ><b>mes</b></span>
+                        <a href="#mes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/adeuda/adeuda.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="meses"></a>
+                    <span class="name">
+                        <span ><b>meses</b></span>
+                        <a href="#meses"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>meses</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/adeuda/adeuda.page.ts:19</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mesPie"></a>
+                    <span class="name">
+                        <span ><b>mesPie</b></span>
+                        <a href="#mesPie"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/adeuda/adeuda.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="miMoneda"></a>
+                    <span class="name">
+                        <span ><b>miMoneda</b></span>
+                        <a href="#miMoneda"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/app/adeuda/adeuda.page.ts:29</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="moneda"></a>
+                    <span class="name">
+                        <span ><b>moneda</b></span>
+                        <a href="#moneda"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/app/adeuda/adeuda.page.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="now"></a>
+                    <span class="name">
+                        <span ><b>now</b></span>
+                        <a href="#now"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/adeuda/adeuda.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="openModal"></a>
+                    <span class="name">
+                        <span ><b>openModal</b></span>
+                        <a href="#openModal"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/app/adeuda/adeuda.page.ts:22</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sig5"></a>
+                    <span class="name">
+                        <span ><b>sig5</b></span>
+                        <a href="#sig5"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>SignaturePad</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/adeuda/adeuda.page.ts:19</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="telFijo"></a>
+                    <span class="name">
+                        <span ><b>telFijo</b></span>
+                        <a href="#telFijo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/adeuda/adeuda.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ya"></a>
+                    <span class="name">
+                        <span ><b>ya</b></span>
+                        <a href="#ya"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/app/adeuda/adeuda.page.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnInit, ViewChild, ElementRef } from &#x27;@angular/core&#x27;;
+import { firmaDemoAjustador, emptySignature, emptySignatureWhite, anySignature } from &#x27;../environments/signatures&#x27;;
+import { logoFicohsa } from &#x27;../environments/default-images&#x27;;
+import { ApiService } from &#x27;../services/api.service&#x27;;
+import { ToastService } from &#x27;../services/toast.service&#x27;;
+import { Platform } from &#x27;@ionic/angular&#x27;;
+import { finalize } from &#x27;rxjs/operators&#x27;;
+import SignaturePad from &#x27;signature_pad&#x27;;
+import { meses } from &#x27;../environments/calendario&#x27;;
+
+@Component({
+  selector: &#x27;app-adeuda&#x27;,
+  templateUrl: &#x27;./adeuda.page.html&#x27;,
+  styleUrls: [&#x27;./adeuda.page.scss&#x27;],
+})
+export class AdeudaPage implements OnInit {
+//Firma
+@ViewChild(&quot;canvas5&quot;, { static: true }) canvas5: ElementRef;
+sig5: SignaturePad;meses:any&#x3D;meses;firmaDemoAjustador:any &#x3D; firmaDemoAjustador;emptySignature:any&#x3D; emptySignature
+emptySignatureWhite:any &#x3D; emptySignatureWhite;anySignature:any&#x3D;anySignature
+
+isLoading: boolean&#x3D;false;openModal: boolean &#x3D; false;fechaParrafo:any;fechaPie:any;acuerdoDeuda:any;
+adeudaCompleta:boolean&#x3D;false;deviceWidth:any;deviceHeight:any;idAtencion:any;telFijo:any;laPoliza:any;
+fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:any;isSigned:any;
+  ya: boolean&#x3D;false;
+  atencionId: number;
+  expediente: any;
+  moneda: any;
+  miMoneda: string;
+// datos a arreglar
+// poliza, agregar del cliente
+// fecha formato
+// 
+
+  constructor(private platform:Platform, private api:ApiService, private toaster: ToastService) { 
+    this.idAtencion &#x3D; localStorage.getItem(&#x27;idAtencion&#x27;);
+    this.laPoliza &#x3D; localStorage.getItem(&#x27;poliza&#x27;);
+    this.telFijo &#x3D; localStorage.getItem(&#x27;telFijo&#x27;);
+    this.acuerdoDeuda &#x3D; JSON.parse(localStorage.getItem(&#x27;deuda&#x27;));
+    this.isSigned &#x3D; localStorage.getItem(&#x27;adeudaCompleta&#x27;);
+
+    /*
+    if (this.isSigned) {
+      this.ya &#x3D; this.isSigned;
+    }
+    */
+
+    console.table(this.acuerdoDeuda);
+    this.now &#x3D; new Date();
+    this.diaPie &#x3D; this.now.getDate();
+    this.mesPie &#x3D; this.now.getMonth();
+    this.anioPie &#x3D; this.now.getFullYear();
+
+    let daDate &#x3D; localStorage.getItem(&#x27;FechaRegistro&#x27;);
+    this.dia &#x3D; daDate.split(&#x27;T&#x27;)[0].substring(8,10);
+    this.mes &#x3D; daDate.split(&#x27;T&#x27;)[0].substring(5,7);
+    this.anio &#x3D; daDate.split(&#x27;T&#x27;)[0].substring(0,4);
+    this.fechaParrafo &#x3D; this.dia+&#x27; de &#x27;+ this.meses[this.mes-1].mes+&#x27; de &#x27;+this.anio;
+    this.fechaPie &#x3D; (this.diaPie)+ &#x27; días&#x27;+&#x27; del mes de &#x27;+ this.meses[this.mesPie].mes+&#x27; de &#x27;+this.anioPie;
+    console.log((this.diaPie)+ &#x27; días&#x27;+&#x27; del mes de &#x27;+ this.meses[this.mesPie].mes+&#x27; de &#x27;+this.anioPie,&#x27;fecha siniestro&#x27;);
+
+    this.fsLogo &#x3D; logoFicohsa
+    if (this.platform.is(&#x27;android&#x27;)) {
+      this.deviceWidth &#x3D; this.platform.width()-90;
+    }else{
+      this.deviceWidth &#x3D; this.platform.width()-100;
+    }
+  }
+
+  ngOnInit() {
+    this.sig5 &#x3D; new SignaturePad(this.canvas5.nativeElement);
+    this.sig5.backgroundColor &#x3D; &quot;rgb(255, 255, 255)&quot;;
+    this.sig5.minWidth &#x3D; 1;
+    this.sig5.maxWidth &#x3D; 1.5;
+    this.sig5.dotSize &#x3D; 3;
+    //this.sig5.penColor &#x3D; &quot;rgb(66, 133, 244)&quot;;
+
+    this.idAtencion &#x3D; localStorage.getItem(&#x27;idAtencion&#x27;);
+    if (this.hasNonDigit(this.idAtencion) &#x3D;&#x3D; false) {
+      //alert(parseInt(this.idAtencion)+1)
+      this.atencionId &#x3D; parseInt(this.idAtencion);
+
+      this.api.Expediente(this.atencionId).pipe( 
+        finalize(async ()&#x3D;&gt;{
+          this.isLoading &#x3D; false;
+        })
+      ).subscribe(
+         (res) &#x3D;&gt;{
+          console.log(res, &#x27;respuesta&#x27;);
+          this.expediente&#x3D; res;
+          this.moneda &#x3D; this.expediente[0].Moneda;
+
+          //alert(this.moneda)
+          if (this.moneda &#x3D;&#x3D; null) {
+            this.miMoneda &#x3D; &quot;Lempiras&quot;;
+          }else{
+            this.miMoneda &#x3D; this.moneda.Moneda;
+          }
+          
+         }
+      )
+    }
+  }
+
+  hasNonDigit(str){
+    return /\D/g.test(str.toString());
+  }
+
+  clear() {
+    this.sig5.clear();
+  }
+  
+
+  guardarDeuda(){
+    this.acuerdoDeuda.FirmaDeudor &#x3D; firmaDemoAjustador;
+    this.isLoading &#x3D; true;
+    const mySignature &#x3D;this.sig5.toDataURL(&quot;image/jpeg&quot;);
+        console.log(mySignature);
+
+        if(mySignature !&#x3D; this.emptySignature &amp;&amp; mySignature !&#x3D; this.emptySignatureWhite &amp;&amp;
+          mySignature !&#x3D; this.firmaDemoAjustador &amp;&amp; mySignature !&#x3D;this.anySignature 
+          &amp;&amp; mySignature !&#x3D; null &amp;&amp; mySignature !&#x3D; undefined){
+
+          this.acuerdoDeuda.FirmaDeudor &#x3D; mySignature.split(&#x27;,&#x27;)[1];
+
+          this.toaster.presentToast(this.diaPie, &#x27;bottom&#x27;, &#x27;fecha&#x27;);
+          console.dir(this.acuerdoDeuda)
+          
+          this.api.insertarReconocimientoDeuda(this.acuerdoDeuda).pipe( 
+            finalize(async ()&#x3D;&gt;{
+              this.isLoading &#x3D; false;
+              this.ya &#x3D; true;
+              this.toaster.presentToastNoButtons(&#x27;Acuerdo Guardado con Exito. Puedes descargar una copia y enviarla a tu correo.&#x27;, &#x27;middle&#x27;, &#x27;deuda&#x27;);
+              this.adeudaCompleta &#x3D; true;
+              localStorage.setItem(&#x27;adeudaCompleta&#x27;, this.adeudaCompleta.toString());
+              //await load.dismiss();
+            })
+            
+          ).subscribe(
+             async (res) &#x3D;&gt;{
+              console.log(&#x27;Esto viene de la deuda&#x27;);
+              console.dir(res);
+              //this.idTablaAjustador &#x3D; res.toString();
+             })
+             /**/
+      }else{
+        
+        this.toaster.presentToastNoButtons(&quot;Necesitas escribir una firma para guardarla.&quot;, &quot;top&quot;, &quot;firma&quot;);
+        this.isLoading &#x3D; false;
+      }
+
+    
+    
+  }
+
+  printPdf(){
+    let pdfUrl;
+    pdfUrl &#x3D; &#x27;https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadReconocimientoDeDeuda/&#x27;;
+
+    if (this.adeudaCompleta &#x3D;&#x3D; true) {
+      this.openModal &#x3D; true;
+      console.log(parseInt(this.idAtencion));
+      window.open(pdfUrl+parseInt(this.idAtencion) , &#x27;_self&#x27;);
+    }else{
+      this.openModal &#x3D; false;
+      this.toaster.presentToastNoButtons(&#x27;Debes guardar el acuerdo firmado antes de imprimirlo.&#x27;, &#x27;middle&#x27;, &#x27;deuda&#x27;);
+    }
+  }
+
+  previewPdf(){
+    let pdfUrl;
+    pdfUrl &#x3D; &#x27;https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/ReconocimientoDeDeuda/&#x27;;
+    
+    if (this.adeudaCompleta &#x3D;&#x3D; true) {
+      this.openModal &#x3D; true;
+      console.log(parseInt(this.idAtencion));
+      window.open(pdfUrl+parseInt(this.idAtencion) , &#x27;_self&#x27;);
+    }else{
+      this.openModal &#x3D; false;
+      this.toaster.presentToastNoButtons(&#x27;Debes guardar el acuerdo firmado antes de previsualizarlo.&#x27;, &#x27;middle&#x27;, &#x27;deuda&#x27;);
+    }
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;ion-header&gt;
+  &lt;ion-spinner color&#x3D;&quot;primary&quot; name&#x3D;&quot;lines&quot; *ngIf&#x3D;&quot;isLoading &#x3D;&#x3D; true&quot;&gt;&lt;/ion-spinner&gt;
+  &lt;ion-footer *ngIf&#x3D;&quot;isLoading &#x3D;&#x3D; true&quot;&gt;&lt;/ion-footer&gt;
+  &lt;!--ion-fab id&#x3D;&quot;button-back&quot; style&#x3D;&quot;position: fixed;&quot; vertical&#x3D;&quot;top&quot; horizontal&#x3D;&quot;start&quot; (click)&#x3D;&quot;goBack()&quot;&gt;
+    &lt;ion-fab-button (click)&#x3D;&quot;&#x27;confirmar()&#x27;&quot;&gt;
+      &lt;ion-icon name&#x3D;&quot;arrow-back&quot;&gt;&lt;/ion-icon&gt;
+    &lt;/ion-fab-button&gt;
+  &lt;/!--ion-fab --&gt;
+  &lt;ion-toolbar&gt;
+    &lt;ion-buttons slot&#x3D;&quot;start&quot;&gt;
+      &lt;ion-back-button&gt;&lt;/ion-back-button&gt;
+    &lt;/ion-buttons&gt;
+    &lt;ion-title&gt;
+      &lt;ion-grid&gt;
+        &lt;ion-row&gt;
+          &lt;ion-col size&#x3D;&quot;3&quot;&gt;&lt;/ion-col&gt;
+          &lt;ion-col size&#x3D;&quot;6&quot;&gt;Acuerdo de Deuda - Atención # {{idAtencion}} - {{miMoneda}}&lt;/ion-col&gt;
+          &lt;!--ion-col size&#x3D;&quot;6&quot;&gt;Formulario Declaración - Atención # {{idAtencion}}&lt;/!--ion-col --&gt;
+          &lt;ion-col size&#x3D;&quot;3&quot; style&#x3D;&quot;float: right;color:blue;&quot;&gt;&lt;/ion-col&gt;
+        &lt;/ion-row&gt;
+      &lt;/ion-grid&gt;
+      &lt;!--div *ngIf&#x3D;&quot;isTablet &#x3D;&#x3D; true&quot; style&#x3D;&quot;margin-left: 40%;&quot;&gt;Formulario Declaración&lt;/!--div&gt;
+      &lt;div *ngIf&#x3D;&quot;isTablet &#x3D;&#x3D; false&quot; style&#x3D;&quot;margin-left: 1%;&quot;&gt;Formulario Declaración&lt;/div --&gt;
+    &lt;/ion-title&gt;
+    &lt;!--ion-label style&#x3D;&quot;position: absolute; top:-10px;left:88.5%;color:blue;z-index: 999;&quot;&gt;&lt;br&gt;Atención # {{idAtencion}}&lt;/!--ion-label --&gt;
+  &lt;/ion-toolbar&gt;
+&lt;/ion-header&gt;
+
+&lt;ion-content&gt;
+  &lt;ion-label class&#x3D;&quot;text-size-lg&quot; style&#x3D;&quot;padding-left: 5px;&quot;&gt;
+  &lt;/ion-label&gt;
+  &lt;ion-grid style&#x3D;&quot;margin-top: -40px;&quot;&gt;
+    &lt;ion-row&gt;
+      &lt;ion-col size&#x3D;&quot;12&quot;&gt;
+        &lt;ion-card style&#x3D;&quot;margin: 0;padding:0;&quot;&gt;
+          &lt;ion-grid&gt;
+            &lt;ion-row&gt;
+              &lt;ion-col size&#x3D;&quot;10&quot;&gt;
+                &lt;img alt&#x3D;&quot;Ficohsa Seguros&quot; src&#x3D;&quot;{{fsLogo}}&quot; style&#x3D;&quot;width: 281px; height: 61px; margin-left: 15px; margin-top: 15px;&quot; /&gt;
+              &lt;/ion-col&gt;
+              &lt;ion-col size&#x3D;&quot;2&quot;&gt;
+                &lt;!--ion-icon class&#x3D;&quot;impresora&quot; name&#x3D;&quot;eye&quot; (click)&#x3D;&quot;this.modalPdf.present()&quot; id&#x3D;&quot;open-modal-pdf&quot; style&#x3D;&quot;margin-right: 25%;&quot;&gt;&lt;/!--ion-icon&gt;
+                &lt;ion-icon class&#x3D;&quot;impresora&quot; name&#x3D;&quot;print&quot; (click)&#x3D;&quot;this.modalPdf.present()&quot; id&#x3D;&quot;open-modal-pdf&quot;&gt;&lt;/ion-icon --&gt;
+              &lt;/ion-col&gt;
+            &lt;/ion-row&gt;
+          &lt;/ion-grid&gt;
+          
+          &lt;ion-card-header&gt;
+            &lt;ion-card-title&gt;Reconocimiento de Deuda&lt;/ion-card-title&gt;
+            &lt;ion-card-subtitle style&#x3D;&quot;text-align: justify;&quot;&gt;Yo {{acuerdoDeuda.NombreDeudor}}, mayor de edad, con tarjeta de identidad No {{acuerdoDeuda.IdentidadDeudor}}, con 
+              domicilio en {{acuerdoDeuda.Domicilio}} No de teléfono {{telFijo}}, celular No {{acuerdoDeuda.Celular}}, 
+              trabajo en {{acuerdoDeuda.LugarDeTrabajo}}, correo electrónico &lt;a&gt;{{acuerdoDeuda.CorreoElectronico}}&lt;/a&gt;, nombre de contacto (familiar o amigo)
+              {{acuerdoDeuda.NombreContacto}}, celular No {{acuerdoDeuda.CelularContacto}}
+
+              Declaro: &lt;strong style&#x3D;&quot;font-weight: bold;&quot;&gt;PRIMERO&lt;/strong&gt;: Actuando en mi condición de deudor de INTERAMERICANA DE SEGUROS S.A., también conocida como FICOHSA SEGUROS,
+              por deuda contraída con esta institución, en el accidente de fecha {{fechaParrafo}}, en el cual resultó perjudicado 
+              el vehículo marca {{acuerdoDeuda.Marca}} modelo {{acuerdoDeuda.Modelo}}, año {{acuerdoDeuda.Anio}}, placa {{acuerdoDeuda.Placa}} del asegurado {{acuerdoDeuda.NombreAsegurado}}, con poliza No {{laPoliza}}, 
+              cuyos daños fueron ocasionados por el vehículo: marca {{acuerdoDeuda.MarcaImplicado}}, modelo {{acuerdoDeuda.ModeloImplicado}}, año {{acuerdoDeuda.AnioImplicado}}, placa {{acuerdoDeuda.PlacaImplicado}}, propiedad de {{acuerdoDeuda.NombrePersonaPropiedadImplicada}}.
+
+              &lt;strong style&#x3D;&quot;font-weight: bold;&quot;&gt;SEGUNDO&lt;/strong&gt;: De dicho accidente resultaron los siguientes daños: {{acuerdoDeuda.DanioCausadoObservacion}}.
+
+              Acepto que quedan comprendidos en este acto, los daños mecánicos que aun no han sido constatados siempre y cuando estos sean
+              producto de la colisión causada por mi persona.
+
+              &lt;strong style&#x3D;&quot;font-weight: bold;&quot;&gt;TERCERO&lt;/strong&gt;: Acepto que la factura de reparación de los daños mencionados en la cláusula SEGUNDA, formará para integrar el presente
+              Reconocimiento de Deuda.
+            &lt;/ion-card-subtitle&gt;
+          &lt;/ion-card-header&gt;
+        
+          &lt;ion-card-content&gt;
+            En fé de lo cual firmo en la ciudad de Tegucigalpa a los {{fechaPie}}.
+          &lt;/ion-card-content&gt;
+        &lt;/ion-card&gt;
+      &lt;/ion-col&gt;
+    &lt;/ion-row&gt;
+    &lt;ion-row&gt;
+      &lt;!--ion-col size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #3171e0;&quot;&gt;
+        &lt;ion-label style&#x3D;&quot;margin-left: 19px;&quot;&gt;Firma Implicado&lt;/ion-label&gt;
+      &lt;/!--ion-col --&gt;
+      &lt;ion-col size&#x3D;&quot;12&quot; style&#x3D;&quot;margin-top: -10px;&quot;&gt;
+        &lt;ion-card id&#x3D;&quot;cardAsegurado&quot;&gt;
+          &lt;ion-card-content&gt;
+            &lt;!--ion-img *ngIf&#x3D;&quot;isSign &#x3D;&#x3D; true&quot; src&#x3D;&quot;{{firmaPrecargada}}&quot;/ --&gt;
+            &lt;canvas id&#x3D;&quot;canvasAdeudado&quot; width&#x3D;&quot;{{deviceWidth}}&quot; [height]&#x3D;&quot;200&quot;  #canvas5 style&#x3D;&quot;border: 6px dashed #ede9e9&quot;&gt;&lt;/canvas&gt;
+            &lt;!--canvas id&#x3D;&quot;canvasAsegurado&quot; [width]&#x3D;&quot;500&quot; [height]&#x3D;&quot;150&quot;  #canvas2 style&#x3D;&quot;border: 6px dashed #ede9e9&quot;&gt;&lt;/!--canvas --&gt;
+          &lt;/ion-card-content&gt;
+          &lt;ion-grid&gt;
+            &lt;ion-row&gt;
+              &lt;ion-col size&#x3D;&quot;6&quot;&gt;
+                &lt;ion-button expand&#x3D;&quot;block&quot; (click)&#x3D;&quot;clear()&quot;&gt;Limpiar Firma&lt;/ion-button&gt;
+              &lt;/ion-col&gt;
+              &lt;ion-col size&#x3D;&quot;6&quot;&gt;
+                &lt;ion-button *ngIf&#x3D;&quot;ya &#x3D;&#x3D; false&quot; expand&#x3D;&quot;block&quot; (click)&#x3D;&quot;guardarDeuda()&quot;&gt;Firmar Acuerdo&lt;/ion-button&gt;
+                &lt;ion-button *ngIf&#x3D;&quot;ya &#x3D;&#x3D; true&quot; expand&#x3D;&quot;block&quot; disabled&gt;Firmar Acuerdo&lt;/ion-button&gt;
+              &lt;/ion-col&gt;
+            &lt;/ion-row&gt;
+          &lt;/ion-grid&gt;
+        &lt;/ion-card&gt;
+      &lt;/ion-col&gt;
+      
+    &lt;/ion-row&gt;
+  &lt;/ion-grid&gt;
+&lt;/ion-content&gt;
+
+&lt;ion-modal #modalPdf #modal trigger&#x3D;&quot;open-modal-pdf&quot; [initialBreakpoint]&#x3D;&quot;0.5&quot; [breakpoints]&#x3D;&quot;[0, 0.25, 0.5, 0.75]&quot;&gt;
+  &lt;ng-template&gt;
+    &lt;ion-content&gt;
+      &lt;ion-toolbar&gt;Decargar PDFs&lt;/ion-toolbar&gt;
+      &lt;ion-list&gt;
+        &lt;ion-item (click)&#x3D;&quot;printPdf()&quot;&gt;
+          &lt;ion-avatar slot&#x3D;&quot;start&quot;&gt;
+            &lt;ion-icon style&#x3D;&quot;font-size: 2.8rem;&quot; name&#x3D;&quot;wallet-outline&quot;&gt;&lt;/ion-icon&gt;
+          &lt;/ion-avatar&gt;
+          &lt;ion-label&gt;
+            &lt;h2&gt;Acuerdo de Deuda&lt;/h2&gt;
+            &lt;p&gt;Compromiso de deuda&lt;/p&gt;
+          &lt;/ion-label&gt;
+        &lt;/ion-item&gt;
+        
+        &lt;!--ion-item id&#x3D;&quot;step1&quot; (click)&#x3D;&quot;printPdf(2)&quot;&gt;
+          &lt;ion-avatar slot&#x3D;&quot;start&quot;&gt;
+            &lt;ion-icon style&#x3D;&quot;font-size: 2.8rem;&quot; name&#x3D;&quot;shield-outline&quot;&gt;&lt;/ion-icon&gt;
+          &lt;/ion-avatar&gt;
+          &lt;ion-grid&gt;
+            &lt;ion-row&gt;
+              &lt;ion-col size&#x3D;&quot;6&quot;&gt;
+                &lt;ion-label&gt;
+                  &lt;h2&gt;Cierre de Cobertura&lt;/h2&gt;
+                  &lt;p&gt;Cobertura de Seguro&lt;/p&gt;
+                &lt;/ion-label&gt;
+              &lt;/ion-col&gt;
+            &lt;/ion-row&gt;
+          &lt;/ion-grid&gt;
+        &lt;/!--ion-item&gt;
+        &lt;ion-item id&#x3D;&quot;step2&quot; (click)&#x3D;&quot;printPdf(3)&quot;&gt;
+          &lt;ion-avatar slot&#x3D;&quot;start&quot;&gt;
+            &lt;ion-icon style&#x3D;&quot;font-size: 2.8rem;&quot; name&#x3D;&quot;document-attach-outline&quot;&gt;&lt;/ion-icon&gt;
+          &lt;/ion-avatar&gt;
+          &lt;ion-label&gt;
+            &lt;h2&gt;Reclamo de Cliente&lt;/h2&gt;
+            &lt;p&gt;Reclamo de Cobertura&lt;/p&gt;
+          &lt;/ion-label&gt;
+        &lt;/ion-item --&gt;
+
+        &lt;ion-item&gt;
+        &lt;/ion-item&gt;
+      &lt;/ion-list&gt;
+    &lt;/ion-content&gt;
+  &lt;/ng-template&gt;
+&lt;/ion-modal&gt;
+
+&lt;ion-modal #modalPdfPre trigger&#x3D;&quot;open-modal-pdf-pre&quot; [initialBreakpoint]&#x3D;&quot;0.5&quot; [breakpoints]&#x3D;&quot;[0, 0.25, 0.5, 0.75]&quot;&gt;
+  &lt;ng-template&gt;
+    &lt;ion-content&gt;
+      &lt;ion-toolbar&gt;Decargar PDFs&lt;/ion-toolbar&gt;
+      &lt;ion-list&gt;
+        &lt;ion-item (click)&#x3D;&quot;previewPdf()&quot;&gt;
+          &lt;ion-avatar slot&#x3D;&quot;start&quot;&gt;
+            &lt;ion-icon style&#x3D;&quot;font-size: 2.8rem;&quot; name&#x3D;&quot;wallet-outline&quot;&gt;&lt;/ion-icon&gt;
+          &lt;/ion-avatar&gt;
+          &lt;ion-label&gt;
+            &lt;h2&gt;Acuerdo de Deuda&lt;/h2&gt;
+            &lt;p&gt;Compromiso de deuda&lt;/p&gt;
+          &lt;/ion-label&gt;
+        &lt;/ion-item&gt;
+        
+        &lt;!--ion-item id&#x3D;&quot;step1&quot; (click)&#x3D;&quot;printPdf(2)&quot;&gt;
+          &lt;ion-avatar slot&#x3D;&quot;start&quot;&gt;
+            &lt;ion-icon style&#x3D;&quot;font-size: 2.8rem;&quot; name&#x3D;&quot;shield-outline&quot;&gt;&lt;/ion-icon&gt;
+          &lt;/ion-avatar&gt;
+          &lt;ion-grid&gt;
+            &lt;ion-row&gt;
+              &lt;ion-col size&#x3D;&quot;6&quot;&gt;
+                &lt;ion-label&gt;
+                  &lt;h2&gt;Cierre de Cobertura&lt;/h2&gt;
+                  &lt;p&gt;Cobertura de Seguro&lt;/p&gt;
+                &lt;/ion-label&gt;
+              &lt;/ion-col&gt;
+            &lt;/ion-row&gt;
+          &lt;/ion-grid&gt;
+        &lt;/!--ion-item&gt;
+        &lt;ion-item id&#x3D;&quot;step2&quot; (click)&#x3D;&quot;printPdf(3)&quot;&gt;
+          &lt;ion-avatar slot&#x3D;&quot;start&quot;&gt;
+            &lt;ion-icon style&#x3D;&quot;font-size: 2.8rem;&quot; name&#x3D;&quot;document-attach-outline&quot;&gt;&lt;/ion-icon&gt;
+          &lt;/ion-avatar&gt;
+          &lt;ion-label&gt;
+            &lt;h2&gt;Reclamo de Cliente&lt;/h2&gt;
+            &lt;p&gt;Reclamo de Cobertura&lt;/p&gt;
+          &lt;/ion-label&gt;
+        &lt;/ion-item --&gt;
+
+        &lt;ion-item&gt;
+        &lt;/ion-item&gt;
+      &lt;/ion-list&gt;
+    &lt;/ion-content&gt;
+  &lt;/ng-template&gt;
+&lt;/ion-modal&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./adeuda.page.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">strong{
+    font-weight: bolder;
+}
+
+ion-spinner{
+	position: fixed;
+    top: 28%;
+    left: 40%;
+    z-index: 999;
+    width: 20%;
+    height: 20%;
+	//background-color: #00213f;
+}
+
+#spinFooter{
+	position: fixed;
+    background: black;
+    opacity: 0.6;
+    height: 100vh;
+    width: 100vw;
+    z-index: 900;
+    bottom: 0;
+}
+
+.impresora {
+    font-size: 2rem;
+    color: #f14f23;
+    position: absolute;
+    right: 1%;
+    top: 15%;
+  }</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><ion-header>  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>  <ion-footer *ngIf="isLoading == true"></ion-footer>  <!--ion-fab id="button-back" style="position: fixed;" vertical="top" horizontal="start" (click)="goBack()">    <ion-fab-button (click)="\'confirmar()\'">      <ion-icon name="arrow-back"></ion-icon>    </ion-fab-button>  </!--ion-fab -->  <ion-toolbar>    <ion-buttons slot="start">      <ion-back-button></ion-back-button>    </ion-buttons>    <ion-title>      <ion-grid>        <ion-row>          <ion-col size="3"></ion-col>          <ion-col size="6">Acuerdo de Deuda - Atención # {{idAtencion}} - {{miMoneda}}</ion-col>          <!--ion-col size="6">Formulario Declaración - Atención # {{idAtencion}}</!--ion-col -->          <ion-col size="3" style="float: right;color:blue;"></ion-col>        </ion-row>      </ion-grid>      <!--div *ngIf="isTablet == true" style="margin-left: 40%;">Formulario Declaración</!--div>      <div *ngIf="isTablet == false" style="margin-left: 1%;">Formulario Declaración</div -->    </ion-title>    <!--ion-label style="position: absolute; top:-10px;left:88.5%;color:blue;z-index: 999;"><br>Atención # {{idAtencion}}</!--ion-label -->  </ion-toolbar></ion-header><ion-content>  <ion-label class="text-size-lg" style="padding-left: 5px;">  </ion-label>  <ion-grid style="margin-top: -40px;">    <ion-row>      <ion-col size="12">        <ion-card style="margin: 0;padding:0;">          <ion-grid>            <ion-row>              <ion-col size="10">                <img alt="Ficohsa Seguros" src="{{fsLogo}}" style="width: 281px; height: 61px; margin-left: 15px; margin-top: 15px;" />              </ion-col>              <ion-col size="2">                <!--ion-icon class="impresora" name="eye" (click)="this.modalPdf.present()" id="open-modal-pdf" style="margin-right: 25%;"></!--ion-icon>                <ion-icon class="impresora" name="print" (click)="this.modalPdf.present()" id="open-modal-pdf"></ion-icon -->              </ion-col>            </ion-row>          </ion-grid>                    <ion-card-header>            <ion-card-title>Reconocimiento de Deuda</ion-card-title>            <ion-card-subtitle style="text-align: justify;">Yo {{acuerdoDeuda.NombreDeudor}}, mayor de edad, con tarjeta de identidad No {{acuerdoDeuda.IdentidadDeudor}}, con               domicilio en {{acuerdoDeuda.Domicilio}} No de teléfono {{telFijo}}, celular No {{acuerdoDeuda.Celular}},               trabajo en {{acuerdoDeuda.LugarDeTrabajo}}, correo electrónico <a>{{acuerdoDeuda.CorreoElectronico}}</a>, nombre de contacto (familiar o amigo)              {{acuerdoDeuda.NombreContacto}}, celular No {{acuerdoDeuda.CelularContacto}}              Declaro: <strong style="font-weight: bold;">PRIMERO</strong>: Actuando en mi condición de deudor de INTERAMERICANA DE SEGUROS S.A., también conocida como FICOHSA SEGUROS,              por deuda contraída con esta institución, en el accidente de fecha {{fechaParrafo}}, en el cual resultó perjudicado               el vehículo marca {{acuerdoDeuda.Marca}} modelo {{acuerdoDeuda.Modelo}}, año {{acuerdoDeuda.Anio}}, placa {{acuerdoDeuda.Placa}} del asegurado {{acuerdoDeuda.NombreAsegurado}}, con poliza No {{laPoliza}},               cuyos daños fueron ocasionados por el vehículo: marca {{acuerdoDeuda.MarcaImplicado}}, modelo {{acuerdoDeuda.ModeloImplicado}}, año {{acuerdoDeuda.AnioImplicado}}, placa {{acuerdoDeuda.PlacaImplicado}}, propiedad de {{acuerdoDeuda.NombrePersonaPropiedadImplicada}}.              <strong style="font-weight: bold;">SEGUNDO</strong>: De dicho accidente resultaron los siguientes daños: {{acuerdoDeuda.DanioCausadoObservacion}}.              Acepto que quedan comprendidos en este acto, los daños mecánicos que aun no han sido constatados siempre y cuando estos sean              producto de la colisión causada por mi persona.              <strong style="font-weight: bold;">TERCERO</strong>: Acepto que la factura de reparación de los daños mencionados en la cláusula SEGUNDA, formará para integrar el presente              Reconocimiento de Deuda.            </ion-card-subtitle>          </ion-card-header>                  <ion-card-content>            En fé de lo cual firmo en la ciudad de Tegucigalpa a los {{fechaPie}}.          </ion-card-content>        </ion-card>      </ion-col>    </ion-row>    <ion-row>      <!--ion-col size="12" style="color: #3171e0;">        <ion-label style="margin-left: 19px;">Firma Implicado</ion-label>      </!--ion-col -->      <ion-col size="12" style="margin-top: -10px;">        <ion-card id="cardAsegurado">          <ion-card-content>            <!--ion-img *ngIf="isSign == true" src="{{firmaPrecargada}}"/ -->            <canvas id="canvasAdeudado" width="{{deviceWidth}}" [height]="200"  #canvas5 style="border: 6px dashed #ede9e9"></canvas>            <!--canvas id="canvasAsegurado" [width]="500" [height]="150"  #canvas2 style="border: 6px dashed #ede9e9"></!--canvas -->          </ion-card-content>          <ion-grid>            <ion-row>              <ion-col size="6">                <ion-button expand="block" (click)="clear()">Limpiar Firma</ion-button>              </ion-col>              <ion-col size="6">                <ion-button *ngIf="ya == false" expand="block" (click)="guardarDeuda()">Firmar Acuerdo</ion-button>                <ion-button *ngIf="ya == true" expand="block" disabled>Firmar Acuerdo</ion-button>              </ion-col>            </ion-row>          </ion-grid>        </ion-card>      </ion-col>          </ion-row>  </ion-grid></ion-content><ion-modal #modalPdf #modal trigger="open-modal-pdf" [initialBreakpoint]="0.5" [breakpoints]="[0, 0.25, 0.5, 0.75]">  <ng-template>    <ion-content>      <ion-toolbar>Decargar PDFs</ion-toolbar>      <ion-list>        <ion-item (click)="printPdf()">          <ion-avatar slot="start">            <ion-icon style="font-size: 2.8rem;" name="wallet-outline"></ion-icon>          </ion-avatar>          <ion-label>            <h2>Acuerdo de Deuda</h2>            <p>Compromiso de deuda</p>          </ion-label>        </ion-item>                <!--ion-item id="step1" (click)="printPdf(2)">          <ion-avatar slot="start">            <ion-icon style="font-size: 2.8rem;" name="shield-outline"></ion-icon>          </ion-avatar>          <ion-grid>            <ion-row>              <ion-col size="6">                <ion-label>                  <h2>Cierre de Cobertura</h2>                  <p>Cobertura de Seguro</p>                </ion-label>              </ion-col>            </ion-row>          </ion-grid>        </!--ion-item>        <ion-item id="step2" (click)="printPdf(3)">          <ion-avatar slot="start">            <ion-icon style="font-size: 2.8rem;" name="document-attach-outline"></ion-icon>          </ion-avatar>          <ion-label>            <h2>Reclamo de Cliente</h2>            <p>Reclamo de Cobertura</p>          </ion-label>        </ion-item -->        <ion-item>        </ion-item>      </ion-list>    </ion-content>  </ng-template></ion-modal><ion-modal #modalPdfPre trigger="open-modal-pdf-pre" [initialBreakpoint]="0.5" [breakpoints]="[0, 0.25, 0.5, 0.75]">  <ng-template>    <ion-content>      <ion-toolbar>Decargar PDFs</ion-toolbar>      <ion-list>        <ion-item (click)="previewPdf()">          <ion-avatar slot="start">            <ion-icon style="font-size: 2.8rem;" name="wallet-outline"></ion-icon>          </ion-avatar>          <ion-label>            <h2>Acuerdo de Deuda</h2>            <p>Compromiso de deuda</p>          </ion-label>        </ion-item>                <!--ion-item id="step1" (click)="printPdf(2)">          <ion-avatar slot="start">            <ion-icon style="font-size: 2.8rem;" name="shield-outline"></ion-icon>          </ion-avatar>          <ion-grid>            <ion-row>              <ion-col size="6">                <ion-label>                  <h2>Cierre de Cobertura</h2>                  <p>Cobertura de Seguro</p>                </ion-label>              </ion-col>            </ion-row>          </ion-grid>        </!--ion-item>        <ion-item id="step2" (click)="printPdf(3)">          <ion-avatar slot="start">            <ion-icon style="font-size: 2.8rem;" name="document-attach-outline"></ion-icon>          </ion-avatar>          <ion-label>            <h2>Reclamo de Cliente</h2>            <p>Reclamo de Cobertura</p>          </ion-label>        </ion-item -->        <ion-item>        </ion-item>      </ion-list>    </ion-content>  </ng-template></ion-modal></div>'
+    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AjustadorPage', 'selector': 'app-ajustador'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'}];
+    var DIRECTIVES = [{'name': 'ParallaxHeader', 'selector': '[parallax-header]'},{'name': 'PressDirective', 'selector': '[appPress]'}];
+    var ACTUAL_COMPONENT = {'name': 'AdeudaPage'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'AdeudaPage.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

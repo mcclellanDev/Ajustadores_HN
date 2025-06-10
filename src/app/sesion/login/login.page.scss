@@ -1,0 +1,131 @@
+
+:host {
+    --img-logo: 30vh;
+  }
+  
+  form{
+    width: 86%;
+  }
+  ion-grid,
+  ion-row {
+    height: 100%;
+    background: var(--cs-background-primary, #fff);
+  }
+  
+  
+  ion-img {
+    width: var(--img-logo);
+    text-align: center;
+    margin: 0 auto;
+  }
+  
+  ion-item {
+    ion-input {
+      --padding-end: 8px;
+      --margin-right: 8px;
+    }
+   ion-icon {
+     position: absolute;
+     right: 0;
+     bottom: 8px
+    }
+
+    
+  }
+
+  ion-button.warning-button {
+    --background: none;
+    --background-hover: none;
+    --background-activated: none;
+    --background-focused: none;
+  
+    --color: #F04F23;
+  
+    --border-radius: 60px;
+    --border-color: none;
+    --border-style: none;
+    --border-width: none;
+  
+    --box-shadow: 0 2px 6px 0 rgb(0, 0, 0, 0.25);
+  
+    --ripple-color: rgb(41, 35, 38);
+  
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+    --color-hover: blue;
+  }
+
+  ion-split-pane {
+    --side-width: 40%;
+    --side-max-width: 40%;
+
+    --border: 10px groove #b3baff;
+
+    ion-menu{
+      border-radius:30%;
+    }
+  }
+
+  ion-split-pane:before {
+    --border: 10px groove orangered;
+  }
+
+  
+
+  ion-grid{
+    height: 100%;
+}
+ion-row{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+ion-spinner{
+	position: fixed;
+    top: 28%;
+    left: 40%;
+    z-index: 999;
+    width: 20%;
+    height: 20%;
+	//background-color: #00213f;
+}
+
+#spinFooter{
+	position: fixed;
+    background: black;
+    opacity: 0.6;
+    height: 100vh;
+    width: 100vw;
+    z-index: 900;
+    bottom: 0;
+}
+
+.custom-toast-multi{
+  transform: translateY(56px) !important;
+}
+
+  /*
+  ion-button.warning-button {
+    --background: #F04F23;
+    --background-hover: #F04F23;
+    --background-activated: #F04F23;
+    --background-focused: #F04F23;
+  
+    --color: white;
+  
+    --border-radius: 60px;
+    --border-color: #85341d;
+    --border-style: solid;
+    --border-width: 1px;
+  
+    --box-shadow: 0 2px 6px 0 rgb(0, 0, 0, 0.25);
+  
+    --ripple-color: rgb(41, 35, 38);
+  
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+    
+  }
+*/  

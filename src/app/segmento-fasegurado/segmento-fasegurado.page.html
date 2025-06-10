@@ -1,0 +1,96 @@
+<ion-header>
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer *ngIf="isLoading == true"></ion-footer>
+  
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+      
+    </ion-buttons>
+    <ion-title>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="3"></ion-col>
+          <ion-col size="6">{{segmentoTitulo}} - Atención # {{idAtencion}} - {{miMoneda}}</ion-col>
+          <ion-col size="3" style="float: right;color:blue;"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-col id="segmentAfiliatedAju" size="12">
+    <ion-item lines="none" class="ion-no-padding  input">
+      <ion-label class="text-size-lg" style="padding-left: 5px;">
+        <ion-badge>
+          {{segmentoTitulo}} o Conductor
+        </ion-badge>
+      </ion-label>
+    </ion-item>
+
+  <ion-grid>
+    <ion-row>
+      
+      <ion-col size="12">
+                  
+        <ion-card style="height:405px">
+          <img *ngIf="firmaPrecargada" #imagen name="firma" alt="Firmar" src="{{firmaPrecargada}}" [(ngModel)]="firmaPrecargada" onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'"
+          style="width: 100%;margin-top: 30%; height: '{{imageHeight}}'"/>
+
+          <!--img #imagen alt="Firmar" src="{{firmaPrecargada}}" [(ngModel)]="firmaPrecargada" onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'"
+          style="width: 100%;margin-top: 30%; height: '{{imageHeight}}'"/ -->
+        
+          <ion-card-content style="    padding: 0; margin-bottom: 50px;">
+            
+          </ion-card-content>
+        </ion-card>
+        <br>
+        <ion-item style="padding-top: 9%;">
+          <ion-input id="aseguradoNombre" type="text" placeholder="Nombre Completo" [(ngModel)]="aseguradoNombre" readonly></ion-input>
+        </ion-item> 
+        
+        <ion-item lines="none">
+        </ion-item>
+      
+
+    </ion-col>
+
+    </ion-row>
+  </ion-grid>
+  </ion-col>
+</ion-content>
+
+
+<!--
+  
+
+            <ion-grid>
+              <ion-row>
+                
+                <ion-col size="6">
+                <ion-content class="ion-no-padding">
+                  <ion-grid style="padding-top: 0;">
+                    <ion-row>
+                      
+                      <ion-col size="12" style="padding-top: 0;">
+                        <ion-card style="height:405px">
+                          <ion-card-header style="font-size:1rem">
+                            Fecha del Siniestro
+                          </ion-card-header>
+                          <ion-card-content style="margin-top: 26%;">
+                            <ion-badge style="margin-left: 0px;padding: 20px;font-size: 1.3rem;height: 60px;width: 410px;">{{formateada}}</ion-badge>
+                          </ion-card-content>
+                        </ion-card>
+                        
+                      </ion-col>
+                      
+                    </ion-row>
+                  </ion-grid>
+                </ion-content>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+            
+          </ion-col>
+-->

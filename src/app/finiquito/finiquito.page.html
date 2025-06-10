@@ -1,0 +1,162 @@
+<ion-header>
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer *ngIf="isLoading == true"></ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="3"></ion-col>
+          <ion-col size="6">Finiquito Manual - Atención # {{idAtencion}} - {{miMoneda}}</ion-col>
+          <ion-col size="3" style="float: right;color:blue;"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!--ion-button id="scrollIcon" size="small" style="position: absolute;top:30%;right:0;z-index: 999;font-size: 5rem;opacity: 0.4;display: none;color: cornflowerblue;">Ver Mas...</!--ion-button -->
+  <!--ion-icon id="scrollIcon" name="swap-vertical" style="position: absolute;top:30%;right:0;z-index: 999;font-size: 5rem;opacity: 0.4;display: none;color: cornflowerblue;"></!--ion-icon>
+  <ion-label class="text-size-lg" style="padding-left: 5px;">
+  </ion-label -->
+  <ion-grid style="margin-top: -30px;">
+    <ion-row>
+      <ion-col size="12">
+        <ion-card id="ele" style="margin: 0;padding:0;height: 350px;overflow-y: scroll;" (touchstart)="onScroll($event)">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="10">
+                <img alt="Ficohsa Seguros" src="{{fsLogo}}" style="width: 281px; height: 61px; margin-left: 15px; margin-top: 15px;" />
+              </ion-col>
+              <ion-col size="2">
+                <!--ion-icon class="impresora" name="print" (click)="this.modalPdfiniquito.present()" id="open-modal-pdf"></!--ion-icon -->
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+          
+          <ion-card-header>
+            <ion-card-title><strong>FINIQUITO MANUAL POR LIQUIDACIÓN</strong></ion-card-title>
+            <ion-card-subtitle><strong>Siniestro No. </strong> {{idAtencion}}</ion-card-subtitle>
+            <ion-card-subtitle><strong>Asegurado: </strong>{{acuerdoFiniquito.NombreCliente}}</ion-card-subtitle>
+            <ion-card-subtitle><strong>Póliza de Autos No.: </strong>{{acuerdoFiniquito.Poliza}}</ion-card-subtitle>
+            <ion-card-subtitle><strong>Vigencia: </strong> Desde {{fechaDesde}}, Hasta {{fechaHasta}}</ion-card-subtitle>
+            <br>
+            <ion-card-subtitle style="text-align: justify;">
+              Yo, {{acuerdoFiniquito.NombreQuienRecibe}} en mi condición de {{tipoDeBeneficiario}} hago constar que en esta fecha he recibido de 
+              INTERAMERICANA DE SEGUROS, S.A., el pago por indemnización por el siniestro ocurrido el {{fechaParrafo}} que a continuación describo: 
+              Pago Total por la cobertura de {{TipoCoberturaFicohsa}}, del vehículo marca: {{acuerdoFiniquito.Marca}}, {{acuerdoFiniquito.Modelo}} Año: {{acuerdoFiniquito.Anio}}, motor: {{acuerdoFiniquito.Motor}}, 
+              Placa: {{acuerdoFiniquito.Placa}}, que se encuentra amparada en la póliza supra mencionada.
+              En virtud de lo anterior y en mi condición indicada, por este acto relevo a INTERAMERICANA DE SEGUROS, S.A. de toda responsabilidad derivada del siniestro 
+              descrito, renuncio a cualquier otro reclamo o acción extrajudicial o judicial relacionado con el mismo, y en consecuencia, le extiendo él más amplio y eficaz 
+              finiquito de solvencia.
+            </ion-card-subtitle>
+            <!--ion-card-subtitle style="text-align: justify;">Yo, MANUEL ALEJANDRO PALMA HENRIQUEZ en mi condición de (Asegurado, Tercero, Beneficiario) hago constar que en esta fecha he recibido de 
+              INTERAMERICANA DE SEGUROS, S.A., el pago por indemnización por el siniestro ocurrido el 17 de Noviembre del 2023 que a continuación describo: 
+              Pago Total por la cobertura de __________________________________________, del vehículo marca: Toyota, Modelo Corolla XLT Año: 2023, motor: 878798987987987877, 
+              Placa: PBC78987, que se encuentra amparada en la póliza supra mencionada.
+              En virtud de lo anterior y en mi condición indicada, por este acto relevo a INTERAMERICANA DE SEGUROS, S.A. de toda responsabilidad derivada del siniestro 
+              descrito, renuncio a cualquier otro reclamo o acción extrajudicial o judicial relacionado con el mismo, y en consecuencia, le extiendo él más amplio y eficaz 
+              finiquito de solvencia.
+
+              Para constancia y seguridad de INTERAMERICANA DE SEGUROS, S.A., extiendo y firmo este finiquito en la ciudad de Tegucigalpa, a los {{fechaPie}}.
+            </!--ion-card-subtitle -->
+          </ion-card-header>
+        
+          <ion-card-content>
+            
+            <br>
+            <ion-card-subtitle>
+              Para constancia y seguridad de INTERAMERICANA DE SEGUROS, S.A., extiendo y firmo este finiquito en la ciudad de {{acuerdoFiniquito.Ciudad}}, a los {{fechaPie}}.
+            </ion-card-subtitle>
+            <br>
+            <!--ion-card-subtitle>
+              <strong>Firma. </strong>
+              {{acuerdoFiniquito.FirmaCliente}}
+            </!--ion-card-subtitle -->
+            <ion-card-subtitle>
+              <strong>Nombre de quien recibe. </strong>
+              {{acuerdoFiniquito.NombreQuienRecibe}}
+            </ion-card-subtitle>
+            <ion-card-subtitle>
+              <strong>Identidad #. </strong>
+              {{acuerdoFiniquito.IdentidadQuienRecibe}}
+            </ion-card-subtitle>
+            <ion-card-subtitle>
+              <strong>Cheque No.: </strong>
+              {{acuerdoFiniquito.NumeroCheque}}
+            </ion-card-subtitle>
+            <ion-card-subtitle>
+              <strong>Fecha: </strong>
+              {{acuerdoFiniquito.FechaDelCheque}}
+            </ion-card-subtitle>
+            <ion-card-subtitle>
+              <strong>Valor del Cheque: </strong>
+              L. {{acuerdoFiniquito.ValorDelCheque}}
+            </ion-card-subtitle>
+            <ion-card-subtitle>
+              <strong>A favor de: </strong>
+              {{acuerdoFiniquito.NombreAFavor}}
+            </ion-card-subtitle>
+          </ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col offset="9" size="3">
+                <ion-button size="small" style="position: fixed; right: 2%; bottom: 60%;" (click)="scrollToElement()">Ver Mas</ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <!--ion-col size="12" style="color: #3171e0;">
+        <ion-label style="margin-left: 19px;">Firma Implicado</ion-label>
+      </!--ion-col -->
+      <ion-col size="12" style="margin-top: -10px;">
+        <ion-card id="cardAsegurado">
+          <ion-card-content>
+            <!--ion-img *ngIf="isSign == true" src="{{firmaPrecargada}}"/ -->
+            <canvas id="canvasFiniquito" width="{{deviceWidth}}" [height]="200"  #canvas6 style="border: 6px dashed #ede9e9"></canvas>
+            <!--canvas id="canvasAsegurado" [width]="500" [height]="150"  #canvas2 style="border: 6px dashed #ede9e9"></!--canvas -->
+          </ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6">
+                <ion-button expand="block" (click)="clear()">Limpiar Firma</ion-button>
+              </ion-col>
+              <ion-col size="6">
+                <ion-button expand="block" (click)="testSave()">Enviar</ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card>
+      </ion-col>
+      
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-modal #modalPdfiniquito #modal trigger="open-modal-pdf" [initialBreakpoint]="0.5" [breakpoints]="[0, 0.25, 0.5, 0.75]">
+  <ng-template>
+    <ion-content>
+      <ion-toolbar>Decargar PDFs</ion-toolbar>
+      <ion-list>
+        <ion-item (click)="printPdf()">
+          <ion-avatar slot="start">
+            <ion-icon style="font-size: 2.8rem;" name="wallet-outline"></ion-icon>
+          </ion-avatar>
+          <ion-label>
+            <h2>Finiquito Manual </h2>
+            <p>Chequera de Liquidación</p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+

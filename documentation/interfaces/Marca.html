@@ -1,0 +1,606 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>help_ajustadores documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content interface">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Interfaces</li>
+  <li class="breadcrumb-item"
+  >
+  Marca</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/interfaces/marca.ts</code>
+        </p>
+
+
+
+
+        <section data-compodoc="block-index">
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Properties</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                        <a href="#marcas" 
+>
+                                            marcas
+                                        </a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+
+
+            <section data-compodoc="block-properties">
+                <h3 id="inputs">Properties</h3>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="marcas"></a>
+                                        <span class="name "><b>marcas</b>
+                                            <a href="#marcas">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>marcas:     <code>[literal type, literal type, literal type, literal type, literal type, literal type, literal type, literal type]</code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code>[literal type, literal type, literal type, literal type, literal type, literal type, literal type, literal type]</code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+            </section>
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export interface Marca {
+    marcas : [
+      {
+        &quot;id&quot;: 1,
+        &quot;nombre&quot;: &quot;Audi&quot;,
+        &quot;modelos&quot;: [
+          &quot;A5&quot;,
+          &quot;A3&quot;,
+          &quot;A4&quot;,
+          &quot;A6&quot;,
+          &quot;S3&quot;,
+          &quot;S4&quot;,
+          &quot;TT&quot;,
+          &quot;A1&quot;,
+          &quot;TTS&quot;,
+          &quot;A1 1.4 T&quot;,
+          &quot;Q7&quot;,
+          &quot;Q5&quot;,
+          &quot;Q3&quot;,
+          &quot;Q2&quot;
+        ]
+      },
+      {
+        &quot;id&quot;: 2,
+        &quot;nombre&quot;: &quot;BMW&quot;,
+        &quot;modelos&quot;: [
+          &quot;Serie 6&quot;,
+          &quot;Serie 7&quot;,
+          &quot;Z4&quot;,
+          &quot;M6&quot;,
+          &quot;Serie 1&quot;,
+          &quot;Serie 3&quot;,
+          &quot;Serie 5&quot;,
+          &quot;Serie 8&quot;,
+          &quot;1800&quot;,
+          &quot;M&quot;,
+          &quot;Serie 4&quot;,
+          &quot;Serie 2&quot;,
+          &quot;M235&quot;,
+          &quot;428i&quot;,
+          &quot;i&quot;,
+          &quot;1M&quot;,
+          &quot;M4&quot;,
+          &quot;M3&quot;,
+          &quot;M2&quot;,
+          &quot;X6&quot;,
+          &quot;X1&quot;,
+          &quot;X3&quot;,
+          &quot;X5&quot;,
+          &quot;X4&quot;,
+          &quot;X2&quot;
+        ]
+      },
+      {
+        &quot;id&quot;: 3,
+        &quot;nombre&quot;: &quot;Chevrolet&quot;,
+        &quot;modelos&quot;: [
+          &quot;Alto&quot;,
+          &quot;Astra&quot;,
+          &quot;Bel Air&quot;,
+          &quot;Camaro&quot;,
+          &quot;Aveo&quot;,
+          &quot;Cavalier&quot;,
+          &quot;Celebrity&quot;,
+          &quot;Citation&quot;,
+          &quot;Corsa&quot;,
+          &quot;Chevy&quot;,
+          &quot;Epica&quot;,
+          &quot;Esteem&quot;,
+          &quot;Impala&quot;,
+          &quot;Malibu&quot;,
+          &quot;Monza&quot;,
+          &quot;Optra&quot;,
+          &quot;Spark&quot;,
+          &quot;Sprint&quot;,
+          &quot;Style&quot;,
+          &quot;Line&quot;,
+          &quot;Swift&quot;,
+          &quot;Wagon R+&quot;,
+          &quot;Sail&quot;,
+          &quot;Buick&quot;,
+          &quot;Cruze&quot;,
+          &quot;39&quot;,
+          &quot;Cobalt&quot;,
+          &quot;Sonic&quot;,
+          &quot;Onix&quot;,
+          &quot;Beat&quot;,
+          &quot;Vivant&quot;,
+          &quot;Blazer 4x2&quot;,
+          &quot;Captiva&quot;,
+          &quot;Tahoe&quot;,
+          &quot;HHR&quot;,
+          &quot;Courier&quot;,
+          &quot;Zafira&quot;,
+          &quot;Blazer&quot;,
+          &quot;4x4&quot;,
+          &quot;Grand&quot;,
+          &quot;Vitara&quot;,
+          &quot;Grand Blazer&quot;,
+          &quot;Rodeo&quot;,
+          &quot;Suburban&quot;,
+          &quot;Trail&quot;,
+          &quot;Blazer&quot;,
+          &quot;Traverse&quot;,
+          &quot;Orlando&quot;,
+          &quot;Tracker&quot;,
+          &quot;Equinox&quot;,
+          &quot;Jimny&quot;,
+          &quot;Samurai&quot;,
+          &quot;Trooper&quot;,
+          &quot;Vitara&quot;,
+          &quot;FSR&quot;,
+          &quot;FVR&quot;,
+          &quot;FTR&quot;,
+          &quot;NNR&quot;,
+          &quot;Cheyenne&quot;,
+          &quot;C30&quot;,
+          &quot;3100&quot;,
+          &quot;Luv&quot;,
+          &quot;Brigadier&quot;,
+          &quot;C70&quot;,
+          &quot;Carry&quot;,
+          &quot;NHR&quot;,
+          &quot;NPR&quot;,
+          &quot;NKR&quot;,
+          &quot;Super&quot;,
+          &quot;Brigadier&quot;,
+          &quot;Super&quot;,
+          &quot;Carry&quot;,
+          &quot;Kodiak&quot;,
+          &quot;NQR&quot;,
+          &quot;FRR&quot;,
+          &quot;FVZ&quot;,
+          &quot;N300&quot;,
+          &quot;Luv&quot;,
+          &quot;D-max&quot;,
+          &quot;DMAX&quot;,
+          &quot;Super&quot;,
+          &quot;Carry&quot;,
+          &quot;NQR&quot;,
+          &quot;FRR&quot;,
+          &quot;Carry&quot;,
+          &quot;CHR&quot;,
+          &quot;LV&quot;,
+          &quot;NKR&quot;,
+          &quot;NPR&quot;,
+          &quot;Luv&quot;,
+          &quot;D-max&quot;,
+          &quot;SSR&quot;,
+          &quot;Luv Dmax&quot;,
+          &quot;N300&quot;,
+          &quot;Apache&quot;,
+          &quot;C10&quot;,
+          &quot;C30&quot;,
+          &quot;Cheyenne&quot;,
+          &quot;Luv 1.6&quot;,
+          &quot;Luv 2.2&quot;,
+          &quot;Luv 2.3&quot;,
+          &quot;Luv 2.5&quot;,
+          &quot;Colorado&quot;,
+          &quot;Luv 2.8&quot;,
+          &quot;Silverado&quot;,
+          &quot;Optra&quot;,
+          &quot;Spark&quot;,
+          &quot;Corsa&quot;,
+          &quot;Taxi&quot;,
+          &quot;Chevette&quot;,
+          &quot;Chevytaxi&quot;,
+          &quot;7:24&quot;,
+          &quot;ChevyVan&quot;,
+          &quot;ChevyWagon&quot;,
+          &quot;Super&quot;,
+          &quot;Carry&quot;,
+          &quot;N200&quot;,
+          &quot;N300&quot;
+        ]
+      },
+      {
+        &quot;id&quot;: 4,
+        &quot;nombre&quot;: &quot;Citroen&quot;,
+        &quot;modelos&quot;: [
+          &quot;Xsara&quot;,
+          &quot;Picasso&quot;,
+          &quot;C3&quot;,
+          &quot;C5&quot;,
+          &quot;Saxo&quot;,
+          &quot;Xantia&quot;,
+          &quot;ZX&quot;,
+          &quot;C4&quot;,
+          &quot;C2&quot;,
+          &quot;Xsara&quot;,
+          &quot;DS3&quot;,
+          &quot;DS4&quot;,
+          &quot;DS5&quot;,
+          &quot;C-Elysee&quot;,
+          &quot;Aircross&quot;,
+          &quot;Aircross&quot;,
+          &quot;C4&quot;,
+          &quot;C3&quot;,
+          &quot;Berlingo&quot;,
+          &quot;Jumper&quot;,
+          &quot;Jumpy&quot;,
+          &quot;Berlingo&quot;
+        ]
+      },
+      {
+        &quot;id&quot;: 5,
+        &quot;nombre&quot;: &quot;Daihatsu&quot;,
+        &quot;modelos&quot;: [
+          &quot;Charade&quot;,
+          &quot;Charmant&quot;,
+          &quot;Sirion&quot;,
+          &quot;Materia&quot;,
+          &quot;Terios&quot;,
+          &quot;F20&quot;,
+          &quot;Feroza&quot;,
+          &quot;Rocky&quot;,
+          &quot;Delta&quot;,
+          &quot;V126&quot;
+        ]
+      },
+      {
+        &quot;id&quot;: 6,
+        &quot;nombre&quot;: &quot;Dodge&quot;,
+        &quot;modelos&quot;: [
+          &quot;Coronet&quot;,
+          &quot;Dart&quot;,
+          &quot;Demon&quot;,
+          &quot;D100&quot;,
+          &quot;Royal&quot;,
+          &quot;Journey&quot;,
+          &quot;Caliber&quot;,
+          &quot;Fargo&quot;,
+          &quot;Durango&quot;,
+          &quot;300&quot;,
+          &quot;600&quot;,
+          &quot;900&quot;,
+          &quot;500&quot;,
+          &quot;Ram&quot;,
+          &quot;D100&quot;,
+          &quot;Dakota&quot;,
+          &quot;Caravan&quot;
+        ]
+      },
+      {
+        &quot;id&quot;: 7,
+        &quot;nombre&quot;: &quot;Fiat&quot;,
+        &quot;modelos&quot;: [
+          &quot;Zastava&quot;,
+          &quot;Idea&quot;,
+          &quot;124&quot;,
+          &quot;Punto&quot;,
+          &quot;147&quot;,
+          &quot;Palio&quot;,
+          &quot;Polsky&quot;,
+          &quot;Premio&quot;,
+          &quot;Siena&quot;,
+          &quot;Stilo&quot;,
+          &quot;Tipo&quot;,
+          &quot;Topolino&quot;,
+          &quot;Uno&quot;,
+          &quot;500&quot;,
+          &quot;Linea&quot;,
+          &quot;Nuevo&quot;,
+          &quot;Palio&quot;,
+          &quot;Argo&quot;,
+          &quot;Cronos&quot;,
+          &quot;Adventure&quot;,
+          &quot;500&quot;,
+          &quot;X&quot;,
+          &quot;Fiorino&quot;,
+          &quot;Furgon&quot;,
+          &quot;Strada&quot;,
+          &quot;Idea&quot;
+        ]
+      },
+      {
+        &quot;id&quot;: 8,
+        &quot;nombre&quot;: &quot;Ford&quot;,
+        &quot;modelos&quot;: [
+          &quot;Fusion&quot;,
+          &quot;Crown&quot;,
+          &quot;Victoria&quot;,
+          &quot;Falcon&quot;,
+          &quot;Festiva&quot;,
+          &quot;Fiesta&quot;,
+          &quot;Focus&quot;,
+          &quot;Granada&quot;,
+          &quot;Laser&quot;,
+          &quot;Mustang&quot;,
+          &quot;Taurus&quot;,
+          &quot;Hot&quot;,
+          &quot;Rod&quot;,
+          &quot;Escort&quot;,
+          &quot;Ltd&quot;,
+          &quot;555E&quot;,
+          &quot;Chiva&quot;,
+          &quot;Ecosport&quot;,
+          &quot;Panel&quot;,
+          &quot;Edge&quot;,
+          &quot;Flex&quot;,
+          &quot;Courier&quot;,
+          &quot;Escape&quot;,
+          &quot;Expedition&quot;,
+          &quot;Explorer&quot;,
+          &quot;Llanero&quot;,
+          &quot;Bronco&quot;,
+          &quot;Piragua&quot;,
+          &quot;Aeromax&quot;,
+          &quot;Cargo&quot;,
+          &quot;815&quot;,
+          &quot;F350&quot;,
+          &quot;600&quot;,
+          &quot;F8000&quot;,
+          &quot;F 600&quot;,
+          &quot;F 350[7]&quot;,
+          &quot;F9000&quot;,
+          &quot;F-150&quot;,
+          &quot;Cargo 1019&quot;,
+          &quot;Cargo 816&quot;,
+          &quot;F250&quot;,
+          &quot;Nueva&quot;,
+          &quot;Ranger&quot;,
+          &quot;Explorer&quot;,
+          &quot;F100&quot;,
+          &quot;F-150&quot;,
+          &quot;F350&quot;,
+          &quot;Ranger&quot;
+        ]
+      }
+    ]
+  }
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'Marca.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

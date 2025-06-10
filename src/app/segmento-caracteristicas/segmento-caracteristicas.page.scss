@@ -1,0 +1,24 @@
+ion-spinner{
+    position: fixed;
+      top: 28%;
+      left: 40%;
+      z-index: 999;
+      width: 20%;
+      height: 20%;
+    //background-color: #00213f;
+  }
+  
+  ion-footer{
+    position: fixed;
+      background: black;
+      opacity: 0.6;
+      height: 100vh;
+      width: 100vw;
+      z-index: 900;
+      bottom: 0;
+  }
+
+
+  .select-label{
+    text-transform: uppercase;
+  }

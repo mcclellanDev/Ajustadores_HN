@@ -1,0 +1,80 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Propiedades Privada Dañiada</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-grid fixed>
+    <ion-row>
+      <!-- datos de los terceros -->
+      <ion-col size="12">
+        <ion-item  lines="none" style="--background: #0090D0;" class="ion-no-padding  input">
+          <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Propiedades Dañiadas</ion-label>
+        </ion-item>
+        <ion-item  lines="none" style="padding-left: 70%;--border-radius: 0px;">
+          <ion-button style="color: white; width: 100%;" shape="round"  (click)="personaModal()">
+            Agregar
+          </ion-button>
+      </ion-item>
+       </ion-col>
+        <ion-col  size="12">
+          <ion-item *ngFor="let item of propiedadPrivadaList; let i = index " >
+            <ion-icon style="color: red;" (click)="deletePersona(i)" slot="start" name="trash"></ion-icon>
+            <ion-label (click)="editPersona(i)">{{item.Nombre}}</ion-label>
+            <ion-icon (click)="editPersona(i)" slot="end" style="color: #0090d0; "name="create"></ion-icon>
+          </ion-item>
+        </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-button style="color: white;left: 0px;top: 90%;position: sticky; width: 50%; margin-left: 25%;margin-right: 25%;right: 0px;" (click)="next()" shape="round">
+    Continuar
+  </ion-button>
+</ion-content>
+<!-- tercero modal  -->
+<ion-modal class="persona" [isOpen]="showPersona">
+  <ng-template>
+    <ion-content>
+      <ion-grid fixed>
+        <ion-row>
+           <!-- Datos del tercero -->  
+           <ion-col size="12">
+            <ion-item  lines="none" style="--background: #0090D0;" class="ion-no-padding  input">
+              <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Dato De La Propiedad Dañiada</ion-label>
+            </ion-item>
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-label class="text-size-sm" position="floating">
+                Nombre y Apellido Del Propietario</ion-label>
+              <ion-input type="text" [(ngModel)]="propiedadPrivada.Nombre"></ion-input>
+            </ion-item>
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-label class="text-size-sm" position="floating">
+                Dirección</ion-label>
+              <ion-input type="text" [(ngModel)]="propiedadPrivada.Direccion"></ion-input>
+            </ion-item>
+            <ion-item  class="ion-no-padding  input">
+              <ion-label class="text-size-sm" position="floating">
+                Descripción Del Daño</ion-label>
+                <ion-textarea rows="10%" cols="1"  [(ngModel)]="propiedadPrivada.DaniosPrivado">
+                </ion-textarea>
+            </ion-item>
+           </ion-col>
+          <ion-col size="12">
+            <ion-col *ngIf="guardar"  size="6">
+              <ion-button style="color: white;" (click)="addPersona()" expand="block" shape="round">
+                Agregar
+              </ion-button>
+            </ion-col>
+            <ion-col *ngIf="editar"  size="6">
+              <ion-button style="color: white;" (click)="updatePersona()" expand="block" shape="round">
+                Actualizar
+              </ion-button>
+            </ion-col>
+          </ion-col>    
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+  </ng-template>
+</ion-modal>

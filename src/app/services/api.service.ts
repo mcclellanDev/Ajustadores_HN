@@ -1,0 +1,1706 @@
+import { environment, environment_local } from 'src/environments/environment';
+import { ItemsData, cacheIndexArray } from './../environments/predeterminados';
+import { User } from './../interfaces/user';
+import { helpFilesUrl } from 'src/environments/environment';
+import { Injectable } from '@angular/core';
+import { Preferences } from '@capacitor/preferences';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { tap, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, from, Observable, of } from 'rxjs';
+import { Router } from '@angular/router';
+import { CapacitorHttp, HttpResponse } from '@capacitor/core';
+import { firmaDemoAjustador, emptySignature, emptySignatureWhite } from '../environments/signatures';
+import { RequestOptions } from 'https';
+import { promise } from 'protractor';
+import * as xml2js from 'xml2js';
+import * as $ from 'jquery';
+//Constantes
+const ACCESS_TOKEN_KEY = 'MY_ACCESS_CODE' //this change maybe later
+const USER_DATA = 'MY_USER_DATA' // CHANGE LATER TOO
+const PUSH_TOKEN = 'MY_PUSH_TOKEN'// the value is generate by onesignal is send when login
+
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ApiService {
+  firmaDemoAjustador:any = firmaDemoAjustador
+  emptySignature:any= emptySignature
+  emptySignatureWhite:any = emptySignatureWhite
+  isAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  currentAccessToken= null;
+  currentUser: User = null;
+  urlRequest:string;
+  // Environment test
+  /*
+  whiteList=[`${environment.api_url}/Login/Autenticacion`]
+
+  apiUrl = environment.api_url;
+  */
+  
+  // Environment producción
+ whiteList=[`${environment.api_url}/Login/Autenticacion`] 
+ apiUrl = environment.api_url;
+
+  filesUrl = helpFilesUrl.api_url;
+  idAtencion: string;
+  constructor(private http: HttpClient, private router: Router){ 
+    localStorage.setItem('apiUrl', this.apiUrl);
+    this.loadToken();
+  }
+   async request(urlRequest:string, data:any){
+    const options ={
+      url: this.apiUrl+urlRequest,
+      headers:{'X-Fake-Header':'Fake-Value'},
+      params: data
+    }
+    console.log(options);
+    const response: HttpResponse = await CapacitorHttp.post(options);
+  }
+  async loadToken(){
+    const token=  await Preferences.get({key: ACCESS_TOKEN_KEY}); // maybe need use JSON.parse
+    const user = await Preferences.get({key: USER_DATA});// this is the local variable user
+    if(token && token.value && user && user.value){
+      this.currentAccessToken= token.value;
+      this.currentUser = JSON.parse(user.value);
+      this.isAuthenticated.next(true);
+      this.router.navigateByUrl('/tabs', { replaceUrl: true });
+    }else{
+      this.isAuthenticated.next(false);
+      this.router.navigateByUrl('/', { replaceUrl: true });
+    }
+  }
+  MisAtenciones(credentials:any): Observable<any> {
+    console.log(credentials);
+
+    // 3912
+   return this.http.get(`${this.apiUrl}/Proveedor/ObtenerMisAtenciones?IdProveedorAgente=${credentials}`).pipe(
+    //switchMap((tokens: {accessToken, refreshToken }) => {
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+  )
+  }
+  MisAtencionesActivas(credentials:any): Observable<any> {
+    console.log(credentials);
+
+    // 3912
+   return this.http.get(`${this.apiUrl}/Proveedor/ObtenerMisAtencionesActivas?IdProveedorAgente=${credentials}`).pipe(
+    //switchMap((tokens: {accessToken, refreshToken }) => {
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+  )
+  }
+
+  // get /api/Proveedor/ContarOtrosDanios
+  ContarOtrosDanios(): Observable<any> {
+
+    // 3912
+   return this.http.get(`${this.apiUrl}/Proveedor/ContarOtrosDanios`).pipe(
+    //switchMap((tokens: {accessToken, refreshToken }) => {
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+  )
+  }
+
+  // post /api/Proveedor/GuardarTiposPersonasSiniestros
+  GuardarLesionado(credentials:any): Observable<any> {
+    let body = {
+      Nombre: credentials.Nombre,
+      Telefono: credentials.Telefono,
+      Direccion: credentials.Direccion,
+      DescripcionLesion: credentials.DescripcionLesion,
+      DireccionHospitalizacion: credentials.DireccionHospitalizacion,
+      TipoPersonaSiniestro: credentials.TipoPersonaSiniestro,
+      RefAjustadorAudienciaId: credentials.RefAjustadorAudienciaId
+    }
+
+    return this.http.post(`${this.apiUrl}/Proveedor/GuardarTiposPersonasSiniestros`,body).pipe(
+      //switchMap((tokens: {accessToken, refreshToken }) => {
+        switchMap(( res: any  ) => {
+        return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+
+  }
+
+
+  // post /api/Proveedor/GuardarTiposPersonasSiniestros
+  GuardarPersonaSiniestro(credentials:any): Observable<any> {
+    let body = {
+      Nombre: credentials.Nombre,
+      Telefono: credentials.Telefono,
+      Direccion: credentials.Direccion,
+      DescripcionLesion: credentials.DescripcionLesion,
+      DireccionHospitalizacion: credentials.DireccionHospitalizacion,
+      TipoPersonaSiniestro: credentials.TipoPersonaSiniestro,
+      RefAjustadorAudienciaId: credentials.RefAjustadorAudienciaId
+    }
+
+    return this.http.post(`${this.apiUrl}/Proveedor/GuardarTiposPersonasSiniestros`,body).pipe(
+      //switchMap((tokens: {accessToken, refreshToken }) => {
+        switchMap(( res: any  ) => {
+        return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+
+  }
+
+  //Guardar Tercero
+  GuardarTerceros(credentials:any): Observable<any> {
+    let body = {
+      RefAjustadorAudienciaId: credentials.RefAjustadorAudienciaId,
+        NombreCompleto: credentials.NombreCompleto,
+        Identificacion: credentials.Identificacion,
+        DPI_Pasaporte: credentials.DPI_Pasaporte,
+        Telefono: credentials.Telefono,
+        Celular: credentials.Telefono,
+        Vigencia: credentials.Vigencia,
+        TipoLicencia: credentials.TipoLicencia,
+        Licencia: credentials.Licencia,
+        Edad: credentials.Edad,
+        Sexo: credentials.Sexo,
+        Culpalble: credentials.Culpalble,
+        Afectado: credentials.Afectado,
+        Marca: credentials.Marca,
+        Modelo: credentials.Modelo,
+        TipoVehiculo: credentials.TipoVehiculo,
+        Anio: credentials.Anio,
+        Placa: credentials.Placa,
+        Color: credentials.Color,
+        Chasis: credentials.Chasis,
+        Motor: credentials.Motor,
+        RefAgenteProveedorId: credentials.RefAgenteProveedorId,
+        TipoTercero: credentials.TipoTercero
+    }
+
+    
+    return this.http.post(`${this.apiUrl}/Proveedor/GuardarTercerosReclamo`,body).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+  //Guardar Propiedad 
+  GuardarPropiedadTercero(credentials:any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Proveedor/GuardarPropiedadDaniadaSiniestro_HN`,credentials).pipe(
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+  //Guardar Firmas
+  GuardarFirmaAsegurado(credentials:any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Proveedor/SubirFirmas`,credentials).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+   //POST /api/Proveedor/SubirFirmaAjustador
+   GuardarFirmaAjustador(credentials:any): Observable<any> {
+    let body = {
+      FotoFirma: credentials.Firma,
+      IdAgente: credentials.IdAgente
+    }
+    return this.http.post(`${this.apiUrl}/Proveedor/SubirFirmaAjustador`,body).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+   // POST /api/FicohsaHN/Subir_Archivos_WSFH
+   GuardarArchivoSiniestro(credentials:any): Observable<any> {
+    let body = {
+      filetxt: credentials.filetxt,
+      CodigoSolicitud_BPM: credentials.CodigoSolicitud_BPM,
+      NombreTipoExtensionFile: credentials.NombreTipoExtensionFile
+    }
+    return this.http.post(`${this.apiUrl}/FicohsaHN/Subir_Archivos_WSFH`,body).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+  //Guardar fotos
+  GuardarFotos(credentials:any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Proveedor/SubirFotosSiniestro`,credentials).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+   // POST /api/Proveedor/SubirFotografiaAjustador
+   GuardarFotoAjustador(credentials:any): Observable<any> {
+    let body = {
+      Fotografia: credentials[0].Fotografia,
+      IdAgente: credentials[0].IdAgente
+    }
+    console.log("body en el envio de la fotografia del ajustador ");
+    console.dir(credentials)
+    return this.http.post(`${this.apiUrl}/Proveedor/SubirFotografiaAjustador`,body).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+   //Envio de token push
+  SendToken(credentials:any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Proveedor/TokenPushOneSignal?IdProveedorAgente=${credentials.IdProveedorAgente}&TokenPush=${credentials.TokenPush}`,{}).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+  //Guardar Siniestros
+  GuardarSiniestro(credentials:any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`,credentials).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+      switchMap(( res: any  ) => {
+        return of(res);
+      }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+   // POST /api/Proveedor/GuardarCacheCliente
+   GuardarCacheCliente(credentials:any): Observable<any> {
+    this.idAtencion = localStorage.getItem('idAtencion');
+    console.log('Cache en api');
+    console.dir(credentials)
+    let cacheData = {};
+
+    
+    for (let index = 0; index < cacheIndexArray.length; index++) {
+      const element = cacheIndexArray[index];
+      //alert(element.title)
+      let key = element.title;
+      let valor = credentials[key];
+      //alert(key+' : '+valor)
+      cacheData[key] = valor;
+
+      if (index == (cacheIndexArray.length-1)) {
+        cacheData['IdAtencion'] = parseInt(this.idAtencion); 
+      }
+    }
+
+    return this.http.post(`${this.apiUrl}/Proveedor/GuardarCacheCliente`,cacheData).pipe(
+      switchMap(( res: any  ) => {
+        return of(res);
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+   }
+
+   GuardarSiniestroHN(credentials:any): Observable<any> {
+    //console.log('Siniestro en api');
+    //console.dir(credentials)
+    let siniestroData = {}
+    for (let index = 0; index < ItemsData.length; index++) {
+      const element = ItemsData[index];
+      console.log(element.nombre)
+      for (let indexc = 0; indexc < credentials.length; indexc++) {
+        const elementc = credentials[indexc];
+
+        if (element.nombre==elementc.nombre) {
+          console.log(elementc.valor)
+          let valor = elementc.valor;
+          
+          if (valor != null && valor != undefined) {
+            siniestroData[element.nombre] =valor;
+          }else{
+            siniestroData[element.nombre] =null;
+          }
+        }
+        
+      }
+
+      if (index == (ItemsData.length-1)) {
+        console.log('Siniestro en api');
+        console.dir(siniestroData)
+        siniestroData['FechaHora'] = localStorage.getItem('FechaHora');
+      }
+    }
+    return this.http.post(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`,siniestroData).pipe(
+      switchMap(( res: any  ) => {
+        return of(res);
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+   }
+
+   GuardarSiniestroHN_Sin_Poliza(credentials:any): Observable<any> {
+    let siniestroData = {
+      RefAtencionId:  credentials.RefAtencionId,
+      RefProveedorAgenteId:  credentials.RefProveedorAgenteId,
+      RefProveedorAgenteAbogadoId:  credentials.RefProveedorAgenteAbogadoId,
+      AgendarAudiencia:  credentials.AgendarAudiencia,
+      AseguradoUsoPoliza:  credentials.AseguradoUsoPoliza,
+      TerceroResponsable:  credentials.TerceroResponsable,
+      LesionadosSinAudiencia:  credentials.LesionadosSinAudiencia,
+      DescripcionAudiencia:  credentials.DescripcionAudiencia,
+      Poliza:  credentials.Poliza,
+      Identificacion:  credentials.Identificacion,
+      Nombre:  credentials.Nombre,
+      ConductorAfiliado:  credentials.ConductorAfiliado,
+      ConductorDetenido:  credentials.ConductorDetenido,
+      Descripcion:  credentials.Descripcion,
+      MarcaVehiculo:  credentials.MarcaVehiculo,
+      ModeloVehiculo:  credentials.ModeloVehiculo,
+      AnioVehiculo:  credentials.AnioVehiculo,
+      PlacaVehiculo:  credentials.PlacaVehiculo,
+      ChasisVehiculo:  credentials.ChasisVehiculo,
+      ColorVehiculo:  credentials.ColorVehiculo,
+      VehiculoDetenido:  credentials.VehiculoDetenido,
+      DescripcionVehiculo:  credentials.DescripcionVehiculo,
+      TercerosHeridos:  credentials.TercerosHeridos,
+      TercerosMuertos:  credentials.TercerosMuertos,
+      DescripcionTercerosHeridos:  credentials.DescripcionTercerosHeridos,
+      DescripcionTercerosMuertos:  credentials.DescripcionTercerosMuertos,
+      DanioFrontal:  credentials.DanioFrontal,
+      DanioTrasero:  credentials.DanioTrasero,
+      DanioLateralDerecho:  credentials.DanioLateralDerecho,
+      DanioLataralIzquierdo:  credentials.DanioLataralIzquierdo,
+      VehiculoVolcado:  credentials.VehiculoVolcado,
+      DescripcionDanio:  credentials.DescripcionDanio,
+      RefPaisId:  credentials.RefPaisId,
+      RefCiudadId:  credentials.RefCiudadId,
+      RefDeptoId:  credentials.RefDeptoId,
+      RefMunicipioId:  credentials.RefMunicipioId,
+      FechaHora:  credentials.FechaHora,
+      Lugar:  credentials.Lugar,
+      RefUsuarioId:  credentials.RefUsuarioId,
+      TallerMecanicoId:  credentials.TallerMecanicoId,
+      Blindado:  credentials.Blindado,
+      ObservacionTaller:  credentials.ObservacionTaller,
+      ReclamoAsegurado:  credentials.ReclamoAsegurado,
+      Observaciones:  credentials.Observaciones,
+      Latitud:  credentials.Latitud,
+      Longitud:  credentials.Longitud,
+      NombreConductor:  credentials.NombreConductor,
+      IdentidaConductor:  credentials.IdentidaConductor,
+      DPI_Pasaporte:credentials.IdentidaConductor,
+      TelefonoConductor:  credentials.TelefonoConductor,
+      CelularConductor:  credentials.CelularConductor,
+      Edad:  credentials.Edad,
+      Licencia:  credentials.Licencia,
+      TipoLicencia:  credentials.TipoLicencia,
+      Vigencia:  credentials.Vigencia,
+      DireccionConductor:  credentials.DireccionConductor,
+      Sexo:  credentials.Sexo,
+      RefTipoConductorId:  credentials.RefTipoConductorId,
+      DireccionEnvioCorrespondencia:  credentials.DireccionEnvioCorrespondencia,
+      CorreoElectronico:  credentials.CorreoElectronico,
+      RefTipoLicenciaId:  credentials.RefTipoLicenciaId,
+      NombreAtribuyeAccidente:  credentials.NombreAtribuyeAccidente,
+      AutoridadInvolucrada:  credentials.AutoridadInvolucrada,
+      UbicacionVehiculoDetenido:  credentials.UbicacionVehiculoDetenido,
+      PruebaAlcoholemia:  credentials.PruebaAlcoholemia,
+      RefTipoCombustibleId:  credentials.RefTipoCombustibleId,
+      AC:  credentials.AC,
+      Rines:  credentials.Rines,
+      BolsaAire:  credentials.BolsaAire,
+      CierreCentralizado:  credentials.CierreCentralizado,
+      Mecanico:  credentials.Mecanico,
+      RetrovisorElectronico:  credentials.RetrovisorElectronico,
+      Overfenders:  credentials.Overfenders,
+      ColaPato:  credentials.ColaPato,
+      CintaDecorativa:  credentials.CintaDecorativa,
+      LicenciaEstado:  credentials.LicenciaEstado,
+      ObservacionesFinales:  credentials.ObservacionesFinales,
+      RefTipoSolicitanteInformeAjusteId:  credentials.RefTipoSolicitanteInformeAjusteId,
+      TipoAcuerdoFicohsa:  credentials.TipoAcuerdoFicohsa,
+      DondeSeEncuentraVehiculo:  credentials.DondeSeEncuentraVehiculo,
+      NumeroUnidad:  credentials.NumeroUnidad,
+      Parentesco:  credentials.Parentesco,
+      FechaNacimientoConductor:  credentials.FechaNacimientoConductor,
+      CulpableCompromisoPago:  credentials.CulpableCompromisoPago,
+      ObservacionCompromisoPago:  credentials.ObservacionCompromisoPago,
+      PorqueNoUsoServicioAsistencia:  credentials.PorqueNoUsoServicioAsistencia,
+      Kilometraje:  credentials.Kilometraje,
+    }
+
+    return this.http.post(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`,siniestroData).pipe(
+      switchMap(( res: any  ) => {
+        return of(res);
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+   }
+
+   GuardarInformeAjustador(credentials:any): Observable<any> {
+    console.log('Informe ajustador en api');
+    console.dir(credentials);
+    let siniestroData = {}
+
+    for (let index = 0; index < credentials.length; index++) {
+      const element = credentials[index];
+      console.log(element.nombre+', '+element.valor)
+      //alert(element.nombre+', '+element.valor)
+
+      if (element.valor != null || element.valor != undefined) {
+        siniestroData[element.nombre] =element.valor
+      }
+
+      if (index == (ItemsData.length-1)) {
+        console.dir(siniestroData)
+      }
+      
+    }
+    
+    return this.http.post(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`,siniestroData).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+      switchMap(( res: any  ) => {
+        return of(res);
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+   }
+
+   /*
+
+   
+
+    for (let index = 0; index < ItemsData.length; index++) {
+      const element = ItemsData[index];
+      console.log(element.nombre)
+      console.log(credentials[element.nombre])
+
+      let valor = credentials[element.nombre];
+      
+      
+    }
+*/
+
+   // POST /api/Proveedor/GuardaInformerAjustador_HN
+   /*
+   GuardarInforme(credentials:any): Observable<any> {
+    console.log('Informe en api');
+    console.dir(credentials)
+    let siniestroData = {}
+    for (let index = 0; index < ItemsData.length; index++) {
+      const element = ItemsData[index];
+      console.log(element.nombre)
+      console.log(credentials[element.nombre])
+      let valor = credentials[element.nombre];
+      if (valor != null || valor != undefined) {
+        siniestroData[element.nombre] =valor
+      }
+
+      if (index == (ItemsData.length-1)) {
+        console.dir(siniestroData)
+      }
+    }
+    return this.http.post(`${this.apiUrl}/Proveedor/GuardaInformerAjustador_HN`,siniestroData).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+      switchMap(( res: any  ) => {
+        return of(res);
+      }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+*/
+   
+
+  //Datos tipos de siniestros
+  tipoDeSiniestros(): Observable<any> {
+   return this.http.post(`${this.apiUrl}/Proveedor/TiposDeSiniestroFicohsa`,{}).pipe(
+    //switchMap((tokens: {accessToken, refreshToken }) => {
+      switchMap(( res: any  ) => {
+        
+      return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+   )
+  }
+
+  // POST /api/Proveedor/ActualizarFiniquito
+  ActualizarFiniquito(credentials:any): Observable<any> {
+    console.log(credentials);
+   return this.http.post(`${this.apiUrl}/Proveedor/ActualizarFiniquito?RefAtencionId=${credentials.RefAtencionId}&NumeroReclamo=${credentials.NumeroReclamo}&TipoCoberturaFicohsa=${credentials.TipoCoberturaFicohsa}`,{}).pipe(
+    //switchMap((tokens: {accessToken, refreshToken }) => {
+      switchMap(( res: any  ) => {
+        console.log(res)
+        if (res=== null){
+          res = "yes"
+        }
+      return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+   )
+  }
+
+  // post /api/Proveedor/ObtenerAgenteProveedor
+  ObtenerAgenteProveedor(agenteId:number): Observable<any> {
+    let finiquitoData = {
+      agenteId: agenteId
+    }
+   return this.http.post(`${this.apiUrl}/Proveedor/ObtenerAgenteProveedor?agenteId=${agenteId}}`,finiquitoData).pipe(
+    //switchMap((tokens: {accessToken, refreshToken }) => {
+      switchMap(( res: any  ) => {
+        console.log(res)
+        if (res=== null){
+          res = "yes"
+        }
+      return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+   )
+  }
+
+  // POST /api/Proveedor/ObtenerFiniquito
+  ObtenerFiniquito(RefAtencionId:number): Observable<any> {
+    let finiquitoData = {
+      RefAtencionId: RefAtencionId
+    }
+   return this.http.post(`${this.apiUrl}/Proveedor/ObtenerFiniquito?RefAtencionId=${RefAtencionId}}`,finiquitoData).pipe(
+    //switchMap((tokens: {accessToken, refreshToken }) => {
+      switchMap(( res: any  ) => {
+        console.log(res)
+        if (res=== null){
+          res = "yes"
+        }
+      return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+   )
+  }
+
+  //Cambio de estado de expediente
+  cambiarEstadoOrden(credentials:any): Observable<any> {
+    console.log(credentials);
+   return this.http.post(`${this.apiUrl}/Proveedor/TomarORCancelarAtencion?IdAtencion=${credentials.id}&Estado=${credentials.estado}`,{}).pipe(
+    //switchMap((tokens: {accessToken, refreshToken }) => {
+      switchMap(( res: any  ) => {
+        console.log(res)
+        if (res=== null){
+          res = "yes"
+        }
+      return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+   )
+  }
+
+  // POST /api/Proveedor/ActualizaLogAtencion
+  ActualizaLogAtencion(credentials:any): Observable<any> {
+    console.log('Para actualizar el estado de '+credentials)
+    console.log(credentials);
+   return this.http.post(`${this.apiUrl}/Proveedor/ActualizaLogAtencion?IdAtencion=${credentials}`,{}).pipe(
+    //switchMap((tokens: {accessToken, refreshToken }) => {
+      switchMap(( res: any  ) => {
+        console.log(res)
+        if (res=== null){
+          res = "yes"
+        }
+      return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+   )
+  }
+
+  // Retomar lista de ajutadores para reasignar 
+  Ajustadores(credentials:any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/Proveedor/ListadoAjustadores?IdPais=${credentials}`).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+   // get /api/Proveedor/ListadoAbogados
+   Abogados(credentials:any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/Proveedor/ListadoAbogados?IdPais=${credentials}`).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+
+  // Hacer cambio de asignacion asignar a otro.
+  Reasignar(credentials:any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Proveedor/ReAsignarExpediente?IdAtencion=${credentials.IdAtencion}&IdAgenteProveedor=${credentials.IdAgenteProveedor}`,{}).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+  //Datos de expedientes
+  Expediente(credentials:any): Observable<any> {
+    //alert('Id atención : '+credentials)
+   return this.http.get(`${this.apiUrl}/Proveedor/ObtenerDatosExpedientes?IdAtencion=${credentials}`).pipe(
+    //switchMap((tokens: {accessToken, refreshToken }) => {
+      switchMap(( res: any  ) => {
+        localStorage.setItem('elExpediente', res);
+      return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+  )
+  }
+
+  //get /api/Proveedor/ObtenerDatosDeAtencion 
+  DatosDeAtencion(credentials:any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/Proveedor/ObtenerDatosDeAtencion?IdAtencion=${credentials}`).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+        console.log("Hasta este punto, todo bien : "+ res.length);
+        //console.dir(res[0]);
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+   //GET /api/Proveedor/ObtenerCacheCliente
+  ObtenercacheCliente(credentials:any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/Proveedor/ObtenerCacheCliente?IdAtencion=${credentials}`).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+        console.log("Datos del caché del cliente : "+ res.length);
+        //console.dir(res[0]);
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+   // post /api/Proveedor/ObtenerDaniosExtras
+   ObtenerDaniosExtras(IdAtencion:any, TipoEntidad:string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Proveedor/ObtenerDaniosExtras?RefAtencionId=${IdAtencion}&TipoEntidad=${TipoEntidad}`,{}).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+   // post /api/Proveedor/ActualizarTipoReparacion
+   ActualizarTipoReparacion(Id:number, Tipo:any, indexFront:number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Proveedor/ActualizarTipoReparacion?Id=${Id}&Tipo=${Tipo}&indexFront=${indexFront}`,{}).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+
+   // post /api/Proveedor/ActualizarIndexFront
+   ActualizarIndexFront(Id:number, indexFront:number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Proveedor/ActualizarIndexFront?Id=${Id}&indexFront=${indexFront}`,{}).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+    )
+   }
+
+   // post /api/Proveedor/ActualizarEstadoDanioExtraAtencion
+   ActualizarEstadoDanioExtraAtencion(RefAtencionId:number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Proveedor/ActualizarEstadoDanioExtraAtencion?Id=${RefAtencionId}`,{}).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+    )
+   }
+
+   // post /api/Proveedor/EliminaDanioExtra
+   EliminaDanioExtra(Id:number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Proveedor/EliminaDanioExtra?Id=${Id}`,{}).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+   // POST /api/Proveedor/GuardarIdTablaAjustador
+   GuardarIdTablaAjustador(IdAtencion:any, IdAgenteProveedor:any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Proveedor/GuardarIdTablaAjustador?IdAtencion=${IdAtencion}&IdTablaAjustador=${IdAgenteProveedor}`,{}).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+   // post /api/Proveedor/ActualizarAudicion
+   ActualizarAudicion(audicion): Observable<any> {
+
+    return this.http.post(`${this.apiUrl}/Proveedor/ActualizarAudicion?IdAjustadorAudiencia=${audicion.IdAjustadorAudiencia}&RefProveedorAgenteAbogadoId=${audicion.RefProveedorAgenteAbogadoId}
+      &AgendarAudiencia=${audicion.AgendarAudiencia}&FechaHora=${audicion.FechaHora}&Fecha=${audicion.Fecha}&Hora=${audicion.Hora}&Lugar=${audicion.Lugar}`,{audicion}).pipe(
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+   ObtenerIdTablaAjustador(IdAtencion:any): Observable<any> {
+    let jssonIdTabla = {
+      IdAtencion: IdAtencion
+    }
+   return this.http.post(`${this.apiUrl}/Proveedor/ObtenerIdTablaAjustador?IdAtencion=${IdAtencion}`,{}).pipe(
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+  )
+  }
+
+  // POST /api/Proveedor/ObtenerEstadoLog
+  ObtenerEstadoLog(IdAtencion:any): Observable<any> {
+    //alert('Id atención : '+IdAtencion)
+   return this.http.post(`${this.apiUrl}/Proveedor/ObtenerEstadoLog?IdAtencion=${IdAtencion}`,{}).pipe(
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+  )
+  }
+
+
+  //Recuperar Contraseña
+  recuperarContrasena(credentials:any): Observable<any> {
+    console.log(credentials);
+    this.whiteList.push(`${this.apiUrl}/Login/RecuperarPassword?user=${credentials}`)
+   return this.http.post(`${this.apiUrl}/Login/RecuperarPassword?user=${credentials}`,credentials).pipe(
+    //switchMap((tokens: {accessToken, refreshToken }) => {
+      switchMap(( res: any  ) => {
+        console.log(res)
+      return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+   )
+  }
+  //cambiar password
+  cambiarPassword(credentials:any): Observable<any> {
+    console.log(credentials);
+    this.whiteList.push(`${this.apiUrl}/Login/ActualizarPassword?user=${credentials.user}&password=${credentials.password}`);
+   return this.http.post(`${this.apiUrl}/Login/ActualizarPassword?user=${credentials.user}&password=${credentials.password}`,null);
+  }
+    //Validar OTP
+    
+    validarOtp(credentials:any): Observable<any> {
+      console.log(credentials);
+      this.whiteList.push(`${this.apiUrl}/Login/ValidarClave?clave=${credentials.clave}&user=${credentials.user}`)
+     return this.http.post(`${this.apiUrl}/Login/ValidarClave?clave=${credentials.clave}&user=${credentials.user}`,null
+      )
+    }
+  //Login Api
+
+  //POST /api/Login/SubirVideo
+  GuardarVideo(file: File, idAtencion: number): Observable<any> {
+    this.currentAccessToken = null;
+    const formData: FormData = new FormData();
+    formData.append('File', file, file.name);
+    formData.append('IdAtencion', idAtencion.toString());
+    formData.append('IdProveedor', this.currentUser.ProveedorAgenteId);
+
+    return this.http.post(this.filesUrl, formData)
+    .pipe(
+        (e) => {
+          try
+          {
+            console.log(e);
+            return from(e);
+          } 
+          catch(ex)
+          {
+            console.log(ex);
+          }
+        },
+        tap(_ => {
+          //this.isAuthenticated.next(true);
+          console.log("X1");
+        })
+      )
+    
+  }
+
+  
+  login(credentials:any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Login/Autenticacion`, credentials).pipe(
+      //switchMap((tokens: {accessToken, refreshToken }) => {
+        switchMap(( Data:{ ProveedorAgenteId,
+          ProveedorName,
+          TipoAgente,
+          Correo,
+          ProveedorId,
+          Usuario,
+          NombreAgente,
+          Token,
+          Foto,
+          Lat,
+          Long,
+          Movil,
+          IdPaid,
+          Pais,
+          Firma,
+          UsuarioBPM}) => {
+        console.log(Data[0], 'los datos');
+        this.currentAccessToken = Data[0].Token;
+        this.currentUser = Data[0];
+       // this.userData.next(Data[0].Data[0]);
+        //this.user = Data.Data;
+        const storeAccess = Preferences.set({key: ACCESS_TOKEN_KEY, value: Data[0].Token});
+        const userData = Preferences.set({key: USER_DATA, value: JSON.stringify(Data[0])});
+        return from(Promise.all([storeAccess, userData]));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+
+  
+
+  // POST /api/Login/EnviarNotificacionAccidente
+  EnviarNotificacionEmail(credentials:any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/Login/EnviarNotificacionAccidente?IdAtencion=${credentials}`).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+         localStorage.setItem('Email enviado', res);
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
+   // POST /api/Login/GetAppVersion
+
+   GetAppVersion(credentials:any): Observable<any> {
+    let versionData = {
+      plataforma:credentials
+    }
+    return this.http.post(`${this.apiUrl}/Login/GetAppVersion?plataforma=${credentials}`,versionData).pipe(
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+   }
+
+
+   GetAppVersionProveedores(credentials:any): Observable<any> {
+    let versionData = {
+      plataforma:credentials
+    }
+    return this.http.post(`${this.apiUrl}/Login/GetAppVersion?plataforma=${credentials}`,versionData).pipe(
+       switchMap(( res: any  ) => {
+       return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+   }
+
+
+
+// GET ALL LIST
+  ListTiposDeFotografia(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeFotografia`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+  ListTipoSiniestroFicohsa(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TiposDeSiniestroFicohsa`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+  ListTipoConductor(): Observable<any> {
+//    console.log("Aqui llamo a los tipos de conductor");
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeConductor`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+  ListTipoGenero(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeGenero`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+  //GET /api/SeleccionMultiple/TiposDeParentescoFicohsa
+  ListTipoParentesco(idPais:any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TiposDeParentescoFicohsa?IdPais=${idPais}`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+  //GET /api/SeleccionMultiple/TiposDeSiniestroFicohsa
+  ListTipoSiniestro(idPais:any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TiposDeSiniestroFicohsa?IdPais=${idPais}`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+  ListTipoDeAudiencia(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeAudiencia`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+  ListTipoCombustible(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeCombustible`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+  ListTipoFoto(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/SeleccionMultiple/TipoDeFotografia`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+
+  //Omar McClellan, 11 de Septiembre de 2023
+  //Tipo licencia cambia a un solo endpoint llamado TipoDeLicencia y recibe id de pais 3 para Honduras, 4 para Guatemala
+  TipoDeLicencia(paisId:any) : Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeLicencia?IdPais=${paisId}`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+
+  TipoDeVehiculo(paisId:any) : Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TiposDeVehiculosFicohsa?IdPais=${paisId}`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+
+  // Lista de los 100 daños más comunes
+  //GET /api/SeleccionMultiple/ListadoDanioAlVehiculoFicohsa
+  listDanios(): Observable<any>{
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/ListadoDanioAlVehiculoFicohsa`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+  // GET /api/SeleccionMultiple/ListadoTalleresFicohsa
+  ListTalleres() : Observable<any>{
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/ListadoTalleresFicohsa`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+
+  // GET /api/Proveedor/ListaTipoAcuerdos
+  ListarTiposAcuerdo(): Observable<any>{
+    return this.http.get(`${this.apiUrl}/Proveedor/ListaTipoAcuerdos`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+
+  //GET /api/Proveedor/ListaFotografiasFirmasAtencion
+//  obtenerFirmaPorAtencion(atencionId:any, TipoFotoFirma:any) : Observable<any> {
+    obtenerFotoPorAtencion(atencionId:any, TipoFotoFirma:any) : Observable<any> {
+    let body:any = {
+      IdAtencion:atencionId,
+      TipoFotoFirma:TipoFotoFirma
+    }
+    // ?IdAtencion=${atencionId}&TipoFotoFirma=${TipoFotoFirma}
+    return this.http.post(`${this.apiUrl}/Proveedor/ListaFotografiasFirmasAtencion`, body).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+
+  // GET /api/Proveedor/VectorGpsAtencion
+  obtenerCoordenadasPorAtencion(atencionId:any, Tipo:any) : Observable<any> {
+    let body:any = {
+      IdAtencion:atencionId,
+      Tipo:Tipo
+    }
+    // ?IdAtencion=${atencionId}&TipoFotoFirma=${TipoFotoFirma}
+    return this.http.get(`${this.apiUrl}/Proveedor/VectorGpsAtencion?IdAtencion=${atencionId}&Tipo=${Tipo}`, {}).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+
+  // POST /api/Proveedor/ActualizarCordenadasAjustador
+  // ?IdTablaAjustador=${credentials.IdTablaAjustador}&CodigoBPMFicohsa=${credentials.CodigoBPMFicohsa}&CodigoReclamoFicohsa=${credentials.CodigoReclamoFicohsa}
+  setAjuPosition(credentials:any): Observable<any> {
+    const jsonPosition = {
+      Latitud: credentials.Latitud,
+      Longitud: credentials.Longitud,
+      RefUsuarioId: credentials.RefUsuarioId,
+      Contador: credentials.Contador
+    }
+    //alert(credentials.RefUsuarioId+' setAjuPosition ')
+    return this.http.post(`${this.apiUrl}/Proveedor/ActualizarCordenadasAjustador?Longitud=${credentials.Longitud}&Latitud=${credentials.Latitud}&IdProveedorAgente=${credentials.RefUsuarioId}`, {}).pipe(
+      switchMap(( res: any  ) => {
+        console.log('Respuesta de insertar coordenadas del ajustador inicialmente');
+        console.dir(res);
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+
+  }
+
+
+  // POST /api/Proveedor/InsertarCoordenadasAtencionAgenteProveedor
+  setPositionNRoute(credentials:any): Observable<any> {
+    const jsonPosition = {
+      Latitud: credentials.Latitud,
+      Longitud: credentials.Longitud,
+      RefAtencionId: credentials.RefAtencionId,
+      RefUsuarioId: credentials.RefUsuarioId,
+      Tipo: credentials.Tipo,
+      FechaRegistro: new Date().toISOString(),
+      Contador: credentials.Contador
+    }
+
+    //alert(credentials.Contador+1)
+    //alert(credentials.RefUsuarioId+' setPositionNRoute ')
+    return this.http.post(`${this.apiUrl}/Proveedor/InsertarCoordenadasAtencionAgenteProveedor`, jsonPosition).pipe(
+    switchMap(( res: any  ) => {
+      console.log('Respuesta de insertar coordenadas ');
+      console.dir(res);
+    return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+  )
+  /**/
+}
+
+
+  // POST /api/Proveedor/InsertarConvenioReparacionTaller
+  insertarConvenioReparacion(credentials:any): Observable<any> {
+      const jsonRepara = {
+        CodigoDanioVehiculo: credentials.codigoDanio,
+        Descripcion: credentials.descripcionDanio,
+        Fotografia: credentials.fotografia,
+        IdAtencion: credentials.idAtencion,
+        RefTipoFotoId: credentials.refTipofotoId,
+        TipoEntidad: credentials.TipoEntidad
+      }
+      
+      return this.http.post(`${this.apiUrl}/Proveedor/InsertarConvenioReparacionTaller`, jsonRepara).pipe(
+      switchMap(( res: any  ) => {
+        console.log('Respuesta de ingresar la Convenio Taller ');
+        console.dir(res);
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+    /**/
+  }
+
+  // post /api/Proveedor/InsertarConvenioReparacionTallerExtra
+  InsertarConvenioReparacionTallerExtra(credentials:any): Observable<any> {
+    const jsonRepara = 
+    {
+      RefAtencionId: credentials.RefAtencionId,
+      DescripcionDeDanio: credentials.DescripcionDeDanio,
+      FechaRegistro: credentials.FechaRegistro,
+      UsuarioId: credentials.UsuarioId,
+      TipoEntidad: credentials.TipoEntidad,
+      TipoReparacion: credentials.TipoReparacion,
+      CodigoDanioVehiculo: credentials.CodigoDanioVehiculo,
+      indexFront: credentials.indexFront
+    }
+    
+    return this.http.post(`${this.apiUrl}/Proveedor/InsertarConvenioReparacionTallerExtra`, jsonRepara).pipe(
+    switchMap(( res: any  ) => {
+      console.log('Respuesta de ingresar la Convenio Taller Extra ');
+      console.dir(res);
+    return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+  )
+  /**/
+}
+
+  //POST /api/Proveedor/InsertarFiniquitoManual
+  /*
+  {
+  "NumeroReclamo": "string",
+  "FechaDesde": "2023-11-15T17:24:18.116Z",
+  "FechaHasta": "2023-11-15T17:24:18.116Z",
+  "NombreCliente": "string",
+  "TipoCoberturaFicohsa": "string",
+  "FechaFirma": "2023-11-15T17:24:18.116Z",
+  "FirmaCliente": "string",
+  "NombreQuienRecibe": "string",
+  "IdentidadQuienRecibe": "string",
+  "NumeroCheque": "string",
+  "FechaDelCheque": "2023-11-15T17:24:18.116Z",
+  "ValorDelCheque": 0,
+  "NombreAFavor": "string",
+  "Poliza": "string",
+  "RefAtencionId": 0,
+  "Marca": "string",
+  "Modelo": "string",
+  "Anio": 0,
+  "Placa": "string",
+  "Chasis": "string",
+  "Motor": "string"
+}
+
+    {
+  "NumeroReclamo": "string", // despues de crear el reclamo
+  "FechaDesde": "2023-11-14T19:55:55.849Z", // Input directo
+  "FechaHasta": "2023-11-14T19:55:55.849Z", // Input directo
+  "NombreCliente": "string", // de la info del asegurado
+  "TipoCoberturaFicohsa": "string", // Input directo
+  "FechaFirma": "2023-11-14T19:55:55.849Z", // Input directo
+  "FirmaCliente": "string", // Desde el canvas
+  "NombreQuienRecibe": "string", // Input directo
+  "IdentidadQuienRecibe": "string", // Input directo
+  "NumeroCheque": "string", // Input directo
+  "FechaDelCheque": "2023-11-14T19:55:55.849Z", // Input directo
+  "ValorDelCheque": 0, // Input directo
+  "NombreAFavor": "string", // Input directo
+  "Poliza": "string", // de la info del asegurado
+  "RefAtencionId": 0, // de la info del asegurado
+  "Marca": "string", // de la info del asegurado
+  "Modelo": "string", // de la info del asegurado
+  "Anio": 0, // de la info del asegurado
+  "Placa": "string", // de la info del asegurado
+  "Chasis": "string", // de la info del asegurado
+  "Motor": "string" // de la info del asegurado
+}
+    */
+  insertarFiniquitoManual(credentials:any): Observable<any> {
+    const jsonFiniquito = {
+      NumeroReclamo: credentials.NumeroReclamo,
+      FechaDesde: credentials.FechaDesde,
+      FechaHasta: credentials.FechaHasta,
+      RefAtencionId: credentials.RefAtencionId,
+      NombreCliente: credentials.NombreCliente,
+      TipoCoberturaFicohsa: credentials.TipoCoberturaFicohsa,
+      FechaFirma: credentials.FechaFirma,
+      FirmaCliente: credentials.FirmaCliente,
+      NombreQuienRecibe: credentials.NombreQuienRecibe,
+      IdentidadQuienRecibe: credentials.IdentidadQuienRecibe,
+      NumeroCheque: credentials.NumeroCheque,
+      FechaDelCheque: credentials.FechaDelCheque,
+      ValorDelCheque: credentials.ValorDelCheque,
+      NombreAFavor: credentials.NombreAFavor,
+      Poliza: credentials.Poliza,
+      Marca: credentials.Marca,
+      Modelo: credentials.Modelo,
+      Anio: credentials.Anio,
+      Placa: credentials.Placa,
+      Chasis: credentials.Chasis,
+      Motor: credentials.Motor
+    }
+    
+    return this.http.post(`${this.apiUrl}/Proveedor/InsertarFiniquitoManual`, jsonFiniquito).pipe(
+    switchMap(( res: any  ) => {
+      console.log('Respuesta de ingresar el finiquito ');
+      console.dir(res);
+    return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+  )
+  /**/
+}
+
+
+  // POST /api/Proveedor/InsertarReconocimientoDeDeuda
+  insertarReconocimientoDeuda(credentials:any): Observable<any> {
+      const jsonDeuda = {
+        Id: 0,
+        NombreDeudor: credentials.NombreDeudor,
+        IdentidadDeudor: credentials.IdentidadDeudor,
+        Celular: credentials.Celular,
+        Domicilio: credentials.Domicilio,
+        CorreoElectronico: credentials.CorreoElectronico,
+        LugarDeTrabajo: credentials.LugarDeTrabajo,
+        NombreContacto: credentials.NombreContacto,
+        CelularContacto: credentials.CelularContacto,
+        FechaRegistroDocumento: credentials.FechaRegistroDocumento,
+        Marca: credentials.Marca,
+        Modelo: credentials.Modelo,
+        Anio: credentials.Anio,
+        Placa: credentials.Placa,
+        NombreAsegurado: credentials.NombreAsegurado,
+        MarcaImplicado: credentials.MarcaImplicado,
+        ModeloImplicado: credentials.ModeloImplicado,
+        AnioImplicado: credentials.AnioImplicado,
+        PlacaImplicado: credentials.PlacaImplicado,
+        MotorImplicado : credentials.MotorImplicado,
+        ChasisImplicado: credentials.ChasisImplicado,
+        NombrePersonaPropiedadImplicada: credentials.NombrePersonaPropiedadImplicada,
+        DanioCausadoObservacion: credentials.DanioCausadoObservacion,
+        RefAtencionId: credentials.RefAtencionId,
+        FechaRegistro: credentials.FechaRegistro,
+        FirmaDeudor: credentials.FirmaDeudor,//this.firmaDemoAjustador.split(',')[1]// credentials.FirmaDeudor,
+        Ciudad: credentials.Ciudad,
+        TelefonoCulpable:credentials.TelefonoCulpable,
+        LicenciaCulpable:credentials.LicenciaCulpable,
+        TipoLicencia:credentials.TipoLicencia,
+        FechaVencimientoLicencia:credentials.FechaVencimientoLicencia,
+        NombreDireccionPropietarioVehiculoImplicado:credentials.NombreDireccionPropietarioVehiculoImplicado,
+        CompromisoDePago:credentials.CompromisoDePago,
+        Observaciones:credentials.Observaciones,
+        Edad:credentials.Edad,
+        RefTipoFotografiaIdAdeudado:credentials.RefTipoFotografiaIdAdeudado,
+        RefTipoFotografiaIdBeneficiario:credentials.RefTipoFotografiaIdBeneficiario
+      }
+      
+      return this.http.post(`${this.apiUrl}/Proveedor/InsertarReconocimientoDeDeuda`, jsonDeuda).pipe(
+//      return this.http.post(`${this.apiUrl}/Proveedor/InsertarReconocimientoDeDeuda?IdTablaAjustador=${credentials.IdTablaAjustador}&CodigoBPMFicohsa=${credentials.CodigoBPMFicohsa}&CodigoReclamoFicohsa=${credentials.CodigoReclamoFicohsa}`, {}).pipe(
+      switchMap(( res: any  ) => {
+        console.log('Respuesta de ingresar la deuda ');
+        console.dir(res);
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+
+  /*
+  ListLicenciaHn(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeLicenciaHN`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+
+  
+  ListLicenciaHn(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeLicenciaHN`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+  ListLicenciaGT(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeLicenciaGT`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+  */
+  ListTipoDeEntidadComunicativa(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeEntidadComunicativa`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+
+  // GET /api/Proveedor/ListaVehiculosFicohsa
+  ListMarcasVehiculosFicohsa(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/Proveedor/ListaVehiculosFicohsa`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+  ListTipoDeSolicitanteInformeAjuste(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeSolicitanteInformeAjuste`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+  ListTipoDePersonaSiniestro(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDePersonaSiniestro`).pipe(
+      switchMap(( res: any  ) => {
+      return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+
+  
+
+//End list
+  //https://gist.github.com/AnndresRodriguez/a4216e3f82f45fc4514dc954f967fe9a#file-models-json
+
+//POST /api/FicohsaHN/Carga_Reclamo_Sinau_BPM_Fico
+GuardarBPM(credentials:any): Observable<any> {
+  console.log("Las credenciales que me envias son :");
+  console.table(credentials); // hasta aqui funciona
+
+  /*
+  let misdatos ={
+    Chasis: "5XYPG4A3XGG076002",
+    puntoServicio: "307",
+    Poliza: "2001069268",
+    Certificado: "1",
+    NombreAsegurado: " ROLVIN FERNANDO FIGUEROA ZEPEDA",
+    Sucursal: "0001",
+    Producto: "AU01",
+    Ramo: "0002",
+    FechaOcurrencia: "2024-05-21T16:39:36",
+    Causa: "A001",
+    ValorReserva: "2500",
+    UsuarioBPM: "HN15169",
+    Latitud: "14.0985125",
+    Longitud: "-87.1849219",
+    NombreConductor: " ROLVIN FERNANDO FIGUEROA ZEPEDA",
+    Genero: "M",
+    Parentesco: "0001",
+    Observacion: "40129"
+}
+
+
+
+*/
+let misdatos ={
+  Chasis: credentials.Chasis,
+  puntoServicio: credentials.puntoServicio,
+  Poliza: credentials.Poliza,
+  Certificado: credentials.Certificado,
+  NombreAsegurado: credentials.NombreAsegurado,
+  Sucursal: credentials.Sucursal,
+  Producto: credentials.Producto,
+  Ramo: credentials.Ramo,
+  FechaOcurrencia: credentials.FechaOcurrencia,
+  Causa: credentials.Causa,
+  ValorReserva: credentials.ValorReserva,
+  UsuarioBPM: credentials.UsuarioBPM,
+  Latitud: credentials.Latitud,
+  Longitud: credentials.Longitud,
+  NombreConductor: credentials.NombreConductor,
+  Genero: credentials.Genero,
+  Parentesco: credentials.Parentesco,
+  Observacion: credentials.Observacion
+}
+
+    return this.http.post(`${this.apiUrl}/FicohsaHN/Carga_Reclamo_Sinau_BPM_Fico`, misdatos).pipe(
+    switchMap(( res: any  ) => {
+      console.log('Respuesta de ingresar la nueva atencion ');
+      console.dir(res);
+    return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+  )
+}
+
+//POST /api/Proveedor/ActualizarCodigoBPMAjustador
+ActualizarBPM(credentials:any): Observable<any> {
+  console.log("Las credenciales para actualizar son :");
+  console.table(credentials); // hasta aqui funciona
+    const jsonUpdate = {
+      IdTablaAjustador: credentials.IdTablaAjustador,
+      CodigoBPMFicohsa: credentials.CodigoBPMFicohsa,
+      CodigoReclamoFicohsa: credentials.CodigoReclamoFicohsa
+    }
+    return this.http.post(`${this.apiUrl}/Proveedor/ActualizarCodigoBPMAjustador?IdTablaAjustador=${credentials.IdTablaAjustador}&CodigoBPMFicohsa=${credentials.CodigoBPMFicohsa}&CodigoReclamoFicohsa=${credentials.CodigoReclamoFicohsa}`, {jsonUpdate}).pipe(
+    switchMap(( res: any  ) => {
+      console.log('Respuesta de ingresar la nueva atencion ');
+      console.dir(res);
+    return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+  )
+}
+
+setPushToken(push: string){
+  //this.currentPushToken = push;
+  const storePushToken = Preferences.set({key:PUSH_TOKEN, value: push })
+}
+
+//POST /api/Proveedor/InsertarLesionesHospitalizacion
+insertarHospitalizacion(credentials:any): Observable<any> {
+  console.log("Las credenciales para actualizar son :");
+  console.table(credentials); // hasta aqui funciona
+    const jsonUpdate = {
+      IdAjustadorAudiencia: credentials.IdAjustadorAudiencia,
+      TipoLesionesTercerosAfectados: credentials.TipoLesionesTercerosAfectados,
+      NombreHospital: credentials.NombreHospital
+    }
+    return this.http.post(`${this.apiUrl}/Proveedor/InsertarLesionesHospitalizacion?IdAjustadorAudiencia=${credentials.IdAjustadorAudiencia}&TipoLesionesTercerosAfectados=${credentials.TipoLesionesTercerosAfectados}&NombreHospital=${credentials.NombreHospital}`, {}).pipe(
+    switchMap(( res: any  ) => {
+      console.log('Respuesta de ingresar la nueva atencion ');
+      console.dir(res);
+    return from(Promise.all(res));
+    }),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+  )
+}
+
+
+logout() {
+      this.currentAccessToken = null;
+     this.currentUser = null;
+      // Remove all stored tokens
+      localStorage.setItem('previous', this.router.url);
+      const deleteAccess = Preferences.remove({ key: ACCESS_TOKEN_KEY });
+      const deleteUserData = Preferences.remove({ key: USER_DATA });
+      this.isAuthenticated.next(false);
+      this.router.navigateByUrl('login', { replaceUrl: true });
+      return from(Promise.all([deleteAccess,deleteUserData]))//, deleteRefresh]));
+
+  //  }),
+  //  tap(_ => {
+      // this.isAuthenticated.next(false);
+      // this.router.navigateByUrl('/', { replaceUrl: true });
+   // })
+ // ).subscribe();
+}
+
+// // Load the refresh token from storage
+// // then attach it as the header for one specific API call
+// getNewAccessToken() {
+//   const refreshToken = from(Preferences.get({ key: REFRESH_TOKEN_KEY }));
+//   return refreshToken.pipe(
+//     switchMap(token => {
+//       if (token && token.value) {
+//         const httpOptions = {
+//           headers: new HttpHeaders({
+//             'Content-Type': 'application/json',
+//             Authorization: `Bearer ${token.value}`
+//           })
+//         }
+//         return this.http.get(`${this.url}/auth/refresh`, httpOptions);
+//       } else {
+//         // No stored refresh token
+//         return of(null);
+//       }
+//     })
+//   );
+// }
+
+// // Store a new access token
+// storeAccessToken(accessToken) {
+//   this.currentAccessToken = accessToken;
+//   return from(Preferences.set({ key: ACCESS_TOKEN_KEY, value: accessToken }));
+// }
+}

@@ -1,0 +1,56 @@
+ion-spinner{
+	position: fixed;
+    top: 28%;
+    left: 40%;
+    z-index: 999;
+    width: 20%;
+    height: 20%;
+	//background-color: #00213f;
+}
+
+#spinFooter{
+	position: fixed;
+    background: black;
+    opacity: 0.6;
+    height: 100vh;
+    width: 100vw;
+    z-index: 900;
+    bottom: 0;
+}
+
+ion-accordion {
+    margin: 0 auto;
+    --width: 100% !important;
+  }
+
+  ion-accordion-group {
+    width: 100%;
+  }
+  
+  ion-accordion.accordion-expanding,
+  ion-accordion.accordion-expanded {
+    width: calc(100% - 32px);
+  
+    margin: 16px auto;
+  }
+  
+  ion-accordion.accordion-collapsing ion-item[slot='header'],
+  ion-accordion.accordion-collapsed ion-item[slot='header'] {
+    --background: var(--ion-color-light);
+    --color: var(--ion-color-light-contrast);
+
+  }
+  
+  ion-accordion.accordion-expanding ion-item[slot='header'],
+  ion-accordion.accordion-expanded ion-item[slot='header'] {
+    --background: #7da1c4;//var(--ion-color-primary);
+    --color: white;//var(--ion-color-primary-contrast);
+  }
+
+  ion-input.custom {
+    text-transform: uppercase !important;
+  }
+
+  .select-label{
+    text-transform: uppercase;
+  }

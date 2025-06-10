@@ -1,0 +1,3063 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>help_ajustadores documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  CulpablePage</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/culpable/culpable.page.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnInit</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-culpable</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./culpable.page.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./culpable.page.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#atencionId" >atencionId</a>
+                            </li>
+                            <li>
+                                <a href="#culpable" >culpable</a>
+                            </li>
+                            <li>
+                                <a href="#culpableContacto" >culpableContacto</a>
+                            </li>
+                            <li>
+                                <a href="#culpableContactoNumero" >culpableContactoNumero</a>
+                            </li>
+                            <li>
+                                <a href="#culpableCorreo" >culpableCorreo</a>
+                            </li>
+                            <li>
+                                <a href="#culpableEsPropiertario" >culpableEsPropiertario</a>
+                            </li>
+                            <li>
+                                <a href="#culpableIdentidad" >culpableIdentidad</a>
+                            </li>
+                            <li>
+                                <a href="#culpableTrabajo" >culpableTrabajo</a>
+                            </li>
+                            <li>
+                                <a href="#dataSiniestro" >dataSiniestro</a>
+                            </li>
+                            <li>
+                                <a href="#deuda" >deuda</a>
+                            </li>
+                            <li>
+                                <a href="#elExpediente" >elExpediente</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#emailMask" >emailMask</a>
+                            </li>
+                            <li>
+                                <a href="#expediente" >expediente</a>
+                            </li>
+                            <li>
+                                <a href="#fechaFirma" >fechaFirma</a>
+                            </li>
+                            <li>
+                                <a href="#idAtencion" >idAtencion</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#idMask" >idMask</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#idMaskFechaVencimiento" >idMaskFechaVencimiento</a>
+                            </li>
+                            <li>
+                                <a href="#isLoading" >isLoading</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#kmMask" >kmMask</a>
+                            </li>
+                            <li>
+                                <a href="#marcasVehiculos" >marcasVehiculos</a>
+                            </li>
+                            <li>
+                                <a href="#miMoneda" >miMoneda</a>
+                            </li>
+                            <li>
+                                <a href="#modelosMarca" >modelosMarca</a>
+                            </li>
+                            <li>
+                                <a href="#moneda" >moneda</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#phoneMask" >phoneMask</a>
+                            </li>
+                            <li>
+                                <a href="#poliza" >poliza</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#predicateCliente" >predicateCliente</a>
+                            </li>
+                            <li>
+                                <a href="#reconocimientoDeuda" >reconocimientoDeuda</a>
+                            </li>
+                            <li>
+                                <a href="#telFijo" >telFijo</a>
+                            </li>
+                            <li>
+                                <a href="#tipoLicencia" >tipoLicencia</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#yearMask" >yearMask</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#cambiarPropietario" >cambiarPropietario</a>
+                            </li>
+                            <li>
+                                <a href="#entraContactoCulpable" >entraContactoCulpable</a>
+                            </li>
+                            <li>
+                                <a href="#entraContactoMNumeroCulpable" >entraContactoMNumeroCulpable</a>
+                            </li>
+                            <li>
+                                <a href="#entraCorreoCulpable" >entraCorreoCulpable</a>
+                            </li>
+                            <li>
+                                <a href="#entraIdentidadCulpable" >entraIdentidadCulpable</a>
+                            </li>
+                            <li>
+                                <a href="#entraNombreCulpable" >entraNombreCulpable</a>
+                            </li>
+                            <li>
+                                <a href="#entraNombrePropietarioCulpable" >entraNombrePropietarioCulpable</a>
+                            </li>
+                            <li>
+                                <a href="#entraTrabajoCulpable" >entraTrabajoCulpable</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getTipoLicencia" >getTipoLicencia</a>
+                            </li>
+                            <li>
+                                <a href="#goAdeuda" >goAdeuda</a>
+                            </li>
+                            <li>
+                                <a href="#hasNonDigit" >hasNonDigit</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#print" >print</a>
+                            </li>
+                            <li>
+                                <a href="#seleccionarMarcaCulpable" >seleccionarMarcaCulpable</a>
+                            </li>
+                            <li>
+                                <a href="#seleccionarModeloCulpable" >seleccionarModeloCulpable</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(loading: LoadingController, api: <a href="../injectables/ApiService.html" target="_self">ApiService</a>, router: Router, toaster: <a href="../injectables/ToastService.html" target="_self">ToastService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">src/app/culpable/culpable.page.ts:62</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>loading</td>
+                                                  
+                                                        <td>
+                                                                    <code>LoadingController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>api</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ApiService.html" target="_self" >ApiService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>router</td>
+                                                  
+                                                        <td>
+                                                                    <code>Router</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>toaster</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ToastService.html" target="_self" >ToastService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="cambiarPropietario"></a>
+                    <span class="name">
+                        <span ><b>cambiarPropietario</b></span>
+                        <a href="#cambiarPropietario"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>cambiarPropietario(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="242"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:242</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="entraContactoCulpable"></a>
+                    <span class="name">
+                        <span ><b>entraContactoCulpable</b></span>
+                        <a href="#entraContactoCulpable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>entraContactoCulpable(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="204"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:204</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="entraContactoMNumeroCulpable"></a>
+                    <span class="name">
+                        <span ><b>entraContactoMNumeroCulpable</b></span>
+                        <a href="#entraContactoMNumeroCulpable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>entraContactoMNumeroCulpable(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="208"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:208</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="entraCorreoCulpable"></a>
+                    <span class="name">
+                        <span ><b>entraCorreoCulpable</b></span>
+                        <a href="#entraCorreoCulpable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>entraCorreoCulpable(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="196"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:196</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="entraIdentidadCulpable"></a>
+                    <span class="name">
+                        <span ><b>entraIdentidadCulpable</b></span>
+                        <a href="#entraIdentidadCulpable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>entraIdentidadCulpable(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="212"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:212</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="entraNombreCulpable"></a>
+                    <span class="name">
+                        <span ><b>entraNombreCulpable</b></span>
+                        <a href="#entraNombreCulpable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>entraNombreCulpable(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="187"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:187</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="entraNombrePropietarioCulpable"></a>
+                    <span class="name">
+                        <span ><b>entraNombrePropietarioCulpable</b></span>
+                        <a href="#entraNombrePropietarioCulpable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>entraNombrePropietarioCulpable(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="192"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:192</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="entraTrabajoCulpable"></a>
+                    <span class="name">
+                        <span ><b>entraTrabajoCulpable</b></span>
+                        <a href="#entraTrabajoCulpable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>entraTrabajoCulpable(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="200"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:200</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getTipoLicencia"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getTipoLicencia</b></span>
+                        <a href="#getTipoLicencia"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getTipoLicencia(paisIdentidad)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="216"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:216</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>paisIdentidad</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="goAdeuda"></a>
+                    <span class="name">
+                        <span ><b>goAdeuda</b></span>
+                        <a href="#goAdeuda"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>goAdeuda()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="262"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:262</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hasNonDigit"></a>
+                    <span class="name">
+                        <span ><b>hasNonDigit</b></span>
+                        <a href="#hasNonDigit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>hasNonDigit(str)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="178"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:178</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>str</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="131"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:131</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="print"></a>
+                    <span class="name">
+                        <span ><b>print</b></span>
+                        <a href="#print"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>print(item)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="257"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:257</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>item</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seleccionarMarcaCulpable"></a>
+                    <span class="name">
+                        <span ><b>seleccionarMarcaCulpable</b></span>
+                        <a href="#seleccionarMarcaCulpable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>seleccionarMarcaCulpable(idMarca)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="162"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:162</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>idMarca</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seleccionarModeloCulpable"></a>
+                    <span class="name">
+                        <span ><b>seleccionarModeloCulpable</b></span>
+                        <a href="#seleccionarModeloCulpable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>seleccionarModeloCulpable(idModelo)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="182"
+                                    class="link-to-prism">src/app/culpable/culpable.page.ts:182</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>idModelo</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="atencionId"></a>
+                    <span class="name">
+                        <span ><b>atencionId</b></span>
+                        <a href="#atencionId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/app/culpable/culpable.page.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="culpable"></a>
+                    <span class="name">
+                        <span ><b>culpable</b></span>
+                        <a href="#culpable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/culpable.html" target="_self" >culpable</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app/culpable/culpable.page.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="culpableContacto"></a>
+                    <span class="name">
+                        <span ><b>culpableContacto</b></span>
+                        <a href="#culpableContacto"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="56" class="link-to-prism">src/app/culpable/culpable.page.ts:56</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="culpableContactoNumero"></a>
+                    <span class="name">
+                        <span ><b>culpableContactoNumero</b></span>
+                        <a href="#culpableContactoNumero"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">src/app/culpable/culpable.page.ts:57</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="culpableCorreo"></a>
+                    <span class="name">
+                        <span ><b>culpableCorreo</b></span>
+                        <a href="#culpableCorreo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">src/app/culpable/culpable.page.ts:54</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="culpableEsPropiertario"></a>
+                    <span class="name">
+                        <span ><b>culpableEsPropiertario</b></span>
+                        <a href="#culpableEsPropiertario"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="59" class="link-to-prism">src/app/culpable/culpable.page.ts:59</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="culpableIdentidad"></a>
+                    <span class="name">
+                        <span ><b>culpableIdentidad</b></span>
+                        <a href="#culpableIdentidad"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">src/app/culpable/culpable.page.ts:58</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="culpableTrabajo"></a>
+                    <span class="name">
+                        <span ><b>culpableTrabajo</b></span>
+                        <a href="#culpableTrabajo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">src/app/culpable/culpable.page.ts:55</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dataSiniestro"></a>
+                    <span class="name">
+                        <span ><b>dataSiniestro</b></span>
+                        <a href="#dataSiniestro"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/culpable/culpable.page.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deuda"></a>
+                    <span class="name">
+                        <span ><b>deuda</b></span>
+                        <a href="#deuda"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/app/culpable/culpable.page.ts:46</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="elExpediente"></a>
+                    <span class="name">
+                        <span ><b>elExpediente</b></span>
+                        <a href="#elExpediente"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/app/culpable/culpable.page.ts:42</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="emailMask"></a>
+                    <span class="name">
+                            <span class="modifier">Readonly</span>
+                        <span ><b>emailMask</b></span>
+                        <a href="#emailMask"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>MaskitoOptions</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    mask: [/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,],
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/app/culpable/culpable.page.ts:36</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="expediente"></a>
+                    <span class="name">
+                        <span ><b>expediente</b></span>
+                        <a href="#expediente"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">src/app/culpable/culpable.page.ts:60</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fechaFirma"></a>
+                    <span class="name">
+                        <span ><b>fechaFirma</b></span>
+                        <a href="#fechaFirma"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">src/app/culpable/culpable.page.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="idAtencion"></a>
+                    <span class="name">
+                        <span ><b>idAtencion</b></span>
+                        <a href="#idAtencion"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="50" class="link-to-prism">src/app/culpable/culpable.page.ts:50</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="idMask"></a>
+                    <span class="name">
+                            <span class="modifier">Readonly</span>
+                        <span ><b>idMask</b></span>
+                        <a href="#idMask"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>MaskitoOptions</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    mask: [/\d/, /\d/,/\d/, /\d/, &#x27;-&#x27;, /\d/, /\d/,/\d/, /\d/, &#x27;-&#x27;, /\d/, /\d/,/\d/, /\d/,/\d/,],
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/culpable/culpable.page.ts:19</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="idMaskFechaVencimiento"></a>
+                    <span class="name">
+                            <span class="modifier">Readonly</span>
+                        <span ><b>idMaskFechaVencimiento</b></span>
+                        <a href="#idMaskFechaVencimiento"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>MaskitoOptions</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    mask: [/\d/, /\d/, &#x27;/&#x27;, /\d/, /\d/, &#x27;/&#x27;, /\d/, /\d/, /\d/, /\d/,],
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/culpable/culpable.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isLoading"></a>
+                    <span class="name">
+                        <span ><b>isLoading</b></span>
+                        <a href="#isLoading"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">src/app/culpable/culpable.page.ts:52</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="kmMask"></a>
+                    <span class="name">
+                            <span class="modifier">Readonly</span>
+                        <span ><b>kmMask</b></span>
+                        <a href="#kmMask"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>MaskitoOptions</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    mask: [/\d/, /\d/,/\d/, /\d/, /\d/, /\d/, /\d/,],
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/app/culpable/culpable.page.ts:33</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="marcasVehiculos"></a>
+                    <span class="name">
+                        <span ><b>marcasVehiculos</b></span>
+                        <a href="#marcasVehiculos"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>marcasVehiculos</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="53" class="link-to-prism">src/app/culpable/culpable.page.ts:53</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="miMoneda"></a>
+                    <span class="name">
+                        <span ><b>miMoneda</b></span>
+                        <a href="#miMoneda"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">src/app/culpable/culpable.page.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="modelosMarca"></a>
+                    <span class="name">
+                        <span ><b>modelosMarca</b></span>
+                        <a href="#modelosMarca"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/culpable/culpable.page.ts:41</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="moneda"></a>
+                    <span class="name">
+                        <span ><b>moneda</b></span>
+                        <a href="#moneda"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">src/app/culpable/culpable.page.ts:61</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="phoneMask"></a>
+                    <span class="name">
+                            <span class="modifier">Readonly</span>
+                        <span ><b>phoneMask</b></span>
+                        <a href="#phoneMask"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>MaskitoOptions</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    mask: [&#x27;(&#x27;, &#x27;5&#x27;, &#x27;0&#x27;, &#x27;4&#x27;, &#x27;)&#x27;, &#x27; &#x27;, /\d/, /\d/,/\d/, /\d/, &#x27; &#x27;, /\d/, /\d/,/\d/, /\d/,],
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/culpable/culpable.page.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="poliza"></a>
+                    <span class="name">
+                        <span ><b>poliza</b></span>
+                        <a href="#poliza"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/app/culpable/culpable.page.ts:47</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="predicateCliente"></a>
+                    <span class="name">
+                            <span class="modifier">Readonly</span>
+                        <span ><b>predicateCliente</b></span>
+                        <a href="#predicateCliente"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>MaskitoElementPredicateAsync</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>() &#x3D;&gt; {...}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/culpable/culpable.page.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="reconocimientoDeuda"></a>
+                    <span class="name">
+                        <span ><b>reconocimientoDeuda</b></span>
+                        <a href="#reconocimientoDeuda"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/app/culpable/culpable.page.ts:43</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="telFijo"></a>
+                    <span class="name">
+                        <span ><b>telFijo</b></span>
+                        <a href="#telFijo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/app/culpable/culpable.page.ts:48</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tipoLicencia"></a>
+                    <span class="name">
+                        <span ><b>tipoLicencia</b></span>
+                        <a href="#tipoLicencia"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/tipoLicencia.html" target="_self" >tipoLicencia[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/culpable/culpable.page.ts:44</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="yearMask"></a>
+                    <span class="name">
+                            <span class="modifier">Readonly</span>
+                        <span ><b>yearMask</b></span>
+                        <a href="#yearMask"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>MaskitoOptions</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    mask: [/\d/, /\d/,/\d/, /\d/,],
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/app/culpable/culpable.page.ts:30</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { culpable, personaHn, propiedaPrivadaHn} from &#x27;./../interfaces/formulario&#x27;;
+import { MaskitoElementPredicateAsync, MaskitoOptions } from &#x27;@maskito/core&#x27;;
+import { Router, ActivatedRoute } from &#x27;@angular/router&#x27;;
+import { finalize } from &#x27;rxjs/operators&#x27;;
+import { ApiService } from &#x27;../services/api.service&#x27;;
+import { LoadingController } from &#x27;@ionic/angular&#x27;;
+import { marcasVehiculos } from &#x27;../environments/vehicles&#x27;;
+import { tipoLicencia} from &#x27;./../interfaces/formulario&#x27;;
+import { Component, OnInit } from &#x27;@angular/core&#x27;;
+import { ToastService } from &#x27;../services/toast.service&#x27;;
+
+@Component({
+  selector: &#x27;app-culpable&#x27;,
+  templateUrl: &#x27;./culpable.page.html&#x27;,
+  styleUrls: [&#x27;./culpable.page.scss&#x27;],
+})
+export class CulpablePage implements OnInit {
+  readonly predicateCliente: MaskitoElementPredicateAsync &#x3D; async (el) &#x3D;&gt;(el as HTMLIonInputElement).getInputElement();
+  readonly idMask: MaskitoOptions &#x3D; {
+    mask: [/\d/, /\d/,/\d/, /\d/, &#x27;-&#x27;, /\d/, /\d/,/\d/, /\d/, &#x27;-&#x27;, /\d/, /\d/,/\d/, /\d/,/\d/,],
+  }
+
+  readonly idMaskFechaVencimiento: MaskitoOptions &#x3D; {
+    mask: [/\d/, /\d/, &#x27;/&#x27;, /\d/, /\d/, &#x27;/&#x27;, /\d/, /\d/, /\d/, /\d/,],
+  }
+
+  readonly phoneMask: MaskitoOptions &#x3D; {
+    mask: [&#x27;(&#x27;, &#x27;5&#x27;, &#x27;0&#x27;, &#x27;4&#x27;, &#x27;)&#x27;, &#x27; &#x27;, /\d/, /\d/,/\d/, /\d/, &#x27; &#x27;, /\d/, /\d/,/\d/, /\d/,],
+  }
+  readonly yearMask: MaskitoOptions &#x3D; {
+    mask: [/\d/, /\d/,/\d/, /\d/,],
+  }
+  readonly kmMask: MaskitoOptions &#x3D; {
+    mask: [/\d/, /\d/,/\d/, /\d/, /\d/, /\d/, /\d/,],
+  }
+  readonly emailMask: MaskitoOptions &#x3D; {
+    mask: [/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,],
+  }
+
+  culpable: culpable&#x3D;{};
+  modelosMarca:any&#x3D;[];
+  elExpediente:any&#x3D;[];
+  reconocimientoDeuda:any&#x3D;[];
+  tipoLicencia: tipoLicencia[]&#x3D;[];
+  dataSiniestro:any&#x3D;[];
+  deuda:any&#x3D;[];
+  poliza:any;
+  telFijo:any;
+  fechaFirma:any;
+  idAtencion:any;
+  atencionId:number;
+  isLoading:boolean&#x3D;false;
+  marcasVehiculos:any&#x3D;marcasVehiculos;
+  culpableCorreo:any;
+  culpableTrabajo:any;
+  culpableContacto:any;
+  culpableContactoNumero:any;
+  culpableIdentidad:any;
+  culpableEsPropiertario:boolean&#x3D;true;
+  expediente: any;
+  moneda: any;
+  miMoneda: string;
+  constructor(private loading: LoadingController,private api: ApiService, private router: Router,
+    private toaster:ToastService) { 
+    /*
+    localStorage.setItem(&#x27;deuda&#x27;, JSON.stringify(this.reconocimientoDeuda));
+    localStorage.setItem(&#x27;telFijo&#x27;, this.culpable.TelefonoFijoCulpable);
+    localStorage.setItem(&#x27;dataSiniestro&#x27;, JSON.stringify(data));
+    localStorage.setItem(&#x27;poliza&#x27;,this.cliente.Poliza);
+    localStorage.setItem(&#x27;fechaFirma&#x27;, this.mydate);
+    */
+
+    //this.deuda &#x3D; localStorage.getItem(&#x27;deuda&#x27;);
+    this.telFijo &#x3D; localStorage.getItem(&#x27;telFijo&#x27;);
+    this.isLoading &#x3D; true;
+    this.idAtencion &#x3D; localStorage.getItem(&#x27;idAtencion&#x27;);
+
+    this.api.DatosDeAtencion(this.idAtencion).pipe( 
+      finalize(async ()&#x3D;&gt;{
+        this.isLoading &#x3D; false;
+      })
+    ).subscribe(
+       async (res) &#x3D;&gt;{
+        if (res.length &gt; 0) {
+          this.dataSiniestro &#x3D; res;
+          console.log(&quot;Mis datos de atencion&quot;);
+          console.dir(this.dataSiniestro);
+        }else{
+          //this.toaster.presentToastNoButtonsRed(&#x27;Aun no se ha guardado datos para esta atención.&#x27;, &#x27;top&#x27;, &#x27;culpable&#x27;);
+        }
+        
+      },
+      async (res) &#x3D;&gt; {
+        this.toaster.presentToast(res.error.Message, &#x27;top&#x27;, &#x27;solicitante&#x27;);
+      }
+
+    )
+
+    this.poliza &#x3D; localStorage.getItem(&#x27;poliza&#x27;);
+    this.fechaFirma &#x3D; localStorage.getItem(&#x27;fechaFirma&#x27;);
+    this.api.DatosDeAtencion(this.idAtencion).pipe( 
+      finalize(async ()&#x3D;&gt;{
+        this.isLoading &#x3D; false;
+      })
+    ).subscribe(
+       async (res) &#x3D;&gt;{
+        if (res.length &gt; 0) {
+          this.elExpediente &#x3D; res;
+          console.log(&quot;Mis datos de atencion&quot;);
+          console.dir(this.dataSiniestro);
+        }else{
+          //this.toaster.presentToastNoButtonsRed(&#x27;Aun no se ha guardado datos para esta atención.&#x27;, &#x27;top&#x27;, &#x27;culpable&#x27;);
+        }
+        
+      },
+      async (res) &#x3D;&gt; {
+        this.toaster.presentToast(res.error.Message, &#x27;top&#x27;, &#x27;solicitante&#x27;);
+      }
+
+    )
+
+    //this.toaster.presentToastNoButtonsRed(&#x27;Aun no se ha guardado datos para esta atención.&#x27;, &#x27;top&#x27;, &#x27;culpable&#x27;);
+/*
+    if (this.fechaFirma &#x3D;&#x3D; undefined || this.fechaFirma &#x3D;&#x3D; &quot;undefined&quot; || this.fechaFirma &#x3D;&#x3D; null) {
+      this.toaster.presentToastNoButtonsRed(&#x27;Aun no se ha guardado datos para esta atención.&#x27;, &#x27;top&#x27;, &#x27;culpable&#x27;);
+    }else{
+    }
+    */
+  }
+
+  ngOnInit() {
+    this.getTipoLicencia(3);
+
+    this.idAtencion &#x3D; localStorage.getItem(&#x27;idAtencion&#x27;);
+    if (this.hasNonDigit(this.idAtencion) &#x3D;&#x3D; false) {
+      //alert(parseInt(this.idAtencion)+1)
+      this.atencionId &#x3D; parseInt(this.idAtencion);
+
+      this.api.Expediente(this.atencionId).pipe( 
+        finalize(async ()&#x3D;&gt;{
+          this.isLoading &#x3D; false;
+        })
+      ).subscribe(
+         (res) &#x3D;&gt;{
+          console.log(res, &#x27;respuesta&#x27;);
+          this.expediente&#x3D; res;
+          this.moneda &#x3D; this.expediente[0].Moneda;
+
+          //alert(this.moneda)
+          if (this.moneda &#x3D;&#x3D; null) {
+            this.miMoneda &#x3D; &quot;Lempiras&quot;;
+          }else{
+            this.miMoneda &#x3D; this.moneda.Moneda;
+          }
+          
+         }
+      )
+    }
+    
+  }
+
+  seleccionarMarcaCulpable(idMarca){
+    this.modelosMarca &#x3D; [];
+    let elIndex &#x3D; idMarca.target.value;
+    //alert(elIndex)
+    this.culpable.MarcaCulpable &#x3D; marcasVehiculos[elIndex].nombre;
+
+        for (let index &#x3D; 0; index &lt; marcasVehiculos.length; index++) {
+          const element &#x3D; marcasVehiculos[index];
+          if(element.id &#x3D;&#x3D; elIndex){
+            //console.log(&quot;Estos son los modelos de esta marca &quot;);
+            this.modelosMarca &#x3D; element.modelos;
+            //console.dir(this.modelosMarca)
+          }
+        }
+  }
+
+  hasNonDigit(str){
+    return /\D/g.test(str.toString());
+  }
+
+  seleccionarModeloCulpable(idModelo){
+    this.culpable.ModeloCulpable &#x3D; idModelo.target.value;
+    //console.log(this.culpable.ModeloCulpable)
+  }
+
+  entraNombreCulpable(event){
+    this.culpable.NombreCulpable &#x3D; event.target.value;
+    this.culpable.NombreDireccionPropietarioCulpable &#x3D; event.target.value;
+  }
+
+  entraNombrePropietarioCulpable(event){
+    this.culpable.NombreDireccionPropietarioCulpable &#x3D; event.target.value;
+  }
+
+  entraCorreoCulpable(event){
+    this.culpableCorreo &#x3D; event.target.value;
+  }
+
+  entraTrabajoCulpable(event){
+    this.culpableTrabajo &#x3D; event.target.value;
+  }
+
+  entraContactoCulpable(event){
+    this.culpableContacto &#x3D; event.target.value;
+  }
+
+  entraContactoMNumeroCulpable(event){
+    this.culpableContactoNumero &#x3D; event.target.value;
+  }
+
+  entraIdentidadCulpable(event){
+    this.culpableIdentidad &#x3D; event.target.value;
+  }
+
+  async getTipoLicencia(paisIdentidad){
+    const load &#x3D; await this.loading.create();
+    await  load.present();
+    
+    this.api.TipoDeLicencia(paisIdentidad).pipe( 
+      finalize(async ()&#x3D;&gt;{
+        await load.dismiss();
+      })
+    ).subscribe(
+       async (res) &#x3D;&gt;{
+        this.tipoLicencia &#x3D; res;
+      },
+      async (res) &#x3D;&gt; {
+        /*
+        const alert &#x3D; await this.alert.create({
+          header:&#x27;HELP&#x27;,
+          message:res.error.Message,
+          buttons:[&#x27;Ok&#x27;]
+        });
+        await alert.present();
+      }
+      */
+      }
+    )
+  }
+
+  cambiarPropietario(event){
+    //alert(event.target.value &#x3D;&#x3D; &#x27;on&#x27;)
+    if (event.target.value &#x3D;&#x3D; &#x27;on&#x27;) {
+      event.target.value &#x3D; &#x27;off&#x27;;
+      this.culpable.NombreDireccionPropietarioCulpable &#x3D; &#x27;&#x27;;
+      this.elExpediente.DireccionPropietarioCulpable &#x3D; &#x27;&#x27;;
+      this.culpableEsPropiertario &#x3D; false;
+    }else{
+      event.target.value &#x3D; &#x27;on&#x27;;
+      this.culpableEsPropiertario &#x3D; true;
+      this.culpable.NombreDireccionPropietarioCulpable &#x3D; this.culpable.NombreCulpable;
+      this.elExpediente.DireccionPropietarioCulpable &#x3D; this.culpable.DireccionCulpable;
+    }
+  }
+
+  print(item)
+  {
+    //console.log(item);
+  }
+
+  goAdeuda(){
+    this.idAtencion &#x3D; localStorage.getItem(&#x27;idAtencion&#x27;);
+    if (this.hasNonDigit(this.idAtencion) &#x3D;&#x3D; false) {
+      //alert(parseInt(this.idAtencion)+1)
+      this.atencionId &#x3D; parseInt(this.idAtencion);
+      //console.log(this.atencionId)
+    }
+
+        /*
+      [11:00, 25/10/2023] Manuel Palma: NombreDireccionPropietarioImplicado
+    [11:00, 25/10/2023] Manuel Palma: FechaVencimientoLicencia
+    [11:02, 25/10/2023] Manuel Palma: NombreDireccionPropietarioVehiculoImplicado
+      */
+    this.reconocimientoDeuda &#x3D; {
+      Id: 0,
+      NombreDeudor: this.culpable.NombreCulpable,
+      IdentidadDeudor: this.culpableIdentidad,
+      Celular: this.culpable.CelularCulpable,
+      Domicilio: this.culpable.DireccionCulpable,
+      CorreoElectronico: this.culpableCorreo, // pendiente, agregar a formulario
+      LugarDeTrabajo: this.culpableTrabajo, // pendiente, agregar a formulario
+      NombreContacto: this.culpableContacto, // pendiente, agregar a formulario
+      CelularContacto: this.culpableContactoNumero, // pendiente, agregar a formulario
+      FechaRegistroDocumento: this.fechaFirma,
+      Marca: this.elExpediente.Marca,
+      Modelo: this.elExpediente.Modelo,
+      Anio: this.elExpediente.Year,
+      Placa: this.elExpediente.NumeroPlaca,
+      NombreAsegurado: this.elExpediente.Cliente,
+      MarcaImplicado: this.culpable.MarcaCulpable,
+      ModeloImplicado: this.culpable.ModeloCulpable,
+      AnioImplicado: this.culpable.AnioCulpable,
+      PlacaImplicado: this.culpable.NoPlacaCulpable,
+      NombrePersonaPropiedadImplicada: this.culpable.NombreDireccionPropietarioCulpable,
+      DanioCausadoObservacion: this.dataSiniestro.DescripcionDanio,
+      RefAtencionId: this.atencionId,
+      FechaRegistro: this.fechaFirma,
+      FirmaDeudor: &quot;string&quot;,
+      Ciudad: this.elExpediente.Ciudad, // pendiente, agregar a formulario
+      TelefonoCulpable: this.culpable.TelefonoFijoCulpable,
+      LicenciaCulpable: this.culpable.CelularCulpable,
+      TipoLicencia: this.culpable.LicenciaTipoCulpable,
+      FechaVencimientoLicencia: this.culpable.FechaVencimientoLicenciaCulpable,
+      NombreDireccionPropietarioVehiculoImplicado: &quot;string&quot;,
+      //CulpableCompromisoPago: this.culpable.CompromisoPago,
+      //ObservacionCompromisoPago: this.culpable.ObservacionesCulpable,
+      CompromisoDePago: this.culpable.CompromisoPago,
+      Observaciones: this.culpable.ObservacionesCulpable
+    }
+
+    console.dir(this.reconocimientoDeuda);
+
+    localStorage.setItem(&#x27;deuda&#x27;, JSON.stringify(this.reconocimientoDeuda));
+    localStorage.setItem(&#x27;poliza&#x27;,this.poliza);
+    localStorage.setItem(&#x27;telFijo&#x27;, this.telFijo);
+    localStorage.setItem(&#x27;fechaFirma&#x27;, this.fechaFirma);
+
+    this.router.navigate([&#x27;./adeuda&#x27;]);
+
+    /*
+    if (this.fechaFirma &#x3D;&#x3D; undefined || this.fechaFirma &#x3D;&#x3D; &quot;undefined&quot; || this.fechaFirma &#x3D;&#x3D; null) {
+      this.toaster.presentToastNoButtonsRed(&#x27;Aun no se ha guardado datos para esta atención.&#x27;, &#x27;top&#x27;, &#x27;culpable&#x27;);
+    }else{
+      this.router.navigate([&#x27;./adeuda&#x27;]);
+    }
+    */
+    
+  }
+
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;ion-header&gt;
+  &lt;ion-toolbar&gt;
+    &lt;ion-buttons slot&#x3D;&quot;start&quot;&gt;
+      &lt;ion-back-button&gt;&lt;/ion-back-button&gt;
+      
+    &lt;/ion-buttons&gt;
+    &lt;ion-title&gt;
+      &lt;ion-grid&gt;
+        &lt;ion-row&gt;
+          &lt;ion-col size&#x3D;&quot;4&quot;&gt;&lt;/ion-col&gt;
+          &lt;ion-col size&#x3D;&quot;4&quot;&gt;Atención # {{idAtencion}} - {{miMoneda}}&lt;/ion-col&gt;
+          &lt;ion-col size&#x3D;&quot;4&quot;&gt;&lt;/ion-col&gt;
+        &lt;/ion-row&gt;
+      &lt;/ion-grid&gt;
+    &lt;/ion-title&gt;
+  &lt;/ion-toolbar&gt;
+&lt;/ion-header&gt;
+
+&lt;ion-content&gt;
+    &lt;ion-list style&#x3D;&quot;width: 95%; margin-left:2%;margin-top: 3%;&quot;&gt;
+
+&lt;ion-label class&#x3D;&quot;text-size-lg&quot; style&#x3D;&quot;padding-left: 5px;&quot;&gt;
+              &lt;ion-badge&gt;
+                Datos Culpable
+              &lt;/ion-badge&gt;
+            &lt;/ion-label&gt;
+    
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Nombre del conductor&lt;/ion-label&gt;
+              &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;culpable.NombreCulpable&quot; (ionChange)&#x3D;&quot;entraNombreCulpable($event)&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item  class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Identidad Número&lt;/ion-label&gt;
+              &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;culpableIdentidad&quot; (ionChange)&#x3D;&quot;entraIdentidadCulpable($event)&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item  class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Dirección&lt;/ion-label&gt;
+              &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;culpable.DireccionCulpable&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Teléfono&lt;/ion-label&gt;
+              &lt;ion-input type&#x3D;&quot;number&quot; [(ngModel)]&#x3D;&quot;culpable.TelefonoFijoCulpable&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Celular&lt;/ion-label&gt;
+              &lt;ion-input type&#x3D;&quot;number&quot; [(ngModel)]&#x3D;&quot;culpable.CelularCulpable&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Edad&lt;/ion-label&gt;
+              &lt;ion-input [maskito]&#x3D;&quot;yearMask&quot; [maskitoElement]&#x3D;&quot;predicateCliente&quot; [(ngModel)]&#x3D;&quot;culpable.EdadCulpable&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item  class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Correo electrónico&lt;/ion-label&gt;
+              &lt;ion-input type&#x3D;&quot;email&quot; [(ngModel)]&#x3D;&quot;culpableCorreo&quot; (ionChange)&#x3D;&quot;entraCorreoCulpable($event)&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item  class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Lugar De Trabajo&lt;/ion-label&gt;
+              &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;culpableTrabajo&quot; (ionChange)&#x3D;&quot;entraTrabajoCulpable($event)&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item  class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Nombre De Contacto&lt;/ion-label&gt;
+              &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;culpableContacto&quot; (ionChange)&#x3D;&quot;entraContactoCulpable($event)&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item  class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Numero De Contacto&lt;/ion-label&gt;
+              &lt;ion-input type&#x3D;&quot;number&quot; [(ngModel)]&#x3D;&quot;culpableContactoNumero&quot; (ionChange)&#x3D;&quot;entraContactoMNumeroCulpable($event)&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Tipo de licencia&lt;/ion-label&gt;
+                &lt;ion-select class&#x3D;&quot;text-size-xs&quot; [(ngModel)]&#x3D;&quot;culpable.LicenciaTipoCulpable&quot; multiple&#x3D;&quot;false&quot; &gt;
+                  &lt;ion-select-option *ngFor&#x3D;&quot;let licencia of tipoLicencia&quot; [value]&#x3D;&quot;licencia.Id&quot;&gt;
+                    {{licencia.TipoLicencia}}
+                  &lt;/ion-select-option&gt;
+                &lt;/ion-select&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Licencia&lt;/ion-label&gt;
+              &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;culpable.NumeroLicenciaCulpable&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Fecha de vencimiento&lt;/ion-label&gt;
+              &lt;ion-input placeholder&#x3D;&quot;DD/MM/AA&quot; [maskito]&#x3D;&quot;idMaskFechaVencimiento&quot; [maskitoElement]&#x3D;&quot;predicateCliente&quot; [(ngModel)]&#x3D;&quot;culpable.FechaVencimientoLicenciaCulpable&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Marca&lt;/ion-label&gt;
+              &lt;ion-select class&#x3D;&quot;text-size-xs&quot; (ionChange)&#x3D;&quot;seleccionarMarcaCulpable($event)&quot; [(ngModel)]&#x3D;&quot;culpable.MarcaCulpable&quot; multiple&#x3D;&quot;false&quot; &gt;
+                &lt;ion-select-option *ngFor&#x3D;&quot;let marca of marcasVehiculos&quot;  [value]&#x3D;&quot;marca.id&quot;&gt;{{marca.nombre}}
+                &lt;/ion-select-option&gt;
+              &lt;/ion-select&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Modelo&lt;/ion-label&gt;
+              &lt;ion-select class&#x3D;&quot;text-size-xs&quot; [(ngModel)]&#x3D;&quot;culpable.ModeloCulpable&quot; multiple&#x3D;&quot;false&quot; (ionChange)&#x3D;&quot;seleccionarModeloCulpable($event)&quot;&gt;
+                &lt;ion-select-option *ngFor&#x3D;&quot;let modelo of modelosMarca&quot;  [value]&#x3D;&quot;modelo&quot;&gt;{{modelo}}
+                &lt;/ion-select-option&gt;
+              &lt;/ion-select&gt;
+            &lt;/ion-item&gt;
+    
+            
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Año&lt;/ion-label&gt;
+              &lt;ion-input [maskito]&#x3D;&quot;yearMask&quot; [maskitoElement]&#x3D;&quot;predicateCliente&quot; [(ngModel)]&#x3D;&quot;culpable.AnioCulpable&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Motor No.&lt;/ion-label&gt;
+              &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;culpable.MotorNoCulpable&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Chasis No.&lt;/ion-label&gt;
+              &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;culpable.Chasis&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                No. de placa&lt;/ion-label&gt;
+              &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;culpable.NoPlacaCulpable&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Nombre del propietario&lt;/ion-label&gt;
+                &lt;ion-checkbox slot&#x3D;&quot;end&quot; [ngModel]&#x3D;&quot;culpableEsPropiertario&quot; (ionChange)&#x3D;&quot;cambiarPropietario($event)&quot; labelPlacement&#x3D;&quot;end&quot;&gt;&lt;/ion-checkbox&gt;&lt;span style&#x3D;&quot;position: absolute;right: 4%;top: 4px;&quot;&gt;
+                  El conductor es el propietario?&lt;/span&gt;
+                &lt;ion-input *ngIf&#x3D;&quot;culpableEsPropiertario &#x3D;&#x3D; true&quot; type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;culpable.NombreCulpable&quot; readonly&gt;&lt;/ion-input&gt;  
+              &lt;ion-input *ngIf&#x3D;&quot;culpableEsPropiertario &#x3D;&#x3D; false&quot; type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;culpable.NombreDireccionPropietarioCulpable&quot; (ionChange)&#x3D;&quot;entraNombrePropietarioCulpable($event)&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+               Dirección del propietario&lt;/ion-label&gt;
+               &lt;ion-input *ngIf&#x3D;&quot;culpableEsPropiertario &#x3D;&#x3D; true&quot; type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;culpable.DireccionCulpable&quot; readonly&gt;&lt;/ion-input&gt;
+              &lt;ion-input *ngIf&#x3D;&quot;culpableEsPropiertario &#x3D;&#x3D; false&quot; type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;elExpediente.DireccionPropietarioCulpable&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot;&gt;
+                ¿Hay compromiso de pago?&lt;/ion-label&gt;
+                &lt;ion-radio-group [(ngModel)]&#x3D;&quot;culpable.CompromisoPago&quot; (ngModelChange)&#x3D;&quot;print(culpable.CompromisoPago)&quot;&gt;
+                  &lt;ion-item lines&#x3D;&quot;none&quot; style&#x3D;&quot;display: inline-block;&quot;&gt;
+                    &lt;ion-label&gt;No&lt;/ion-label&gt;
+                    &lt;ion-radio value&#x3D;&quot;2&quot;&gt;&lt;/ion-radio&gt;
+                  &lt;/ion-item&gt;
+                  &lt;ion-item lines&#x3D;&quot;none&quot;  style&#x3D;&quot;display: inline-block;&quot;&gt;
+                    &lt;ion-label&gt;Si&lt;/ion-label&gt;
+                    &lt;ion-radio value&#x3D;&quot;1&quot;&gt;&lt;/ion-radio&gt;
+                  &lt;/ion-item&gt;
+                &lt;/ion-radio-group&gt;          &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+                Observaciones&lt;/ion-label&gt;
+              &lt;ion-textarea rows&#x3D;&quot;5&quot; columns&#x3D;&quot;1&quot; style&#x3D;&quot;width: 100%;&quot; type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;culpable.ObservacionesCulpable&quot;&gt;&lt;/ion-textarea&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-grid style&#x3D;&quot;color: white;&quot;&gt;
+              &lt;ion-row&gt;
+                &lt;ion-col size&#x3D;&quot;12&quot;&gt;Ajustadores Por Salud&lt;/ion-col&gt;
+              &lt;/ion-row&gt;
+            &lt;/ion-grid&gt;
+            &lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+    &lt;/ion-list&gt;
+
+    &lt;ion-footer style&#x3D;&quot;position: fixed; bottom: 0;left:0;height:auto;&quot;&gt;
+      &lt;ion-fab *ngIf&#x3D;&quot;true&quot; style&#x3D;&quot;position: fixed;&quot; vertical&#x3D;&quot;bottom&quot; horizontal&#x3D;&quot;end&quot;&gt;
+        &lt;ion-fab-button (click)&#x3D;&quot;goAdeuda()&quot;&gt;
+          &lt;ion-icon name&#x3D;&quot;save&quot;&gt;&lt;/ion-icon&gt;
+        &lt;/ion-fab-button&gt;
+      &lt;/ion-fab&gt;
+      &lt;!--ion-fab *ngIf&#x3D;&quot;true&quot; style&#x3D;&quot;position: fixed;&quot; vertical&#x3D;&quot;bottom&quot; horizontal&#x3D;&quot;end&quot;&gt;
+        &lt;ion-fab-button (click)&#x3D;&quot;showMeaPic()&quot;&gt;
+          &lt;ion-icon name&#x3D;&quot;camera&quot;&gt;&lt;/ion-icon&gt;
+        &lt;/ion-fab-button&gt;
+      &lt;/!--ion-fab --&gt;
+    &lt;/ion-footer&gt;
+
+&lt;/ion-content&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./culpable.page.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">ion-radio {
+    width: 30px;
+    height: 30px;
+  }
+  
+  ion-radio::part(container) {
+    border-radius: 8px;
+    border: 2px solid #ddd;
+  }
+  
+  ion-radio::part(mark) {
+    background: none;
+    transition: none;
+    transform: none;
+    border-radius: 0;
+  }
+  
+  ion-radio.radio-checked::part(container) {
+    background: #0090D0;
+    border-color: transparent;
+  }
+  
+  ion-radio.radio-checked::part(mark) {
+    width: 6px;
+    height: 10px;
+  
+    border-width: 0px 2px 2px 0px;
+    border-style: solid;
+    border-color: #fff;
+  
+    transform: rotate(45deg);
+  }
+  canvas {
+    border: groove;
+    padding-top: 2px;
+  }
+
+  #d-toolbar{
+    --background: transparent;
+    --ion-color-base: transparent !important;
+    
+  }
+
+  ion-toolbar{
+    background: white !important;
+  .toolbar-content{
+    background: white !important;
+  }
+}
+
+  ion-alert{
+    button{
+      background: red;
+    }
+  }
+    
+  ion-segment {
+    --background: rgb(232, 231, 231);
+    ion-segment-button{
+      color: white;
+    }
+    ion-segment-button::part(indicator-background) {
+      background: #0090d0;
+    }
+    
+    /* Material Design styles */
+    ion-segment-button.md::part(native) {
+      color: #000;
+    }
+    
+    .segment-button-checked.md::part(native) {
+      color: #0090d0;
+    }
+    
+    ion-segment-button.md::part(indicator-background) {
+      height: 4px;
+    }
+    
+    /* iOS styles */
+    ion-segment-button.ios::part(native) {
+      color: #0090d0;
+    }
+    
+    .segment-button-checked.ios::part(native) {
+      color: #fff;
+    }
+    
+    ion-segment-button.ios::part(indicator-background) {
+      border-radius: 20px;
+    }
+  }
+
+
+  
+#button-back{
+  border-radius: 50%;
+  margin-bottom: 9px;
+  ion-fab-button{
+    padding-bottom: 25px;
+    ion-icon{color: white;}
+  }
+}
+
+ion-datetime {
+  --background-rgb: white;
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: rgba(gray, 0.3) 0px 10px 15px -3px;
+}
+
+ion-badge{
+  font-size: 1rem;
+  padding: 6px;
+  //width: 130px;
+}
+
+ion-button{
+  color: white;
+}
+
+ion-split-pane {
+  --side-width: 50%;
+  --side-max-width: 50%;
+}
+
+#big-pane-cliente{
+  --side-width: 82%;
+    --side-max-width: 82%;
+}
+
+ion-select::part(text) {
+  font-size: 1.1rem;
+}
+
+.modal-fecha-input
+{ 
+  .modal-wrapper{
+    width: 30%;
+  }
+}
+
+.modal-fecha-input{
+  .modal-wrapper{
+   height: 30%;
+   width: 90%;
+   border-radius: 15px;
+ }
+}
+
+ion-fab-button {
+    --background: #f14f23;
+    --background-activated: #a8462a;
+    --background-hover: #f66e48;
+    --border-radius: 15px;
+    --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    --color: white;
+  }
+ 
+/*
+ion-fab-button {
+  --background: #f14f23;
+  --background-activated: #a8462a;
+  --background-hover: #f66e48;
+  --border-radius: 15px;
+  --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --color: white;
+}
+*/
+
+ </code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><ion-header>  <ion-toolbar>    <ion-buttons slot="start">      <ion-back-button></ion-back-button>          </ion-buttons>    <ion-title>      <ion-grid>        <ion-row>          <ion-col size="4"></ion-col>          <ion-col size="4">Atención # {{idAtencion}} - {{miMoneda}}</ion-col>          <ion-col size="4"></ion-col>        </ion-row>      </ion-grid>    </ion-title>  </ion-toolbar></ion-header><ion-content>    <ion-list style="width: 95%; margin-left:2%;margin-top: 3%;"><ion-label class="text-size-lg" style="padding-left: 5px;">              <ion-badge>                Datos Culpable              </ion-badge>            </ion-label>                <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Nombre del conductor</ion-label>              <ion-input type="text" [(ngModel)]="culpable.NombreCulpable" (ionChange)="entraNombreCulpable($event)"></ion-input>            </ion-item>            <ion-item  class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Identidad Número</ion-label>              <ion-input type="text" [(ngModel)]="culpableIdentidad" (ionChange)="entraIdentidadCulpable($event)"></ion-input>            </ion-item>            <ion-item  class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Dirección</ion-label>              <ion-input type="text" [(ngModel)]="culpable.DireccionCulpable"></ion-input>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Teléfono</ion-label>              <ion-input type="number" [(ngModel)]="culpable.TelefonoFijoCulpable"></ion-input>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Celular</ion-label>              <ion-input type="number" [(ngModel)]="culpable.CelularCulpable"></ion-input>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Edad</ion-label>              <ion-input [maskito]="yearMask" [maskitoElement]="predicateCliente" [(ngModel)]="culpable.EdadCulpable"></ion-input>            </ion-item>            <ion-item  class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Correo electrónico</ion-label>              <ion-input type="email" [(ngModel)]="culpableCorreo" (ionChange)="entraCorreoCulpable($event)"></ion-input>            </ion-item>            <ion-item  class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Lugar De Trabajo</ion-label>              <ion-input type="text" [(ngModel)]="culpableTrabajo" (ionChange)="entraTrabajoCulpable($event)"></ion-input>            </ion-item>            <ion-item  class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Nombre De Contacto</ion-label>              <ion-input type="text" [(ngModel)]="culpableContacto" (ionChange)="entraContactoCulpable($event)"></ion-input>            </ion-item>            <ion-item  class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Numero De Contacto</ion-label>              <ion-input type="number" [(ngModel)]="culpableContactoNumero" (ionChange)="entraContactoMNumeroCulpable($event)"></ion-input>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Tipo de licencia</ion-label>                <ion-select class="text-size-xs" [(ngModel)]="culpable.LicenciaTipoCulpable" multiple="false" >                  <ion-select-option *ngFor="let licencia of tipoLicencia" [value]="licencia.Id">                    {{licencia.TipoLicencia}}                  </ion-select-option>                </ion-select>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Licencia</ion-label>              <ion-input type="text" [(ngModel)]="culpable.NumeroLicenciaCulpable"></ion-input>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Fecha de vencimiento</ion-label>              <ion-input placeholder="DD/MM/AA" [maskito]="idMaskFechaVencimiento" [maskitoElement]="predicateCliente" [(ngModel)]="culpable.FechaVencimientoLicenciaCulpable"></ion-input>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Marca</ion-label>              <ion-select class="text-size-xs" (ionChange)="seleccionarMarcaCulpable($event)" [(ngModel)]="culpable.MarcaCulpable" multiple="false" >                <ion-select-option *ngFor="let marca of marcasVehiculos"  [value]="marca.id">{{marca.nombre}}                </ion-select-option>              </ion-select>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Modelo</ion-label>              <ion-select class="text-size-xs" [(ngModel)]="culpable.ModeloCulpable" multiple="false" (ionChange)="seleccionarModeloCulpable($event)">                <ion-select-option *ngFor="let modelo of modelosMarca"  [value]="modelo">{{modelo}}                </ion-select-option>              </ion-select>            </ion-item>                            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Año</ion-label>              <ion-input [maskito]="yearMask" [maskitoElement]="predicateCliente" [(ngModel)]="culpable.AnioCulpable"></ion-input>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Motor No.</ion-label>              <ion-input type="text" [(ngModel)]="culpable.MotorNoCulpable"></ion-input>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Chasis No.</ion-label>              <ion-input type="text" [(ngModel)]="culpable.Chasis"></ion-input>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                No. de placa</ion-label>              <ion-input type="text" [(ngModel)]="culpable.NoPlacaCulpable"></ion-input>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Nombre del propietario</ion-label>                <ion-checkbox slot="end" [ngModel]="culpableEsPropiertario" (ionChange)="cambiarPropietario($event)" labelPlacement="end"></ion-checkbox><span style="position: absolute;right: 4%;top: 4px;">                  El conductor es el propietario?</span>                <ion-input *ngIf="culpableEsPropiertario == true" type="text" [(ngModel)]="culpable.NombreCulpable" readonly></ion-input>                <ion-input *ngIf="culpableEsPropiertario == false" type="text" [(ngModel)]="culpable.NombreDireccionPropietarioCulpable" (ionChange)="entraNombrePropietarioCulpable($event)"></ion-input>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">               Dirección del propietario</ion-label>               <ion-input *ngIf="culpableEsPropiertario == true" type="text" [(ngModel)]="culpable.DireccionCulpable" readonly></ion-input>              <ion-input *ngIf="culpableEsPropiertario == false" type="text" [(ngModel)]="elExpediente.DireccionPropietarioCulpable"></ion-input>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm">                ¿Hay compromiso de pago?</ion-label>                <ion-radio-group [(ngModel)]="culpable.CompromisoPago" (ngModelChange)="print(culpable.CompromisoPago)">                  <ion-item lines="none" style="display: inline-block;">                    <ion-label>No</ion-label>                    <ion-radio value="2"></ion-radio>                  </ion-item>                  <ion-item lines="none"  style="display: inline-block;">                    <ion-label>Si</ion-label>                    <ion-radio value="1"></ion-radio>                  </ion-item>                </ion-radio-group>          </ion-item>            <ion-item class="ion-no-padding  input">              <ion-label class="text-size-sm" position="floating">                Observaciones</ion-label>              <ion-textarea rows="5" columns="1" style="width: 100%;" type="text" [(ngModel)]="culpable.ObservacionesCulpable"></ion-textarea>            </ion-item>            <ion-grid style="color: white;">              <ion-row>                <ion-col size="12">Ajustadores Por Salud</ion-col>              </ion-row>            </ion-grid>            <br><br><br>    </ion-list>    <ion-footer style="position: fixed; bottom: 0;left:0;height:auto;">      <ion-fab *ngIf="true" style="position: fixed;" vertical="bottom" horizontal="end">        <ion-fab-button (click)="goAdeuda()">          <ion-icon name="save"></ion-icon>        </ion-fab-button>      </ion-fab>      <!--ion-fab *ngIf="true" style="position: fixed;" vertical="bottom" horizontal="end">        <ion-fab-button (click)="showMeaPic()">          <ion-icon name="camera"></ion-icon>        </ion-fab-button>      </!--ion-fab -->    </ion-footer></ion-content></div>'
+    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AjustadorPage', 'selector': 'app-ajustador'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'}];
+    var DIRECTIVES = [{'name': 'ParallaxHeader', 'selector': '[parallax-header]'},{'name': 'PressDirective', 'selector': '[appPress]'}];
+    var ACTUAL_COMPONENT = {'name': 'CulpablePage'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'CulpablePage.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

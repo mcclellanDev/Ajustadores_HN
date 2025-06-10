@@ -1,0 +1,141 @@
+
+<!-- lOGIN FROMA --COMPONENT 1 -->
+    <!-- Content -->
+    <ion-content style="position: absolute;bottom:0;left:0">
+      <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+      <ion-footer *ngIf="isLoading == true"></ion-footer>
+      <ion-split-pane when="xs" contentId="main">
+        <ion-menu contentId="main">
+          <ion-header>
+            <!--ion-toolbar color="tertiary">
+              <ion-title>Menu</ion-title>
+            </!--ion-toolbar -->
+          </ion-header>
+          <ion-content class="ion-padding">
+            <ion-footer style="position:fixed; bottom: 0; left: 0; height: 100%;">
+              <ion-grid>
+                <ion-row justify-content-center align-items-end >
+                  <ion-col size="12">
+                    <ion-img src="../../../assets/logos/help.png"></ion-img>
+                  </ion-col>
+                </ion-row>
+              </ion-grid></ion-footer>
+            
+          </ion-content>
+        </ion-menu>
+      
+        <div class="ion-page" id="main">
+          <ion-header>
+          </ion-header>
+          <ion-content class="ion-padding">
+            <ion-grid>
+              <ion-row>
+                <ion-col size="12">
+                  <form (ngSubmit)="login()" [formGroup]="credenciales" id="loginform">
+                    <ion-col class="ion-padding" size="12" size-md="10" push-md="1">
+                        <ion-item class="ion-no-padding input">
+                          <ion-label  class="text-size-xs" position="floating">Correo
+                          </ion-label>
+                          <ion-input required type="email" formControlName="user" (ionChange)="walkEmail($event)" (ionBlur)="validateEmail()" [(ngModel)]="item.user" 
+                          onfocusin="readInput($event)" name="usernamevalue"> 
+                          </ion-input>
+                          <ion-icon *ngIf="!isUsernameValid" class="icon-small" name="remove-circle">
+                          </ion-icon>
+                        </ion-item>
+                        <ion-item class="ion-no-padding input">
+                          <ion-label class="text-size-xs" position="floating">Contraseña
+                          </ion-label>
+                          <ion-input required [type]="isVisible ? 'text' : 'password'" formControlName="password" (ionChange)="validatePassword()" [(ngModel)]="item.password"></ion-input>
+                          <ion-icon slot="start" [name]="isVisible ? 'eye-off' : 'eye'" aria-hidden="true" color="primary" style="float: right; margin-right: 0;font-size: 1.5rem;z-index: 1090;bottom: 0px;"
+                            (click)="toggleVisual()">
+                          </ion-icon>
+                        </ion-item>
+                    </ion-col>
+                    <ion-col class="ion-padding" size="12" size-md="10" push-md="1">
+                      <ion-row class="ion-padding-top ion-margin-top">
+                        <ion-col size="12" class="ion-no-padding ion-align-self-center">
+                          <ion-button class="button-round ion-text-capitalize" expand="full" shape="round" type="submit" [disabled]="!credenciales.valid"
+                          fill="outline">
+                            Iniciar Sesion
+                          </ion-button>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row class="ion-padding-top ion-margin-top">
+                        <ion-col size="12" class="ion-no-padding ion-align-self-center">
+                          <ion-button class="button-round ion-text-capitalize warning-button ion-align-self-right" shape="round"
+                          style="color: #F04F23;float: right;"
+                          fill="outline" (click)="recoveryPassword()" >
+                            Recuperar Contraseña
+                          </ion-button>
+      
+                        </ion-col>
+                      </ion-row>
+                    </ion-col> 
+                </form>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-content>
+        </div>
+      </ion-split-pane>
+
+      <!--ion-grid>
+        <ion-row class="ion-align-items-center">
+          <ion-col class="ion-padding" size="12" size-md="10" push-md="1">
+            
+            
+            <ion-img src="../../../assets/logos/help.png"></ion-img>
+          </ion-col>
+          <form (ngSubmit)="login()" [formGroup]="credenciales">
+              <ion-col class="ion-padding" size="12" size-md="10" push-md="1">
+                
+              
+                
+                    <ion-item class="ion-no-padding input">
+                      <ion-label  class="text-size-xs" position="floating">Correo
+                      </ion-label>
+                      <ion-input required type="text" formControlName="user"> 
+                      </ion-input>
+                      <ion-icon *ngIf="!isUsernameValid" class="icon-small" name="remove-circle">
+                      </ion-icon>
+                    </ion-item>
+                   
+                    <ion-item class="ion-no-padding input">
+                      <ion-label class="text-size-xs" position="floating">Contraseña
+                      </ion-label>
+                      <ion-input required type="password" formControlName="password">
+                      </ion-input>
+                      <ion-icon *ngIf="!isPasswordValid" class="icon-small" name="remove-circle">
+                      </ion-icon>
+                    </ion-item>
+                  
+                
+                
+              </ion-col>
+              <ion-col class="ion-padding" size="12" size-md="10" push-md="1">
+                <ion-row class="ion-padding-top ion-margin-top">
+                  <ion-col size="12" class="ion-no-padding ion-align-self-center">
+                    
+                    <ion-button class="button-round ion-text-capitalize" expand="full" shape="round" type="submit" [disabled]="!credenciales.valid"
+                    fill="outline"> 
+                      Iniciar Sesion
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+                <ion-row class="ion-padding-top ion-margin-top">
+                  <ion-col size="12" class="ion-no-padding ion-align-self-center">
+                   
+                    <ion-button class="button-round ion-text-capitalize warning-button ion-align-self-right" shape="round"
+                    style="color: #F04F23;float: right;"
+                    fill="outline" (click)="recoveryPassword()" >
+                      Recuperar Contraseña
+                    </ion-button>
+
+                  </ion-col>
+                </ion-row>
+              </ion-col>
+              
+          </form>
+        </ion-row>
+      </!--ion-grid -->
+    </ion-content>

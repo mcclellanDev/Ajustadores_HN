@@ -1,0 +1,1658 @@
+<ion-header>
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer *ngIf="isLoading == true"></ion-footer>
+  <!--ion-fab id="button-back" style="position: fixed;" vertical="top" horizontal="start" (click)="goBack()">
+    <ion-fab-button (click)="'confirmar()'">
+      <ion-icon name="arrow-back"></ion-icon>
+    </ion-fab-button>
+  </!--ion-fab -->
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">Atención # {{idAtencion}} - {{miMoneda}}</ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-split-pane id="big-pane-nulls" contentId="main-nulls">
+  <div class="ion-page" id="main-nulls"></div>
+</ion-split-pane>
+<ion-split-pane id="big-pane-cliente" when="xs" contentId="main">
+  <ion-menu>
+    <ion-header>
+      <ion-toolbar color="tertiary">
+        <ion-title>Menú</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding" id="segmentsContent">
+      <ion-grid>
+        <ion-row>
+          
+
+          <ion-col id="segmentCoordinates" size="12">
+            <ion-label class="text-size-lg" style="padding-left: 5px;">
+              <ion-badge color="tertiary">
+                Coordenadas
+              </ion-badge>
+            </ion-label>
+
+            <ion-accordion-group [multiple]="true" [value]="['first', 'second', 'third']">
+              <ion-accordion class="acordion" value="first">
+                <ion-item slot="header">
+                  <ion-label>Uso del servicio</ion-label>
+                </ion-item>
+                <div class="ion-padding" slot="content">
+                  <ion-list class="ion-no-padding">
+                    <ion-item  class="ion-no-padding  input">
+                      <ion-grid>
+                        <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                          El asegurado utilizó póliza?
+                            </ion-row>
+                        <ion-row>
+                          <ion-col offset="6" size="6" style="text-align: right;">
+                            <ion-radio-group id="usoRadioGroup" (ionChange)="utilizacionAsistencia($event)" class="required-data">
+                              <ion-item lines="none" style="display: inline-block;">
+                                <ion-label color="tertiary">No</ion-label>
+                                <ion-radio value="2"></ion-radio>
+                              </ion-item>
+                              <ion-item lines="none"  style="display: inline-block;">
+                                <ion-label color="tertiary">Si</ion-label>
+                                <ion-radio value="1"></ion-radio>
+                              </ion-item>
+                            </ion-radio-group>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                    </ion-item>
+                    
+                  </ion-list>
+                </div>
+
+                
+
+
+              </ion-accordion>
+              <ion-accordion class="acordion" value="second">
+                <ion-item slot="header">
+                  <ion-label>Posicionamiento</ion-label>
+                </ion-item>
+                <div class="ion-padding" slot="content">
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col size="6">
+                        <strong>Latitud : </strong> &nbsp; <ion-text color="tertiary">{{cliente.Latitud}}</ion-text>
+                      </ion-col>
+                      <ion-col size="6">
+                        <strong>Longitud : </strong> &nbsp; <ion-text color="tertiary">{{cliente.Longitud}}</ion-text>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </div>
+              </ion-accordion>
+              <ion-accordion class="acordion" value="third">
+                <ion-item slot="header">
+                  <ion-label>Ubicación</ion-label>
+                </ion-item>
+                <div class="ion-padding" slot="content">
+                  <strong>
+                    SINIESTRO OCURRIDO EN LA REGIÓN DE {{miPaisNombre}}
+                  </strong>
+
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col size="12">
+                        LOCALIDAD DE {{miPaisLocalidad}}, {{miPaisLocalidadSub}}
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </div>
+              </ion-accordion>
+            </ion-accordion-group>
+          </ion-col>
+    
+          <ion-col id="segmentAfiliated" size="12">
+            <ion-label class="text-size-lg" style="padding-left: 5px;">
+              <ion-badge>
+                Datos Asegurado
+              </ion-badge>
+            </ion-label>
+    
+            <ion-content color="light" style="height: 100vh">
+              <ion-list [inset]="true">
+                
+                <ion-item class="ion-no-padding  input required-data">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Asegurado Ó Empresa
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input class="custom" *ngIf="elExpediente.Cliente != null" [(ngModel)]="elExpediente.Cliente" readonly></ion-input>
+                        <ion-input class="custom" *ngIf="elExpediente.Cliente == null || elExpediente.Cliente == ''" type="text" 
+                        (ionChange)="entraNombreAsegurado($event)" [(ngModel)]="elExpediente.Cliente"></ion-input>
+                        
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>                  
+                </ion-item>
+                <ion-item class="ion-no-padding  input required-data">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Identidad Asegurado
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input type="text" [(ngModel)]="identidadAsegurado"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                <ion-item class="ion-no-padding  input required-data">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Póliza
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input type="text" [(ngModel)]="elExpediente.PolizaExterna" (ionChange)="entraPolizaConductor($event)" readonly></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                <ion-item  class="ion-no-padding  input required-data">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Dirección correspondencia
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input class="custom" type="text" [(ngModel)]="cliente.DireccionEnvioCorrespondencia" (ionChange)="entraDireccionConductorCorrespondencia($event)"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+
+                <ion-item class="ion-no-padding  input required-data">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Teléfono
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input type="number" [(ngModel)]="cliente.TelefonFijo" (ionChange)="entraTelefonoAsegurado($event)"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                <ion-item  class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Celular
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input type="number" [(ngModel)]="cliente.Celular" (ionChange)="entraCelularAsegurado($event)" class="required-data"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                <ion-item  class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Correo electrónico
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="7">
+                        <ion-input type="email" [(ngModel)]="cliente.CorreoElectronico" (ionChange)="entraCorreoConductor($event)" class="required-data custom"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                <ion-item  class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Dirección del siniestro
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input class="custom" type="text" [(ngModel)]="elExpediente.Direccion" (ionChange)="entraDireccion($event)" class="required-data"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                <ion-item  class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Fecha y hora del siniestro
+                    </ion-row>
+                    <ion-row style="padding-top: 6px;">
+                      <ion-col offset="9" size="3">
+                        <ion-badge style="margin-top: 2.5px;" class="required-data">{{formateadaSiniestro}} <small>{{horaSiniestro}}</small> </ion-badge>
+                        <!--span color="danger" style="padding: 6px;height: 23px;width: 23px;">*</!--span -->
+                      </ion-col>
+                      <ion-col size="3">
+                        <!--ion-button id="open-modal-fecha-siniestro" expand="block" (click)="modalFechaSiniestro.present()">Seleccionar Fecha</!--ion-button -->
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                
+                <ion-item style="color: white;height: 3vh;">
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col size="12">            Ajustadores Por Salud</ion-col>
+                    </ion-row>
+                  </ion-grid>
+                  <br><br><br><br><br><br>
+                </ion-item>
+                <ion-item lines="none"></ion-item>
+              </ion-list>
+              <ion-grid style="color: #f7f7f7;">
+                <ion-row>
+                  <ion-col size="12">           ...</ion-col>
+                </ion-row>
+              </ion-grid>
+              <br><br><br><br><br><br>
+            </ion-content>
+            
+          </ion-col>
+    
+          <ion-col id="segmentVehicle" size="12">
+            <ion-label class="text-size-lg" style="padding-left: 5px;">
+              <ion-badge>
+                Datos Asegurado Vehículo
+              </ion-badge>
+            </ion-label>
+    
+            <ion-content color="light" style="height: 100vh">
+            <ion-list [inset]="true">
+              <ion-item class="ion-no-padding  input">
+                <ion-grid>
+                  <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                    Marca
+                    </ion-row>
+                  <ion-row>
+                    <ion-col size="12">
+                      <ion-input *ngIf="elExpediente.Marca != null" readonly [value]="elExpediente.Marca"></ion-input>
+                      <ion-select *ngIf="elExpediente.Marca == null" class="text-size-xs required-data" (ionChange)="seleccionarMarca($event)" [(ngModel)]="elExpediente.Marca" multiple="false" >
+                        <ion-select-option *ngFor="let marca of marcasVehiculos"  [value]="marca.id">{{marca.nombre}}
+                        </ion-select-option>
+                      </ion-select>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-item>
+              <ion-item class="ion-no-padding  input">
+                <ion-grid>
+                  <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                    Modelo
+                    </ion-row>
+                  <ion-row>
+                    <ion-col size="12">
+                      <ion-input *ngIf="elExpediente.Modelo != null" readonly [value]="elExpediente.Modelo"></ion-input>
+                      <ion-select *ngIf="elExpediente.Modelo == null" class="text-size-xs required-data" [(ngModel)]="elExpediente.Modelo" multiple="false" (ionChange)="seleccionarModelo($event)">
+                        <!--span color="danger" style="padding: 6px;height: 23px;width: 23px;">*</!--span -->
+                        <ion-select-option *ngFor="let modelo of modelosMarca"  [value]="modelo">{{modelo}}
+                        </ion-select-option>
+                      </ion-select>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-item>
+              <ion-item class="ion-no-padding  input">
+                <ion-grid>
+                  <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                    Año
+                    </ion-row>
+                  <ion-row>
+                    <ion-col size="12">
+                      <ion-input *ngIf="elExpediente.Year != null" readonly [value]="elExpediente.Year"></ion-input>
+                      <ion-input *ngIf="elExpediente.Year == null" [maskito]="yearMask" [maskitoElement]="predicateCliente" [(ngModel)]="elExpediente.Year" (ionChange)="entrarAnio($event)"
+                      class="required-data"></ion-input>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-item>
+              <ion-item class="ion-no-padding  input">
+                <ion-grid>
+                  <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                    Motor No.
+                    </ion-row>
+                  <ion-row>
+                    <ion-col size="12">
+                      <ion-input *ngIf="elExpediente.Motor != null" readonly [value]="elExpediente.Motor"></ion-input>
+                      <ion-input *ngIf="elExpediente.Motor == null" type="text" [(ngModel)]="elExpediente.Motor" (ionChange)="entrarMotor($event)"
+                      class="required-data"></ion-input>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-item>
+              <ion-item class="ion-no-padding  input">
+                <ion-grid>
+                  <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                    Chasis
+                    </ion-row>
+                  <ion-row>
+                    <ion-col size="12">
+                      <ion-input *ngIf="elExpediente.Chasis != null" readonly [value]="elExpediente.Chasis"></ion-input>
+                      <ion-input *ngIf="elExpediente.Chasis == null || elExpediente.Chasis == '' || elExpediente.Chasis == 'N/D'" type="text" [(ngModel)]="elExpediente.Chasis"
+                      (ionChange)="entrarChasis($event)" class="required-data"></ion-input>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-item>
+              <ion-item class="ion-no-padding  input">
+                <ion-grid>
+                  <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                    Placa
+                    </ion-row>
+                  <ion-row>
+                    <ion-col size="12">
+                      <ion-input *ngIf="elExpediente.NumeroPlaca != null" readonly [value]="elExpediente.NumeroPlaca"></ion-input>
+                      <ion-input *ngIf="elExpediente.NumeroPlaca == null" type="text" [(ngModel)]="elExpediente.NumeroPlaca"
+                      (ionChange)="entrarPlaca($event)" class="required-data"></ion-input>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-item>
+              <ion-item  class="ion-no-padding  input">
+                <ion-grid>
+                  <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                    Blindado?
+                    </ion-row>
+                  <ion-row>
+                    <ion-col offset="6" size="6" style="text-align: right;">
+                      <ion-radio-group [(ngModel)]="dataProcess.Blindado" (ngModelChange)="esBlindado($event)" >
+                        <ion-item lines="none" style="display: inline-block;">
+                          <ion-label color="tertiary">No</ion-label>
+                          <ion-radio [value]="2"></ion-radio>
+                        </ion-item>
+                        <ion-item lines="none"  style="display: inline-block;">
+                          <ion-label color="tertiary">Si</ion-label>
+                          <ion-radio [value]="1"></ion-radio>
+                        </ion-item>
+                      </ion-radio-group>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+                  
+              </ion-item>
+
+              <ion-item class="ion-no-padding  input">
+                <ion-grid>
+                  <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                    No. de unidad
+                    </ion-row>
+                  <ion-row>
+                    <ion-col size="12">
+                      <ion-input type="text" [(ngModel)]="elExpediente.NoUnidad" (ionChange)="entrarUnidad($event)" class="required-data custom"></ion-input>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-item>
+              <ion-grid style="color: #f7f7f7;">
+                <ion-row>
+                  <ion-col size="12">Ajustadores Por Salud</ion-col>
+                </ion-row>
+              </ion-grid>
+              <br><br><br><br><br><br>
+            </ion-list>
+            
+          </ion-content>
+          </ion-col>
+          <ion-col id="segmentDriver" size="12">
+            <ion-label class="text-size-lg" style="padding-left: 5px;">
+              <ion-badge color="primary">
+                Datos Asegurado Conductor
+              </ion-badge>
+            </ion-label>
+    
+            <ion-content color="light" style="height: 100vh">
+            <ion-list [inset]="true">
+            <ion-item class="ion-no-padding  input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Conducido por
+                    </ion-row>
+                <ion-row>
+                  <ion-col id="tipoSiniestrosDisplay" size="9" class="select-label">{{elTipoDeConductor}}</ion-col>
+                    <ion-col size="3">
+                      <ion-select [(ngModel)]="elExpediente.ConducidoPor" multiple="false" (ionChange)="seleccionarTipoConductor($event)"
+                    style="float: right;color: white;">
+                      <ion-select-option *ngFor="let tipoC of tipoConductor" [value]="tipoC.Id" >{{tipoC.TipoConductor}} 
+                      </ion-select-option>
+                    </ion-select>
+                    </ion-col>
+
+                  <!--ion-col offset="5" size="7" style="text-align: right;">
+                    <ion-select class="text-size-xs" [(ngModel)]="elExpediente.ConducidoPor" multiple="false" (ionChange)="seleccionarTipoConductor($event)"
+                    style="float: right;">
+                      <ion-select-option *ngFor="let tipoC of tipoConductor" [value]="tipoC.Id" >{{tipoC.TipoConductor}} 
+                      </ion-select-option>
+                    </ion-select>
+                  </!--ion-col -->
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+            <ion-item class="ion-no-padding  input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Nombre y Apellido
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input [hidden]="conductorEsAfiliado === false" type="text" [(ngModel)]="elExpediente.NombreConductor" class="required-data select-label"></ion-input>
+                    <ion-input [hidden]="conductorEsAfiliado === true" type="text" (ionChange)="entraNombreConductor($event)" [(ngModel)]="daNombreConductor" class="required-data select-label"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+            <ion-item class="ion-no-padding  input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Numero de identidad
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input [hidden]="conductorEsAfiliado == false" [(ngModel)]="cliente.IdentidadConductor" type="text" class="required-data"></ion-input>
+                    <ion-input [hidden]="conductorEsAfiliado == true" [(ngModel)]="daIdentidadConductor" type="text" (ionChange)="entraIdentidadConductor($event)"
+                    class="required-data"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+            <ion-item  class="ion-no-padding  input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">Fecha de nacimiento</ion-row>
+                <ion-row style="padding-top: 6px;">
+                  <ion-col size="12">
+                    <ion-chip>
+                      <ion-avatar>
+                        <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+                      </ion-avatar>
+                      <ion-label class="date-label">{{formateadaNacimiento}}</ion-label>
+                      <ion-icon name="calendar" class="chip-icon"></ion-icon>
+                    </ion-chip>
+                    
+                    <ion-chip [color]="esMenor == true ? 'danger' : ''">
+                      <ion-icon name="hourglass" color="tertiary"></ion-icon>
+                      <ion-label>{{edad}} años</ion-label>
+                      <ion-icon name="time" class="chip-icon"></ion-icon>
+                    </ion-chip>
+                  </ion-col>
+                  <ion-col offset="9" size="3">
+                    <ion-button id="open-modal-fecha-nacimiento" expand="block" (click)="modalFechaNacimiento.present()">Seleccionar Fecha</ion-button>
+                  </ion-col>
+                  <!--ion-col size="3">
+                    <ion-badge class="required-data">{{formateadaNacimiento}} </ion-badge> : 
+                    <ion-badge [hidden]="esMenor == true" class="required-data">{{edad}} años</ion-badge>
+                    <ion-badge id="esMenorLabel" #esMenorLabel [hidden]="esMenor == false" color="danger">{{edad}} años</ion-badge>
+                  </ion-col>
+
+                  <ion-col offset="6" size="3">
+                    <ion-button id="open-modal-fecha-nacimiento" expand="block" (click)="modalFechaNacimiento.present()">Seleccionar Fecha</ion-button>
+                  </ion-col -->
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+            <ion-item class="ion-no-padding  input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Tipo de parentesco
+                    </ion-row>
+                <ion-row>
+                  <ion-col id="tipoSiniestrosDisplay" size="9" class="select-label">{{elTipoDeParentesco}}</ion-col>
+                    <ion-col size="3">
+                      <ion-select class="text-size-xs" [(ngModel)]="elTipoParentesco" multiple="false" (ionChange)="getElTipoParentesco($event)"
+                    style="float: right;color: white;">
+                      <ion-select-option *ngFor="let parentesco of tipoParentescos" [value]="parentesco.CODIGO" class="required-data">
+                        {{parentesco.DESCRIPCION}}
+                        <ion-input #parentescoId [hidden]="true" [value]="parentesco.Id"></ion-input>
+                        <ion-input #parentescoDescripcion [hidden]="true" [value]="parentesco.DESCRIPCION"></ion-input>
+                      </ion-select-option>
+                    </ion-select>
+                    </ion-col>
+                  <!--ion-col offset="5" size="7">
+                    
+                  </!--ion-col -->
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+            <ion-item class="ion-no-padding  input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Tipo de licencia
+                    </ion-row>
+                <ion-row>
+                  <ion-col id="tipoSiniestrosDisplay" size="9" class="select-label">{{elTipoDeLicencia}}</ion-col>
+                    <ion-col size="3">
+                      <ion-select class="text-size-xs" [(ngModel)]="elExpediente.TipoLicencia" multiple="false" (ionChange)="entraTipoLicencia($event)"
+                    style="float: right;color: white;">
+                      <ion-select-option *ngFor="let licencia of tipoLicencia" [value]="[licencia.TipoLicencia]" class="required-data">
+                        {{licencia.TipoLicencia}}
+                      </ion-select-option>
+                    </ion-select>
+                    </ion-col>
+                  <!--ion-col offset="5" size="7">
+                    
+                  </!--ion-col -->
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+
+            <ion-item class="ion-no-padding  input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  No. Licencia
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input type="text" [(ngModel)]="elExpediente.LicenciaNo" (ionChange)="entraLicencia($event)" class="required-data select-label"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+
+            <ion-item class="ion-no-padding  input">
+              <ion-grid>
+                <!--ion-row style="color: #7da1c4;font-size:1rem;">
+                  Fecha de Vencimiento : <span style="color: black;">{{formateadaVigencia}}</span>
+                    </!--ion-row -->
+                <ion-row>
+                  <ion-col size="7">
+                    <ion-text color="tertiary">Fecha de Vencimiento : </ion-text><br>
+                    {{formateadaVigencia}}
+                    <!--ion-label *ngIf="isVence" style="margin-left:5px; width: 100%; max-width: 100%;">{{formateadaVigencia}}</!--ion-label -->
+                  </ion-col>
+                  <ion-col offset="2" size="3">
+                    <ion-input [maskito]="idMaskFechaVencimiento" [maskitoElement]="predicateCliente"
+                    placeholder="DD/MM/AAAA" [(ionModel)]="formateadaVigencia" (ionChange)="entraVencimiento($event)" class="required-data"
+                    style="text-align: right;"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid> 
+            </ion-item>
+
+            <ion-item class="ion-no-padding  input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Estado de la Licencia
+                    </ion-row>
+                <ion-row>
+                  <ion-col offset="6" size="6" style="text-align: right;">
+                    <ion-radio-group id="licenciaEstado" (ionChange)="entraLicenciaEstado($event)" class="required-data">
+                      <ion-item lines="none" style="display: inline-block;">
+                        <ion-label color="tertiary" style="margin-left:5px">Vencida</ion-label>
+                        <ion-radio value="2"></ion-radio>
+                      </ion-item>
+                      <ion-item lines="none"  style="display: inline-block;">
+                        <ion-label color="tertiary" style="margin-left:5px">Vigente</ion-label>
+                        <ion-radio value="1"></ion-radio>
+                      </ion-item>
+                    </ion-radio-group>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+                
+            </ion-item>
+            
+            <!--ion-item  class="ion-no-padding  input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Utilizó póliza?
+                    </ion-row>
+                <ion-row>
+                  <ion-col offset="6" size="6" style="text-align: right;">
+                    <ion-radio-group id="usoRadioGroup" (ionChange)="utilizacionAsistencia($event)" class="required-data">
+                      <ion-item lines="none" style="display: inline-block;">
+                        <ion-label color="tertiary">No</ion-label>
+                        <ion-radio value="2"></ion-radio>
+                      </ion-item>
+                      <ion-item lines="none"  style="display: inline-block;">
+                        <ion-label color="tertiary">Si</ion-label>
+                        <ion-radio value="1"></ion-radio>
+                      </ion-item>
+                    </ion-radio-group>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </!--ion-item>
+            <ion-item *ngIf="cliente.UtilizoSerivicioAsistencia==='2'"  class="ion-no-padding  input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Si su respuesta es no ¿Por qué?
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input type="text" [(ngModel)]="cliente.PorqueNoUsoServicioAsistencia" (ionChange)="entraPorqueNoUso($event)"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item -->
+
+            <ion-item  class="ion-no-padding  input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Prueba de Alcoholemia?
+                    </ion-row>
+                <ion-row>
+                  <ion-col offset="6" size="6" style="text-align: right;">
+                    <ion-radio-group id="pruebaRadioGroup" (ionChange)="pruebaAlcohol($event)" >
+                      <ion-item lines="none" style="display: inline-block;">
+                        <ion-label color="tertiary">No</ion-label>
+                        <ion-radio value="2"></ion-radio>
+                      </ion-item>
+                      <ion-item lines="none"  style="display: inline-block;">
+                        <ion-label color="tertiary">Si</ion-label>
+                        <ion-radio value="1"></ion-radio>
+                      </ion-item>
+                    </ion-radio-group>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+            <ion-item class="ion-no-padding  input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Dirección del conductor
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input type="text" [(ngModel)]="elExpediente.DireccionConductor" (ionChange)="entraDireccionConductor($event)"
+                    class="required-data select-label"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+            <ion-item class="ion-no-padding  input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Teléfono 
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input [hidden]="conductorEsAfiliado == false" type="number" [(ngModel)]="elExpediente.TelefonoFijoConductor"
+              class="required-data"></ion-input>
+              <ion-input [hidden]="conductorEsAfiliado == true" type="number" [(ngModel)]="daTelefonoFijoConductor" 
+              (ionChange)="entraTelefonoConductor($event)"
+              class="required-data"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+            <ion-item class="ion-no-padding  input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Celular
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input [hidden]="conductorEsAfiliado == false" type="number" [(ngModel)]="elExpediente.CelularConductor"
+              class="required-data"></ion-input>
+              <ion-input [hidden]="conductorEsAfiliado == true" type="number" [(ngModel)]="daCelularConductor"
+              (ionChange)="entraCelularConductor($event)"
+              class="required-data"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+          </ion-list>
+          <ion-grid style="color: white;">
+            <ion-row>
+              <ion-col size="12">            Ajustadores Por Salud</ion-col>
+            </ion-row>
+          </ion-grid>
+          <br><br><br><br><br><br>
+        </ion-content>
+          </ion-col>
+          <ion-col id="segmentInfo" size="12">
+            <ion-label class="text-size-lg" style="padding-left: 5px;">
+              <ion-badge>
+                Datos Información Relacionada
+              </ion-badge>
+            </ion-label>
+
+            <ion-content color="light" style="height: 100vh">
+              <ion-list [inset]="true">
+                <ion-item  class="ion-no-padding  input">
+                  
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Se responsabiliza a?
+                        </ion-row>
+                    <ion-row>
+                      <ion-col size="12"></ion-col>
+                    </ion-row>
+                  </ion-grid>
+
+                  
+                    <ion-radio-group id="responsableRadioGroup" (ionChange)="entraResponsable($event)" >
+                      <ion-item lines="none" style="display: inline-block;">
+                        <ion-label color="tertiary">Tercero</ion-label>
+                        <ion-radio value="3"></ion-radio>
+                      </ion-item>
+                      <ion-item lines="none" style="display: inline-block;">
+                        <ion-label color="tertiary">Conductor</ion-label>
+                        <ion-radio value="2"></ion-radio>
+                      </ion-item>
+                      <ion-item lines="none"  style="display: inline-block;">
+                        <ion-label color="tertiary">Asegurado</ion-label>
+                        <ion-radio value="1"></ion-radio>
+                      </ion-item>
+                    </ion-radio-group>
+                </ion-item>
+
+
+                <ion-item class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Responsable
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input type="text" [(ngModel)]="elExpediente.NombreAtribuyeAccidente" (ionChange)="entraNombreAtribuye($event)"
+                  class="required-data select-label"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+
+                <ion-item class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Autoridad
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input type="text" [(ngModel)]="elExpediente.AutoridadInvolucrada" (ionChange)="entraEntidadInvolucrada($event)"
+                  class="required-data select-label"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                <ion-item class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Ubicación vehículo
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input type="text" [(ngModel)]="elExpediente.UbicacionVehiculoAsegurado" (ionChange)="entraUbicacionVehiculoAsegurado($event)"
+                  class="required-data select-label"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                
+                <!--ion-item  class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Se agendó audiencia?
+                    </ion-row>
+                    <ion-row>
+                      <ion-col offset="6" size="6" style="text-align: right;">
+                        <ion-radio-group id="audienciaRadioGroup" (ionChange)="agendoAudiencia($event)" >
+                          <ion-item lines="none" style="display: inline-block;">
+                            <ion-label>No</ion-label>
+                            <ion-radio [value]="2"></ion-radio>
+                          </ion-item>
+                          <ion-item lines="none"  style="display: inline-block;">
+                            <ion-label>Si</ion-label>
+                            <ion-radio [value]="1"></ion-radio>
+                          </ion-item>
+                        </ion-radio-group>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </!--ion-item -->
+
+                <ion-item  class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Se agendó audiencia?
+                    </ion-row>
+                    <ion-row>
+                      <ion-col offset="6" size="6" style="text-align: right;">
+                        <ion-radio-group id="audiRadioGroup" (ionChange)="audiciona($event)" >
+                          <ion-item lines="none" style="display: inline-block;">
+                            <ion-label color="tertiary">No</ion-label>
+                            <ion-radio value="2"></ion-radio>
+                          </ion-item>
+                          <ion-item lines="none"  style="display: inline-block;">
+                            <ion-label color="tertiary">Si</ion-label>
+                            <ion-radio value="1"></ion-radio>
+                          </ion-item>
+                        </ion-radio-group>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                    
+                </ion-item>
+
+                <ion-item  class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Fue detenido el vehiculo?
+                    </ion-row>
+                    <ion-row>
+                      <ion-col offset="6" size="6" style="text-align: right;">
+                        <ion-radio-group id="detenidoVRadioGroup" (ionChange)="fueDetenido($event)" >
+                          <ion-item lines="none" style="display: inline-block;">
+                            <ion-label color="tertiary">No</ion-label>
+                            <ion-radio value="2"></ion-radio>
+                          </ion-item>
+                          <ion-item lines="none"  style="display: inline-block;">
+                            <ion-label color="tertiary">Si</ion-label>
+                            <ion-radio value="1"></ion-radio>
+                          </ion-item>
+                        </ion-radio-group>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                    
+                </ion-item>
+
+                <ion-item  class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Fue detenido el conductor?
+                    </ion-row>
+                    <ion-row>
+                      <ion-col offset="6" size="6" style="text-align: right;">
+                        <ion-radio-group id="detenidoCRadioGroup" (ionChange)="fueDetenidoElConductor($event)" >
+                          <ion-item lines="none" style="display: inline-block;">
+                            <ion-label color="tertiary">No</ion-label>
+                            <ion-radio value="2"></ion-radio>
+                          </ion-item>
+                          <ion-item lines="none"  style="display: inline-block;">
+                            <ion-label color="tertiary">Si</ion-label>
+                            <ion-radio value="1"></ion-radio>
+                          </ion-item>
+                        </ion-radio-group>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                    
+                </ion-item>
+
+                <ion-item  class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Volcó el vehiculo?
+                    </ion-row>
+                    <ion-row>
+                      <ion-col offset="6" size="6" style="text-align: right;">
+                        <ion-radio-group id="volcoRadioGroup" (ionChange)="fueVolcado($event)" >
+                          <ion-item lines="none" style="display: inline-block;">
+                            <ion-label color="tertiary">No</ion-label>
+                            <ion-radio value="2"></ion-radio>
+                          </ion-item>
+                          <ion-item lines="none"  style="display: inline-block;">
+                            <ion-label color="tertiary">Si</ion-label>
+                            <ion-radio value="1"></ion-radio>
+                          </ion-item>
+                        </ion-radio-group>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+
+                <ion-item class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      En qué comisaría ó juzgado se encuentra el vehículo?
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input type="text" [(ngModel)]="elExpediente.UbicacionVehiculoDetenido" (ionChange)="entraUbicacionVehiculoDetenido($event)"
+                  class="required-data select-label"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+    
+    
+                <!-- pregunta, vehiculo culpable? -->
+                <ion-item  class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Terceros heridos?
+                    </ion-row>
+                    <ion-row>
+                      <ion-col offset="6" size="6" style="text-align: right;">
+                        <ion-radio-group id="tHeridosRadioGroup" (ionChange)="tercerosHeridos($event)" >
+                          <ion-item lines="none" style="display: inline-block;">
+                            <ion-label color="tertiary">No</ion-label>
+                            <ion-radio value="2"></ion-radio>
+                          </ion-item>
+                          <ion-item lines="none"  style="display: inline-block;">
+                            <ion-label color="tertiary">Si</ion-label>
+                            <ion-radio value="1"></ion-radio>
+                          </ion-item>
+                        </ion-radio-group>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                <ion-item class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Descripcion heridos.
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input type="text" [(ngModel)]="elExpediente.DescripcionTercerosHeridos" (ionChange)="dTercerosHeridos($event)"
+                        class="custom"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                <ion-item  class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Terceros fallecidos?
+                    </ion-row>
+                    <ion-row>
+                      <ion-col offset="6" size="6" style="text-align: right;">
+                        <ion-radio-group id="tMuertosRadioGroup" (ionChange)="tercerosMuertos($event)" >
+                          <ion-item lines="none" style="display: inline-block;">
+                            <ion-label color="tertiary">No</ion-label>
+                            <ion-radio value="2"></ion-radio>
+                          </ion-item>
+                          <ion-item lines="none"  style="display: inline-block;">
+                            <ion-label color="tertiary">Si</ion-label>
+                            <ion-radio value="1"></ion-radio>
+                          </ion-item>
+                        </ion-radio-group>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                <ion-item class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Descripcion fallecidos
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input type="text" [(ngModel)]="elExpediente.DescripcionTercerosMuertos" (ionChange)="dTercerosMuertos($event)"
+                        class="custom"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                <ion-item class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Descripción accidente
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input [(ngModel)]="elExpediente.DescripcionAccidente" (ionChange)="descripcionAccidente($event)"
+                    class="required-data custom"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                <ion-item class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Descripción audiencia
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input [(ngModel)]="elExpediente.DescripcionAudiencia" (ionChange)="entraDescripcionAudiencia($event)"
+                        class="custom"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+
+                <ion-item class="ion-no-padding  input">
+                  <ion-grid>
+                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                      Descripción del daño al vehículo
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-input [(ngModel)]="elExpediente.DescripcionDanioVehiculo" (ionChange)="descripcionDanio($event)"
+                    class="required-data custom"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+                <ion-grid style="color: white;">
+                  <ion-row>
+                    <ion-col size="12">            Ajustadores Por Salud</ion-col>
+                  </ion-row>
+                </ion-grid>
+                <br><br><br><br><br><br>
+              </ion-list>
+            </ion-content>
+
+          
+          </ion-col>
+          <ion-col id="segmentCompany" size="12">
+            <ion-label class="text-size-lg" style="padding-left: 5px;">
+              <ion-badge>
+                Datos Asegurado Acompañantes
+              </ion-badge>
+            </ion-label>
+            
+            <ion-list>
+              <ion-item lines="none">
+                <ion-button style="color: white; width: 30%;" shape="round"  (click)="personaModal(1)">
+                  Agregar
+                </ion-button>
+                </ion-item>
+                <ion-item *ngFor="let item of acompaniante; let i = index " >
+                  <ion-icon style="color: orangered;" (click)="deletePersona(i, item.TipoPersona)" slot="start" name="trash"></ion-icon>
+                  <ion-label (click)="editPersona(i, item.TipoPersona)" class="select-label">{{item.Nombre}}</ion-label>
+                  <ion-icon (click)="editPersona(i, item.TipoPersona)" slot="end" style="color: #7da1c4;" name="create"></ion-icon>
+                </ion-item>
+            </ion-list>
+          </ion-col>
+          <ion-col id="segmentWitness" size="12">
+            <ion-label class="text-size-lg" style="padding-left: 5px;">
+              <ion-badge>
+                Datos Testigos
+              </ion-badge>
+            </ion-label>
+    
+            <ion-item lines="none">
+              <ion-button style="color: white; width: 30%;" shape="round"  (click)="personaModal(2)">
+                Agregar
+              </ion-button>
+            </ion-item>
+          
+            <ion-list [inset]="true">
+              <ion-item *ngFor="let item of testigos; let i = index " >
+                <ion-icon style="color: orangered;" (click)="deletePersona(i, item.TipoPersona)" slot="start" name="trash"></ion-icon>
+                <ion-label (click)="editPersona(i, item.TipoPersona)" class="select-label">{{item.Nombre}}</ion-label>
+                <ion-icon (click)="editPersona(i, item.TipoPersona)" slot="end" style="color: #7da1c4; "name="create"></ion-icon>
+              </ion-item>
+            </ion-list>
+          </ion-col>
+    
+          <ion-col id="segmentProperty" size="12">
+            <ion-label class="text-size-lg" style="padding-left: 5px;">
+              <ion-badge>
+                Daños a la Propiedad Privada
+              </ion-badge>
+            </ion-label>
+    
+            <ion-list [inset]="true">
+              <ion-item lines="none">
+                <ion-button style="color: white; width: 30%;" shape="round"  (click)="openModalPropiedad()">
+                  Agregar
+                </ion-button>
+              </ion-item>
+              <ion-item *ngFor="let item of propiedadesprivadas; let i = index " >
+                <ion-icon style="color: orangered;" (click)="deletePropiedad(i)" slot="start" name="trash"></ion-icon>
+                <ion-label (click)="editPropiedad(i)" class="select-label">{{item.BienAfectado}}</ion-label>
+                <ion-icon (click)="editPropiedad(i)" slot="end" style="color: #7da1c4;" name="create"></ion-icon>
+              </ion-item>
+            </ion-list>
+    
+            
+    
+          </ion-col>
+          <ion-col id="segmentDamage" size="12">
+            <ion-label class="text-size-lg" style="padding-left: 5px;">
+              <ion-badge>
+                Lesiones a Personas
+              </ion-badge>
+            </ion-label>
+    
+            <ion-item lines="none">
+              <ion-button style="color: white; width: 30%;" shape="round"  (click)="personaModal(3)">
+                Agregar
+              </ion-button>
+            </ion-item>
+
+            <ion-content color="light" style="height: 100vh">
+              <ion-list [inset]="true">
+                <ion-item *ngFor="let item of lesionados; let i = index ">
+                  <ion-icon style="color: red;" (click)="deletePersona(i, item.TipoPersona)" slot="start" name="trash"></ion-icon>
+                  <ion-label (click)="editPersona(i, item.TipoPersona)" class="select-label">{{item.Nombre}}</ion-label>
+                  <ion-icon (click)="editPersona(i, item.TipoPersona)" slot="end" style="color: #7da1c4; "name="create"></ion-icon>
+                </ion-item>
+                <!--ion-item>
+                  <ion-grid style="width: 100%;">
+                    <ion-row>
+                      <ion-col  size="12">
+                        <ion-label class="text-size-sm" position="absolute">
+                          Qué tipo de lesiones?</ion-label>
+                         <ion-input type="text" [(ngModel)]="elExpediente.LesionesDescripcion"
+                         (ionChange)="insertarLesion($event)"></ion-input>
+                      </ion-col>
+                      <ion-col  size="12">
+                        <ion-label class="text-size-sm" position="absolute">
+                          En qué hospital?</ion-label>
+                         <ion-input type="text" [(ngModel)]="elExpediente.Hospital"></ion-input>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </!--ion-item -->
+              </ion-list>
+            </ion-content>
+          </ion-col>
+
+          <ion-col id="segmentSignature" size="12">
+            <ion-grid>
+              <ion-row>
+                <ion-col size="6">
+                    <ion-grid>
+                      <ion-row>
+                        <ion-col size="12">
+                          <ion-label class="text-size-lg" style="padding-left: 10px;color: #3171e0;">
+                             Firma Asegurado o conductor
+                          </ion-label>
+                            <ion-card style="height:202px">
+                              <img #imagen alt="Firmar" src="{{firmaPrecargada}}" onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'"
+                              style="    border: 6px dashed rgb(237, 233, 233);margin-top: 1%; width: 98%; height: 150px; margin-left: 1%;"/>
+                            
+                              <ion-card-content style="padding: 0; margin-bottom: 6px;padding-left: 1%;">
+                                {{elExpediente.Cliente}}
+                              </ion-card-content>
+                            </ion-card>
+                        </ion-col>
+
+                        <!--ion-col size="12">
+                          <ion-card style="height: 432px;margin-top: 0;">
+                            <img #imagen alt="Firmar" src="{{firmaPrecargada}}"  onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'"
+                            style="width: 100%;margin-top: 25%; height: '{{imageHeight}}'" onload="'firmar()'"/>
+                          
+                            <ion-card-content>
+                              Si la firma es incorrecta, puedes editarla antes de guardar tus cambios.
+                            </ion-card-content>
+                          </ion-card>
+                        </!--ion-col -->
+
+                      </ion-row>
+                    </ion-grid>
+
+                </ion-col>
+                <ion-col size="6">
+                <ion-content class="ion-no-padding">
+                  <ion-grid style="padding-top: 0;">
+                    <ion-row>
+                      
+                      <ion-col size="12">
+                        <ion-label class="text-size-lg" style="padding-left: 10px;color: #3171e0;">
+                          Fecha del Siniestro
+                        </ion-label>
+                        <ion-card style="height:210px">
+                          <ion-card-content style="margin-top: 10%;">
+                            <ion-chip class="date-siniestro">
+                              <ion-icon name="calendar" color="tertiary"></ion-icon>
+                              <ion-label class="chip-label">{{formateadaSiniestro}}</ion-label>
+                              <ion-icon name="time" class="chip-icon"></ion-icon>
+                            </ion-chip>
+                          </ion-card-content>
+                        </ion-card>
+                      </ion-col>
+
+                      <!--ion-col size="12" style="padding-top: 0;">
+                        <ion-card style="height: 435px;margin-top: 10px;">
+                          <ion-card-header>
+                          </ion-card-header>
+                          <ion-card-content>
+                            <ion-datetime [(ngModel)]="mydate" (ionChange)="marcarFecha(mydate)"></ion-datetime>
+                          </ion-card-content>
+                        </ion-card>
+                        <ion-badge style="margin-left: 27px;">{{formateada}}</ion-badge>
+                      </!--ion-col -->
+                      
+                    </ion-row>
+                  </ion-grid>
+                </ion-content>
+                
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size="12">
+                  
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-col>          
+        </ion-row>
+        <ion-row id="dataNull" style="display: none;">
+          <ion-col size="12">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-subtitle><strong>Elementos Incompletos</strong></ion-card-subtitle>
+                <ion-card-subtitle><small>Los siguientes campos aun no se han completado :</small></ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-list>
+                  <ion-item *ngFor="let nulo of validaNulos; let i = index" style="color: orangered;">
+                    <ion-label>{{i+1}}. {{nulo}}</ion-label>
+                  </ion-item>
+                </ion-list>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+  </ion-menu>
+  <div class="ion-page" id="main">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Main View</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-no-padding">
+      <ion-list style="width: 100%;">
+        <ion-item *ngFor="let segment of segments; let i = index" class="segment-item" (click)="setSegment(segmentInput.value, indexInput.value)">
+          <ion-input #segmentInput [hidden]="true" [value]="segment.name"></ion-input>
+          <ion-input #indexInput [hidden]="true" [value]="i"></ion-input>
+          <ion-icon style="color: gray;" class="segment-icon" name={{segment.name}}></ion-icon><span class="segment-title" style="margin-left: 9px;">{{segment.titulo}}</span>
+        </ion-item>
+
+        <!--ion-item *ngIf="isComplete == false" disabled>
+          <ion-icon style="color: gray;" class="segment-icon-no" name="footsteps" disabled></ion-icon>
+          <span class="segment-title" style="margin-left: 9px;">Culpable</span>
+        </!--ion-item>
+        <ion-item *ngIf="isComplete == true" (click)="goCulpable()">
+          <ion-input #segmentInput [hidden]="true" [value]="'footsteps'"></ion-input>
+          <ion-input #indexInput [hidden]="true" [value]="10"></ion-input>
+          <ion-icon style="color: gray;" class="segment-icon" name="footsteps" disabled></ion-icon>
+          <span class="segment-title" style="margin-left: 9px;">Culpable</span>
+        </ion-item -->
+
+        <!--ion-item *ngIf="isComplete == false" disabled>
+          <ion-icon style="color: gray;" class="segment-icon-no" name="document-text" disabled></ion-icon>
+          <span class="segment-title" style="margin-left: 9px;">Acuerdo Deuda</span>
+        </!--ion-item>
+        <ion-item id="open-modal-agreement" *ngIf="isComplete == true" (click)="goAdeuda()">
+          <ion-icon style="color: gray;" class="segment-icon-no" name="document-text" disabled></ion-icon>
+          <span class="segment-title" style="margin-left: 9px;">Acuerdo Deuda</span>
+        </ion-item>
+
+        <ion-item *ngIf="isComplete == false" disabled>
+          <ion-icon style="color: gray;" class="segment-icon-no" name="camera" disabled></ion-icon>
+          <span class="segment-title" style="margin-left: 9px;">Envío Imágenes</span>
+        </ion-item -->
+
+        <!--ion-item (click)="goFotos()">
+          <ion-icon style="color: gray;" class="segment-icon" name="camera" disabled></ion-icon>
+          <span class="segment-title" style="margin-left: 9px;">Envío Imágenes</span>
+        </!--ion-item -->
+      </ion-list>
+    </ion-content>
+    <!--ion-button *ngIf="daSegment == 'ribbon'" 
+    style="color: white;position: fixed; width: 100%; margin-left: 0;bottom: 0;right: 0px;" (click)="validarFormulario()" shape="round">
+      Continuar
+    </!--ion-button -->
+  </div>
+  
+
+</ion-split-pane>
+<!-- personas modal  -->
+
+<!--ion-button *ngIf="daSegment == 'ribbon' && isEditSig == true" style="position: fixed;width: 60px;height: 60px;bottom: 34%;right: 1%; z-index: 999;--background: #f14f23;
+--background-activated: #a8462a;
+--background-hover: #f66e48;
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;" vertical="bottom" horizontal="end" (click)="firmar()">
+  <ion-icon name="refresh"></ion-icon>
+</!--ion-button>
+
+<ion-button *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 23%;right: 1%; z-index: 999;--background: #f14f23;
+--background-activated: #a8462a;
+--background-hover: #f66e48;
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;" vertical="bottom" horizontal="end" (click)="goESignature()">
+  <ion-icon name="pencil"></ion-icon>
+</ion-button>
+
+<ion-button *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 12%;right: 1%; z-index: 999;--background: #f14f23;
+--background-activated: #a8462a;
+--background-hover: #f66e48;
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;" vertical="bottom" horizontal="end" (click)="GuardarDatos()">
+  <ion-icon name="chevron-forward"></ion-icon -->
+
+    <ion-button id="signButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 15%; z-index: 999;--background: #f14f23;
+--background-activated: #a8462a;
+--background-hover: #f66e48;
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;" vertical="bottom" horizontal="end" (click)="firmar()">
+  <ion-icon name="refresh"></ion-icon>
+</ion-button>
+
+    <ion-button id="goSignButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 8%; z-index: 999;--background: #f14f23;
+--background-activated: #a8462a;
+--background-hover: #f66e48;
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;" vertical="bottom" horizontal="end" (click)="goESignature()">
+  <ion-icon name="pencil"></ion-icon>
+</ion-button>
+
+  <ion-button id="saveButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: #f14f23;
+--background-activated: #a8462a;
+--background-hover: #f66e48;
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;" vertical="bottom" horizontal="end" (click)="GuardarDatos()">
+  <ion-icon name="chevron-forward"></ion-icon>
+</ion-button>
+
+<ion-button id="camButton" style="position: fixed;width: 60px;height: 60px;bottom: 1%;left: 1%; z-index: 999;--background: #f14f23;
+--background-activated: #a8462a;
+--background-hover: #f66e48;
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;" vertical="bottom" horizontal="end" (click)="goFotos()">
+  <ion-icon name="camera"></ion-icon>
+</ion-button>
+
+<ion-badge id="successLabel" color="warning" style="position: fixed; left: 10px; bottom: 10px; width: auto; padding: 15px; height: 46px; text-align: left;z-index: 999; display: none;color: white;--background: #f14f23;
+--background-activated: #a8462a;
+--background-hover: #f66e48;" vertical="bottom" horizontal="end">
+  Registro guardado con éxito! 
+</ion-badge>
+
+<ion-button id="buttonGoAjuste" style="position: fixed; left: 290px; bottom: 7px;height: 46px; z-index: 999; display: none;color: white;" vertical="bottom" horizontal="start"
+(click)="goAjuste()">Ir a Ajustador</ion-button>
+
+  <!--ion-button style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: #f14f23;
+--background-activated: #a8462a;
+--background-hover: #f66e48;
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;" vertical="bottom" horizontal="end" (click)="goMap()">
+  <ion-icon name="location"></ion-icon>
+</!--ion-button -->
+
+<ion-footer slot="fixed" style="bottom: 0;left:0;height:80px; background: white;"></ion-footer>
+
+
+
+<ion-modal #daModal id="daModal" class="persona" [isOpen]="showPersona">
+  <ng-template>
+    <ion-content>
+      <ion-grid fixed>
+        <ion-row>
+          <!-- Datos del tercero -->  
+          <ion-col size="12">
+            <ion-item  lines="none" style="--background: #7da1c4;" class="ion-no-padding  input">
+              <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos </ion-label>
+            </ion-item>
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Nombre
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input type="text" [(ngModel)]="persona.Nombre"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+              
+            </ion-item>
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Teléfono
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input type="number" [(ngModel)]="persona.Telefono"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Dirección
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input type="text" [(ngModel)]="persona.Direccion"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-col *ngIf="guardar"  size="6">
+              <ion-button style="color: white;" (click)="addPersona()" expand="block" shape="round">
+                Agregar
+              </ion-button>
+            </ion-col>
+            <ion-col *ngIf="editar"  size="6">
+              <ion-button style="color: white;" (click)="updatePersona()" expand="block" shape="round">
+                Actualizar
+              </ion-button>
+            </ion-col>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+
+  <ion-modal #modalLesion id="modalLesion" class="persona-lesion" [isOpen]="showPersonaLesion">
+  <ng-template>
+    <ion-content>
+      <ion-grid fixed>
+        <ion-row>
+          <ion-col size="12">
+            <ion-item  lines="none" style="--background: #7da1c4;" class="ion-no-padding  input">
+              <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos Lesionado</ion-label>
+            </ion-item>
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Nombre
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input type="text" [(ngModel)]="persona.Nombre"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+              
+            </ion-item>
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Teléfono
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input type="number" [(ngModel)]="persona.Telefono"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Dirección
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input type="text" [(ngModel)]="persona.Direccion"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Tipo de lesión
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input type="text" [(ngModel)]="persona.TipoLesion"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-grid>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                  Hospital o Clínica
+                    </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-input type="text" [(ngModel)]="persona.DireccionHospitalizacion"></ion-input>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+
+          </ion-col>
+          
+
+          <ion-col size="12">
+            <ion-col *ngIf="guardar"  size="6">
+              <ion-button style="color: white;" (click)="addPersona()" expand="block" shape="round">
+                Agregar
+              </ion-button>
+            </ion-col>
+            <ion-col *ngIf="editar"  size="6">
+              <ion-button style="color: white;" (click)="updatePersona()" expand="block" shape="round">
+                Actualizar
+              </ion-button>
+            </ion-col>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+<!---->
+
+
+<ion-modal #propModal id="propModal" class="propiedad" [isOpen]="showPropiedad">
+  <ng-template>
+    <ion-content>
+      <ion-grid fixed>
+        <ion-row>
+          <!-- Datos del tercero -->  
+          <ion-col size="12">
+            <ion-item  lines="none" style="--background: #7da1c4;" class="ion-no-padding  input">
+              <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos De la Propiedad</ion-label>
+            </ion-item>
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-label class="text-size-sm" position="floating">
+                Nombre del Bien</ion-label>
+              <ion-input type="text" [(ngModel)]="propiedadPrivada.BienAfectado"></ion-input>
+            </ion-item>
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-label class="text-size-sm" position="floating">
+                Nombre Propietario</ion-label>
+              <ion-input type="text" [(ngModel)]="propiedadPrivada.NombrePropietario"></ion-input>
+            </ion-item>
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-label class="text-size-sm" position="floating">
+                Telefono</ion-label>
+              <ion-input type="number" [(ngModel)]="propiedadPrivada.Telefono"></ion-input>
+            </ion-item>
+
+            <ion-item  class="ion-no-padding transparent input">
+              <ion-label class="text-size-sm" position="floating">
+                Dirección</ion-label>
+              <ion-input type="text" [(ngModel)]="propiedadPrivada.DireeccionPropietario"></ion-input>
+            </ion-item>
+            
+          </ion-col>
+          <!-- Datos del vehiculo -->
+          <ion-col size="12">
+            <ion-item  style="--background: #7da1c4;" class="ion-no-padding  input">
+              <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos Daño</ion-label>
+            </ion-item>
+            <ion-item   class="ion-no-padding transparent input">
+              <ion-label class="text-size-sm" position="floating">
+                Descripción del Bien</ion-label>
+              <ion-input type="text" [(ngModel)]="propiedadPrivada.DescripcioDelBien"></ion-input>
+            </ion-item>
+            <ion-item   class="ion-no-padding transparent input">
+              <ion-label class="text-size-sm" position="floating">
+                Dirección del Bien</ion-label>
+              <ion-input type="text" [(ngModel)]="propiedadPrivada.DireccionDelBien"></ion-input>
+            </ion-item>
+            <ion-item   class="ion-no-padding transparent input">
+              <ion-label class="text-size-sm" position="floating">
+                Descripción del Daño</ion-label>
+                <ion-input [(ngModel)]="propiedadPrivada.DescripcionDelDanio" label="input" placeholder="Describa el daño" [autoGrow]="true"></ion-input>
+              <!--ion-input type="text" [(ngModel)]="propiedadPrivada.DescripcionDelDanio"></!--ion-input -->
+            </ion-item>
+          </ion-col>
+          <ion-col size="12">
+            <ion-col *ngIf="guardar"  size="6">
+              <ion-button style="color: white;" (click)="addPropiedad()" expand="block" shape="round">
+                Agregar
+              </ion-button>
+            </ion-col>
+            <ion-col *ngIf="editar"  size="6">
+              <ion-button style="color: white;" (click)="updatePropiedad()" expand="block" shape="round">
+                Actualizar
+              </ion-button>
+            </ion-col>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-modal #modalFechaSiniestro trigger="open-modal-fecha-siniestro" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.25, 0.5, 0.75]">
+  <ng-template>
+    <ion-content>
+      <ion-datetime style="margin-left:120px" [showDefaultButtons]="true" doneText="Guardar" cancelText="Cancelar"
+      [(ngModel)]="elExpediente.FechaHoraAccidente" (ionChange)="marcarFechaSiniestro(elExpediente.FechaHoraAccidente)"></ion-datetime>
+    </ion-content>
+    <!--ion-button>Guardar Fecha</!--ion-button -->
+  </ng-template>
+</ion-modal>
+
+<ion-modal #modalFechaNacimiento trigger="open-modal-fecha-nacimiento" [initialBreakpoint]="1" [breakpoints]="[0, 0.25, 0.5, 0.75, 1]">
+  <ng-template>
+    <ion-content>
+      <ion-datetime style="margin-left:120px" [showDefaultButtons]="true" doneText="Guardar" cancelText="Cancelar"
+      [(ngModel)]="formateadaNacimiento" (ionChange)="marcarFechaNacimiento($event)"
+      class="required-data"></ion-datetime>
+      <!--span color="danger" style="padding: 6px;height: 23px;width: 23px;">*</!--span -->
+    </ion-content>
+    <!--ion-button>Guardar Fecha</!--ion-button -->
+  </ng-template>
+</ion-modal>
+
+<ion-modal #modalFechaVencimiento trigger="open-modal-fecha-vencimiento" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.25, 0.5, 0.75]">
+  <ng-template>
+    <ion-content>
+      <ion-datetime style="margin-left:120px" [showDefaultButtons]="true" doneText="Guardar" cancelText="Cancelar"
+      [(ngModel)]="dataProcess.Vigencia" [maskito]="idMaskFechaVencimiento" [predicate]="predicateCliente" (ionChange)="entraVencimiento($event)"
+      class="required-data"></ion-datetime>
+      <!--span color="danger" style="padding: 6px;height: 23px;width: 23px;">*</!--span -->
+    </ion-content>
+    <!--ion-button>Guardar Fecha</!--ion-button -->
+  </ng-template>
+</ion-modal>
+
+

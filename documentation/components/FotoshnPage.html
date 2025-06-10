@@ -1,0 +1,3852 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>help_ajustadores documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  FotoshnPage</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/fotoshn/fotoshn.page.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnInit</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-fotoshn</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./fotoshn.page.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./fotoshn.page.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#archivo" >archivo</a>
+                            </li>
+                            <li>
+                                <a href="#atencionId" >atencionId</a>
+                            </li>
+                            <li>
+                                <a href="#contador" >contador</a>
+                            </li>
+                            <li>
+                                <a href="#conteo" >conteo</a>
+                            </li>
+                            <li>
+                                <a href="#daImagen" >daImagen</a>
+                            </li>
+                            <li>
+                                <a href="#daPrompt" >daPrompt</a>
+                            </li>
+                            <li>
+                                <a href="#dedscripcionContainer" >dedscripcionContainer</a>
+                            </li>
+                            <li>
+                                <a href="#descripcionesVacias" >descripcionesVacias</a>
+                            </li>
+                            <li>
+                                <a href="#dVideoSize" >dVideoSize</a>
+                            </li>
+                            <li>
+                                <a href="#esTablet" >esTablet</a>
+                            </li>
+                            <li>
+                                <a href="#expediente" >expediente</a>
+                            </li>
+                            <li>
+                                <a href="#fDescripcion" >fDescripcion</a>
+                            </li>
+                            <li>
+                                <a href="#fechaFirma" >fechaFirma</a>
+                            </li>
+                            <li>
+                                <a href="#foto" >foto</a>
+                            </li>
+                            <li>
+                                <a href="#fotoData" >fotoData</a>
+                            </li>
+                            <li>
+                                <a href="#fotos" >fotos</a>
+                            </li>
+                            <li>
+                                <a href="#fotosBorrar" >fotosBorrar</a>
+                            </li>
+                            <li>
+                                <a href="#fotosFromCamera" >fotosFromCamera</a>
+                            </li>
+                            <li>
+                                <a href="#fotosFromGallery" >fotosFromGallery</a>
+                            </li>
+                            <li>
+                                <a href="#hoy" >hoy</a>
+                            </li>
+                            <li>
+                                <a href="#imagenesSeleccionadas" >imagenesSeleccionadas</a>
+                            </li>
+                            <li>
+                                <a href="#img" >img</a>
+                            </li>
+                            <li>
+                                <a href="#indexCamera" >indexCamera</a>
+                            </li>
+                            <li>
+                                <a href="#isLoading" >isLoading</a>
+                            </li>
+                            <li>
+                                <a href="#isVideo" >isVideo</a>
+                            </li>
+                            <li>
+                                <a href="#mensaje" >mensaje</a>
+                            </li>
+                            <li>
+                                <a href="#miFoto" >miFoto</a>
+                            </li>
+                            <li>
+                                <a href="#nombreFirmante" >nombreFirmante</a>
+                            </li>
+                            <li>
+                                <a href="#openFoto" >openFoto</a>
+                            </li>
+                            <li>
+                                <a href="#process" >process</a>
+                            </li>
+                            <li>
+                                <a href="#reclamoData" >reclamoData</a>
+                            </li>
+                            <li>
+                                <a href="#tipoFotos" >tipoFotos</a>
+                            </li>
+                            <li>
+                                <a href="#videoArray" >videoArray</a>
+                            </li>
+                            <li>
+                                <a href="#videoDivisions" >videoDivisions</a>
+                            </li>
+                            <li>
+                                <a href="#videoFile" >videoFile</a>
+                            </li>
+                            <li>
+                                <a href="#videos" >videos</a>
+                            </li>
+                            <li>
+                                <a href="#videosSeleccionados" >videosSeleccionados</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#checkPlatformForWeb" >checkPlatformForWeb</a>
+                            </li>
+                            <li>
+                                <a href="#clearPhotos" >clearPhotos</a>
+                            </li>
+                            <li>
+                                <a href="#deleteFoto" >deleteFoto</a>
+                            </li>
+                            <li>
+                                <a href="#displayPhotos" >displayPhotos</a>
+                            </li>
+                            <li>
+                                <a href="#entraDescripcionFoto" >entraDescripcionFoto</a>
+                            </li>
+                            <li>
+                                <a href="#getBase64" >getBase64</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getTipoFotos" >getTipoFotos</a>
+                            </li>
+                            <li>
+                                <a href="#guardarFotos" >guardarFotos</a>
+                            </li>
+                            <li>
+                                <a href="#guardarFotosX" >guardarFotosX</a>
+                            </li>
+                            <li>
+                                <a href="#heyOmar" >heyOmar</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#onFileSelected" >onFileSelected</a>
+                            </li>
+                            <li>
+                                <a href="#onUpload" >onUpload</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#openCamera" >openCamera</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#openFilesInput" >openFilesInput</a>
+                            </li>
+                            <li>
+                                <a href="#openFilesInputVideo" >openFilesInputVideo</a>
+                            </li>
+                            <li>
+                                <a href="#openImg" >openImg</a>
+                            </li>
+                            <li>
+                                <a href="#randomIntFromInterval" >randomIntFromInterval</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(router: Router, route: ActivatedRoute, loading: LoadingController, alert: AlertController, api: <a href="../injectables/ApiService.html" target="_self">ApiService</a>, toast: ToastController, toaster: <a href="../injectables/ToastService.html" target="_self">ToastService</a>, platform: Platform, modalPrompt: ModalController, http: HttpClient)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:27</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>router</td>
+                                                  
+                                                        <td>
+                                                                    <code>Router</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>route</td>
+                                                  
+                                                        <td>
+                                                                    <code>ActivatedRoute</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>loading</td>
+                                                  
+                                                        <td>
+                                                                    <code>LoadingController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>alert</td>
+                                                  
+                                                        <td>
+                                                                    <code>AlertController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>api</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ApiService.html" target="_self" >ApiService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>toast</td>
+                                                  
+                                                        <td>
+                                                                    <code>ToastController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>toaster</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ToastService.html" target="_self" >ToastService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>platform</td>
+                                                  
+                                                        <td>
+                                                                    <code>Platform</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>modalPrompt</td>
+                                                  
+                                                        <td>
+                                                                    <code>ModalController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>http</td>
+                                                  
+                                                        <td>
+                                                                    <code>HttpClient</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkPlatformForWeb"></a>
+                    <span class="name">
+                        <span ><b>checkPlatformForWeb</b></span>
+                        <a href="#checkPlatformForWeb"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>checkPlatformForWeb()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="673"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:673</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="clearPhotos"></a>
+                    <span class="name">
+                        <span ><b>clearPhotos</b></span>
+                        <a href="#clearPhotos"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>clearPhotos()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="684"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:684</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteFoto"></a>
+                    <span class="name">
+                        <span ><b>deleteFoto</b></span>
+                        <a href="#deleteFoto"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>deleteFoto(i: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="678"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:678</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>i</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayPhotos"></a>
+                    <span class="name">
+                        <span ><b>displayPhotos</b></span>
+                        <a href="#displayPhotos"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>displayPhotos(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="448"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:448</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="entraDescripcionFoto"></a>
+                    <span class="name">
+                        <span ><b>entraDescripcionFoto</b></span>
+                        <a href="#entraDescripcionFoto"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>entraDescripcionFoto(descripcion, fIndex)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="666"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:666</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>descripcion</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>fIndex</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getBase64"></a>
+                    <span class="name">
+                        <span ><b>getBase64</b></span>
+                        <a href="#getBase64"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getBase64(file, index)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="649"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:649</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>file</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>index</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getTipoFotos"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getTipoFotos</b></span>
+                        <a href="#getTipoFotos"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getTipoFotos()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="714"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:714</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="guardarFotos"></a>
+                    <span class="name">
+                        <span ><b>guardarFotos</b></span>
+                        <a href="#guardarFotos"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>guardarFotos()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="508"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:508</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="guardarFotosX"></a>
+                    <span class="name">
+                        <span ><b>guardarFotosX</b></span>
+                        <a href="#guardarFotosX"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>guardarFotosX()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="567"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:567</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="heyOmar"></a>
+                    <span class="name">
+                        <span ><b>heyOmar</b></span>
+                        <a href="#heyOmar"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>heyOmar(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="385"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:385</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:37</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onFileSelected"></a>
+                    <span class="name">
+                        <span ><b>onFileSelected</b></span>
+                        <a href="#onFileSelected"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onFileSelected(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="119"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:119</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onUpload"></a>
+                    <span class="name">
+                        <span ><b>onUpload</b></span>
+                        <a href="#onUpload"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onUpload()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="222"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:222</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="openCamera"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>openCamera</b></span>
+                        <a href="#openCamera"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>openCamera()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:53</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="openFilesInput"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>openFilesInput</b></span>
+                        <a href="#openFilesInput"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>openFilesInput()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="364"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:364</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="openFilesInputVideo"></a>
+                    <span class="name">
+                        <span ><b>openFilesInputVideo</b></span>
+                        <a href="#openFilesInputVideo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>openFilesInputVideo()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="397"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:397</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="openImg"></a>
+                    <span class="name">
+                        <span ><b>openImg</b></span>
+                        <a href="#openImg"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>openImg(foto: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:48</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>foto</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="randomIntFromInterval"></a>
+                    <span class="name">
+                        <span ><b>randomIntFromInterval</b></span>
+                        <a href="#randomIntFromInterval"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>randomIntFromInterval(min, max)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="504"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:504</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>min</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>max</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="archivo"></a>
+                    <span class="name">
+                        <span ><b>archivo</b></span>
+                        <a href="#archivo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>FormData</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="atencionId"></a>
+                    <span class="name">
+                        <span ><b>atencionId</b></span>
+                        <a href="#atencionId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="contador"></a>
+                    <span class="name">
+                        <span ><b>contador</b></span>
+                        <a href="#contador"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="conteo"></a>
+                    <span class="name">
+                        <span ><b>conteo</b></span>
+                        <a href="#conteo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="daImagen"></a>
+                    <span class="name">
+                        <span ><b>daImagen</b></span>
+                        <a href="#daImagen"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="daPrompt"></a>
+                    <span class="name">
+                        <span ><b>daPrompt</b></span>
+                        <a href="#daPrompt"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dedscripcionContainer"></a>
+                    <span class="name">
+                        <span ><b>dedscripcionContainer</b></span>
+                        <a href="#dedscripcionContainer"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="descripcionesVacias"></a>
+                    <span class="name">
+                        <span ><b>descripcionesVacias</b></span>
+                        <a href="#descripcionesVacias"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dVideoSize"></a>
+                    <span class="name">
+                        <span ><b>dVideoSize</b></span>
+                        <a href="#dVideoSize"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="esTablet"></a>
+                    <span class="name">
+                        <span ><b>esTablet</b></span>
+                        <a href="#esTablet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="expediente"></a>
+                    <span class="name">
+                        <span ><b>expediente</b></span>
+                        <a href="#expediente"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fDescripcion"></a>
+                    <span class="name">
+                        <span ><b>fDescripcion</b></span>
+                        <a href="#fDescripcion"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fechaFirma"></a>
+                    <span class="name">
+                        <span ><b>fechaFirma</b></span>
+                        <a href="#fechaFirma"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="foto"></a>
+                    <span class="name">
+                        <span ><b>foto</b></span>
+                        <a href="#foto"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fotoData"></a>
+                    <span class="name">
+                        <span ><b>fotoData</b></span>
+                        <a href="#fotoData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fotos"></a>
+                    <span class="name">
+                        <span ><b>fotos</b></span>
+                        <a href="#fotos"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/foto.html" target="_self" >foto[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fotosBorrar"></a>
+                    <span class="name">
+                        <span ><b>fotosBorrar</b></span>
+                        <a href="#fotosBorrar"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fotosFromCamera"></a>
+                    <span class="name">
+                        <span ><b>fotosFromCamera</b></span>
+                        <a href="#fotosFromCamera"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/foto.html" target="_self" >foto[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fotosFromGallery"></a>
+                    <span class="name">
+                        <span ><b>fotosFromGallery</b></span>
+                        <a href="#fotosFromGallery"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/foto.html" target="_self" >foto[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hoy"></a>
+                    <span class="name">
+                        <span ><b>hoy</b></span>
+                        <a href="#hoy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Date().toISOString()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="imagenesSeleccionadas"></a>
+                    <span class="name">
+                        <span ><b>imagenesSeleccionadas</b></span>
+                        <a href="#imagenesSeleccionadas"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="img"></a>
+                    <span class="name">
+                        <span ><b>img</b></span>
+                        <a href="#img"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/foto.html" target="_self" >foto</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="indexCamera"></a>
+                    <span class="name">
+                        <span ><b>indexCamera</b></span>
+                        <a href="#indexCamera"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isLoading"></a>
+                    <span class="name">
+                        <span ><b>isLoading</b></span>
+                        <a href="#isLoading"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isVideo"></a>
+                    <span class="name">
+                        <span ><b>isVideo</b></span>
+                        <a href="#isVideo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mensaje"></a>
+                    <span class="name">
+                        <span ><b>mensaje</b></span>
+                        <a href="#mensaje"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="miFoto"></a>
+                    <span class="name">
+                        <span ><b>miFoto</b></span>
+                        <a href="#miFoto"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="nombreFirmante"></a>
+                    <span class="name">
+                        <span ><b>nombreFirmante</b></span>
+                        <a href="#nombreFirmante"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="openFoto"></a>
+                    <span class="name">
+                        <span ><b>openFoto</b></span>
+                        <a href="#openFoto"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="process"></a>
+                    <span class="name">
+                        <span ><b>process</b></span>
+                        <a href="#process"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>1</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="reclamoData"></a>
+                    <span class="name">
+                        <span ><b>reclamoData</b></span>
+                        <a href="#reclamoData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tipoFotos"></a>
+                    <span class="name">
+                        <span ><b>tipoFotos</b></span>
+                        <a href="#tipoFotos"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>tipofotos[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="videoArray"></a>
+                    <span class="name">
+                        <span ><b>videoArray</b></span>
+                        <a href="#videoArray"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="videoDivisions"></a>
+                    <span class="name">
+                        <span ><b>videoDivisions</b></span>
+                        <a href="#videoDivisions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="videoFile"></a>
+                    <span class="name">
+                        <span ><b>videoFile</b></span>
+                        <a href="#videoFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>File</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="videos"></a>
+                    <span class="name">
+                        <span ><b>videos</b></span>
+                        <a href="#videos"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="videosSeleccionados"></a>
+                    <span class="name">
+                        <span ><b>videosSeleccionados</b></span>
+                        <a href="#videosSeleccionados"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { tipofotos } from &#x27;./../interfaces/formulario&#x27;;
+import { Router, ActivatedRoute } from &#x27;@angular/router&#x27;;
+import { AlertController, LoadingController, ToastController, Platform, ModalController } from &#x27;@ionic/angular&#x27;;
+import { HttpClient, HttpHeaders, HttpStatusCode } from &#x27;@angular/common/http&#x27;;
+import { BehaviorSubject, from, Observable, of } from &#x27;rxjs&#x27;;
+import { Component, OnInit, ViewChild, ElementRef } from &#x27;@angular/core&#x27;;
+import { ToastService } from &#x27;../services/toast.service&#x27;;
+import { ApiService } from &#x27;../services/api.service&#x27;;
+import { Camera, CameraDirection, CameraResultType, CameraSource } from &#x27;@capacitor/camera&#x27;;
+import { Capacitor } from &#x27;@capacitor/core&#x27;;
+import { finalize, switchMap, tap } from &#x27;rxjs/operators&#x27;;
+import { foto } from &#x27;../interfaces/formulario&#x27;;
+import * as $ from &#x27;jquery&#x27;;  
+
+@Component({
+  selector: &#x27;app-fotoshn&#x27;,
+  templateUrl: &#x27;./fotoshn.page.html&#x27;,
+  styleUrls: [&#x27;./fotoshn.page.scss&#x27;],
+})
+export class FotoshnPage implements OnInit {
+ // @ViewChild(&quot;modalPrompt&quot;, { static: true }) modalPrompt: ElementRef;
+
+  foto:string&#x3D;&#x27;&#x27;;  hoy: any &#x3D; new Date().toISOString();  openFoto &#x3D; false;  img: foto&#x3D;{};  fotos: foto[]&#x3D;[];  tipoFotos: tipofotos[]&#x3D;[];  reclamoData:any&#x3D;[];
+  fotoData:any&#x3D;[];  videos:any&#x3D;[];  atencionId:number;  nombreFirmante:any;  fDescripcion:any;  descripcionesVacias:any&#x3D;[];  dedscripcionContainer:any;
+  imagenesSeleccionadas:number&#x3D;0;  videosSeleccionados:number&#x3D;0;  fechaFirma:any;  isLoading:boolean&#x3D;false;  esTablet:boolean&#x3D;true;  isVideo:boolean&#x3D;false;
+  daPrompt:any;  conteo:number &#x3D; 0;  contador:any&#x3D;[];  fotosFromCamera:foto[]&#x3D;[];  fotosFromGallery:foto[]&#x3D;[];  fotosBorrar:any&#x3D;[];  daImagen:any;  miFoto:any;
+  process:number&#x3D;1;  indexCamera: number;  videoFile: File;  archivo: FormData;  mensaje: any;  videoArray: any;  expediente: any; dVideoSize:any; videoDivisions:number&#x3D;0;
+  constructor(private router: Router,    private route:ActivatedRoute,    private loading: LoadingController,    private alert: AlertController,    private api: ApiService, 
+    private toast: ToastController,    private toaster:ToastService,     private platform:Platform,    private modalPrompt:ModalController,
+    private http: HttpClient) { 
+      this.atencionId &#x3D; parseInt(localStorage.getItem(&#x27;idAtencion&#x27;));
+      this.nombreFirmante &#x3D; localStorage.getItem(&#x27;nombreConductor&#x27;);
+      //this.fechaFirma &#x3D; localStorage.getItem(&#x27;fechaFirma&#x27;); this.fechaFirma &#x3D; new Date().toISOString();
+      this.fechaFirma &#x3D; this.hoy;
+    }
+
+  ngOnInit() {
+    this.fotos&#x3D;[];
+    this.route.queryParams.subscribe(params &#x3D;&gt;{
+      if(this.router.getCurrentNavigation().extras.state){
+        this.reclamoData &#x3D; this.router.getCurrentNavigation().extras.state.data;
+        console.table(this.reclamoData);
+      }
+    })
+
+    this.getTipoFotos();
+  }
+  openImg(foto:string){
+    this.foto &#x3D; foto;
+    this.openFoto &#x3D; !this.openFoto;
+  }
+
+  async openCamera(){
+    this.conteo &#x3D; this.fotosFromCamera.length; // 0
+
+    if (this.fotosFromGallery.length &gt; 0) {
+      this.contador &#x3D; this.fotosFromGallery.length;  
+
+      if (this.conteo &gt; 0) {
+        this.indexCamera &#x3D; this.contador + this.conteo;
+        // for imagenes de la camara (conteo)
+      }else{
+        this.indexCamera &#x3D; this.contador;
+      }
+      
+    }else{
+      this.contador &#x3D; 0;
+      if (this.conteo &gt; 0) {
+        this.indexCamera &#x3D; this.conteo+1;
+        // for imagenes de la camara (conteo)
+      }else{
+        this.indexCamera &#x3D; this.conteo;
+      }
+    }
+    
+    this.esTablet &#x3D; this.platform.is(&#x27;android&#x27;);
+    this.modalPrompt.dismiss();
+    const img &#x3D; await Camera.getPhoto({
+      quality:90,
+      allowEditing:false,
+      source: CameraSource.Camera,
+      resultType: CameraResultType.Base64
+    });
+
+    this.img.IdTipo&#x3D;1;
+    this.img.Tipo&#x3D;&#x27;Daño&#x27;;
+    this.img.Foto&#x3D; img.base64String//.split(&#x27;,&#x27;)[1];
+    this.img.Fecha &#x3D; new Date().toISOString();
+    this.img.Descripcion &#x3D; &#x27;&#x27;;
+    this.img.NombreFirmante &#x3D; this.nombreFirmante;
+    this.img.Source &#x3D; 1;
+    this.fotosFromCamera.push(this.img);
+    localStorage.setItem(&#x27;Foto &#x27;+this.indexCamera, JSON.stringify(img));
+    this.img&#x3D;{};
+
+  }
+/*
+  put( archivo: FormData|null){
+    if(archivo &#x3D;&#x3D; undefined){
+      archivo &#x3D; null;
+    }
+    this.api.SubirVideo(this.atencionId,archivo).subscribe({
+      next: (resp) &#x3D;&gt; {
+        this.mensaje &#x3D; resp.message;
+        this.toaster.presentToastSave(this.mensaje, &quot;top&quot;, &quot;video&quot;, &quot;&quot;);
+      }
+    })
+  }
+
+  fileEvent(fileInput: any){
+    if(fileInput.target.files[0] !&#x3D; undefined || fileInput.type !&#x3D; undefined){
+      this.archivo &#x3D; new FormData;
+      this.archivo.append(&#x27;Archivo&#x27;, fileInput.target.files[0], fileInput.target.files[0].name);
+      this.put(this.archivo);
+    }
+  }
+  */
+
+  onFileSelected(event){
+    
+    this.isVideo &#x3D; true;
+    this.videos &#x3D; [];
+    this.modalPrompt.dismiss();
+    
+
+    const fileInputVs &#x3D; (document.getElementById(&quot;uploadVideoInput&quot;) as HTMLInputElement).files;
+    this.videosSeleccionados &#x3D; fileInputVs.length;
+
+    setTimeout(() &#x3D;&gt; {
+      if (fileInputVs.length &gt; 0) {
+        
+        this.videosSeleccionados &#x3D; fileInputVs.length;
+        
+        $(&quot;#videosConteo&quot;).fadeIn(&#x27;xslow&#x27;);
+        $(&quot;#buttonSubmitVideo&quot;).fadeIn(&#x27;xslow&#x27;);
+
+        for (let index &#x3D; 0; index &lt; fileInputVs.length; index++) {
+          this.fechaFirma &#x3D; new Date().toISOString();
+          const file &#x3D; fileInputVs[index];
+          let dSize &#x3D; file.size;
+          let videoType &#x3D; file.type;
+          //alert(videoType)
+          this.dVideoSize &#x3D; (Math.round(+dSize/1024)/1000).toFixed(2);
+
+
+          if (this.dVideoSize &gt; 16) {
+            this.videoDivisions &#x3D; parseInt(Math.ceil(this.dVideoSize/16).toFixed(0));
+            this.toaster.presentToastNoButtonsRed(&#x27;El tamaño del archivo excede los 16Mb, deberás dividirlo en &#x27;+this.videoDivisions+&#x27; partes.&#x27;, &#x27;top&#x27;, &#x27;video-upload&#x27;);
+          }else{
+            this.toaster.dismissToast();
+            this.isLoading &#x3D; true;
+            var reader &#x3D; new FileReader();
+            reader.readAsDataURL(file);
+
+            reader.onload &#x3D; e &#x3D;&gt; {
+              this.videos.push(e.target.result)
+            };
+            
+    
+            if (index &#x3D;&#x3D; (fileInputVs.length-1)) {
+              this.isLoading &#x3D; false;
+            }
+          }
+        }
+        
+      }else{}
+    }, this.randomIntFromInterval(1, 5));
+    
+    
+    
+    console.log(event.target.value);
+    this.videoFile &#x3D; event.target.files[0];
+    this.videoArray &#x3D; event.target.files; 
+    
+
+  }
+/*
+  onFileSelected(event){
+    
+    this.isVideo &#x3D; true;
+    this.videos &#x3D; [];
+    this.modalPrompt.dismiss();
+
+    const fileInputVs &#x3D; (document.getElementById(&quot;uploadVideoInput&quot;) as HTMLInputElement).files;
+    this.videosSeleccionados &#x3D; fileInputVs.length;
+
+    setTimeout(() &#x3D;&gt; {
+      if (fileInputVs.length &gt; 0) {
+        this.videosSeleccionados &#x3D; fileInputVs.length;
+        
+        for (let index &#x3D; 0; index &lt; fileInputVs.length; index++) {
+          this.fechaFirma &#x3D; new Date().toISOString();
+          const file &#x3D; fileInputVs[index];
+  
+          var reader &#x3D; new FileReader();
+          reader.readAsDataURL(file);
+
+          reader.onload &#x3D; e &#x3D;&gt; {
+            this.videos.push(e.target.result)
+          };
+          
+  
+          if (index &#x3D;&#x3D; (fileInputVs.length-1)) {
+            
+          }
+          
+        }
+        
+      }else{}
+    }, this.randomIntFromInterval(1, 5));
+    
+    $(&quot;#videosConteo&quot;).fadeIn(&#x27;xslow&#x27;);
+    $(&quot;#buttonSubmitVideo&quot;).fadeIn(&#x27;xslow&#x27;);
+    
+    console.log(event.target.value);
+    this.videoFile &#x3D; event.target.files[0];
+    this.videoArray &#x3D; event.target.files; 
+  }
+
+  */
+
+  onUpload() {
+    if (this.videoFile &amp;&amp; this.atencionId) {
+      
+      //this.currentAccessToken &#x3D; null;
+      const formData: FormData &#x3D; new FormData();
+      formData.append(&#x27;File&#x27;, this.videoFile, this.videoFile.name);
+      formData.append(&#x27;IdAtencion&#x27;, this.atencionId.toString());
+      formData.append(&#x27;IdProveedor&#x27;, &#x27;3912&#x27;);
+
+      
+  
+      let thisThing &#x3D; &quot;https://testportal.porsalud.net/Applications/HELP/help_CargaDeArchivos/UploadArchive&quot;;
+      let thisLocal &#x3D; &quot;http://localhost:18951/help_CargaDeArchivos/UploadArchive&quot;;
+      
+      this.api.GuardarVideo(this.videoFile, this.atencionId).subscribe(
+        (e) &#x3D;&gt; {
+//          alert(e.estado);
+          let estado &#x3D; e.estado;
+          if (estado &#x3D;&#x3D; true) {
+            //alert(&quot;Ji vo&quot;)
+            this.toaster.presentToastNoButtons(&quot;Video subido con éxito!&quot;, &quot;top&quot;, &quot;video-upload&quot;);
+            $(&quot;#videosConteo&quot;).fadeOut();
+            $(&quot;#buttonSubmitVideo&quot;).fadeOut();
+            $(&quot;#videosSubidos&quot;).fadeIn();
+          }else{
+            this.toaster.presentToastNoButtonsRed(&quot;No es posible enviar el video, intenta nuevamente!&quot;, &quot;top&quot;, &quot;video-upload&quot;);
+            //alert(&quot;No vo&quot;)
+          }
+          console.log(e.estado);
+          console.log(e.mensaje);
+          return e
+        },
+        (e) &#x3D;&gt; {
+          console.log(&quot;Error&quot;, e);
+          return e;
+        }
+      )
+
+      
+    } else {
+      console.warn(&#x27;Seleccione un archivo de video y proporcione un ID de atención válido.&#x27;);
+    }
+  }
+
+/*
+onUpload() {
+    if (this.videoFile &amp;&amp; this.atencionId) {
+      
+      //this.currentAccessToken &#x3D; null;
+      const formData: FormData &#x3D; new FormData();
+      formData.append(&#x27;File&#x27;, this.videoFile, this.videoFile.name);
+      formData.append(&#x27;IdAtencion&#x27;, this.atencionId.toString());
+      formData.append(&#x27;IdProveedor&#x27;, &#x27;3912&#x27;);
+  
+      let thisThing &#x3D; &quot;https://testportal.porsalud.net/Applications/HELP/help_CargaDeArchivos/UploadArchive&quot;;
+      let thisLocal &#x3D; &quot;http://localhost:18951/help_CargaDeArchivos/UploadArchive&quot;;
+  
+      try {
+        alert(&quot;try&quot;)
+        this.http.post(thisLocal, formData)
+      .pipe(
+          switchMap(( res: any  ) &#x3D;&gt; {
+            try {
+              alert(&quot;YA&quot;)
+              console.dir(&#x27;Video enviado&#x27;, res.code);
+              return from(Promise.all(res));
+            } catch (error) {
+              console.log(&quot;Aca estoy &quot;+error)
+            }
+            
+          }),
+          tap(_ &#x3D;&gt; {
+          })
+        )
+      } catch (error) {
+        console.log(error);
+      }
+      
+    } else {
+      console.warn(&#x27;Seleccione un archivo de video y proporcione un ID de atención válido.&#x27;);
+    }
+  }
+  
+  onFileSelected(event){
+    console.log(event.target.value);
+    this.videoFile &#x3D; event.target.files[0];
+  }
+
+  onUpload() {
+    if (this.videoFile &amp;&amp; this.atencionId) {
+      this.api.GuardarVideo(this.videoFile, this.atencionId).pipe( 
+        finalize(async ()&#x3D;&gt;{
+          console.log(&#x27;He finalizado&#x27;)
+        }),
+        
+      ).subscribe(
+        (response) &#x3D;&gt; {
+          console.log(&#x27;Video uploaded successfully. Response:&#x27;);
+          // Maneja la respuesta de la API según tus necesidades
+        },
+        (error) &#x3D;&gt; {
+          console.log(&#x27;Error uploading video:&#x27;);
+          // Maneja el error según tus necesidades
+        }
+      );
+    } else {
+      console.warn(&#x27;Seleccione un archivo de video y proporcione un ID de atención válido.&#x27;);
+    }
+  }
+*/
+
+/*  
+
+SubirVideo(atencionId:any, Archivo:FormData|null) : Observable&lt;any&gt; {
+    let idProveedor &#x3D; this.currentUser.ProveedorAgenteId;
+    this.currentAccessToken &#x3D; null;
+    //const url: string &#x3D; &#x60;${environment_local.api_url}/Proveedor/SubirVideo?IdProveedor&#x3D;${idProveedor}&amp;IdAtencion&#x3D;${atencionId}&#x60;
+    // ?IdAtencion&#x3D;${atencionId}&amp;TipoFotoFirma&#x3D;${TipoFotoFirma}
+    // return this.http.post&lt;Respuesta&gt;(url, Archivo).pipe(
+    //   tap(_ &#x3D;&gt; {
+    //     this.isAuthenticated.next(true);
+    //   }),
+    //   catchError(err &#x3D;&gt; throwError(() &#x3D;&gt; (err.error.message)))
+    // )
+    //      return this.http.post(&#x60;${this.apiUrl}/Proveedor/InsertarReconocimientoDeDeuda?IdTablaAjustador&#x3D;${credentials.IdTablaAjustador}&amp;CodigoBPMFicohsa&#x3D;${credentials.CodigoBPMFicohsa}&amp;CodigoReclamoFicohsa&#x3D;${credentials.CodigoReclamoFicohsa}&#x60;, {}).pipe(
+    return this.http.post(&#x60;${environment_local.api_url}/Proveedor/SubirVideo?IdProveedor&#x3D;${idProveedor}&amp;IdAtencion&#x3D;${atencionId}&#x60;, Archivo)
+    .pipe(
+        switchMap(( res: any  ) &#x3D;&gt; {
+          //map(res)
+          console.dir(&#x27;Video enviado&#x27;, res.code);
+        return from(Promise.all(res));
+      }),
+      tap(_ &#x3D;&gt; {
+        this.isAuthenticated.next(true);
+      })
+    )
+    
+  }
+
+*/
+
+
+  async openFilesInput(){
+    this.isVideo &#x3D; false;
+    this.fotos &#x3D; [];
+    $(&quot;#fileInput&quot;).click();
+    this.modalPrompt.dismiss();
+    this.process &#x3D; 2;
+
+    document.getElementById(&#x27;fileInput&#x27;).addEventListener(&quot;click&quot;, function(evento) {
+      evento.stopPropagation();
+    }, false);
+
+    $(&quot;#fileInput&quot;).on(&quot;change&quot;, evt &#x3D;&gt; {
+      evt.preventDefault();
+      evt.stopPropagation();
+      evt.stopImmediatePropagation();
+      const fileInputs &#x3D; (document.getElementById(&quot;fileInput&quot;) as HTMLInputElement).files;
+      console.dir(fileInputs)
+      $(&quot;#displayPhotos&quot;).click();
+    });
+  }
+
+  heyOmar(event){
+    let Evento &#x3D; event;
+    console.log(Evento)
+    /*
+    document.getElementById(&quot;filesvid&quot;).onchange &#x3D; function(e: Event) {
+      let file &#x3D; (&lt;HTMLInputElement&gt;e.target).files[0];
+      console.log(file)
+      // rest of your code...
+    }
+    */
+  }
+
+  openFilesInputVideo(){
+    this.isVideo &#x3D; true;
+    this.videos &#x3D; [];
+    $(&quot;#fileInputV&quot;).click();
+    this.modalPrompt.dismiss();
+    this.process &#x3D; 2;
+
+    $(&quot;#fileInputV&quot;).on(&quot;change&quot;, evt &#x3D;&gt; {
+      evt.preventDefault();
+      evt.stopPropagation();
+      evt.stopImmediatePropagation();
+
+      console.dir(evt)
+
+      const fileInputVs &#x3D; (document.getElementById(&quot;fileInputV&quot;) as HTMLInputElement).files;
+      console.dir(fileInputVs);
+
+      setTimeout(() &#x3D;&gt; {
+        //console.log(&#x27;mi fileinput&#x27;)
+        if (fileInputVs.length &gt; 0) {
+          //alert(&#x27;mi fileinput&#x27;)
+          this.videosSeleccionados &#x3D; fileInputVs.length;
+          //$(&quot;#imagenesConteo&quot;).fadeIn(&#x27;xslow&#x27;);
+          //$(&quot;#buttonSubmit&quot;).fadeIn(&#x27;xslow&#x27;);
+          
+          for (let index &#x3D; 0; index &lt; fileInputVs.length; index++) {
+            this.fechaFirma &#x3D; new Date().toISOString();
+            const file &#x3D; fileInputVs[index];
+    
+            var reader &#x3D; new FileReader();
+            reader.readAsDataURL(file);
+  
+            reader.onload &#x3D; e &#x3D;&gt; {
+              this.videos.push(e.target.result)
+            };
+            
+    
+            if (index &#x3D;&#x3D; (fileInputVs.length-1)) {
+              this.isLoading &#x3D; false
+            }
+            
+          }
+          
+        }else{
+          //$(&quot;#imagenesConteo&quot;).fadeOut(&#x27;slow&#x27;);
+          //$(&quot;#buttonSubmit&quot;).fadeOut(&#x27;slow&#x27;);
+        }
+      }, this.randomIntFromInterval(1, 5));
+    });
+  }
+
+  displayPhotos(event) {
+    this.fotos &#x3D; [];
+    event.preventDefault();
+    event.stopPropagation();
+    const fileInput &#x3D; (document.getElementById(&quot;fileInput&quot;) as HTMLInputElement).files;
+    
+    
+    //console.dir(fileInput)
+    this.isLoading &#x3D; true;
+
+    setTimeout(() &#x3D;&gt; {
+      //console.log(&#x27;mi fileinput&#x27;)
+      if (fileInput.length &gt; 0) {
+        //alert(&#x27;mi fileinput&#x27;)
+        this.imagenesSeleccionadas &#x3D; fileInput.length;
+        $(&quot;#imagenesConteo&quot;).fadeIn(&#x27;xslow&#x27;);
+        $(&quot;#buttonSubmit&quot;).fadeIn(&#x27;xslow&#x27;);
+        
+        for (let index &#x3D; 0; index &lt; fileInput.length; index++) {
+          this.fechaFirma &#x3D; new Date().toISOString();
+          const file &#x3D; fileInput[index];
+  
+          var reader &#x3D; new FileReader();
+          reader.readAsDataURL(file);
+
+          
+  
+          reader.onload &#x3D; e &#x3D;&gt; {
+            const b64 &#x3D; e.target.result   
+            this.daImagen &#x3D; b64; 
+            this.img.IdTipo&#x3D;1;
+            this.img.Tipo&#x3D;&#x27;Daño&#x27;;
+            this.img.Foto&#x3D; this.daImagen.split(&#x27;,&#x27;)[1];
+            this.img.Fecha &#x3D; new Date().toISOString();
+            this.img.Descripcion &#x3D; &#x27;&#x27;;
+            this.img.NombreFirmante &#x3D; &#x27;Hola Firmante&#x27;//this.nombreFirmante;
+            this.img.Source &#x3D; 2;
+            this.fotos.push(this.img);
+            this.img&#x3D;{};
+          };
+  
+          if (index &#x3D;&#x3D; (fileInput.length-1)) {
+            this.isLoading &#x3D; false
+          }
+          
+        }
+        
+      }else{
+        $(&quot;#imagenesConteo&quot;).fadeOut(&#x27;slow&#x27;);
+        $(&quot;#buttonSubmit&quot;).fadeOut(&#x27;slow&#x27;);
+      }
+    }, this.randomIntFromInterval(1, 5));
+    
+
+  }
+
+  randomIntFromInterval(min, max) { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
+
+  guardarFotos(){
+    this.toaster.dismissToast();
+          let dedscripcionsContainer &#x3D; document.getElementsByClassName(&#x27;descripcion-entrada&#x27;);
+          for (let indexVacia &#x3D; 0; indexVacia &lt; dedscripcionsContainer.length; indexVacia++) {
+            const elementResdtablecido &#x3D; dedscripcionsContainer[indexVacia];
+            elementResdtablecido
+          }
+
+          this.isLoading &#x3D; true;
+              
+          this.fotoData &#x3D; [];
+          
+          if (this.fotos.length &gt; 0) {
+            for (let index &#x3D; 0; index &lt; this.fotos.length; index++) {
+              const element &#x3D; this.fotos[index];
+
+              this.fotoData &#x3D; [{
+                Foto: element.Foto,
+                IdAtencion: parseInt(localStorage.getItem(&#x27;idAtencion&#x27;)),
+                RefTipoFotoId: element.IdTipo,
+                NombreFirmante: element.NombreFirmante,
+                Descripcion: element.Descripcion,
+                FechaFirma: element.Fecha
+              }]
+
+              this.api.GuardarFotos(this.fotoData).pipe( 
+                finalize(async ()&#x3D;&gt;{
+                  if (index &#x3D;&#x3D; (this.fotos.length-1)) {
+                    this.isLoading &#x3D; false;
+                  }
+                })
+              ).subscribe(
+                async (res) &#x3D;&gt;{
+                    let codigo &#x3D; res.status;
+                    if (index &#x3D;&#x3D; (this.fotos.length-1)) {
+                      this.toaster.presentToastNoButtons(&#x27;Fotos subidas con éxito!&#x27;, &#x27;top&#x27;, &#x27;fotos&#x27;);
+                      $(&quot;#imagenesConteo&quot;).fadeOut(&quot;slow&quot;);
+                      $(&quot;#buttonCancelImage&quot;).fadeOut(&quot;slow&quot;);
+                      $(&quot;#buttonSubmit&quot;).fadeOut(&quot;slow&quot;);
+                      $(&quot;#imagenesSubidas&quot;).fadeIn(&quot;xslow&quot;);
+                      $(&quot;#buttonMore&quot;).fadeIn(&quot;xslow&quot;);
+
+                    }
+                },
+                async (res) &#x3D;&gt; {
+                  let codigo &#x3D; res.status;
+                  this.toaster.presentToastNoButtons(codigo, &#x27;top&#x27;, &#x27;fotos&#x27;);
+                }
+              )
+            
+              if (index &#x3D;&#x3D; (this.fotos.length-1)) {
+                console.log(&quot;Data de fotografia &quot;);
+                console.dir(this.fotoData);
+              }
+            }
+          }else{
+            this.toaster.presentToastNoButtons(&quot;Necesitas cargar una imagen o más para guardarlas.&quot;, &quot;top&quot;, &quot;fotos&quot;);
+          }
+  }
+  guardarFotosX(){
+    this.descripcionesVacias &#x3D; [];
+    this.dedscripcionContainer &#x3D; document.getElementsByClassName(&#x27;descripcion-entrada&#x27;);
+    for (let indexDescripcion &#x3D; 0; indexDescripcion &lt; this.dedscripcionContainer.length; indexDescripcion++) {
+      const element &#x3D; this.dedscripcionContainer[indexDescripcion];
+      let laDescripcion &#x3D; $(&#x27;.descripcion-entrada&#x27;).eq(indexDescripcion).val();
+      if (laDescripcion &#x3D;&#x3D; &#x27;&#x27; || laDescripcion &#x3D;&#x3D; null || laDescripcion &#x3D;&#x3D; undefined) {
+        element.setAttribute(&#x27;style&#x27;, &#x27;color:red;border:2px solid red&#x27;);
+        this.descripcionesVacias.push(indexDescripcion);
+      }else{
+        element.setAttribute(&#x27;style&#x27;, &#x27;color:inherit;border:2px solid inherit&#x27;);
+      }
+
+      if (indexDescripcion &#x3D;&#x3D; (this.dedscripcionContainer.length-1)) {
+        if (this.descripcionesVacias.length &gt; 0) {
+          this.toaster.presentToastNoButtonsRed(&#x27;Los siguientes campos no tienen descripción. Porfavor ingresa una descripción para continuar. Igualmente valida el tipo de fotografía.&#x27;, &#x27;top&#x27;, &#x27;descripcion&#x27;);
+        }else{
+          this.toaster.dismissToast();
+          let dedscripcionsContainer &#x3D; document.getElementsByClassName(&#x27;descripcion-entrada&#x27;);
+          for (let indexVacia &#x3D; 0; indexVacia &lt; dedscripcionsContainer.length; indexVacia++) {
+            const elementResdtablecido &#x3D; dedscripcionsContainer[indexVacia];
+            elementResdtablecido
+          }
+
+          this.isLoading &#x3D; true;
+              
+          this.fotoData &#x3D; [];
+          
+          if (this.fotos.length &gt; 0) {
+            for (let index &#x3D; 0; index &lt; this.fotos.length; index++) {
+              const element &#x3D; this.fotos[index];
+
+              this.fotoData &#x3D; [{
+                Foto: element.Foto,
+                IdAtencion: parseInt(localStorage.getItem(&#x27;idAtencion&#x27;)),
+                RefTipoFotoId: element.IdTipo,
+                NombreFirmante: element.NombreFirmante,
+                Descripcion: element.Descripcion,
+                FechaFirma: element.Fecha
+              }]
+
+              this.api.GuardarFotos(this.fotoData).pipe( 
+                finalize(async ()&#x3D;&gt;{
+                  if (index &#x3D;&#x3D; (this.fotos.length-1)) {
+                    this.isLoading &#x3D; false;
+                  }
+                })
+              ).subscribe(
+                async (res) &#x3D;&gt;{
+                    let codigo &#x3D; res.status;
+                    if (index &#x3D;&#x3D; (this.fotos.length-1)) {
+                      this.toaster.presentToastNoButtons(&#x27;Fotos subidas con éxito!&#x27;, &#x27;top&#x27;, &#x27;fotos&#x27;);
+                      $(&quot;#imagenesConteo&quot;).fadeOut(&quot;slow&quot;);
+                      $(&quot;#buttonCancelImage&quot;).fadeOut(&quot;slow&quot;);
+                      $(&quot;#buttonSubmit&quot;).fadeOut(&quot;slow&quot;);
+                      $(&quot;#imagenesSubidas&quot;).fadeIn(&quot;xslow&quot;);
+                      $(&quot;#buttonMore&quot;).fadeIn(&quot;xslow&quot;);
+                    }
+                },
+                async (res) &#x3D;&gt; {
+                  let codigo &#x3D; res.status;
+                  this.toaster.presentToastNoButtons(codigo, &#x27;top&#x27;, &#x27;fotos&#x27;);
+                }
+              )
+            
+              if (index &#x3D;&#x3D; (this.fotos.length-1)) {
+                console.log(&quot;Data de fotografia &quot;);
+                console.dir(this.fotoData);
+              }
+            }
+          }else{
+            this.toaster.presentToastNoButtons(&quot;Necesitas cargar una imagen o más para guardarlas.&quot;, &quot;top&quot;, &quot;fotos&quot;);
+          }
+     /**/
+
+        }
+      }
+    }
+    
+  }
+  
+
+  getBase64(file, index) {
+    console.dir(file)
+    var reader &#x3D; new FileReader();
+    let img &#x3D; [];
+    reader.readAsDataURL(file);
+    reader.onload &#x3D; function () {
+      img.push( {IdTipo:1, Tipo:&#x27;Daño&#x27;, Foto: reader.result.toString(), Fecha : new Date().toISOString(), Descripcion : &#x27;&#x27;});
+      if (index &lt; 10) {
+        localStorage.setItem(&#x27;Foto &#x27;+index, JSON.stringify(img));  
+      }
+      
+    };
+    reader.onerror &#x3D; function (error) {
+      console.log(&#x27;Error: &#x27;, error);
+    };
+ }
+
+  entraDescripcionFoto(descripcion, fIndex){
+    console.log(descripcion+&#x27;, &#x27;+fIndex);
+    this.fotos[fIndex].Descripcion &#x3D; descripcion;
+
+    console.log(this.fotos[fIndex].IdAtencion);
+  }
+
+  checkPlatformForWeb() {
+    if(Capacitor.getPlatform() &#x3D;&#x3D; &#x27;web&#x27;) return true;
+    return false;
+  }
+
+  deleteFoto(i:number ){
+    this.fotos.splice(i,1);
+    localStorage.removeItem(&#x27;Foto &#x27;+i);
+    this.imagenesSeleccionadas &#x3D; this.imagenesSeleccionadas - 1;
+  }
+
+  clearPhotos(){
+    const fileInputs &#x3D; (document.getElementById(&quot;fileInput&quot;) as HTMLInputElement).files;
+      console.dir(fileInputs)
+
+      
+      
+  
+          
+
+    this.isLoading &#x3D; true;
+    this.toaster.dismissToast();
+    $(&#x27;#fileInput&#x27;).empty();
+    
+    //fileInputs.empty()
+    setTimeout(() &#x3D;&gt; {
+      //alert(&#x27;Soy un feliz intervalo&#x27;)
+      for (let index &#x3D; 0; index &lt; fileInputs.length; index++) {
+        const element &#x3D; fileInputs[index];
+        const file &#x3D; fileInputs[index];
+        var reader &#x3D; new FileReader();
+        reader.readAsDataURL(file);
+        reader.EMPTY;
+      }
+
+      this.imagenesSeleccionadas &#x3D; 0;
+      this.fotos &#x3D; [];
+      this.isLoading &#x3D; false;
+    }, this.randomIntFromInterval(1, 5));
+  }
+
+  async getTipoFotos(){
+    const load &#x3D; await this.loading.create();
+    await  load.present();
+    
+    this.api.ListTipoFoto().pipe( 
+      finalize(async ()&#x3D;&gt;{
+        await load.dismiss();
+      })
+    ).subscribe(
+       async (res) &#x3D;&gt;{
+          this.tipoFotos&#x3D; res;
+      },
+      async (res) &#x3D;&gt; {
+        const alert &#x3D; await this.alert.create({
+          header:&#x27;HELP&#x27;,
+          message:res.error.Message,
+          buttons:[&#x27;Ok&#x27;]
+        });
+        await alert.present();
+      }
+    )
+  }
+  
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;ion-header&gt;
+  &lt;ion-spinner color&#x3D;&quot;primary&quot; name&#x3D;&quot;lines&quot; *ngIf&#x3D;&quot;isLoading &#x3D;&#x3D; true&quot;&gt;&lt;/ion-spinner&gt;
+  &lt;ion-footer id&#x3D;&quot;loaderFooter&quot; *ngIf&#x3D;&quot;isLoading &#x3D;&#x3D; true&quot;&gt;&lt;/ion-footer&gt;
+  &lt;ion-toolbar&gt;
+    &lt;ion-buttons slot&#x3D;&quot;start&quot;&gt;
+      &lt;ion-back-button&gt;&lt;/ion-back-button&gt;
+    &lt;/ion-buttons&gt;
+    &lt;ion-title&gt;
+      &lt;ion-grid class&#x3D;&quot;ion-no-border&quot;&gt;
+        &lt;ion-row&gt;
+          &lt;ion-col size&#x3D;&quot;4&quot; style&#x3D;&quot;box-shadow: none;&quot;&gt;&lt;/ion-col&gt;
+          &lt;ion-col size&#x3D;&quot;4&quot; style&#x3D;&quot;box-shadow: none;&quot;&gt;Informe Fotografico Atención # {{atencionId}}&lt;/ion-col&gt;
+          &lt;ion-col size&#x3D;&quot;4&quot; style&#x3D;&quot;box-shadow: none;&quot;&gt;&lt;/ion-col&gt;
+        &lt;/ion-row&gt;
+      &lt;/ion-grid&gt;
+    &lt;/ion-title&gt;
+  &lt;/ion-toolbar&gt;
+&lt;/ion-header&gt;
+
+&lt;ion-content&gt;
+  &lt;input #fotoInput type&#x3D;&quot;file&quot; id&#x3D;&quot;fileInput&quot; name&#x3D;&quot;files[]&quot; hidden multiple accept&#x3D;&quot;image/*&quot;/&gt;
+  &lt;input #videoInput type&#x3D;&quot;file&quot; id&#x3D;&quot;fileInputV&quot; name&#x3D;&quot;filesv[]&quot; hidden multiple accept&#x3D;&quot;video/*&quot;/&gt;
+
+  &lt;!--form&gt;
+    &lt;input #videoInputEntry type&#x3D;&quot;file&quot; (change)&#x3D;&quot;heyOmar($event)&quot; id&#x3D;&quot;filesvid&quot; name&#x3D;&quot;filesvid&quot; multiple accept&#x3D;&quot;video/*&quot;/&gt;
+    &lt;button #subirVideoBoton type&#x3D;&quot;submit&quot; class&#x3D;&quot;btn btn-success pull-right&quot; id&#x3D;&quot;SubirVideos&quot; (click)&#x3D;&quot;&#x27;subirVideo($event)&#x27;&quot; hidden&gt;&lt;i class&#x3D;&quot;fa fa-save&quot;&gt;&lt;/i&gt; Guardar&lt;/button&gt;
+  &lt;/!--form --&gt;
+
+  &lt;form enctype&#x3D;&quot;multipart/form-data&quot; style&#x3D;&quot;height: 0;visibility: collapse;&quot;&gt;
+   
+    &lt;ion-list&gt;
+      &lt;ion-item&gt;
+        &lt;input #uploadVideoInput id&#x3D;&quot;uploadVideoInput&quot; type&#x3D;&quot;file&quot; (change)&#x3D;&quot;onFileSelected($event)&quot; name&#x3D;&quot;entradaVideo&quot; accept&#x3D;&quot;video/*&quot; hidden&gt;
+        &lt;button #subirVideoBoton ion-button (click)&#x3D;&quot;onUpload()&quot; type&#x3D;&quot;submit&quot; hidden&gt;Subir Video&lt;/button&gt;
+      &lt;/ion-item&gt;
+      &lt;!--ion-item&gt;
+         &lt;input name&#x3D;&quot;Archivo&quot; type&#x3D;&quot;file&quot; (change)&#x3D;&quot;fileEvent($event)&quot; accept&#x3D;&quot;video/*&quot;&gt;
+         &lt;button ion-button (click)&#x3D;&quot;onUpload()&quot; type&#x3D;&quot;submit&quot;&gt;Subir Video Método Chele&lt;/button&gt;
+      &lt;/ion-item --&gt;
+    &lt;/ion-list&gt;
+    
+    &lt;input type&#x3D;&quot;number&quot; placeholder&#x3D;&quot;ID de Atención&quot; style&#x3D;&quot;color: aliceblue;&quot; [(ngModel)]&#x3D;&quot;atencionId&quot; name&#x3D;&quot;entradaId&quot; hidden&gt;
+    
+   
+  &lt;/form&gt;
+
+  &lt;ion-grid *ngIf&#x3D;&quot;isVideo &#x3D;&#x3D; true&quot;&gt;
+    &lt;ion-row&gt;
+      &lt;ion-col size&#x3D;&quot;12&quot; size-md&#x3D;&quot;12&quot; *ngFor&#x3D;&quot;let item of videos;let i &#x3D; index&quot;&gt;
+        &lt;ion-card (click)&#x3D;&quot;&#x27;openImg(item.Foto)&#x27;&quot; class&#x3D;&quot;ion-no-margin background-size ion-no-padding&quot;
+            [ngStyle]&#x3D;&quot;{&#x27;background-image&#x27;: &#x27;url(&#x27;+&#x27;data:image/jpeg;base64, + item.Foto + )&#x27;}&quot;
+            style&#x3D;&quot;width: 100%;height: 460px;&quot;
+            &gt;
+
+            
+
+            &lt;video id&#x3D;&quot;videoDisplay&quot; controls&#x3D;&quot;controls&quot; preload&#x3D;&quot;metadata&quot; autoplay&#x3D;&quot;autoplay&quot; webkit-playsinline&#x3D;&quot;webkit-playsinline&quot; class&#x3D;&quot;videoPlayer&quot;
+            style&#x3D;&quot;width: 100%;height: 460px;&quot;&gt;
+              &lt;source src&#x3D;&quot;{{item}}&quot; type&#x3D;&quot;video/mp4&quot; /&gt;
+             &lt;/video&gt;
+
+            &lt;!--img alt&#x3D;&quot;Foto Siniestro&quot; src&#x3D;&quot;&#x27;data:image/jpeg;base64,&#x27; + {{item.Foto}} + &#x27;&quot; [hidden]&#x3D;&quot;true&quot; / --&gt;
+            
+            &lt;!-- Card Content --&gt;
+            &lt;ion-card-content class&#x3D;&quot;transparent ion-no-padding&quot;&gt;
+              &lt;ion-item class&#x3D;&quot;transparent&quot; lines&#x3D;&quot;none&quot; (click)&#x3D;&quot;&#x27;deleteFoto(i)&#x27;&quot;&gt;
+
+                &lt;ion-label class&#x3D;&quot;ion-float-left&quot;&gt;
+                  &lt;h2 class&#x3D;&quot;text-size-lg&quot;&gt;&lt;/h2&gt;
+                &lt;/ion-label&gt;
+                &lt;ion-icon class&#x3D;&quot;icon icon-small&quot; slot&#x3D;&quot;end&quot; name&#x3D;&quot;trash-outline&quot;&gt;&lt;/ion-icon&gt;
+              &lt;/ion-item&gt;
+            &lt;/ion-card-content&gt;
+            &lt;ion-card-content&gt;
+              &lt;div class&#x3D;&quot;audio-container&quot; hidden&gt;
+                &lt;audio controls&#x3D;&quot;true&quot; preload&#x3D;&quot;none&quot;&gt;
+                  &lt;source type&#x3D;&quot;audio/mpeg&quot; [src]&#x3D;&quot;&#x27;{{item}}&#x27;&quot; /&gt;
+                  [unable to load audio]
+                &lt;/audio&gt;
+              &lt;/div&gt;
+            &lt;/ion-card-content&gt;
+            
+          &lt;/ion-card&gt;
+          &lt;ion-item&gt;
+            &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+              Tipo de Fotografía&lt;/ion-label&gt;
+              &lt;ion-select class&#x3D;&quot;text-size-xs&quot; [(ngModel)]&#x3D;&quot;item.IdTipo&quot; multiple&#x3D;&quot;false&quot; style&#x3D;&quot;box-shadow: -3px 3px 7px lightgray;&quot;&gt;
+                &lt;ion-select-option *ngFor&#x3D;&quot;let tipo of tipoFotos;&quot; [value]&#x3D;&quot;tipo.Id&quot;&gt;{{tipo.TipoFotografia}}
+                  
+                &lt;/ion-select-option&gt;
+                &lt;br&gt;
+                &lt;br&gt;
+                &lt;ion-select-option style&#x3D;&quot;color: white;&quot;&gt;Ajustadores App&lt;/ion-select-option&gt;
+                &lt;br&gt;
+              &lt;/ion-select&gt;
+              &lt;ion-input [hidden]&#x3D;&quot;true&quot; #descripcionFoto [value]&#x3D;&quot;item.Descripcion&quot;&gt;&lt;/ion-input&gt;
+              &lt;ion-input [hidden]&#x3D;&quot;true&quot; #indexFoto [value]&#x3D;&quot;i&quot;&gt;&lt;/ion-input&gt;
+              &lt;ion-input placeholder&#x3D;&quot;Entra Una Descripción&quot;  [(ngModel)]&#x3D;&quot;item.Descripcion&quot; class&#x3D;&quot;form-control descripcion-entrada&quot; (ionBlur)&#x3D;&quot;&#x27;entraDescripcionFoto(descripcionFoto.value, indexFoto.value)&#x27;&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+      &lt;/ion-col&gt;
+    &lt;/ion-row&gt;
+  &lt;/ion-grid&gt;
+
+  &lt;ion-grid *ngIf&#x3D;&quot;isVideo &#x3D;&#x3D; false&quot; fixed&gt;
+    &lt;ion-row&gt;
+
+        &lt;ion-col size&#x3D;&quot;4&quot; size-md&#x3D;&quot;4&quot; *ngFor&#x3D;&quot;let item of fotos;let i &#x3D; index&quot;&gt;
+          
+          &lt;ion-card (click)&#x3D;&quot;openImg(item.Foto)&quot; class&#x3D;&quot;ion-no-margin background-size ion-no-padding&quot;
+            [ngStyle]&#x3D;&quot;{&#x27;background-image&#x27;: &#x27;url(&#x27;+&#x27;data:image/jpeg;base64,&#x27; + item.Foto + &#x27;)&#x27;}&quot;
+            style&#x3D;&quot;width: 100%;&quot;
+            &gt;
+
+            &lt;img alt&#x3D;&quot;Foto Siniestro&quot; src&#x3D;&quot;&#x27;data:image/jpeg;base64,&#x27; + {{item.Foto}} + &#x27;&quot; [hidden]&#x3D;&quot;true&quot; /&gt;
+            
+            &lt;!-- Card Content --&gt;
+            &lt;ion-card-content class&#x3D;&quot;transparent ion-no-padding&quot;&gt;
+              &lt;ion-item class&#x3D;&quot;transparent&quot; lines&#x3D;&quot;none&quot; (click)&#x3D;&quot;deleteFoto(i)&quot;&gt;
+
+                &lt;ion-label class&#x3D;&quot;ion-float-left&quot;&gt;
+                  &lt;h2 class&#x3D;&quot;text-size-lg&quot;&gt;&lt;/h2&gt;
+                &lt;/ion-label&gt;
+                &lt;ion-icon class&#x3D;&quot;icon icon-small&quot; slot&#x3D;&quot;end&quot; name&#x3D;&quot;trash-outline&quot;&gt;&lt;/ion-icon&gt;
+              &lt;/ion-item&gt;
+            &lt;/ion-card-content&gt;
+            
+          &lt;/ion-card&gt;
+          &lt;ion-item&gt;
+            &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+              Tipo de Fotografía&lt;/ion-label&gt;
+              &lt;ion-select class&#x3D;&quot;text-size-xs&quot; [(ngModel)]&#x3D;&quot;item.IdTipo&quot; multiple&#x3D;&quot;false&quot; style&#x3D;&quot;box-shadow: -3px 3px 7px lightgray;&quot;&gt;
+                &lt;ion-select-option *ngFor&#x3D;&quot;let tipo of tipoFotos;&quot; [value]&#x3D;&quot;tipo.Id&quot;&gt;{{tipo.TipoFotografia}}
+                  
+                &lt;/ion-select-option&gt;
+                &lt;br&gt;
+                &lt;br&gt;
+                &lt;ion-select-option style&#x3D;&quot;color: white;&quot;&gt;Ajustadores App&lt;/ion-select-option&gt;
+                &lt;br&gt;
+              &lt;/ion-select&gt;
+              &lt;ion-input [hidden]&#x3D;&quot;true&quot; #descripcionFoto [value]&#x3D;&quot;item.Descripcion&quot;&gt;&lt;/ion-input&gt;
+              &lt;ion-input [hidden]&#x3D;&quot;true&quot; #indexFoto [value]&#x3D;&quot;i&quot;&gt;&lt;/ion-input&gt;
+              &lt;ion-input placeholder&#x3D;&quot;Entra Una Descripción&quot;  [(ngModel)]&#x3D;&quot;item.Descripcion&quot; class&#x3D;&quot;form-control descripcion-entrada&quot; (ionBlur)&#x3D;&quot;entraDescripcionFoto(descripcionFoto.value, indexFoto.value)&quot;&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+        &lt;/ion-col&gt;
+    &lt;/ion-row&gt;
+  &lt;/ion-grid&gt;
+  &lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+  &lt;ion-footer style&#x3D;&quot;position: fixed; bottom: 0; left: 0; height: 78px; background: white;&quot;&gt;
+    
+    &lt;ion-badge *ngIf&#x3D;&quot;isVideo &#x3D;&#x3D; false&quot; id&#x3D;&quot;imagenesSubidas&quot; color&#x3D;&quot;success&quot; style&#x3D;&quot;position: fixed; left: 10px; bottom: 10px; width: 230px; padding: 15px; height: 46px; text-align: left;display: none;&quot; vertical&#x3D;&quot;bottom&quot; horizontal&#x3D;&quot;end&quot;&gt;
+      Imágenes subidas con éxito!
+    &lt;/ion-badge&gt;
+    &lt;ion-badge *ngIf&#x3D;&quot;isVideo &#x3D;&#x3D; false&quot; id&#x3D;&quot;imagenesConteo&quot; color&#x3D;&quot;warning&quot; style&#x3D;&quot;position: fixed; left: 10px; bottom: 10px; width: 215px; padding: 15px; height: 46px; text-align: left;display: none;&quot; vertical&#x3D;&quot;bottom&quot; horizontal&#x3D;&quot;end&quot;&gt;
+      &lt;strong&gt;{{imagenesSeleccionadas}}&lt;/strong&gt; Imágenes seleccionadas
+    &lt;/ion-badge&gt;
+
+    &lt;ion-button *ngIf&#x3D;&quot;isVideo &#x3D;&#x3D; false&quot; color&#x3D;&quot;warning&quot; id&#x3D;&quot;buttonSubmit&quot; style&#x3D;&quot;position: fixed; left: 230px; bottom: 7px;height: 46px; display: none;&quot; vertical&#x3D;&quot;bottom&quot; horizontal&#x3D;&quot;start&quot;
+    (click)&#x3D;&quot;guardarFotos()&quot;&gt;Enviar&lt;/ion-button&gt;
+
+    &lt;ion-badge *ngIf&#x3D;&quot;isVideo &#x3D;&#x3D; true&quot; id&#x3D;&quot;videosSubidos&quot; color&#x3D;&quot;success&quot; style&#x3D;&quot;position: fixed; left: 10px; bottom: 10px; width: 230px; padding: 15px; height: 46px; text-align: left;display: none;&quot; vertical&#x3D;&quot;bottom&quot; horizontal&#x3D;&quot;end&quot;&gt;
+      Videos subidas con éxito!
+    &lt;/ion-badge&gt;
+    &lt;ion-badge *ngIf&#x3D;&quot;isVideo &#x3D;&#x3D; true&quot; id&#x3D;&quot;videosConteo&quot; color&#x3D;&quot;warning&quot; style&#x3D;&quot;position: fixed; left: 10px; bottom: 10px; width: 215px; padding: 15px; height: 46px; text-align: left;display: none;&quot; vertical&#x3D;&quot;bottom&quot; horizontal&#x3D;&quot;end&quot;&gt;
+      &lt;strong&gt;{{videosSeleccionados}}&lt;/strong&gt; Videos seleccionados
+    &lt;/ion-badge&gt;
+
+    &lt;ion-button *ngIf&#x3D;&quot;isVideo &#x3D;&#x3D; true&quot; color&#x3D;&quot;warning&quot; id&#x3D;&quot;buttonSubmitVideo&quot; style&#x3D;&quot;position: fixed; left: 230px; bottom: 7px;height: 46px; display: none;&quot; vertical&#x3D;&quot;bottom&quot; horizontal&#x3D;&quot;start&quot;
+    (click)&#x3D;&quot;subirVideoBoton.click()&quot;&gt;Enviar&lt;/ion-button&gt;
+
+    &lt;ion-fab *ngIf&#x3D;&quot;true&quot; style&#x3D;&quot;position: fixed; right: 218px;&quot; vertical&#x3D;&quot;bottom&quot; horizontal&#x3D;&quot;end&quot;&gt;
+      &lt;ion-fab-button class&#x3D;&quot;boton-estado-2&quot; (click)&#x3D;&quot;clearPhotos()&quot;&gt;
+        &lt;ion-icon style&#x3D;&quot;font-size: 3rem;&quot; src&#x3D;&quot;../../assets/img/clear-broom.svg&quot;&gt;&lt;/ion-icon&gt;
+      &lt;/ion-fab-button&gt;
+    &lt;/ion-fab&gt;
+
+    &lt;ion-fab *ngIf&#x3D;&quot;true&quot; style&#x3D;&quot;position: fixed; right: 150px;&quot; vertical&#x3D;&quot;bottom&quot; horizontal&#x3D;&quot;end&quot;&gt;
+      &lt;ion-fab-button id&#x3D;&quot;displayPhotos&quot; class&#x3D;&quot;boton-estado-2&quot; (click)&#x3D;&quot;displayPhotos($event)&quot;&gt;
+        &lt;ion-icon name&#x3D;&quot;sync&quot;&gt;&lt;/ion-icon&gt;
+      &lt;/ion-fab-button&gt;
+    &lt;/ion-fab&gt;
+    
+    &lt;ion-fab *ngIf&#x3D;&quot;true&quot; style&#x3D;&quot;position: fixed; right: 80px;&quot; vertical&#x3D;&quot;bottom&quot; horizontal&#x3D;&quot;end&quot;&gt;
+      &lt;ion-fab-button class&#x3D;&quot;boton-estado-1&quot; (click)&#x3D;&quot;uploadVideoInput.click()&quot;&gt;
+        &lt;ion-icon name&#x3D;&quot;film&quot;&gt;&lt;/ion-icon&gt;
+      &lt;/ion-fab-button&gt;
+    &lt;/ion-fab&gt;
+
+    &lt;ion-fab *ngIf&#x3D;&quot;true&quot; style&#x3D;&quot;position: fixed;&quot; vertical&#x3D;&quot;bottom&quot; horizontal&#x3D;&quot;end&quot;&gt;
+      &lt;ion-fab-button class&#x3D;&quot;boton-estado-1&quot; (click)&#x3D;&quot;openFilesInput()&quot;&gt;
+        &lt;ion-icon name&#x3D;&quot;camera&quot;&gt;&lt;/ion-icon&gt;
+      &lt;/ion-fab-button&gt;
+    &lt;/ion-fab&gt;
+    
+  &lt;/ion-footer&gt;
+&lt;/ion-content&gt;
+&lt;ion-modal class&#x3D;&quot;Img&quot; #appointmentAlert [isOpen]&#x3D;&quot;openFoto&quot;&gt;
+	&lt;ng-template&gt;
+		&lt;ion-content (click)&#x3D;&quot;openFoto&#x3D;false&quot;&gt;
+			&lt;ion-img [src]&#x3D;&quot;&#x27;data:image/jpeg;base64,&#x27;+foto&quot;&gt;&lt;/ion-img&gt;
+		&lt;/ion-content&gt;
+	&lt;/ng-template&gt;
+&lt;/ion-modal&gt;
+
+&lt;ion-modal #modalPrompt trigger&#x3D;&quot;open-modal-prompt&quot; [initialBreakpoint]&#x3D;&quot;0.75&quot; [breakpoints]&#x3D;&quot;[0, 0.25, 0.5, 0.95]&quot;
+&gt;
+  &lt;ng-template&gt;
+    &lt;ion-content&gt;
+      &lt;ion-toolbar&gt;Opciones Disponibles&lt;/ion-toolbar&gt;
+      &lt;ion-list&gt;
+        &lt;ion-item-divider&gt;
+          &lt;ion-label&gt; Galería &lt;/ion-label&gt;
+        &lt;/ion-item-divider&gt;
+
+        &lt;ion-item (click)&#x3D;&quot;openFilesInput()&quot;&gt;
+          &lt;ion-avatar slot&#x3D;&quot;start&quot;&gt;
+            &lt;ion-icon style&#x3D;&quot;font-size: 3rem;&quot; name&#x3D;&quot;images-outline&quot;&gt;&lt;/ion-icon&gt;
+          &lt;/ion-avatar&gt;
+          &lt;ion-label&gt;
+            &lt;h2&gt;Abrir Galería&lt;/h2&gt;
+            &lt;p&gt;Imágenes Precargadas&lt;/p&gt;
+          &lt;/ion-label&gt;
+        &lt;/ion-item&gt;
+
+        &lt;ion-item (click)&#x3D;&quot;&#x27;videoInputEntry.click()&#x27;&quot;&gt;
+          &lt;ion-avatar slot&#x3D;&quot;start&quot;&gt;
+            &lt;ion-icon style&#x3D;&quot;font-size: 3rem;&quot; name&#x3D;&quot;film-outline&quot;&gt;&lt;/ion-icon&gt;
+          &lt;/ion-avatar&gt;
+          &lt;ion-label&gt;
+            &lt;h2&gt;Abrir Galería (Video)&lt;/h2&gt;
+            &lt;p&gt;Videos Precargados&lt;/p&gt;
+          &lt;/ion-label&gt;
+        &lt;/ion-item&gt;
+
+        &lt;br&gt;
+        &lt;ion-item-divider&gt;
+          &lt;ion-label&gt; Cámara &lt;/ion-label&gt;
+        &lt;/ion-item-divider&gt;
+        &lt;ion-item (click)&#x3D;&quot;openCamera()&quot;&gt;
+          &lt;ion-avatar slot&#x3D;&quot;start&quot;&gt;
+            &lt;ion-icon style&#x3D;&quot;font-size: 3rem;&quot; name&#x3D;&quot;camera-outline&quot;&gt;&lt;/ion-icon&gt;
+          &lt;/ion-avatar&gt;
+          &lt;ion-grid&gt;
+            &lt;ion-row&gt;
+              &lt;ion-col size&#x3D;&quot;6&quot; class&#x3D;&quot;not&quot;&gt;
+                &lt;ion-label&gt;
+                  &lt;h2&gt;Abrir Cámara&lt;/h2&gt;
+                  &lt;p&gt;Captura el Momento&lt;/p&gt;
+                &lt;/ion-label&gt;
+              &lt;/ion-col&gt;
+            &lt;/ion-row&gt;
+          &lt;/ion-grid&gt;
+        &lt;/ion-item&gt;
+
+        &lt;ion-item&gt;
+        &lt;/ion-item&gt;
+      &lt;/ion-list&gt;
+    &lt;/ion-content&gt;
+  &lt;/ng-template&gt;
+&lt;/ion-modal&gt;</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./fotoshn.page.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">ion-col:not(.not){
+    box-shadow: 0px 0px 2px 2px rgb(0 0 0 / 10%);
+    border-radius: 2%;
+}
+ion-card {
+    height: 150px;
+    width: 45vw;
+    border-radius: 0;
+    background-size: cover;
+    ion-card-content {
+      position: relative;
+      background: rgba(36, 36, 36, 0.40);
+      width: 100%;
+      h2,
+      .icon-small {
+        color: var(--cs-text-primary, #ffffff);
+      }
+      width: max-content;
+    }
+  }
+  .Img{
+		//ion-modal{
+			--background: rgba(44,39,45,0.2);
+			color:#4ba8ed;
+			&amp;::part(content){
+				backdrop-filter: blur(6px);
+			}
+			.item.sc-ion-label-md-h, .item .sc-ion-label-md-h{
+				white-space: normal;
+				padding: 10px;
+				font-size: 1.2rem;
+				white-space: normal;
+				font-weight: bold;
+			}
+			ion-content{
+				--background: transparent;
+				--padding-top: 20px;
+				--padding-start: 20px;
+				--padding-end: 20px;
+				ion-img{
+          width: 100%;
+          height: 100%;
+          
+        }
+				.item.sc-ion-label-ios-h, .item .sc-ion-label-ios-h{
+					--color: initial;
+					display: block;
+					font-size: 1.2rem;
+					color: var(--color);
+					font-weight: bold;
+					text-overflow: ellipsis;
+					white-space: normal;
+				}
+			}
+			
+			
+		//}
+		
+	}
+    img{
+        object-fit:revert ;
+    }
+
+	::ng-deep {
+		.alert-wrapper {
+		--min-width: 600px;
+		--max-width: 600px;
+		--width: 600px;
+	  }
+	}
+	  .alert-wrapper{
+		max-width: 600px !important;
+		width: 600px;
+	  }
+
+	  /*
+	  #buttonSubmit{
+		--background: #3880ff;
+		--background-activated: #3968ba;
+		--background-hover: #3968ba;
+		--border-radius: 15px;
+		--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+		--color: white;
+	  }
+
+	  #buttonDisplay{
+		--background: #f14f23;
+		--background-activated: #a8462a;
+		--background-hover: #f66e48;
+		--border-radius: 15px;
+		--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+		--color: white;
+	  }
+
+	  #open-modal-prompt{
+		--background: #d3d1d1;
+		--background-activated: #7e7d7d;
+		--background-hover: #9a8b87;
+		--border-radius: 15px;
+		--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+		--color: white;
+	  }
+
+	  ion-fab-button {
+	--background: #f14f23;
+	--background-activated: #a8462a;
+	--background-hover: #f66e48;
+	--border-radius: 15px;
+	--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+	--color: white;
+  }
+	
+*/
+
+
+
+  .boton-estado-1{
+	--background: #d3d1d1;
+	--background-activated: #7e7d7d;
+	--background-hover: #9a8b87;
+	--border-radius: 15px;
+	--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+	--color: white;
+  }
+
+  .boton-estado-1-x{
+	--background: #d3d1d1;
+	--background-activated: #7e7d7d;
+	--background-hover: #9a8b87;
+	--border-radius: 15px;
+	--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+	--color: white;
+  }
+
+  .boton-estado-2{
+	--background: #f14f23;
+	--background-activated: #a8462a;
+	--background-hover: #f66e48;
+	--border-radius: 15px;
+	--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+	--color: white;
+  }
+
+  .boton-estado-3{
+	--background: #a9d4a5;
+	--background-activated: #819f7e;
+	--background-hover: #819f7e;
+	--border-radius: 15px;
+	--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+	--color: white;
+  }
+
+	  ion-select::part(text) {
+		font-size: 1.2rem;
+	  }
+
+	  ion-spinner{
+		position: fixed;
+		  top: 28%;
+		  left: 40%;
+		  z-index: 999;
+		  width: 20%;
+		  height: 20%;
+		//background-color: #00213f;
+	  }
+	  
+	  #loaderFooter{
+		position: fixed;
+		  background: black;
+		  opacity: 0.6;
+		  height: 100vh;
+		  width: 100vw;
+		  z-index: 900;
+		  bottom: 0;
+	  }
+
+	  ion-item-divider{
+		background: #0090d0;
+		color: aliceblue;
+	}
+
+	.empty-col{
+		box-shadow: none;
+		border: none;
+	}</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><ion-header>  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>  <ion-footer id="loaderFooter" *ngIf="isLoading == true"></ion-footer>  <ion-toolbar>    <ion-buttons slot="start">      <ion-back-button></ion-back-button>    </ion-buttons>    <ion-title>      <ion-grid class="ion-no-border">        <ion-row>          <ion-col size="4" style="box-shadow: none;"></ion-col>          <ion-col size="4" style="box-shadow: none;">Informe Fotografico Atención # {{atencionId}}</ion-col>          <ion-col size="4" style="box-shadow: none;"></ion-col>        </ion-row>      </ion-grid>    </ion-title>  </ion-toolbar></ion-header><ion-content>  <input #fotoInput type="file" id="fileInput" name="files[]" hidden multiple accept="image/*"/>  <input #videoInput type="file" id="fileInputV" name="filesv[]" hidden multiple accept="video/*"/>  <!--form>    <input #videoInputEntry type="file" (change)="heyOmar($event)" id="filesvid" name="filesvid" multiple accept="video/*"/>    <button #subirVideoBoton type="submit" class="btn btn-success pull-right" id="SubirVideos" (click)="\'subirVideo($event)\'" hidden><i class="fa fa-save"></i> Guardar</button>  </!--form -->  <form enctype="multipart/form-data" style="height: 0;visibility: collapse;">       <ion-list>      <ion-item>        <input #uploadVideoInput id="uploadVideoInput" type="file" (change)="onFileSelected($event)" name="entradaVideo" accept="video/*" hidden>        <button #subirVideoBoton ion-button (click)="onUpload()" type="submit" hidden>Subir Video</button>      </ion-item>      <!--ion-item>         <input name="Archivo" type="file" (change)="fileEvent($event)" accept="video/*">         <button ion-button (click)="onUpload()" type="submit">Subir Video Método Chele</button>      </ion-item -->    </ion-list>        <input type="number" placeholder="ID de Atención" style="color: aliceblue;" [(ngModel)]="atencionId" name="entradaId" hidden>         </form>  <ion-grid *ngIf="isVideo == true">    <ion-row>      <ion-col size="12" size-md="12" *ngFor="let item of videos;let i = index">        <ion-card (click)="\'openImg(item.Foto)\'" class="ion-no-margin background-size ion-no-padding"            [ngStyle]="{\'background-image\': \'url(\'+\'data:image/jpeg;base64, + item.Foto + )\'}"            style="width: 100%;height: 460px;"            >                        <video id="videoDisplay" controls="controls" preload="metadata" autoplay="autoplay" webkit-playsinline="webkit-playsinline" class="videoPlayer"            style="width: 100%;height: 460px;">              <source src="{{item}}" type="video/mp4" />             </video>            <!--img alt="Foto Siniestro" src="\'data:image/jpeg;base64,\' + {{item.Foto}} + \'" [hidden]="true" / -->                        <!-- Card Content -->            <ion-card-content class="transparent ion-no-padding">              <ion-item class="transparent" lines="none" (click)="\'deleteFoto(i)\'">                <ion-label class="ion-float-left">                  <h2 class="text-size-lg"></h2>                </ion-label>                <ion-icon class="icon icon-small" slot="end" name="trash-outline"></ion-icon>              </ion-item>            </ion-card-content>            <ion-card-content>              <div class="audio-container" hidden>                <audio controls="true" preload="none">                  <source type="audio/mpeg" [src]="\'{{item}}\'" />                  [unable to load audio]                </audio>              </div>            </ion-card-content>                      </ion-card>          <ion-item>            <ion-label class="text-size-sm" position="floating">              Tipo de Fotografía</ion-label>              <ion-select class="text-size-xs" [(ngModel)]="item.IdTipo" multiple="false" style="box-shadow: -3px 3px 7px lightgray;">                <ion-select-option *ngFor="let tipo of tipoFotos;" [value]="tipo.Id">{{tipo.TipoFotografia}}                                  </ion-select-option>                <br>                <br>                <ion-select-option style="color: white;">Ajustadores App</ion-select-option>                <br>              </ion-select>              <ion-input [hidden]="true" #descripcionFoto [value]="item.Descripcion"></ion-input>              <ion-input [hidden]="true" #indexFoto [value]="i"></ion-input>              <ion-input placeholder="Entra Una Descripción"  [(ngModel)]="item.Descripcion" class="form-control descripcion-entrada" (ionBlur)="\'entraDescripcionFoto(descripcionFoto.value, indexFoto.value)\'"></ion-input>            </ion-item>      </ion-col>    </ion-row>  </ion-grid>  <ion-grid *ngIf="isVideo == false" fixed>    <ion-row>        <ion-col size="4" size-md="4" *ngFor="let item of fotos;let i = index">                    <ion-card (click)="openImg(item.Foto)" class="ion-no-margin background-size ion-no-padding"            [ngStyle]="{\'background-image\': \'url(\'+\'data:image/jpeg;base64,\' + item.Foto + \')\'}"            style="width: 100%;"            >            <img alt="Foto Siniestro" src="\'data:image/jpeg;base64,\' + {{item.Foto}} + \'" [hidden]="true" />                        <!-- Card Content -->            <ion-card-content class="transparent ion-no-padding">              <ion-item class="transparent" lines="none" (click)="deleteFoto(i)">                <ion-label class="ion-float-left">                  <h2 class="text-size-lg"></h2>                </ion-label>                <ion-icon class="icon icon-small" slot="end" name="trash-outline"></ion-icon>              </ion-item>            </ion-card-content>                      </ion-card>          <ion-item>            <ion-label class="text-size-sm" position="floating">              Tipo de Fotografía</ion-label>              <ion-select class="text-size-xs" [(ngModel)]="item.IdTipo" multiple="false" style="box-shadow: -3px 3px 7px lightgray;">                <ion-select-option *ngFor="let tipo of tipoFotos;" [value]="tipo.Id">{{tipo.TipoFotografia}}                                  </ion-select-option>                <br>                <br>                <ion-select-option style="color: white;">Ajustadores App</ion-select-option>                <br>              </ion-select>              <ion-input [hidden]="true" #descripcionFoto [value]="item.Descripcion"></ion-input>              <ion-input [hidden]="true" #indexFoto [value]="i"></ion-input>              <ion-input placeholder="Entra Una Descripción"  [(ngModel)]="item.Descripcion" class="form-control descripcion-entrada" (ionBlur)="entraDescripcionFoto(descripcionFoto.value, indexFoto.value)"></ion-input>            </ion-item>        </ion-col>    </ion-row>  </ion-grid>  <br><br><br><br><br>  <ion-footer style="position: fixed; bottom: 0; left: 0; height: 78px; background: white;">        <ion-badge *ngIf="isVideo == false" id="imagenesSubidas" color="success" style="position: fixed; left: 10px; bottom: 10px; width: 230px; padding: 15px; height: 46px; text-align: left;display: none;" vertical="bottom" horizontal="end">      Imágenes subidas con éxito!    </ion-badge>    <ion-badge *ngIf="isVideo == false" id="imagenesConteo" color="warning" style="position: fixed; left: 10px; bottom: 10px; width: 215px; padding: 15px; height: 46px; text-align: left;display: none;" vertical="bottom" horizontal="end">      <strong>{{imagenesSeleccionadas}}</strong> Imágenes seleccionadas    </ion-badge>    <ion-button *ngIf="isVideo == false" color="warning" id="buttonSubmit" style="position: fixed; left: 230px; bottom: 7px;height: 46px; display: none;" vertical="bottom" horizontal="start"    (click)="guardarFotos()">Enviar</ion-button>    <ion-badge *ngIf="isVideo == true" id="videosSubidos" color="success" style="position: fixed; left: 10px; bottom: 10px; width: 230px; padding: 15px; height: 46px; text-align: left;display: none;" vertical="bottom" horizontal="end">      Videos subidas con éxito!    </ion-badge>    <ion-badge *ngIf="isVideo == true" id="videosConteo" color="warning" style="position: fixed; left: 10px; bottom: 10px; width: 215px; padding: 15px; height: 46px; text-align: left;display: none;" vertical="bottom" horizontal="end">      <strong>{{videosSeleccionados}}</strong> Videos seleccionados    </ion-badge>    <ion-button *ngIf="isVideo == true" color="warning" id="buttonSubmitVideo" style="position: fixed; left: 230px; bottom: 7px;height: 46px; display: none;" vertical="bottom" horizontal="start"    (click)="subirVideoBoton.click()">Enviar</ion-button>    <ion-fab *ngIf="true" style="position: fixed; right: 218px;" vertical="bottom" horizontal="end">      <ion-fab-button class="boton-estado-2" (click)="clearPhotos()">        <ion-icon style="font-size: 3rem;" src="../../assets/img/clear-broom.svg"></ion-icon>      </ion-fab-button>    </ion-fab>    <ion-fab *ngIf="true" style="position: fixed; right: 150px;" vertical="bottom" horizontal="end">      <ion-fab-button id="displayPhotos" class="boton-estado-2" (click)="displayPhotos($event)">        <ion-icon name="sync"></ion-icon>      </ion-fab-button>    </ion-fab>        <ion-fab *ngIf="true" style="position: fixed; right: 80px;" vertical="bottom" horizontal="end">      <ion-fab-button class="boton-estado-1" (click)="uploadVideoInput.click()">        <ion-icon name="film"></ion-icon>      </ion-fab-button>    </ion-fab>    <ion-fab *ngIf="true" style="position: fixed;" vertical="bottom" horizontal="end">      <ion-fab-button class="boton-estado-1" (click)="openFilesInput()">        <ion-icon name="camera"></ion-icon>      </ion-fab-button>    </ion-fab>      </ion-footer></ion-content><ion-modal class="Img" #appointmentAlert [isOpen]="openFoto">	<ng-template>		<ion-content (click)="openFoto=false">			<ion-img [src]="\'data:image/jpeg;base64,\'+foto"></ion-img>		</ion-content>	</ng-template></ion-modal><ion-modal #modalPrompt trigger="open-modal-prompt" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.25, 0.5, 0.95]">  <ng-template>    <ion-content>      <ion-toolbar>Opciones Disponibles</ion-toolbar>      <ion-list>        <ion-item-divider>          <ion-label> Galería </ion-label>        </ion-item-divider>        <ion-item (click)="openFilesInput()">          <ion-avatar slot="start">            <ion-icon style="font-size: 3rem;" name="images-outline"></ion-icon>          </ion-avatar>          <ion-label>            <h2>Abrir Galería</h2>            <p>Imágenes Precargadas</p>          </ion-label>        </ion-item>        <ion-item (click)="\'videoInputEntry.click()\'">          <ion-avatar slot="start">            <ion-icon style="font-size: 3rem;" name="film-outline"></ion-icon>          </ion-avatar>          <ion-label>            <h2>Abrir Galería (Video)</h2>            <p>Videos Precargados</p>          </ion-label>        </ion-item>        <br>        <ion-item-divider>          <ion-label> Cámara </ion-label>        </ion-item-divider>        <ion-item (click)="openCamera()">          <ion-avatar slot="start">            <ion-icon style="font-size: 3rem;" name="camera-outline"></ion-icon>          </ion-avatar>          <ion-grid>            <ion-row>              <ion-col size="6" class="not">                <ion-label>                  <h2>Abrir Cámara</h2>                  <p>Captura el Momento</p>                </ion-label>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item>        </ion-item>      </ion-list>    </ion-content>  </ng-template></ion-modal></div>'
+    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AjustadorPage', 'selector': 'app-ajustador'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'}];
+    var DIRECTIVES = [{'name': 'ParallaxHeader', 'selector': '[parallax-header]'},{'name': 'PressDirective', 'selector': '[appPress]'}];
+    var ACTUAL_COMPONENT = {'name': 'FotoshnPage'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'FotoshnPage.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

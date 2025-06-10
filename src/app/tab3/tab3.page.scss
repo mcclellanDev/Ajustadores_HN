@@ -1,0 +1,55 @@
+:host{
+    --cs-size-avatar: 120px;
+  }
+  
+  ion-card {
+    // Settings Avatar
+    padding-top: 10px;
+    ion-avatar {
+      height: var(--cs-size-avatar);
+      width: var(--cs-size-avatar);
+      margin: 0 auto;
+    }
+  }
+  
+  ion-button {
+    .active {
+      color: var(--cs-icon-color-primary, #00c0e8) !important;
+    }
+  }
+
+  #profile-toolbar{
+    --background:rgb(244, 242, 242);
+    background: rgb(244, 242, 242);
+  }
+
+  ion-avatar {
+    //    --border-radius: 4px;
+        filter:none !important;
+    
+        ion-icon{
+            font-size: 2rem;
+            position: absolute;
+            top: 8vh;
+        }
+    }
+
+    ion-spinner{
+      position: fixed;
+        top: 28%;
+        left: 40%;
+        z-index: 999;
+        width: 20%;
+        height: 20%;
+      //background-color: #00213f;
+    }
+    
+    #spinFooter{
+      position: fixed;
+        background: black;
+        opacity: 0.6;
+        height: 100vh;
+        width: 100vw;
+        z-index: 900;
+        bottom: 0;
+    }

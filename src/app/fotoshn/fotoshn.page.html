@@ -1,0 +1,259 @@
+<ion-header>
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer id="loaderFooter" *ngIf="isLoading == true"></ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-grid class="ion-no-border">
+        <ion-row>
+          <ion-col size="4" style="box-shadow: none;"></ion-col>
+          <ion-col size="4" style="box-shadow: none;">Informe Fotografico Atención # {{atencionId}}</ion-col>
+          <ion-col size="4" style="box-shadow: none;"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <input #fotoInput type="file" id="fileInput" name="files[]" hidden multiple accept="image/*"/>
+  <input #videoInput type="file" id="fileInputV" name="filesv[]" hidden multiple accept="video/*"/>
+
+  <!--form>
+    <input #videoInputEntry type="file" (change)="heyOmar($event)" id="filesvid" name="filesvid" multiple accept="video/*"/>
+    <button #subirVideoBoton type="submit" class="btn btn-success pull-right" id="SubirVideos" (click)="'subirVideo($event)'" hidden><i class="fa fa-save"></i> Guardar</button>
+  </!--form -->
+
+  <form enctype="multipart/form-data" style="height: 0;visibility: collapse;">
+   
+    <ion-list>
+      <ion-item>
+        <input #uploadVideoInput id="uploadVideoInput" type="file" (change)="onFileSelected($event)" name="entradaVideo" accept="video/*" hidden>
+        <button #subirVideoBoton ion-button (click)="onUpload()" type="submit" hidden>Subir Video</button>
+      </ion-item>
+      <!--ion-item>
+         <input name="Archivo" type="file" (change)="fileEvent($event)" accept="video/*">
+         <button ion-button (click)="onUpload()" type="submit">Subir Video Método Chele</button>
+      </ion-item -->
+    </ion-list>
+    
+    <input type="number" placeholder="ID de Atención" style="color: aliceblue;" [(ngModel)]="atencionId" name="entradaId" hidden>
+    
+   
+  </form>
+
+  <ion-grid *ngIf="isVideo == true">
+    <ion-row>
+      <ion-col size="12" size-md="12" *ngFor="let item of videos;let i = index">
+        <ion-card (click)="'openImg(item.Foto)'" class="ion-no-margin background-size ion-no-padding"
+            [ngStyle]="{'background-image': 'url('+'data:image/jpeg;base64, + item.Foto + )'}"
+            style="width: 100%;height: 460px;"
+            >
+
+            
+
+            <video id="videoDisplay" controls="controls" preload="metadata" autoplay="autoplay" webkit-playsinline="webkit-playsinline" class="videoPlayer"
+            style="width: 100%;height: 460px;">
+              <source src="{{item}}" type="video/mp4" />
+             </video>
+
+            <!--img alt="Foto Siniestro" src="'data:image/jpeg;base64,' + {{item.Foto}} + '" [hidden]="true" / -->
+            
+            <!-- Card Content -->
+            <ion-card-content class="transparent ion-no-padding">
+              <ion-item class="transparent" lines="none" (click)="'deleteFoto(i)'">
+
+                <ion-label class="ion-float-left">
+                  <h2 class="text-size-lg"></h2>
+                </ion-label>
+                <ion-icon class="icon icon-small" slot="end" name="trash-outline"></ion-icon>
+              </ion-item>
+            </ion-card-content>
+            <ion-card-content>
+              <div class="audio-container" hidden>
+                <audio controls="true" preload="none">
+                  <source type="audio/mpeg" [src]="'{{item}}'" />
+                  [unable to load audio]
+                </audio>
+              </div>
+            </ion-card-content>
+            
+          </ion-card>
+          <ion-item>
+            <ion-label class="text-size-sm" position="floating">
+              Tipo de Fotografía</ion-label>
+              <ion-select class="text-size-xs" [(ngModel)]="item.IdTipo" multiple="false" style="box-shadow: -3px 3px 7px lightgray;">
+                <ion-select-option *ngFor="let tipo of tipoFotos;" [value]="tipo.Id">{{tipo.TipoFotografia}}
+                  
+                </ion-select-option>
+                <br>
+                <br>
+                <ion-select-option style="color: white;">Ajustadores App</ion-select-option>
+                <br>
+              </ion-select>
+              <ion-input [hidden]="true" #descripcionFoto [value]="item.Descripcion"></ion-input>
+              <ion-input [hidden]="true" #indexFoto [value]="i"></ion-input>
+              <ion-input placeholder="Entra Una Descripción"  [(ngModel)]="item.Descripcion" class="form-control descripcion-entrada" (ionBlur)="'entraDescripcionFoto(descripcionFoto.value, indexFoto.value)'"></ion-input>
+            </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid *ngIf="isVideo == false" fixed>
+    <ion-row>
+
+        <ion-col size="4" size-md="4" *ngFor="let item of fotos;let i = index">
+          
+          <ion-card (click)="openImg(item.Foto)" class="ion-no-margin background-size ion-no-padding"
+            [ngStyle]="{'background-image': 'url('+'data:image/jpeg;base64,' + item.Foto + ')'}"
+            style="width: 100%;"
+            >
+
+            <img alt="Foto Siniestro" src="'data:image/jpeg;base64,' + {{item.Foto}} + '" [hidden]="true" />
+            
+            <!-- Card Content -->
+            <ion-card-content class="transparent ion-no-padding">
+              <ion-item class="transparent" lines="none" (click)="deleteFoto(i)">
+
+                <ion-label class="ion-float-left">
+                  <h2 class="text-size-lg"></h2>
+                </ion-label>
+                <ion-icon class="icon icon-small" slot="end" name="trash-outline"></ion-icon>
+              </ion-item>
+            </ion-card-content>
+            
+          </ion-card>
+          <ion-item>
+            <ion-label class="text-size-sm" position="floating">
+              Tipo de Fotografía</ion-label>
+              <ion-select class="text-size-xs" [(ngModel)]="item.IdTipo" multiple="false" style="box-shadow: -3px 3px 7px lightgray;">
+                <ion-select-option *ngFor="let tipo of tipoFotos;" [value]="tipo.Id">{{tipo.TipoFotografia}}
+                  
+                </ion-select-option>
+                <br>
+                <br>
+                <ion-select-option style="color: white;">Ajustadores App</ion-select-option>
+                <br>
+              </ion-select>
+              <ion-input [hidden]="true" #descripcionFoto [value]="item.Descripcion"></ion-input>
+              <ion-input [hidden]="true" #indexFoto [value]="i"></ion-input>
+              <ion-input placeholder="Entra Una Descripción"  [(ngModel)]="item.Descripcion" class="form-control descripcion-entrada" (ionBlur)="entraDescripcionFoto(descripcionFoto.value, indexFoto.value)"></ion-input>
+            </ion-item>
+        </ion-col>
+    </ion-row>
+  </ion-grid>
+  <br><br><br><br><br>
+  <ion-footer style="position: fixed; bottom: 0; left: 0; height: 78px; background: white;">
+    
+    <ion-badge *ngIf="isVideo == false" id="imagenesSubidas" color="success" style="position: fixed; left: 10px; bottom: 10px; width: 230px; padding: 15px; height: 46px; text-align: left;display: none;" vertical="bottom" horizontal="end">
+      Imágenes subidas con éxito!
+    </ion-badge>
+    <ion-badge *ngIf="isVideo == false" id="imagenesConteo" color="warning" style="position: fixed; left: 10px; bottom: 10px; width: 215px; padding: 15px; height: 46px; text-align: left;display: none;" vertical="bottom" horizontal="end">
+      <strong>{{imagenesSeleccionadas}}</strong> Imágenes seleccionadas
+    </ion-badge>
+
+    <ion-button *ngIf="isVideo == false" color="warning" id="buttonSubmit" style="position: fixed; left: 230px; bottom: 7px;height: 46px; display: none;" vertical="bottom" horizontal="start"
+    (click)="guardarFotos()">Enviar</ion-button>
+
+    <ion-badge *ngIf="isVideo == true" id="videosSubidos" color="success" style="position: fixed; left: 10px; bottom: 10px; width: 230px; padding: 15px; height: 46px; text-align: left;display: none;" vertical="bottom" horizontal="end">
+      Videos subidas con éxito!
+    </ion-badge>
+    <ion-badge *ngIf="isVideo == true" id="videosConteo" color="warning" style="position: fixed; left: 10px; bottom: 10px; width: 215px; padding: 15px; height: 46px; text-align: left;display: none;" vertical="bottom" horizontal="end">
+      <strong>{{videosSeleccionados}}</strong> Videos seleccionados
+    </ion-badge>
+
+    <ion-button *ngIf="isVideo == true" color="warning" id="buttonSubmitVideo" style="position: fixed; left: 230px; bottom: 7px;height: 46px; display: none;" vertical="bottom" horizontal="start"
+    (click)="subirVideoBoton.click()">Enviar</ion-button>
+
+    <ion-fab *ngIf="true" style="position: fixed; right: 218px;" vertical="bottom" horizontal="end">
+      <ion-fab-button class="boton-estado-2" (click)="clearPhotos()">
+        <ion-icon style="font-size: 3rem;" src="../../assets/img/clear-broom.svg"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+    <ion-fab *ngIf="true" style="position: fixed; right: 150px;" vertical="bottom" horizontal="end">
+      <ion-fab-button id="displayPhotos" class="boton-estado-2" (click)="displayPhotos($event)">
+        <ion-icon name="sync"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+    
+    <ion-fab *ngIf="true" style="position: fixed; right: 80px;" vertical="bottom" horizontal="end">
+      <ion-fab-button class="boton-estado-1" (click)="uploadVideoInput.click()">
+        <ion-icon name="film"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+    <ion-fab *ngIf="true" style="position: fixed;" vertical="bottom" horizontal="end">
+      <ion-fab-button class="boton-estado-1" (click)="openFilesInput()">
+        <ion-icon name="camera"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+    
+  </ion-footer>
+</ion-content>
+<ion-modal class="Img" #appointmentAlert [isOpen]="openFoto">
+	<ng-template>
+		<ion-content (click)="openFoto=false">
+			<ion-img [src]="'data:image/jpeg;base64,'+foto"></ion-img>
+		</ion-content>
+	</ng-template>
+</ion-modal>
+
+<ion-modal #modalPrompt trigger="open-modal-prompt" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.25, 0.5, 0.95]"
+>
+  <ng-template>
+    <ion-content>
+      <ion-toolbar>Opciones Disponibles</ion-toolbar>
+      <ion-list>
+        <ion-item-divider>
+          <ion-label> Galería </ion-label>
+        </ion-item-divider>
+
+        <ion-item (click)="openFilesInput()">
+          <ion-avatar slot="start">
+            <ion-icon style="font-size: 3rem;" name="images-outline"></ion-icon>
+          </ion-avatar>
+          <ion-label>
+            <h2>Abrir Galería</h2>
+            <p>Imágenes Precargadas</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item (click)="'videoInputEntry.click()'">
+          <ion-avatar slot="start">
+            <ion-icon style="font-size: 3rem;" name="film-outline"></ion-icon>
+          </ion-avatar>
+          <ion-label>
+            <h2>Abrir Galería (Video)</h2>
+            <p>Videos Precargados</p>
+          </ion-label>
+        </ion-item>
+
+        <br>
+        <ion-item-divider>
+          <ion-label> Cámara </ion-label>
+        </ion-item-divider>
+        <ion-item (click)="openCamera()">
+          <ion-avatar slot="start">
+            <ion-icon style="font-size: 3rem;" name="camera-outline"></ion-icon>
+          </ion-avatar>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6" class="not">
+                <ion-label>
+                  <h2>Abrir Cámara</h2>
+                  <p>Captura el Momento</p>
+                </ion-label>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>

@@ -1,0 +1,59 @@
+//img card style
+.card-header-image {
+    position: relative;
+  
+    &::before {
+      content: "";
+      display: block;
+      height: 100%;
+      width: 100%;
+      top: 0;
+      left: 0;
+      position: absolute;
+      pointer-events: none;
+      mix-blend-mode: var(--cs-mode-image);
+      background: var(--cs-gradient-linear);
+      z-index: 5;
+    }
+  
+    img {
+      width: 100% !important;
+    }
+  }
+
+  ion-searchbar.custom {
+    //--background: #19422d;
+    //--color: #fff;
+    //--placeholder-color: #fff;
+    //--icon-color: #fff;
+    //--clear-button-color: #fff;
+  
+    --border-radius: 15px;
+    .searchbar-input-container{
+      --border-radius: 15px;
+      input{
+        --border-radius: 15px;
+      }
+    }
+
+  }
+
+  ion-spinner{
+    position: fixed;
+      top: 28%;
+      left: 40%;
+      z-index: 999;
+      width: 20%;
+      height: 20%;
+    //background-color: #00213f;
+  }
+  
+  #spinFooter{
+    position: fixed;
+      background: black;
+      opacity: 0.6;
+      height: 100vh;
+      width: 100vw;
+      z-index: 900;
+      bottom: 0;
+  }

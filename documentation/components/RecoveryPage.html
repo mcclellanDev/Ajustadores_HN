@@ -1,0 +1,1221 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>help_ajustadores documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  RecoveryPage</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/sesion/recovery/recovery.page.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnChanges</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-recovery</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./recovery.page.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./recovery.page.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#isEmailValid" >isEmailValid</a>
+                            </li>
+                            <li>
+                                <a href="#isOtp" >isOtp</a>
+                            </li>
+                            <li>
+                                <a href="#item" >item</a>
+                            </li>
+                            <li>
+                                <a href="#load" >load</a>
+                            </li>
+                            <li>
+                                <a href="#oTP" >oTP</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#regex" >regex</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#ngOnChanges" >ngOnChanges</a>
+                            </li>
+                            <li>
+                                <a href="#onSendFunc" >onSendFunc</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#otpController" >otpController</a>
+                            </li>
+                            <li>
+                                <a href="#validate" >validate</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#data" >data</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Outputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#onSend" >onSend</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(router: Router, api: <a href="../injectables/ApiService.html" target="_self">ApiService</a>, alert: AlertController, loading: LoadingController)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/app/sesion/recovery/recovery.page.ts:35</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>router</td>
+                                                  
+                                                        <td>
+                                                                    <code>Router</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>api</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ApiService.html" target="_self" >ApiService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>alert</td>
+                                                  
+                                                        <td>
+                                                                    <code>AlertController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>loading</td>
+                                                  
+                                                        <td>
+                                                                    <code>LoadingController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+    <section data-compodoc="block-inputs">
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="data"></a>
+                        <b>data</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/sesion/recovery/recovery.page.ts:15</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <section data-compodoc="block-outputs">
+    <h3 id="outputs">Outputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="onSend"></a>
+                        <b>onSend</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/sesion/recovery/recovery.page.ts:17</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnChanges"></a>
+                    <span class="name">
+                        <span ><b>ngOnChanges</b></span>
+                        <a href="#ngOnChanges"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnChanges(changes: literal type)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">src/app/sesion/recovery/recovery.page.ts:42</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>changes</td>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onSendFunc"></a>
+                    <span class="name">
+                        <span ><b>onSendFunc</b></span>
+                        <a href="#onSendFunc"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>onSendFunc()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">src/app/sesion/recovery/recovery.page.ts:46</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="otpController"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>otpController</b></span>
+                        <a href="#otpController"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>otpController(event, next, prev, index)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">src/app/sesion/recovery/recovery.page.ts:70</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>next</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>prev</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>index</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/variables.html#now" target="_self" >unknown</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="validate"></a>
+                    <span class="name">
+                        <span ><b>validate</b></span>
+                        <a href="#validate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>validate()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="119"
+                                    class="link-to-prism">src/app/sesion/recovery/recovery.page.ts:119</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isEmailValid"></a>
+                    <span class="name">
+                        <span ><b>isEmailValid</b></span>
+                        <a href="#isEmailValid"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/sesion/recovery/recovery.page.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isOtp"></a>
+                    <span class="name">
+                        <span ><b>isOtp</b></span>
+                        <a href="#isOtp"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/sesion/recovery/recovery.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="item"></a>
+                    <span class="name">
+                        <span ><b>item</b></span>
+                        <a href="#item"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    email: &quot;&quot;,
+    userid:&quot;&quot;
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/app/sesion/recovery/recovery.page.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="load"></a>
+                    <span class="name">
+                        <span ><b>load</b></span>
+                        <a href="#load"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/sesion/recovery/recovery.page.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="oTP"></a>
+                    <span class="name">
+                        <span ><b>oTP</b></span>
+                        <a href="#oTP"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    first: &#x27;&#x27;,
+    second: &#x27;&#x27;,
+    third: &#x27;&#x27;,
+    forth: &#x27;&#x27;
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/sesion/recovery/recovery.page.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="regex"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>regex</b></span>
+                        <a href="#regex"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/app/sesion/recovery/recovery.page.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Observable, throwError } from &#x27;rxjs&#x27;;
+import { AlertController, ToastController, LoadingController } from &#x27;@ionic/angular&#x27;;
+import { ApiService } from &#x27;./../../services/api.service&#x27;;
+import { NavigationExtras, Router } from &#x27;@angular/router&#x27;;
+import { Component,  Output, EventEmitter, Input, OnChanges } from &#x27;@angular/core&#x27;;
+import { catchError, finalize } from &#x27;rxjs/operators&#x27;;
+
+@Component({
+  selector: &#x27;app-recovery&#x27;,
+  templateUrl: &#x27;./recovery.page.html&#x27;,
+  styleUrls: [&#x27;./recovery.page.scss&#x27;],
+})
+export class RecoveryPage implements OnChanges {
+
+  @Input() data: any;
+
+  @Output() onSend &#x3D; new EventEmitter();
+  oTP: any &#x3D;  {
+    first: &#x27;&#x27;,
+    second: &#x27;&#x27;,
+    third: &#x27;&#x27;,
+    forth: &#x27;&#x27;
+  };
+  isOtp&#x3D; false;
+
+  isEmailValid &#x3D; true;
+  load &#x3D; false;
+  private regex &#x3D; /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+//  private regex &#x3D; /^(([^&lt;&gt;()\[\]\\.,;:\s@&quot;]+(\.[^&lt;&gt;()\[\]\\.,;:\s@&quot;]+)*)|(&quot;.+&quot;))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+//const emailRegex &#x3D; /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+  item &#x3D; {
+    email: &quot;&quot;,
+    userid:&quot;&quot;
+  };
+
+  constructor(private router: Router,
+    private api: ApiService,
+    private alert: AlertController,
+    private loading: LoadingController) {}
+
+  ngOnChanges(changes: { [propKey: string]: any }) {
+    this.data &#x3D; changes[&quot;data&quot;].currentValue;
+  }
+
+  onSendFunc(): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (this.validate()) {
+      this.load&#x3D; true;
+      this.onSend.emit(this.item);
+      this.api.recuperarContrasena(this.item.email).subscribe(async res&#x3D;&gt;{
+        if(res){
+          this.isOtp&#x3D;true;
+          this.load&#x3D;false;
+        }else{
+          const alert &#x3D; await this.alert.create({
+            header:&#x27;HELP&#x27;,
+            message:&#x27;re&#x27;,
+            buttons:[&#x27;Ok&#x27;]
+            
+          });
+          await alert.present();
+        }
+      });
+      
+    }
+  }
+  async otpController(event,next,prev, index){
+
+
+    if(index &#x3D;&#x3D; 4) {
+     
+      const otp &#x3D; this.oTP.first + this.oTP.second +  this.oTP.third + this.oTP.forth;
+      console.log(otp);
+      if (otp.length &#x3D;&#x3D;&#x3D; 4 &amp;&amp; this.oTP.forth !&#x3D; (null &amp;&amp; &#x27;&#x27;) ){
+        const loading &#x3D; await  this.loading.create({
+        })
+        loading.present();
+        let data &#x3D;{
+          clave: otp,
+          user: this.item.email
+        }
+        this.api.validarOtp(data).pipe(
+          finalize(()&#x3D;&gt;{
+            loading.dismiss();
+          })
+        ).subscribe((res)&#x3D;&gt;{
+          const nav:  NavigationExtras&#x3D;{
+            state: this.item
+          }
+          this.router.navigate([&#x27;./new-password&#x27;],nav);
+        }, async (err)&#x3D;&gt; {
+          console.log(err)
+          const load &#x3D; await  this.alert.create({
+            header:&quot;HELP&quot;,
+            message:err.error.Message,
+            buttons:[&#x27;OK&#x27;]
+          }) 
+          load.present();
+
+        })
+        
+        
+        //
+      }
+    }
+    if(event.target.value.length &lt; 1 &amp;&amp; prev){
+      prev.setFocus()
+    }
+    else if(next &amp;&amp; event.target.value.length&gt;0){
+      next.setFocus();
+    }
+    else {
+     return 0;
+    } 
+ }
+  validate(): boolean {
+    this.isEmailValid &#x3D; this.regex.test(this.item.email);
+    return this.isEmailValid;
+   //return true;
+  }
+
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;ion-header&gt;
+  &lt;ion-toolbar&gt;
+    &lt;ion-buttons slot&#x3D;&quot;start&quot;&gt;
+      &lt;ion-back-button defaultHref&#x3D;&quot;/&quot;&gt;&lt;/ion-back-button&gt;
+    &lt;/ion-buttons&gt;
+    &lt;ion-title&gt;Recuperar contraseña&lt;/ion-title&gt;
+  &lt;/ion-toolbar&gt;
+&lt;/ion-header&gt;
+&lt;!-- Content --&gt;
+&lt;ion-content&gt;
+  &lt;ion-grid class&#x3D;&quot; ion-padding&quot; *ngIf&#x3D;&quot;!isOtp&quot;&gt;
+    &lt;ion-row class&#x3D;&quot;ion-align-items-center&quot;&gt;
+      &lt;ion-col class&#x3D;&quot;ion-padding&quot; size&#x3D;&quot;12&quot; size-md&#x3D;&quot;10&quot; push-md&#x3D;&quot;1&quot;&gt;
+        &lt;!---Logo--&gt;
+        &lt;!-- &lt;ion-img class&#x3D;&quot;ion-float-end&quot; src&#x3D;&quot;../../../assets/logos/help.png&quot;&gt;&lt;/ion-img&gt; --&gt;
+        &lt;div class&#x3D;&quot;clearfix&quot;&gt;&lt;/div&gt;
+        &lt;h1 class&#x3D;&quot;text-size-xl ion-text-wrap ion-text-capitalize&quot;&gt;
+         Ingresa tu correo&lt;/h1&gt;
+        &lt;div class&#x3D;&quot;clearfix&quot;&gt;&lt;/div&gt;
+        &lt;h2 class&#x3D;&quot;text-size-xs ion-text-wrap ion-padding-end&quot;&gt;
+         Enviaremos a tu correo un código OTP para que recupere su contraseña&lt;/h2&gt;
+        &lt;div class&#x3D;&quot;clearfix&quot;&gt;&lt;/div&gt;
+        &lt;ion-item class&#x3D;&quot;ion-no-padding transparent input&quot;&gt;
+          &lt;!---Input field email--&gt;
+          &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+          Correo&lt;/ion-label&gt;
+          &lt;ion-input required type&#x3D;&quot;email&quot;
+            pattern&#x3D;&quot;[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}&quot;
+            required [(ngModel)]&#x3D;&quot;item.email&quot;
+            [ngModelOptions]&#x3D;&quot;{standalone: true}&quot;&gt;&lt;/ion-input&gt;
+          &lt;ion-icon *ngIf&#x3D;&quot;!isEmailValid&quot; class&#x3D;&quot;icon-small&quot;
+          name&#x3D;&quot;remove-circle&quot;&gt;&lt;/ion-icon&gt;
+        &lt;/ion-item&gt;
+        &lt;!---Send button--&gt;
+        &lt;ion-button class&#x3D;&quot;ion-margin-top button-round ion-float-end&quot;
+        shape&#x3D;&quot;round&quot; fill&#x3D;&quot;outline&quot; (click)&#x3D;&quot;onSendFunc()&quot; [disabled]&#x3D;&quot;load&quot;&gt;
+          Enviar
+        &lt;/ion-button&gt;
+      &lt;/ion-col&gt;
+    &lt;/ion-row&gt;
+  &lt;/ion-grid&gt;
+  &lt;ion-grid class&#x3D;&quot; ion-padding&quot; *ngIf&#x3D;&quot;isOtp&quot;&gt;
+    &lt;ion-row class&#x3D;&quot;ion-align-items-center&quot;&gt;
+      &lt;ion-col class&#x3D;&quot;ion-padding&quot; size&#x3D;&quot;12&quot; size-md&#x3D;&quot;10&quot; push-md&#x3D;&quot;1&quot;&gt;
+        &lt;!---Logo--&gt;
+        &lt;!-- &lt;ion-img class&#x3D;&quot;ion-float-end&quot; src&#x3D;&quot;../../../assets/logos/help.png&quot;&gt;&lt;/ion-img&gt; --&gt;
+        &lt;div class&#x3D;&quot;clearfix&quot;&gt;&lt;/div&gt;
+        &lt;h1 class&#x3D;&quot;text-size-xl ion-text-wrap ion-text-capitalize&quot;&gt;
+         Ingresa el código OTP&lt;/h1&gt;
+        &lt;div class&#x3D;&quot;clearfix&quot;&gt;&lt;/div&gt;
+        &lt;h2 class&#x3D;&quot;text-size-xs ion-text-wrap ion-padding-end&quot;&gt;
+         Enviamos a tu correo un código OTP para que recupere su contraseña&lt;/h2&gt;
+        &lt;div class&#x3D;&quot;clearfix&quot;&gt;&lt;/div&gt;
+        &lt;ion-item class&#x3D;&quot;ion-no-padding transparent input&quot; style&#x3D;&quot;text-align:center;&quot;&gt;
+          &lt;ion-input class&#x3D;&quot;x&quot; #otp1 required&#x3D;&quot;true&quot; maxLength&#x3D;&quot;1&quot; [(ngModel)] &#x3D;&quot;oTP.first&quot; (keyup)&#x3D;&quot;otpController($event,otp2,&#x27;&#x27;, 1)&quot;&gt;
+          &lt;/ion-input&gt;
+          &lt;ion-input class&#x3D;&quot;x&quot; #otp2 required&#x3D;&quot;true&quot; maxLength&#x3D;&quot;1&quot; [(ngModel)]&#x3D;&quot;oTP.second&quot; (keyup)&#x3D;&quot;otpController($event,otp3,otp1, 2)&quot;&gt;
+          &lt;/ion-input&gt;
+          &lt;ion-input class&#x3D;&quot;x&quot; #otp3 required&#x3D;&quot;true&quot; maxLength&#x3D;&quot;1&quot; [(ngModel)]&#x3D;&quot;oTP.third&quot;  (keyup)&#x3D;&quot;otpController($event,otp4,otp2, 3)&quot;&gt;
+          &lt;/ion-input&gt;
+     
+          &lt;ion-input class&#x3D;&quot;x&quot; #otp4 required&#x3D;&quot;true&quot; maxLength&#x3D;&quot;1&quot; [(ngModel)]&#x3D;&quot;oTP.forth&quot;  (keyup)&#x3D;&quot;otpController($event,&#x27;&#x27;,otp3,4)&quot;&gt;
+         &lt;/ion-input&gt;
+        &lt;/ion-item&gt;
+        &lt;!---Send button--&gt;
+        &lt;ion-button class&#x3D;&quot;ion-margin-top button-round ion-float-start&quot;
+        shape&#x3D;&quot;round&quot; fill&#x3D;&quot;outline&quot; (click)&#x3D;&quot;onSendFunc()&quot;&gt;
+          Reenviar código OTP
+        &lt;/ion-button&gt;
+      &lt;/ion-col&gt;
+    &lt;/ion-row&gt;
+  &lt;/ion-grid&gt;
+&lt;/ion-content&gt;</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./recovery.page.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">/* Style component 1
+&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;*/
+:host{
+    --img-logo: 240px;
+  }
+  
+  ion-grid,
+  ion-row {
+    height: 100%;
+    background: var(--cs-background-primary, #ffffff);
+  }
+  
+  ion-img {
+    width: var(--img-logo);
+    text-align: center;
+    margin: 0 auto;
+  }
+  
+  h1 {
+    color: var(--cs-text-secondary, #0090d0)
+  }
+  
+  
+  ion-item {
+    ion-input {
+      --padding-end: 8px;
+    }
+   ion-icon {
+     position: absolute;
+     right: 0;
+     bottom: 8px
+    }
+  }
+  .x{
+    display:inline-block;
+    width:30px;
+    height:30px;
+    margin:10px;
+    --background:#e1e1e1;
+    --padding-start:7px;
+    }
+
+    ion-button.warning-button {
+      --background: none;
+      --background-hover: none;
+      --background-activated: none;
+      --background-focused: none;
+    
+      --color: #F04F23;
+    
+      --border-radius: 60px;
+      --border-color: none;
+      --border-style: none;
+      --border-width: none;
+    
+      --box-shadow: 0 2px 6px 0 rgb(0, 0, 0, 0.25);
+    
+      --ripple-color: rgb(41, 35, 38);
+    
+      --padding-top: 10px;
+      --padding-bottom: 10px;
+      --color-hover: blue;
+    }</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><ion-header>  <ion-toolbar>    <ion-buttons slot="start">      <ion-back-button defaultHref="/"></ion-back-button>    </ion-buttons>    <ion-title>Recuperar contraseña</ion-title>  </ion-toolbar></ion-header><!-- Content --><ion-content>  <ion-grid class=" ion-padding" *ngIf="!isOtp">    <ion-row class="ion-align-items-center">      <ion-col class="ion-padding" size="12" size-md="10" push-md="1">        <!---Logo-->        <!-- <ion-img class="ion-float-end" src="../../../assets/logos/help.png"></ion-img> -->        <div class="clearfix"></div>        <h1 class="text-size-xl ion-text-wrap ion-text-capitalize">         Ingresa tu correo</h1>        <div class="clearfix"></div>        <h2 class="text-size-xs ion-text-wrap ion-padding-end">         Enviaremos a tu correo un código OTP para que recupere su contraseña</h2>        <div class="clearfix"></div>        <ion-item class="ion-no-padding transparent input">          <!---Input field email-->          <ion-label class="text-size-sm" position="floating">          Correo</ion-label>          <ion-input required type="email"            pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}"            required [(ngModel)]="item.email"            [ngModelOptions]="{standalone: true}"></ion-input>          <ion-icon *ngIf="!isEmailValid" class="icon-small"          name="remove-circle"></ion-icon>        </ion-item>        <!---Send button-->        <ion-button class="ion-margin-top button-round ion-float-end"        shape="round" fill="outline" (click)="onSendFunc()" [disabled]="load">          Enviar        </ion-button>      </ion-col>    </ion-row>  </ion-grid>  <ion-grid class=" ion-padding" *ngIf="isOtp">    <ion-row class="ion-align-items-center">      <ion-col class="ion-padding" size="12" size-md="10" push-md="1">        <!---Logo-->        <!-- <ion-img class="ion-float-end" src="../../../assets/logos/help.png"></ion-img> -->        <div class="clearfix"></div>        <h1 class="text-size-xl ion-text-wrap ion-text-capitalize">         Ingresa el código OTP</h1>        <div class="clearfix"></div>        <h2 class="text-size-xs ion-text-wrap ion-padding-end">         Enviamos a tu correo un código OTP para que recupere su contraseña</h2>        <div class="clearfix"></div>        <ion-item class="ion-no-padding transparent input" style="text-align:center;">          <ion-input class="x" #otp1 required="true" maxLength="1" [(ngModel)] ="oTP.first" (keyup)="otpController($event,otp2,\'\', 1)">          </ion-input>          <ion-input class="x" #otp2 required="true" maxLength="1" [(ngModel)]="oTP.second" (keyup)="otpController($event,otp3,otp1, 2)">          </ion-input>          <ion-input class="x" #otp3 required="true" maxLength="1" [(ngModel)]="oTP.third"  (keyup)="otpController($event,otp4,otp2, 3)">          </ion-input>               <ion-input class="x" #otp4 required="true" maxLength="1" [(ngModel)]="oTP.forth"  (keyup)="otpController($event,\'\',otp3,4)">         </ion-input>        </ion-item>        <!---Send button-->        <ion-button class="ion-margin-top button-round ion-float-start"        shape="round" fill="outline" (click)="onSendFunc()">          Reenviar código OTP        </ion-button>      </ion-col>    </ion-row>  </ion-grid></ion-content></div>'
+    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AjustadorPage', 'selector': 'app-ajustador'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'}];
+    var DIRECTIVES = [{'name': 'ParallaxHeader', 'selector': '[parallax-header]'},{'name': 'PressDirective', 'selector': '[appPress]'}];
+    var ACTUAL_COMPONENT = {'name': 'RecoveryPage'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'RecoveryPage.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

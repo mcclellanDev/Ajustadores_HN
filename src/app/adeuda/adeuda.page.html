@@ -1,0 +1,199 @@
+<ion-header>
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer *ngIf="isLoading == true"></ion-footer>
+  <!--ion-fab id="button-back" style="position: fixed;" vertical="top" horizontal="start" (click)="goBack()">
+    <ion-fab-button (click)="'confirmar()'">
+      <ion-icon name="arrow-back"></ion-icon>
+    </ion-fab-button>
+  </!--ion-fab -->
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="3"></ion-col>
+          <ion-col size="6">Acuerdo de Deuda - Atención # {{idAtencion}} - {{miMoneda}}</ion-col>
+          <!--ion-col size="6">Formulario Declaración - Atención # {{idAtencion}}</!--ion-col -->
+          <ion-col size="3" style="float: right;color:blue;"></ion-col>
+        </ion-row>
+      </ion-grid>
+      <!--div *ngIf="isTablet == true" style="margin-left: 40%;">Formulario Declaración</!--div>
+      <div *ngIf="isTablet == false" style="margin-left: 1%;">Formulario Declaración</div -->
+    </ion-title>
+    <!--ion-label style="position: absolute; top:-10px;left:88.5%;color:blue;z-index: 999;"><br>Atención # {{idAtencion}}</!--ion-label -->
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-label class="text-size-lg" style="padding-left: 5px;">
+  </ion-label>
+  <ion-grid style="margin-top: -40px;">
+    <ion-row>
+      <ion-col size="12">
+        <ion-card style="margin: 0;padding:0;">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="10">
+                <img alt="Ficohsa Seguros" src="{{fsLogo}}" style="width: 281px; height: 61px; margin-left: 15px; margin-top: 15px;" />
+              </ion-col>
+              <ion-col size="2">
+                <!--ion-icon class="impresora" name="eye" (click)="this.modalPdf.present()" id="open-modal-pdf" style="margin-right: 25%;"></!--ion-icon>
+                <ion-icon class="impresora" name="print" (click)="this.modalPdf.present()" id="open-modal-pdf"></ion-icon -->
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+          
+          <ion-card-header>
+            <ion-card-title>Reconocimiento de Deuda</ion-card-title>
+            <ion-card-subtitle style="text-align: justify;">Yo {{acuerdoDeuda.NombreDeudor}}, mayor de edad, con tarjeta de identidad No {{acuerdoDeuda.IdentidadDeudor}}, con 
+              domicilio en {{acuerdoDeuda.Domicilio}} No de teléfono {{acuerdoDeuda.TelefonoCulpable}}, celular No {{acuerdoDeuda.Celular}}, 
+              trabajo en {{acuerdoDeuda.LugarDeTrabajo}}, correo electrónico <a>{{acuerdoDeuda.CorreoElectronico}}</a>, nombre de contacto (familiar o amigo)
+              {{acuerdoDeuda.NombreContacto}}, celular No {{acuerdoDeuda.CelularContacto}}
+
+              Declaro: <strong style="font-weight: bold;">PRIMERO</strong>: Actuando en mi condición de deudor de INTERAMERICANA DE SEGUROS S.A., también conocida como FICOHSA SEGUROS,
+              por deuda contraída con esta institución, en el accidente de fecha {{fechaParrafo}}, en el cual resultó perjudicado 
+              el vehículo marca {{acuerdoDeuda.Marca}} modelo {{acuerdoDeuda.Modelo}}, año {{acuerdoDeuda.Anio}}, placa {{acuerdoDeuda.Placa}} del asegurado {{acuerdoDeuda.NombreAsegurado}}, con poliza No {{laPoliza}}, 
+              cuyos daños fueron ocasionados por el vehículo: marca {{acuerdoDeuda.MarcaImplicado}}, modelo {{acuerdoDeuda.ModeloImplicado}}, año {{acuerdoDeuda.AnioImplicado}}, placa {{acuerdoDeuda.PlacaImplicado}}, propiedad de {{acuerdoDeuda.NombrePersonaPropiedadImplicada}}.
+
+              <strong style="font-weight: bold;">SEGUNDO</strong>: De dicho accidente resultaron los siguientes daños: 
+              <!--p *ngFor="danio of daniosSelectCulpable[0]">{{danio.Descripcion}}</!--p --> 
+              {{acuerdoDeuda.DanioCausadoObservacion}}.
+
+              Acepto que quedan comprendidos en este acto, los daños mecánicos que aun no han sido constatados siempre y cuando estos sean
+              producto de la colisión causada por mi persona.
+
+              <strong style="font-weight: bold;">TERCERO</strong>: Acepto que la factura de reparación de los daños mencionados en la cláusula SEGUNDA, formará para integrar el presente
+              Reconocimiento de Deuda.
+            </ion-card-subtitle>
+          </ion-card-header>
+        
+          <ion-card-content>
+            En fé de lo cual firmo en la ciudad de Tegucigalpa a los {{fechaPie}}.
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <!--ion-col size="12" style="color: #3171e0;">
+        <ion-label style="margin-left: 19px;">Firma Implicado</ion-label>
+      </!--ion-col -->
+      <ion-col size="12" style="margin-top: -10px;">
+        <ion-card id="cardAsegurado">
+          <ion-card-content>
+            <!--ion-img *ngIf="isSign == true" src="{{firmaPrecargada}}"/ -->
+            <canvas id="canvasAdeudado" width="{{deviceWidth}}" [height]="200"  #canvas5 style="border: 6px dashed #ede9e9"></canvas>
+            <!--canvas id="canvasAsegurado" [width]="500" [height]="150"  #canvas2 style="border: 6px dashed #ede9e9"></!--canvas -->
+          </ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6">
+                <ion-button expand="block" (click)="clear()">Limpiar Firma</ion-button>
+              </ion-col>
+              <ion-col size="6">
+                <ion-button *ngIf="ya == false" expand="block" (click)="testSave()">Enviar</ion-button>
+                <ion-button *ngIf="ya == true" expand="block" disabled>Enviar</ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card>
+      </ion-col>
+      
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-modal #modalPdf #modal trigger="open-modal-pdf" [initialBreakpoint]="0.5" [breakpoints]="[0, 0.25, 0.5, 0.75]">
+  <ng-template>
+    <ion-content>
+      <ion-toolbar>Decargar PDFs</ion-toolbar>
+      <ion-list>
+        <ion-item (click)="printPdf()">
+          <ion-avatar slot="start">
+            <ion-icon style="font-size: 2.8rem;" name="wallet-outline"></ion-icon>
+          </ion-avatar>
+          <ion-label>
+            <h2>Acuerdo de Deuda</h2>
+            <p>Compromiso de deuda</p>
+          </ion-label>
+        </ion-item>
+        
+        <!--ion-item id="step1" (click)="printPdf(2)">
+          <ion-avatar slot="start">
+            <ion-icon style="font-size: 2.8rem;" name="shield-outline"></ion-icon>
+          </ion-avatar>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6">
+                <ion-label>
+                  <h2>Cierre de Cobertura</h2>
+                  <p>Cobertura de Seguro</p>
+                </ion-label>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </!--ion-item>
+        <ion-item id="step2" (click)="printPdf(3)">
+          <ion-avatar slot="start">
+            <ion-icon style="font-size: 2.8rem;" name="document-attach-outline"></ion-icon>
+          </ion-avatar>
+          <ion-label>
+            <h2>Reclamo de Cliente</h2>
+            <p>Reclamo de Cobertura</p>
+          </ion-label>
+        </ion-item -->
+
+        <ion-item>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-modal #modalPdfPre trigger="open-modal-pdf-pre" [initialBreakpoint]="0.5" [breakpoints]="[0, 0.25, 0.5, 0.75]">
+  <ng-template>
+    <ion-content>
+      <ion-toolbar>Decargar PDFs</ion-toolbar>
+      <ion-list>
+        <ion-item (click)="previewPdf()">
+          <ion-avatar slot="start">
+            <ion-icon style="font-size: 2.8rem;" name="wallet-outline"></ion-icon>
+          </ion-avatar>
+          <ion-label>
+            <h2>Acuerdo de Deuda</h2>
+            <p>Compromiso de deuda</p>
+          </ion-label>
+        </ion-item>
+        
+        <!--ion-item id="step1" (click)="printPdf(2)">
+          <ion-avatar slot="start">
+            <ion-icon style="font-size: 2.8rem;" name="shield-outline"></ion-icon>
+          </ion-avatar>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6">
+                <ion-label>
+                  <h2>Cierre de Cobertura</h2>
+                  <p>Cobertura de Seguro</p>
+                </ion-label>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </!--ion-item>
+        <ion-item id="step2" (click)="printPdf(3)">
+          <ion-avatar slot="start">
+            <ion-icon style="font-size: 2.8rem;" name="document-attach-outline"></ion-icon>
+          </ion-avatar>
+          <ion-label>
+            <h2>Reclamo de Cliente</h2>
+            <p>Reclamo de Cobertura</p>
+          </ion-label>
+        </ion-item -->
+
+        <ion-item>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>

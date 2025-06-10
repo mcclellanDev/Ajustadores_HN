@@ -1,0 +1,1690 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>help_ajustadores documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  TerceroPage</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/tercero/tercero.page.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnInit</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-tercero</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./tercero.page.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./tercero.page.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#AtencionIds" >AtencionIds</a>
+                            </li>
+                            <li>
+                                <a href="#danosVehiculoTercero" >danosVehiculoTercero</a>
+                            </li>
+                            <li>
+                                <a href="#datosVehiculo" >datosVehiculo</a>
+                            </li>
+                            <li>
+                                <a href="#datoTercero" >datoTercero</a>
+                            </li>
+                            <li>
+                                <a href="#editar" >editar</a>
+                            </li>
+                            <li>
+                                <a href="#formulario" >formulario</a>
+                            </li>
+                            <li>
+                                <a href="#guardar" >guardar</a>
+                            </li>
+                            <li>
+                                <a href="#index" >index</a>
+                            </li>
+                            <li>
+                                <a href="#showPersona" >showPersona</a>
+                            </li>
+                            <li>
+                                <a href="#terceroDanosVehiculo" >terceroDanosVehiculo</a>
+                            </li>
+                            <li>
+                                <a href="#terceroDatos" >terceroDatos</a>
+                            </li>
+                            <li>
+                                <a href="#terceroSql" >terceroSql</a>
+                            </li>
+                            <li>
+                                <a href="#terceroSqlList" >terceroSqlList</a>
+                            </li>
+                            <li>
+                                <a href="#terceroVehiculo" >terceroVehiculo</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#addPersona" >addPersona</a>
+                            </li>
+                            <li>
+                                <a href="#damagePosition" >damagePosition</a>
+                            </li>
+                            <li>
+                                <a href="#deletePersona" >deletePersona</a>
+                            </li>
+                            <li>
+                                <a href="#editPersona" >editPersona</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#next" >next</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#personaModal" >personaModal</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#toastAlert" >toastAlert</a>
+                            </li>
+                            <li>
+                                <a href="#updatePersona" >updatePersona</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(router: Router, loading: LoadingController, alert: AlertController, api: <a href="../injectables/ApiService.html" target="_self">ApiService</a>, toast: ToastController)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/tercero/tercero.page.ts:27</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>router</td>
+                                                  
+                                                        <td>
+                                                                    <code>Router</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>loading</td>
+                                                  
+                                                        <td>
+                                                                    <code>LoadingController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>alert</td>
+                                                  
+                                                        <td>
+                                                                    <code>AlertController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>api</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ApiService.html" target="_self" >ApiService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>toast</td>
+                                                  
+                                                        <td>
+                                                                    <code>ToastController</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addPersona"></a>
+                    <span class="name">
+                        <span ><b>addPersona</b></span>
+                        <a href="#addPersona"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>addPersona()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">src/app/tercero/tercero.page.ts:42</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="damagePosition"></a>
+                    <span class="name">
+                        <span ><b>damagePosition</b></span>
+                        <a href="#damagePosition"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>damagePosition(valor: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="68"
+                                    class="link-to-prism">src/app/tercero/tercero.page.ts:68</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>valor</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deletePersona"></a>
+                    <span class="name">
+                        <span ><b>deletePersona</b></span>
+                        <a href="#deletePersona"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>deletePersona(i: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">src/app/tercero/tercero.page.ts:61</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>i</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="editPersona"></a>
+                    <span class="name">
+                        <span ><b>editPersona</b></span>
+                        <a href="#editPersona"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>editPersona(i: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">src/app/tercero/tercero.page.ts:47</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>i</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="next"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>next</b></span>
+                        <a href="#next"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>next()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">src/app/tercero/tercero.page.ts:102</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">src/app/tercero/tercero.page.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="personaModal"></a>
+                    <span class="name">
+                        <span ><b>personaModal</b></span>
+                        <a href="#personaModal"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>personaModal()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">src/app/tercero/tercero.page.ts:65</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="toastAlert"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>toastAlert</b></span>
+                        <a href="#toastAlert"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>toastAlert(mensaje: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">src/app/tercero/tercero.page.ts:94</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>mensaje</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updatePersona"></a>
+                    <span class="name">
+                        <span ><b>updatePersona</b></span>
+                        <a href="#updatePersona"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>updatePersona()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">src/app/tercero/tercero.page.ts:54</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AtencionIds"></a>
+                    <span class="name">
+                        <span ><b>AtencionIds</b></span>
+                        <a href="#AtencionIds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/tercero/tercero.page.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="danosVehiculoTercero"></a>
+                    <span class="name">
+                        <span ><b>danosVehiculoTercero</b></span>
+                        <a href="#danosVehiculoTercero"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/tercero/tercero.page.ts:16</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="datosVehiculo"></a>
+                    <span class="name">
+                        <span ><b>datosVehiculo</b></span>
+                        <a href="#datosVehiculo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/tercero/tercero.page.ts:15</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="datoTercero"></a>
+                    <span class="name">
+                        <span ><b>datoTercero</b></span>
+                        <a href="#datoTercero"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/app/tercero/tercero.page.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="editar"></a>
+                    <span class="name">
+                        <span ><b>editar</b></span>
+                        <a href="#editar"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/tercero/tercero.page.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="formulario"></a>
+                    <span class="name">
+                        <span ><b>formulario</b></span>
+                        <a href="#formulario"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Formulario.html" target="_self" >Formulario</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/app/tercero/tercero.page.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="guardar"></a>
+                    <span class="name">
+                        <span ><b>guardar</b></span>
+                        <a href="#guardar"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/tercero/tercero.page.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="index"></a>
+                    <span class="name">
+                        <span ><b>index</b></span>
+                        <a href="#index"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/app/tercero/tercero.page.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="showPersona"></a>
+                    <span class="name">
+                        <span ><b>showPersona</b></span>
+                        <a href="#showPersona"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/tercero/tercero.page.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="terceroDanosVehiculo"></a>
+                    <span class="name">
+                        <span ><b>terceroDanosVehiculo</b></span>
+                        <a href="#terceroDanosVehiculo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/danioVehiculo.html" target="_self" >danioVehiculo</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/tercero/tercero.page.ts:19</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="terceroDatos"></a>
+                    <span class="name">
+                        <span ><b>terceroDatos</b></span>
+                        <a href="#terceroDatos"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/datosTercero.html" target="_self" >datosTercero</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/tercero/tercero.page.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="terceroSql"></a>
+                    <span class="name">
+                        <span ><b>terceroSql</b></span>
+                        <a href="#terceroSql"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/terceroSQL.html" target="_self" >terceroSQL</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">src/app/tercero/tercero.page.ts:21</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="terceroSqlList"></a>
+                    <span class="name">
+                        <span ><b>terceroSqlList</b></span>
+                        <a href="#terceroSqlList"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/terceroSQL.html" target="_self" >terceroSQL[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/app/tercero/tercero.page.ts:22</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="terceroVehiculo"></a>
+                    <span class="name">
+                        <span ><b>terceroVehiculo</b></span>
+                        <a href="#terceroVehiculo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/vehiculoTercero.html" target="_self" >vehiculoTercero</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/tercero/tercero.page.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnInit } from &#x27;@angular/core&#x27;;
+import { Router, NavigationExtras } from &#x27;@angular/router&#x27;;
+import { AlertController, LoadingController, ToastController } from &#x27;@ionic/angular&#x27;;
+import { finalize } from &#x27;rxjs/operators&#x27;;
+import { danioVehiculo, datosTercero, Formulario, terceroSQL, vehiculoTercero } from &#x27;../interfaces/formulario&#x27;;
+import { ApiService } from &#x27;../services/api.service&#x27;;
+
+@Component({
+  selector: &#x27;app-tercero&#x27;,
+  templateUrl: &#x27;./tercero.page.html&#x27;,
+  styleUrls: [&#x27;./tercero.page.scss&#x27;],
+})
+export class TerceroPage implements OnInit {
+  datoTercero&#x3D;false;
+  datosVehiculo&#x3D; false;
+  danosVehiculoTercero&#x3D;false;
+  terceroDatos:datosTercero;
+  terceroVehiculo:vehiculoTercero;
+  terceroDanosVehiculo:danioVehiculo&#x3D;{};
+  formulario: Formulario&#x3D; {};
+  terceroSql: terceroSQL&#x3D;{};
+  terceroSqlList:terceroSQL[]&#x3D;[];
+  guardar &#x3D; true;
+  editar &#x3D; false;
+  index:number;
+  showPersona&#x3D; false;
+  AtencionIds: any;
+  constructor(private router: Router,
+    private loading: LoadingController,
+    private alert: AlertController,
+    private api: ApiService, 
+    private toast: ToastController) { 
+      const state &#x3D; this.router.getCurrentNavigation().extras.state;
+      console.log(state.data);
+      if(state.data){
+        this.AtencionIds &#x3D; state.data;
+      }
+    }
+
+  ngOnInit() {
+  }
+  addPersona(){
+    this.terceroSqlList.push(this.terceroSql);
+    this.terceroSql&#x3D;{};
+    this.showPersona&#x3D;false;
+  }
+  editPersona(i:number){
+    this.terceroSql&#x3D; this.terceroSqlList[i];
+    this.index&#x3D; i;
+    this.editar &#x3D; true;
+    this.guardar &#x3D; false;
+    this.showPersona&#x3D;true;
+  } 
+  updatePersona(){
+    this.terceroSqlList[this.index]&#x3D; this.terceroSql;
+    this.terceroSql&#x3D;{};
+    this.editar &#x3D; false;
+    this.guardar &#x3D; true;
+    this.showPersona&#x3D;false;
+  }
+  deletePersona(i:number){
+    this.terceroSqlList.splice(i,1)
+    
+  }
+  personaModal() {
+        this.showPersona &#x3D; !this.showPersona;
+  }
+  damagePosition(valor:number){
+    switch(valor){
+      case 1:
+        this.terceroDanosVehiculo.DanioLataralIzquierdo &#x3D; ! this.terceroDanosVehiculo.DanioLataralIzquierdo;
+        this.toastAlert(&quot;Daño Latateral Izquierdo: &quot;+this.terceroDanosVehiculo.DanioLataralIzquierdo);
+        break;
+      case 2: 
+          this.terceroDanosVehiculo.DanioLateralDerecho&#x3D; ! this.terceroDanosVehiculo.DanioLateralDerecho;
+          this.toastAlert(&quot;Daño Latateral Derecho: &quot;+this.terceroDanosVehiculo.DanioLateralDerecho);
+          break;
+      case 3: 
+          this.terceroDanosVehiculo.VehiculoVolcado&#x3D; ! this.terceroDanosVehiculo.VehiculoVolcado;
+          this.toastAlert(&quot;Vehículo Volcado: &quot;+this.terceroDanosVehiculo.VehiculoVolcado);
+          break;
+      case 4: 
+          this.terceroDanosVehiculo.DanioFrontal&#x3D; ! this.terceroDanosVehiculo.DanioFrontal;
+          this.toastAlert(&quot;Daño Frontal: &quot;+this.terceroDanosVehiculo.DanioFrontal);
+          break;
+      case 5: 
+          this.terceroDanosVehiculo.DanioTrasero&#x3D; ! this.terceroDanosVehiculo.DanioTrasero;
+          this.toastAlert(&quot;Daño Trasero: &quot;+this.terceroDanosVehiculo.DanioTrasero);
+          break;
+      default:
+        break;
+    } 
+  }
+  async toastAlert(mensaje: string){
+    const toa &#x3D; await this.toast.create({
+      message:mensaje,
+      duration:2000,
+      position:&quot;bottom&quot;
+    });
+    await toa.present();
+  }
+  async next(){
+    if(this.terceroSqlList.length &gt; 0){
+      const load &#x3D; await this.loading.create();
+      await  load.present();
+      console.log(this.terceroSqlList);
+      this.api.GuardarTerceros(this.terceroSqlList).pipe( 
+      finalize(async ()&#x3D;&gt;{
+        await load.dismiss();
+        })
+        ).subscribe(
+        (res) &#x3D;&gt;{
+            const navigateExtras: NavigationExtras &#x3D; 
+            {
+              state:{
+                data:this.AtencionIds
+              }
+            }
+            this.router.navigate([&#x27;./propiedad&#x27;], navigateExtras)
+          },
+        async (res) &#x3D;&gt; {
+          const alert &#x3D; await this.alert.create({
+            header:&#x27;HELP&#x27;,
+            message:res.error.Message,
+            buttons:[&#x27;Ok&#x27;]
+            
+          });
+          await alert.present();
+          }
+        );
+    }else{
+      const alert &#x3D; await this.alert.create({
+        header:&#x27;HELP&#x27;,
+        message:&#x27;No agrego terceros ¿Desea continuar?&#x27;,
+        buttons:[{
+                  text:&#x27;No&#x27;,
+                  role: &#x27;cancel&#x27;,
+                  },
+               {
+                  text:&#x27;Si&#x27;,
+                  handler: () &#x3D;&gt; {
+                    const navigateExtras: NavigationExtras &#x3D; 
+                    {
+                      state:{
+                        data: this.AtencionIds
+                      }
+                    }
+                    this.router.navigate([&#x27;./propiedad&#x27;], navigateExtras)
+                }
+               }
+        ]
+      });
+      await alert.present();
+
+    }
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;ion-header&gt;
+  &lt;ion-toolbar&gt;
+    &lt;ion-buttons slot&#x3D;&quot;start&quot;&gt;
+      &lt;ion-back-button&gt;&lt;/ion-back-button&gt;
+    &lt;/ion-buttons&gt;
+    &lt;ion-title&gt;Datos Del Tercero&lt;/ion-title&gt;
+  &lt;/ion-toolbar&gt;
+&lt;/ion-header&gt;
+
+&lt;ion-content&gt;
+  &lt;ion-grid fixed&gt;
+    &lt;ion-row&gt;
+      &lt;!-- datos de los terceros --&gt;
+      &lt;ion-col size&#x3D;&quot;12&quot;&gt;
+        &lt;ion-item  lines&#x3D;&quot;none&quot; style&#x3D;&quot;--background: #0090D0;&quot; class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+          &lt;ion-label class&#x3D;&quot;text-size-lg&quot; style&#x3D;&quot;color: white; padding-left: 5px;&quot;&gt;Datos de el/los terceros&lt;/ion-label&gt;
+        &lt;/ion-item&gt;
+        &lt;ion-item  lines&#x3D;&quot;none&quot; style&#x3D;&quot;padding-left: 70%;--border-radius: 0px;&quot;&gt;
+            &lt;ion-button style&#x3D;&quot;color: white; width: 100%;&quot; shape&#x3D;&quot;round&quot;  (click)&#x3D;&quot;personaModal()&quot;&gt;
+              Agregar
+            &lt;/ion-button&gt;
+        &lt;/ion-item&gt;
+        &lt;ion-col  size&#x3D;&quot;12&quot;&gt;
+          &lt;ion-item *ngFor&#x3D;&quot;let item of terceroSqlList; let i &#x3D; index &quot; &gt;
+            &lt;ion-icon style&#x3D;&quot;color: red;&quot; (click)&#x3D;&quot;deletePersona(i)&quot; slot&#x3D;&quot;start&quot; name&#x3D;&quot;trash&quot;&gt;&lt;/ion-icon&gt;
+            &lt;ion-label (click)&#x3D;&quot;editPersona(i)&quot;&gt;{{item.NombrePiloto}}&lt;/ion-label&gt;
+            &lt;ion-icon (click)&#x3D;&quot;editPersona(i)&quot; slot&#x3D;&quot;end&quot; style&#x3D;&quot;color: #0090d0; &quot;name&#x3D;&quot;create&quot;&gt;&lt;/ion-icon&gt;
+          &lt;/ion-item&gt;
+        &lt;/ion-col&gt;
+  
+      &lt;/ion-col&gt;
+    &lt;/ion-row&gt;
+  &lt;/ion-grid&gt;
+  &lt;ion-button style&#x3D;&quot;color: white;left: 0px;top: 90%;position: sticky; width: 50%; margin-left: 25%;margin-right: 25%;right: 0px;&quot; (click)&#x3D;&quot;next()&quot; shape&#x3D;&quot;round&quot;&gt;
+    Continuar
+  &lt;/ion-button&gt;
+&lt;/ion-content&gt;
+&lt;!-- tercero modal  --&gt;
+&lt;ion-modal class&#x3D;&quot;persona&quot; [isOpen]&#x3D;&quot;showPersona&quot;&gt;
+  &lt;ng-template&gt;
+    &lt;ion-content&gt;
+      &lt;ion-grid fixed&gt;
+        &lt;ion-row&gt;
+           &lt;!-- Datos del tercero --&gt;  
+      &lt;ion-col size&#x3D;&quot;12&quot;&gt;
+        &lt;ion-item  lines&#x3D;&quot;none&quot; style&#x3D;&quot;--background: #0090D0;&quot; class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+          &lt;ion-label class&#x3D;&quot;text-size-lg&quot; style&#x3D;&quot;color: white; padding-left: 5px;&quot;&gt;Datos Del Tercero&lt;/ion-label&gt;
+        &lt;/ion-item&gt;
+        &lt;ion-item  class&#x3D;&quot;ion-no-padding transparent input&quot;&gt;
+          &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+            Nombre y Apellido Del Propietario&lt;/ion-label&gt;
+          &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;terceroSql.NombrePropietario&quot;&gt;&lt;/ion-input&gt;
+        &lt;/ion-item&gt;
+        &lt;ion-item  class&#x3D;&quot;ion-no-padding transparent input&quot;&gt;
+          &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+            Nombre y Apellido Del Conductor&lt;/ion-label&gt;
+          &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;terceroSql.NombrePiloto&quot;&gt;&lt;/ion-input&gt;
+        &lt;/ion-item&gt;
+        &lt;ion-item  class&#x3D;&quot;ion-no-padding transparent input&quot;&gt;
+          &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+            Teléfono&lt;/ion-label&gt;
+          &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;terceroSql.Telefono&quot;&gt;&lt;/ion-input&gt;
+        &lt;/ion-item&gt;
+      &lt;/ion-col&gt;
+      &lt;!-- Datos del vehiculo --&gt;
+      &lt;ion-col size&#x3D;&quot;12&quot;&gt;
+        &lt;ion-item  lines&#x3D;&quot;none&quot; style&#x3D;&quot;--background: #0090D0;&quot; class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+          &lt;ion-label class&#x3D;&quot;text-size-lg&quot; style&#x3D;&quot;color: white; padding-left: 5px;&quot;&gt;Datos Del Vehículo Tercero&lt;/ion-label&gt;
+        &lt;/ion-item&gt;
+        &lt;ion-item   class&#x3D;&quot;ion-no-padding transparent input&quot;&gt;
+          &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+            Marca&lt;/ion-label&gt;
+          &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;terceroSql.Marca&quot;&gt;&lt;/ion-input&gt;
+        &lt;/ion-item&gt;
+        &lt;ion-item   class&#x3D;&quot;ion-no-padding transparent input&quot;&gt;
+          &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+            Modelo(Año)&lt;/ion-label&gt;
+          &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;terceroSql.Modelo&quot;&gt;&lt;/ion-input&gt;
+        &lt;/ion-item&gt;
+        &lt;ion-item  class&#x3D;&quot;ion-no-padding transparent input&quot;&gt;
+          &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+            Placa&lt;/ion-label&gt;
+          &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;terceroSql.Placa&quot;&gt;&lt;/ion-input&gt;
+        &lt;/ion-item&gt;
+        &lt;ion-item  class&#x3D;&quot;ion-no-padding transparent input&quot;&gt;
+          &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+            Chasis&lt;/ion-label&gt;
+          &lt;ion-input type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;terceroSql.Chasis&quot;&gt;&lt;/ion-input&gt;
+        &lt;/ion-item&gt;
+        &lt;ion-item  class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+          &lt;ion-label class&#x3D;&quot;text-size-sm&quot; position&#x3D;&quot;floating&quot;&gt;
+            Descripción Del Daño&lt;/ion-label&gt;
+            &lt;ion-textarea rows&#x3D;&quot;10%&quot; cols&#x3D;&quot;1&quot;  [(ngModel)]&#x3D;&quot;terceroSql.DaniosObservacion&quot;&gt;
+            &lt;/ion-textarea&gt;
+        &lt;/ion-item&gt;
+      &lt;/ion-col&gt;
+          &lt;ion-col size&#x3D;&quot;12&quot;&gt;
+            &lt;ion-col *ngIf&#x3D;&quot;guardar&quot;  size&#x3D;&quot;6&quot;&gt;
+              &lt;ion-button style&#x3D;&quot;color: white;&quot; (click)&#x3D;&quot;addPersona()&quot; expand&#x3D;&quot;block&quot; shape&#x3D;&quot;round&quot;&gt;
+                Agregar
+              &lt;/ion-button&gt;
+            &lt;/ion-col&gt;
+            &lt;ion-col *ngIf&#x3D;&quot;editar&quot;  size&#x3D;&quot;6&quot;&gt;
+              &lt;ion-button style&#x3D;&quot;color: white;&quot; (click)&#x3D;&quot;updatePersona()&quot; expand&#x3D;&quot;block&quot; shape&#x3D;&quot;round&quot;&gt;
+                Actualizar
+              &lt;/ion-button&gt;
+            &lt;/ion-col&gt;
+          &lt;/ion-col&gt;
+        &lt;/ion-row&gt;
+      &lt;/ion-grid&gt;
+    &lt;/ion-content&gt;
+  &lt;/ng-template&gt;
+&lt;/ion-modal&gt;</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./tercero.page.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">.card-header-image {
+    position: relative;
+    ion-img{
+      height: 20vh;
+      object-fit: contain;
+    }
+    &amp;::before {
+      content: &quot;&quot;;
+      display: block;
+      height: 20vh;
+      width: 100%;
+      top: 0;
+      left: 0;
+      position: absolute;
+      pointer-events: none;
+      mix-blend-mode: var(--cs-mode-image);
+      background: var(--cs-gradient-damage);
+      z-index: 5;
+    }
+  
+    img {
+      width: 100% !important;
+      height: 20vh;
+      object-fit: contain;
+    }
+  }
+  .card-header-image-inactive {
+    position: relative;
+    ion-img{
+      height: 20vh;
+      object-fit: contain;
+    }
+    &amp;::before {
+      content: &quot;&quot;;
+      display: block;
+      height: 20vh;
+      width: 100%;
+      top: 0;
+      left: 0;
+      position: absolute;
+      pointer-events: none;
+      mix-blend-mode: var(--cs-mode-image);
+      background: var(--cs-gradient-linear);
+      z-index: 5;
+    }
+  
+    img {
+      width: 100% !important;
+      height: 20vh;
+      object-fit: contain;
+    }
+  }</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><ion-header>  <ion-toolbar>    <ion-buttons slot="start">      <ion-back-button></ion-back-button>    </ion-buttons>    <ion-title>Datos Del Tercero</ion-title>  </ion-toolbar></ion-header><ion-content>  <ion-grid fixed>    <ion-row>      <!-- datos de los terceros -->      <ion-col size="12">        <ion-item  lines="none" style="--background: #0090D0;" class="ion-no-padding  input">          <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos de el/los terceros</ion-label>        </ion-item>        <ion-item  lines="none" style="padding-left: 70%;--border-radius: 0px;">            <ion-button style="color: white; width: 100%;" shape="round"  (click)="personaModal()">              Agregar            </ion-button>        </ion-item>        <ion-col  size="12">          <ion-item *ngFor="let item of terceroSqlList; let i = index " >            <ion-icon style="color: red;" (click)="deletePersona(i)" slot="start" name="trash"></ion-icon>            <ion-label (click)="editPersona(i)">{{item.NombrePiloto}}</ion-label>            <ion-icon (click)="editPersona(i)" slot="end" style="color: #0090d0; "name="create"></ion-icon>          </ion-item>        </ion-col>        </ion-col>    </ion-row>  </ion-grid>  <ion-button style="color: white;left: 0px;top: 90%;position: sticky; width: 50%; margin-left: 25%;margin-right: 25%;right: 0px;" (click)="next()" shape="round">    Continuar  </ion-button></ion-content><!-- tercero modal  --><ion-modal class="persona" [isOpen]="showPersona">  <ng-template>    <ion-content>      <ion-grid fixed>        <ion-row>           <!-- Datos del tercero -->        <ion-col size="12">        <ion-item  lines="none" style="--background: #0090D0;" class="ion-no-padding  input">          <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos Del Tercero</ion-label>        </ion-item>        <ion-item  class="ion-no-padding transparent input">          <ion-label class="text-size-sm" position="floating">            Nombre y Apellido Del Propietario</ion-label>          <ion-input type="text" [(ngModel)]="terceroSql.NombrePropietario"></ion-input>        </ion-item>        <ion-item  class="ion-no-padding transparent input">          <ion-label class="text-size-sm" position="floating">            Nombre y Apellido Del Conductor</ion-label>          <ion-input type="text" [(ngModel)]="terceroSql.NombrePiloto"></ion-input>        </ion-item>        <ion-item  class="ion-no-padding transparent input">          <ion-label class="text-size-sm" position="floating">            Teléfono</ion-label>          <ion-input type="text" [(ngModel)]="terceroSql.Telefono"></ion-input>        </ion-item>      </ion-col>      <!-- Datos del vehiculo -->      <ion-col size="12">        <ion-item  lines="none" style="--background: #0090D0;" class="ion-no-padding  input">          <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos Del Vehículo Tercero</ion-label>        </ion-item>        <ion-item   class="ion-no-padding transparent input">          <ion-label class="text-size-sm" position="floating">            Marca</ion-label>          <ion-input type="text" [(ngModel)]="terceroSql.Marca"></ion-input>        </ion-item>        <ion-item   class="ion-no-padding transparent input">          <ion-label class="text-size-sm" position="floating">            Modelo(Año)</ion-label>          <ion-input type="text" [(ngModel)]="terceroSql.Modelo"></ion-input>        </ion-item>        <ion-item  class="ion-no-padding transparent input">          <ion-label class="text-size-sm" position="floating">            Placa</ion-label>          <ion-input type="text" [(ngModel)]="terceroSql.Placa"></ion-input>        </ion-item>        <ion-item  class="ion-no-padding transparent input">          <ion-label class="text-size-sm" position="floating">            Chasis</ion-label>          <ion-input type="text" [(ngModel)]="terceroSql.Chasis"></ion-input>        </ion-item>        <ion-item  class="ion-no-padding  input">          <ion-label class="text-size-sm" position="floating">            Descripción Del Daño</ion-label>            <ion-textarea rows="10%" cols="1"  [(ngModel)]="terceroSql.DaniosObservacion">            </ion-textarea>        </ion-item>      </ion-col>          <ion-col size="12">            <ion-col *ngIf="guardar"  size="6">              <ion-button style="color: white;" (click)="addPersona()" expand="block" shape="round">                Agregar              </ion-button>            </ion-col>            <ion-col *ngIf="editar"  size="6">              <ion-button style="color: white;" (click)="updatePersona()" expand="block" shape="round">                Actualizar              </ion-button>            </ion-col>          </ion-col>        </ion-row>      </ion-grid>    </ion-content>  </ng-template></ion-modal></div>'
+    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AjustadorPage', 'selector': 'app-ajustador'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'}];
+    var DIRECTIVES = [{'name': 'ParallaxHeader', 'selector': '[parallax-header]'},{'name': 'PressDirective', 'selector': '[appPress]'}];
+    var ACTUAL_COMPONENT = {'name': 'TerceroPage'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'TerceroPage.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

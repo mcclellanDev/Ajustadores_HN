@@ -1,0 +1,3173 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>help_ajustadores documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  AjustadorPage</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/ajustador/ajustador.page.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnInit</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>app-ajustador</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./ajustador.page.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./ajustador.page.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#ajustador" >ajustador</a>
+                            </li>
+                            <li>
+                                <a href="#cantidadNulos" >cantidadNulos</a>
+                            </li>
+                            <li>
+                                <a href="#contador" >contador</a>
+                            </li>
+                            <li>
+                                <a href="#danioResults" >danioResults</a>
+                            </li>
+                            <li>
+                                <a href="#danios" >danios</a>
+                            </li>
+                            <li>
+                                <a href="#danioSearchable" >danioSearchable</a>
+                            </li>
+                            <li>
+                                <a href="#daniosIndex" >daniosIndex</a>
+                            </li>
+                            <li>
+                                <a href="#daniosOtros" >daniosOtros</a>
+                            </li>
+                            <li>
+                                <a href="#daniosSelect" >daniosSelect</a>
+                            </li>
+                            <li>
+                                <a href="#daSegment" >daSegment</a>
+                            </li>
+                            <li>
+                                <a href="#dataSiniestro" >dataSiniestro</a>
+                            </li>
+                            <li>
+                                <a href="#datos" >datos</a>
+                            </li>
+                            <li>
+                                <a href="#elExpediente" >elExpediente</a>
+                            </li>
+                            <li>
+                                <a href="#elTipoGenero" >elTipoGenero</a>
+                            </li>
+                            <li>
+                                <a href="#elTipoLicencia" >elTipoLicencia</a>
+                            </li>
+                            <li>
+                                <a href="#elTipoLicenciaId" >elTipoLicenciaId</a>
+                            </li>
+                            <li>
+                                <a href="#elTipoSolicitante" >elTipoSolicitante</a>
+                            </li>
+                            <li>
+                                <a href="#expediente" >expediente</a>
+                            </li>
+                            <li>
+                                <a href="#idAtencion" >idAtencion</a>
+                            </li>
+                            <li>
+                                <a href="#identidadCliente" >identidadCliente</a>
+                            </li>
+                            <li>
+                                <a href="#inicialGenero" >inicialGenero</a>
+                            </li>
+                            <li>
+                                <a href="#isLoading" >isLoading</a>
+                            </li>
+                            <li>
+                                <a href="#isSearch" >isSearch</a>
+                            </li>
+                            <li>
+                                <a href="#licenciaTipo" >licenciaTipo</a>
+                            </li>
+                            <li>
+                                <a href="#miMoneda" >miMoneda</a>
+                            </li>
+                            <li>
+                                <a href="#moneda" >moneda</a>
+                            </li>
+                            <li>
+                                <a href="#nombreCliente" >nombreCliente</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#results" >results</a>
+                            </li>
+                            <li>
+                                <a href="#tipoDeCobertura" >tipoDeCobertura</a>
+                            </li>
+                            <li>
+                                <a href="#tipoGeneros" >tipoGeneros</a>
+                            </li>
+                            <li>
+                                <a href="#tipoLicencia" >tipoLicencia</a>
+                            </li>
+                            <li>
+                                <a href="#tiposdeCobertura" >tiposdeCobertura</a>
+                            </li>
+                            <li>
+                                <a href="#tipoSolicitante" >tipoSolicitante</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#toaster" >toaster</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#closeDanioSearch" >closeDanioSearch</a>
+                            </li>
+                            <li>
+                                <a href="#elminaDanio" >elminaDanio</a>
+                            </li>
+                            <li>
+                                <a href="#entraDanio" >entraDanio</a>
+                            </li>
+                            <li>
+                                <a href="#entraIdentidad" >entraIdentidad</a>
+                            </li>
+                            <li>
+                                <a href="#entraNombre" >entraNombre</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getDanios" >getDanios</a>
+                            </li>
+                            <li>
+                                <a href="#getElTipoGenero" >getElTipoGenero</a>
+                            </li>
+                            <li>
+                                <a href="#getElTipoLicencia" >getElTipoLicencia</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getTipoLicencia" >getTipoLicencia</a>
+                            </li>
+                            <li>
+                                <a href="#getTiposDeCobertura" >getTiposDeCobertura</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getTipoSolicitante" >getTipoSolicitante</a>
+                            </li>
+                            <li>
+                                <a href="#handleInput" >handleInput</a>
+                            </li>
+                            <li>
+                                <a href="#loadGeneros" >loadGeneros</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#seleccionarTipoCobertura" >seleccionarTipoCobertura</a>
+                            </li>
+                            <li>
+                                <a href="#setTipoSolicitante" >setTipoSolicitante</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(api: <a href="../injectables/ApiService.html" target="_self">ApiService</a>, toaster: <a href="../injectables/ToastService.html" target="_self">ToastService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/ajustador/ajustador.page.ts:19</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>api</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ApiService.html" target="_self" >ApiService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>toaster</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ToastService.html" target="_self" >ToastService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="closeDanioSearch"></a>
+                    <span class="name">
+                        <span ><b>closeDanioSearch</b></span>
+                        <a href="#closeDanioSearch"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>closeDanioSearch()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:100</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="elminaDanio"></a>
+                    <span class="name">
+                        <span ><b>elminaDanio</b></span>
+                        <a href="#elminaDanio"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>elminaDanio(i: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="118"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:118</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>i</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="entraDanio"></a>
+                    <span class="name">
+                        <span ><b>entraDanio</b></span>
+                        <a href="#entraDanio"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>entraDanio(danioIndex)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="110"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:110</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>danioIndex</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="entraIdentidad"></a>
+                    <span class="name">
+                        <span ><b>entraIdentidad</b></span>
+                        <a href="#entraIdentidad"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>entraIdentidad(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="184"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:184</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="entraNombre"></a>
+                    <span class="name">
+                        <span ><b>entraNombre</b></span>
+                        <a href="#entraNombre"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>entraNombre(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="180"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:180</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getDanios"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getDanios</b></span>
+                        <a href="#getDanios"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getDanios()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:78</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getElTipoGenero"></a>
+                    <span class="name">
+                        <span ><b>getElTipoGenero</b></span>
+                        <a href="#getElTipoGenero"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getElTipoGenero(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="229"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:229</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getElTipoLicencia"></a>
+                    <span class="name">
+                        <span ><b>getElTipoLicencia</b></span>
+                        <a href="#getElTipoLicencia"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getElTipoLicencia(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="216"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:216</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getTipoLicencia"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getTipoLicencia</b></span>
+                        <a href="#getTipoLicencia"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getTipoLicencia(paisIdentidad)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="193"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:193</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>paisIdentidad</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getTiposDeCobertura"></a>
+                    <span class="name">
+                        <span ><b>getTiposDeCobertura</b></span>
+                        <a href="#getTiposDeCobertura"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getTiposDeCobertura()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="156"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:156</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getTipoSolicitante"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getTipoSolicitante</b></span>
+                        <a href="#getTipoSolicitante"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getTipoSolicitante()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="134"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:134</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleInput"></a>
+                    <span class="name">
+                        <span ><b>handleInput</b></span>
+                        <a href="#handleInput"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>handleInput(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="105"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:105</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loadGeneros"></a>
+                    <span class="name">
+                        <span ><b>loadGeneros</b></span>
+                        <a href="#loadGeneros"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>loadGeneros()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="244"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:244</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:71</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seleccionarTipoCobertura"></a>
+                    <span class="name">
+                        <span ><b>seleccionarTipoCobertura</b></span>
+                        <a href="#seleccionarTipoCobertura"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>seleccionarTipoCobertura(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="175"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:175</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setTipoSolicitante"></a>
+                    <span class="name">
+                        <span ><b>setTipoSolicitante</b></span>
+                        <a href="#setTipoSolicitante"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>setTipoSolicitante(event)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="122"
+                                    class="link-to-prism">src/app/ajustador/ajustador.page.ts:122</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>event</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ajustador"></a>
+                    <span class="name">
+                        <span ><b>ajustador</b></span>
+                        <a href="#ajustador"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/ajustadorHn.html" target="_self" >ajustadorHn</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/ajustador/ajustador.page.ts:16</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="cantidadNulos"></a>
+                    <span class="name">
+                        <span ><b>cantidadNulos</b></span>
+                        <a href="#cantidadNulos"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/ajustador/ajustador.page.ts:16</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="contador"></a>
+                    <span class="name">
+                        <span ><b>contador</b></span>
+                        <a href="#contador"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/ajustador/ajustador.page.ts:16</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="danioResults"></a>
+                    <span class="name">
+                        <span ><b>danioResults</b></span>
+                        <a href="#danioResults"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/ajustador/ajustador.page.ts:15</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="danios"></a>
+                    <span class="name">
+                        <span ><b>danios</b></span>
+                        <a href="#danios"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/ajustador/ajustador.page.ts:15</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="danioSearchable"></a>
+                    <span class="name">
+                        <span ><b>danioSearchable</b></span>
+                        <a href="#danioSearchable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/app/ajustador/ajustador.page.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="daniosIndex"></a>
+                    <span class="name">
+                        <span ><b>daniosIndex</b></span>
+                        <a href="#daniosIndex"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/ajustador/ajustador.page.ts:15</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="daniosOtros"></a>
+                    <span class="name">
+                        <span ><b>daniosOtros</b></span>
+                        <a href="#daniosOtros"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/ajustador/ajustador.page.ts:15</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="daniosSelect"></a>
+                    <span class="name">
+                        <span ><b>daniosSelect</b></span>
+                        <a href="#daniosSelect"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/ajustador/ajustador.page.ts:15</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="daSegment"></a>
+                    <span class="name">
+                        <span ><b>daSegment</b></span>
+                        <a href="#daSegment"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&quot;person&quot;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/app/ajustador/ajustador.page.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dataSiniestro"></a>
+                    <span class="name">
+                        <span ><b>dataSiniestro</b></span>
+                        <a href="#dataSiniestro"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/ajustador/ajustador.page.ts:15</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="datos"></a>
+                    <span class="name">
+                        <span ><b>datos</b></span>
+                        <a href="#datos"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/app/ajustador/ajustador.page.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="elExpediente"></a>
+                    <span class="name">
+                        <span ><b>elExpediente</b></span>
+                        <a href="#elExpediente"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">src/app/ajustador/ajustador.page.ts:13</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="elTipoGenero"></a>
+                    <span class="name">
+                        <span ><b>elTipoGenero</b></span>
+                        <a href="#elTipoGenero"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/ajustador/ajustador.page.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="elTipoLicencia"></a>
+                    <span class="name">
+                        <span ><b>elTipoLicencia</b></span>
+                        <a href="#elTipoLicencia"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/ajustador/ajustador.page.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="elTipoLicenciaId"></a>
+                    <span class="name">
+                        <span ><b>elTipoLicenciaId</b></span>
+                        <a href="#elTipoLicenciaId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/ajustador/ajustador.page.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="elTipoSolicitante"></a>
+                    <span class="name">
+                        <span ><b>elTipoSolicitante</b></span>
+                        <a href="#elTipoSolicitante"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/ajustador/ajustador.page.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="expediente"></a>
+                    <span class="name">
+                        <span ><b>expediente</b></span>
+                        <a href="#expediente"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">src/app/ajustador/ajustador.page.ts:13</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="idAtencion"></a>
+                    <span class="name">
+                        <span ><b>idAtencion</b></span>
+                        <a href="#idAtencion"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">src/app/ajustador/ajustador.page.ts:13</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="identidadCliente"></a>
+                    <span class="name">
+                        <span ><b>identidadCliente</b></span>
+                        <a href="#identidadCliente"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/ajustador/ajustador.page.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="inicialGenero"></a>
+                    <span class="name">
+                        <span ><b>inicialGenero</b></span>
+                        <a href="#inicialGenero"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/ajustador/ajustador.page.ts:19</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isLoading"></a>
+                    <span class="name">
+                        <span ><b>isLoading</b></span>
+                        <a href="#isLoading"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/app/ajustador/ajustador.page.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isSearch"></a>
+                    <span class="name">
+                        <span ><b>isSearch</b></span>
+                        <a href="#isSearch"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">src/app/ajustador/ajustador.page.ts:13</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="licenciaTipo"></a>
+                    <span class="name">
+                        <span ><b>licenciaTipo</b></span>
+                        <a href="#licenciaTipo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/ajustador/ajustador.page.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="miMoneda"></a>
+                    <span class="name">
+                        <span ><b>miMoneda</b></span>
+                        <a href="#miMoneda"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">src/app/ajustador/ajustador.page.ts:13</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="moneda"></a>
+                    <span class="name">
+                        <span ><b>moneda</b></span>
+                        <a href="#moneda"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">src/app/ajustador/ajustador.page.ts:13</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="nombreCliente"></a>
+                    <span class="name">
+                        <span ><b>nombreCliente</b></span>
+                        <a href="#nombreCliente"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/ajustador/ajustador.page.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="results"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>results</b></span>
+                        <a href="#results"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/app/ajustador/ajustador.page.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tipoDeCobertura"></a>
+                    <span class="name">
+                        <span ><b>tipoDeCobertura</b></span>
+                        <a href="#tipoDeCobertura"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/ajustador/ajustador.page.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tipoGeneros"></a>
+                    <span class="name">
+                        <span ><b>tipoGeneros</b></span>
+                        <a href="#tipoGeneros"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/ajustador/ajustador.page.ts:19</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tipoLicencia"></a>
+                    <span class="name">
+                        <span ><b>tipoLicencia</b></span>
+                        <a href="#tipoLicencia"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/tipoLicencia.html" target="_self" >tipoLicencia[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/ajustador/ajustador.page.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tiposdeCobertura"></a>
+                    <span class="name">
+                        <span ><b>tiposdeCobertura</b></span>
+                        <a href="#tiposdeCobertura"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/ajustador/ajustador.page.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tipoSolicitante"></a>
+                    <span class="name">
+                        <span ><b>tipoSolicitante</b></span>
+                        <a href="#tipoSolicitante"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/tipoSolicitante.html" target="_self" >tipoSolicitante[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/ajustador/ajustador.page.ts:16</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="toaster"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>toaster</b></span>
+                        <a href="#toaster"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../injectables/ToastService.html" target="_self" >ToastService</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/app/ajustador/ajustador.page.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnInit } from &#x27;@angular/core&#x27;;
+import { finalize } from &#x27;rxjs/operators&#x27;;
+import { ajustadorHn, tipoLicencia, tipoSolicitante } from &#x27;../interfaces/formulario&#x27;;
+import { ApiService } from &#x27;../services/api.service&#x27;;
+import { ToastService } from &#x27;../services/toast.service&#x27;;
+
+@Component({
+  selector: &#x27;app-ajustador&#x27;,
+  templateUrl: &#x27;./ajustador.page.html&#x27;,
+  styleUrls: [&#x27;./ajustador.page.scss&#x27;],
+})
+export class AjustadorPage implements OnInit {
+  idAtencion:any; expediente: any; moneda: any;  miMoneda: string;  elExpediente: any; isSearch:boolean&#x3D;false;
+  daSegment:any&#x3D;&quot;person&quot;; public results &#x3D; []; danioSearchable:any&#x3D;[];  isLoading: boolean &#x3D; false; datos:any&#x3D;[];
+  danios:any&#x3D;[];  daniosSelect:any&#x3D;[];  danioResults:any&#x3D;[];  daniosOtros:any&#x3D;[]; daniosIndex:number; dataSiniestro:any&#x3D;[];
+  contador:number&#x3D;0; cantidadNulos: number;   ajustador: ajustadorHn&#x3D;{}; tipoSolicitante: tipoSolicitante[]&#x3D;[];
+  nombreCliente:any; identidadCliente:any;  elTipoSolicitante: any; tiposdeCobertura:any;  tipoDeCobertura: any;
+  elTipoLicenciaId:any;  elTipoLicencia:any; tipoLicencia: tipoLicencia[]&#x3D;[]; licenciaTipo:any; elTipoGenero:any;
+  inicialGenero: string; tipoGeneros:any&#x3D;[];
+  constructor(private api: ApiService, public toaster:ToastService) { 
+    this.idAtencion &#x3D; localStorage.getItem(&#x27;idAtencion&#x27;);
+    //alert(this.idAtencion)
+
+      let dIdAtencion &#x3D; parseInt(this.idAtencion);
+
+      this.api.DatosDeAtencion(dIdAtencion).pipe( 
+        finalize(async ()&#x3D;&gt;{
+          this.isLoading &#x3D; false;
+        })
+      ).subscribe(
+         async (res) &#x3D;&gt;{
+          this.dataSiniestro &#x3D; res;
+          console.log(&quot;Mis datos de atencion&quot;);
+          console.dir(this.dataSiniestro);
+          this.identidadCliente &#x3D; this.dataSiniestro[0].IdentidadCliente;
+          this.elTipoLicencia &#x3D; this.dataSiniestro[0].RefTipoLicenciaId;
+
+          if (parseInt(this.dataSiniestro.RefTipoConductorId)&#x3D;&#x3D;1){
+            this.ajustador.TipoSolicitante &#x3D; this.dataSiniestro.RefTipoConductorId;
+            this.datos[&#x27;RefTipoSolicitanteInformeAjusteId&#x27;] &#x3D; this.dataSiniestro.RefTipoConductorId;
+          }
+
+         }
+      )
+
+      this.api.Expediente(dIdAtencion).pipe( 
+        finalize(async ()&#x3D;&gt;{
+          console.log(&#x27;So far so good as you should know my friend what we can do....&#x27;)
+          //this.isLoading &#x3D; false;
+        })
+      ).subscribe(
+          async (res) &#x3D;&gt; {
+            this.elExpediente &#x3D; res;
+            console.log(&#x27;Mi querido expediente es :&#x27;);
+            console.dir(this.elExpediente)
+            console.log(this.elExpediente[0].Cliente);
+            this.nombreCliente &#x3D; this.elExpediente[0].Cliente;
+
+            this.moneda &#x3D; this.elExpediente[0].Moneda;
+            if (this.moneda &#x3D;&#x3D; null) {
+              this.miMoneda &#x3D; &quot;Lempiras&quot;;
+            }else{
+              this.miMoneda &#x3D; this.moneda.Moneda;
+            }
+          }
+      )
+
+      this.getDanios();
+  }
+
+  ngOnInit() {
+    this.getTipoSolicitante();
+    this.getTiposDeCobertura();
+    this.getTipoLicencia(3);
+    this.loadGeneros();
+  }
+
+  async getDanios(){
+    this.isLoading &#x3D; true;
+    this.api.listDanios().pipe( 
+      finalize(async ()&#x3D;&gt;{
+        this.isLoading &#x3D; false;
+      })
+    ).subscribe(
+       async (res) &#x3D;&gt;{
+        this.danios &#x3D; res;
+        this.danioSearchable &#x3D; res;
+        this.results &#x3D; res;
+        this.daniosIndex &#x3D; this.danios.length;
+        //console.log(&quot;Los danios&quot;);
+        //console.dir(this.danios);
+      },
+      async (res) &#x3D;&gt; {
+        this.toaster.presentToast(res.error.Message, &#x27;top&#x27;, &#x27;danios&#x27;);
+      }
+
+    )
+  }
+
+  closeDanioSearch(){
+    this.isSearch &#x3D; false;
+    this.daSegment &#x3D; &#x27;chatbox&#x27;;
+  }
+
+  handleInput(event) {
+    const query &#x3D; event.target.value.toLowerCase();
+    this.results &#x3D; this.danioSearchable.filter((d) &#x3D;&gt; d.Descripcion.toLowerCase().indexOf(query) &gt; -1);
+  }
+
+  entraDanio(danioIndex){
+    const element &#x3D; this.danios[danioIndex-1];
+    console.dir(element)
+    this.daniosSelect.push(element);
+    this.danioResults.push(element);
+    this.contador &#x3D; this.daniosSelect.length;
+  }
+
+  elminaDanio(i:number ){
+    this.daniosSelect.splice(i,1);
+  }
+
+  setTipoSolicitante(event){
+    console.log(event)
+    this.elTipoSolicitante &#x3D; event.target.value;
+    this.datos[&#x27;RefTipoSolicitanteInformeAjusteId&#x27;] &#x3D; event.target.value;
+    localStorage.setItem(&#x27;tipoSolicitante&#x27;, this.elTipoSolicitante);
+    if (this.elTipoSolicitante &#x3D;&#x3D; 1) {
+      this.elExpediente.NombreConductor &#x3D; this.elExpediente[0].Cliente;
+    }else{
+  
+    }
+   }
+
+   async getTipoSolicitante(){
+    //    const load &#x3D; await this.loading.create();
+    //    await  load.present();
+    //alert(&#x27;VOY POR EL SOLICITANTE&#x27;)
+        this.isLoading &#x3D; true;
+        this.api.ListTipoDeSolicitanteInformeAjuste().pipe( 
+          finalize(async ()&#x3D;&gt;{
+    //        await load.dismiss();
+            this.isLoading &#x3D; false;
+          })
+        ).subscribe(
+           async (res) &#x3D;&gt;{
+              this.tipoSolicitante&#x3D; res;
+          },
+          async (res) &#x3D;&gt; {
+            this.toaster.presentToast(res.error.Message, &#x27;top&#x27;, &#x27;solicitante&#x27;);
+            
+          }
+    
+        )
+      }
+
+      getTiposDeCobertura(){
+        this.isLoading &#x3D; true;
+        this.api.ListarTiposAcuerdo().pipe( 
+          finalize(async ()&#x3D;&gt;{
+            this.isLoading &#x3D; false;
+            //this.toaster.presentToastNoButtons(&#x27;Acuerdo Guardado con Exito. Puedes descargar una copia y enviarla a tu correo.&#x27;, &#x27;middle&#x27;, &#x27;deuda&#x27;);
+            //this.finiquitoCompleto &#x3D; true;
+            //await load.dismiss();
+          })
+          
+        ).subscribe(
+           async (res) &#x3D;&gt;{
+            console.log(&#x27;Esto viene de la cobertura&#x27;);
+            console.dir(res);
+            this.tiposdeCobertura &#x3D; res;
+            //this.idTablaAjustador &#x3D; res.toString();
+           })
+      }
+
+      seleccionarTipoCobertura(event){
+        this.tipoDeCobertura &#x3D; event.target.value;
+        localStorage.setItem(&#x27;tipoCobertura&#x27;, event.target.value);
+      }
+
+      entraNombre(event){
+        this.elExpediente.Cliente &#x3D; event.target.value;
+      }
+
+      entraIdentidad(event){
+        if(event.target.value.length &#x3D;&#x3D; event.target.maxlength){
+          this.elExpediente.IdentidaConductor &#x3D; event.target.value;
+          this.datos[&#x27;IdentidaConductor&#x27;] &#x3D; event.target.value;
+          this.datos[&#x27;Identificacion&#x27;] &#x3D; event.target.value;
+          this.datos[&#x27;DPI_Pasaporte&#x27;] &#x3D; event.target.value;
+        }
+      }
+
+      async getTipoLicencia(paisIdentidad){
+            this.isLoading &#x3D; true;
+            this.api.TipoDeLicencia(paisIdentidad).pipe( 
+              finalize(async ()&#x3D;&gt;{
+                this.isLoading &#x3D; false;
+              })
+            ).subscribe(
+               async (res) &#x3D;&gt;{
+                this.tipoLicencia &#x3D; res;
+              },
+              async (res) &#x3D;&gt; {
+                /*
+                const alert &#x3D; await this.alert.create({
+                  header:&#x27;HELP&#x27;,
+                  message:res.error.Message,
+                  buttons:[&#x27;Ok&#x27;]
+                });
+                await alert.present();
+                */
+              }
+            )
+          }
+
+          getElTipoLicencia(event){
+            this.elTipoLicenciaId &#x3D; event.target.value;
+        
+            for (let index &#x3D; 0; index &lt; this.tipoLicencia.length; index++) {
+              const element &#x3D; this.tipoLicencia[index];
+              if(this.elTipoLicenciaId.toString() &#x3D;&#x3D; element.Id.toString()){
+                this.licenciaTipo &#x3D; element.TipoLicencia;
+                //console.log(this.licenciaTipo);
+              }
+              
+            }
+          }
+
+          getElTipoGenero(event){
+            this.elTipoGenero &#x3D; event.target.value;
+            //console.log(gender)
+            this.datos[&#x27;Sexo&#x27;] &#x3D; event.target.value;
+            if (this.elTipoGenero &#x3D;&#x3D; 1) {
+              this.inicialGenero &#x3D; &quot;M&quot;;
+              
+              //console.log(this.inicialGenero);
+            }else if (this.elTipoGenero &#x3D;&#x3D; 2){
+              this.inicialGenero &#x3D; &quot;F&quot;;
+              //console.log(this.inicialGenero);
+            }
+            
+          }
+
+          loadGeneros(){
+            this.api.ListTipoGenero().pipe( 
+              finalize(async ()&#x3D;&gt;{
+                this.isLoading &#x3D; false;
+              })
+            ).subscribe(
+               async (res) &#x3D;&gt;{
+                this.tipoGeneros &#x3D; res;
+                //console.log(&quot;Mis generos&quot;);
+                //console.dir(this.tipoGeneros);
+              },
+              async (res) &#x3D;&gt; {
+                this.toaster.presentToast(res.error.Message, &#x27;top&#x27;, &#x27;solicitante&#x27;);
+                
+              }
+        
+            )
+          }
+
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;ion-header&gt;
+  &lt;ion-spinner color&#x3D;&quot;primary&quot; name&#x3D;&quot;lines&quot; *ngIf&#x3D;&quot;isLoading &#x3D;&#x3D; true&quot;&gt;&lt;/ion-spinner&gt;
+  &lt;ion-footer *ngIf&#x3D;&quot;isLoading &#x3D;&#x3D; true&quot;&gt;&lt;/ion-footer&gt;
+  &lt;ion-toolbar&gt;
+    &lt;ion-buttons slot&#x3D;&quot;start&quot;&gt;
+      &lt;ion-back-button&gt;&lt;/ion-back-button&gt;
+      
+    &lt;/ion-buttons&gt;
+    &lt;ion-title&gt;
+      &lt;ion-grid&gt;
+        &lt;ion-row&gt;
+          &lt;ion-col size&#x3D;&quot;4&quot;&gt;&lt;/ion-col&gt;
+          &lt;ion-col size&#x3D;&quot;4&quot;&gt;Atención # {{idAtencion}} - {{miMoneda}}&lt;/ion-col&gt;
+          &lt;ion-col size&#x3D;&quot;4&quot;&gt;&lt;/ion-col&gt;
+        &lt;/ion-row&gt;
+      &lt;/ion-grid&gt;
+    &lt;/ion-title&gt;
+  &lt;/ion-toolbar&gt;
+&lt;/ion-header&gt;
+
+&lt;ion-split-pane id&#x3D;&quot;big-pane&quot; when&#x3D;&quot;xs&quot; contentId&#x3D;&quot;main&quot;&gt;
+  &lt;ion-menu contentId&#x3D;&quot;main&quot;&gt;
+    &lt;ion-header&gt;
+      &lt;ion-toolbar color&#x3D;&quot;tertiary&quot;&gt;
+        &lt;ion-title&gt;Datos de Formulario&lt;/ion-title&gt;
+      &lt;/ion-toolbar&gt;
+    &lt;/ion-header&gt;
+    &lt;ion-content *ngIf&#x3D;&quot;isSearch &#x3D;&#x3D; true &amp;&amp; daSegment &#x3D;&#x3D; &#x27;chatbox-ellipses&#x27;&quot; [hidden]&#x3D;&quot;daSegment !&#x3D;&#x3D; &#x27;chatbox-ellipses&#x27;&quot; class&#x3D;&quot;ion-padding&quot;&gt;
+      &lt;ion-grid&gt;
+        &lt;ion-row&gt;
+          &lt;ion-col size&#x3D;&quot;10&quot;&gt;
+            &lt;ion-badge&gt;
+              Daños Comunes A Vehículos
+            &lt;/ion-badge&gt;
+          &lt;/ion-col&gt;
+          &lt;ion-col size&#x3D;&quot;2&quot;&gt;
+            &lt;ion-button class&#x3D;&quot;close-search&quot; style&#x3D;&quot;float: right ;&quot; (click)&#x3D;&quot;closeDanioSearch()&quot;&gt;
+              &lt;ion-icon name&#x3D;&quot;return-up-back&quot;&gt;&lt;/ion-icon&gt;
+            &lt;/ion-button&gt;
+          &lt;/ion-col&gt;
+        &lt;/ion-row&gt;
+      &lt;/ion-grid&gt;
+      &lt;ion-searchbar animated&#x3D;&quot;true&quot; placeholder&#x3D;&quot;Escribe un Daño de Vehículo&quot; show-clear-button&#x3D;&quot;focus&quot; show-cancel-button&#x3D;&quot;focus&quot; cancel-button-text&#x3D;&quot;Cancelar&quot;
+      cancel-button-icon&#x3D;&quot;trash-bin&quot; [debounce]&#x3D;&quot;1000&quot; (ionInput)&#x3D;&quot;handleInput($event)&quot;&gt;&lt;/ion-searchbar&gt;
+
+      &lt;ion-content color&#x3D;&quot;light&quot;&gt;
+        &lt;ion-list [inset]&#x3D;&quot;true&quot; style&#x3D;&quot;width: 97%;&quot;&gt;
+          &lt;ion-item *ngFor&#x3D;&quot;let result of results&quot; (click)&#x3D;&quot;entraDanio(danioEntrada.value)&quot; style&#x3D;&quot;padding-left: 10px;border-radius:9px;&quot;&gt;
+            {{ result.Descripcion }}
+            &lt;ion-input [hidden]&#x3D;&quot;true&quot; #danioEntrada [value]&#x3D;&quot;result.Id&quot;&gt;&lt;/ion-input&gt;
+          &lt;/ion-item&gt;
+          &lt;ion-item style&#x3D;&quot;color: white;&quot;&gt;Ajustadores Ficohsa por Porsalud&lt;/ion-item&gt;
+          &lt;br&gt;&lt;br&gt;&lt;br&gt;
+        &lt;/ion-list&gt;
+      &lt;/ion-content&gt;
+      
+    &lt;/ion-content&gt;
+    &lt;ion-content *ngIf&#x3D;&quot;isSearch &#x3D;&#x3D; false&quot; class&#x3D;&quot;ion-padding&quot;&gt;
+      Contenido de Segmentos
+      &lt;ion-button (click)&#x3D;&quot;isSearch &#x3D; true; daSegment &#x3D; &#x27;chatbox-ellipses&#x27;&quot;&gt;Click me&lt;/ion-button&gt;
+      &lt;ion-grid&gt;
+        &lt;ion-row id&#x3D;&quot;dataSegment&quot;&gt;
+          &lt;ion-col id&#x3D;&quot;segmentRequestAju&quot; size&#x3D;&quot;12&quot;&gt;
+            &lt;ion-item lines&#x3D;&quot;none&quot; class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-lg&quot; style&#x3D;&quot;padding-left: 5px;&quot;&gt;
+                &lt;ion-badge&gt;
+                  Datos Del Solicitante
+                &lt;/ion-badge&gt;
+              &lt;/ion-label&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-grid&gt;
+                &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+                  Tipo de solicitante
+                &lt;/ion-row&gt;
+                &lt;ion-row&gt;
+                  &lt;ion-col size&#x3D;&quot;12&quot; style&#x3D;&quot;text-align: left;&quot;&gt;
+                    &lt;ion-select id&#x3D;&quot;tipoSolicitante&quot; class&#x3D;&quot;text-size-xs&quot; [(ngModel)]&#x3D;&quot;ajustador.TipoSolicitante&quot; multiple&#x3D;&quot;false&quot; (ionChange)&#x3D;&quot;setTipoSolicitante($event)&quot; style&#x3D;&quot;float: right;&quot;&gt;
+                      &lt;ion-select-option *ngFor&#x3D;&quot;let tipo of tipoSolicitante&quot;  [value]&#x3D;&quot;tipo.Id&quot;&gt;{{tipo.TipoSolicitante}} 
+                      &lt;/ion-select-option&gt;
+                    &lt;/ion-select&gt;
+                  &lt;/ion-col&gt;
+                &lt;/ion-row&gt;
+              &lt;/ion-grid&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-grid&gt;
+                &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+                  Tipo de Cobertura
+                &lt;/ion-row&gt;
+                &lt;ion-row&gt;
+                  &lt;ion-col size&#x3D;&quot;12&quot; style&#x3D;&quot;text-align: left;width: 100%;&quot;&gt;
+                    &lt;ion-select class&#x3D;&quot;text-size-xs&quot; (ionChange)&#x3D;&quot;seleccionarTipoCobertura($event)&quot; [(ngModel)]&#x3D;&quot;datos.TipoAcuerdoFicohsa&quot; multiple&#x3D;&quot;false&quot; 
+                    style&#x3D;&quot;float: left;width: 100%;&quot;&gt;
+                      &lt;ion-select-option *ngFor&#x3D;&quot;let tipoC of tiposdeCobertura;let i &#x3D; index&quot;  [value]&#x3D;&quot;tipoC.Descripcion&quot;&gt;{{tipoC.Descripcion}}
+                      &lt;/ion-select-option&gt;
+                    &lt;/ion-select&gt;
+                  &lt;/ion-col&gt;
+                &lt;/ion-row&gt;
+              &lt;/ion-grid&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-grid&gt;
+                &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+                  Nombre del asegurado
+                &lt;/ion-row&gt;
+                &lt;ion-row&gt;
+                  &lt;ion-col size&#x3D;&quot;12&quot; style&#x3D;&quot;text-align: rigth;&quot;&gt;
+                    &lt;ion-input *ngIf&#x3D;&quot;nombreCliente&quot; value&#x3D;&quot;{{nombreCliente}}&quot; readonly&gt;&lt;/ion-input&gt;
+                    &lt;ion-input *ngIf&#x3D;&quot;nombreCliente &#x3D;&#x3D; null || nombreCliente &#x3D;&#x3D; &#x27;&#x27;&quot; type&#x3D;&quot;text&quot; 
+                (ionChange)&#x3D;&quot;entraNombre($event)&quot; class&#x3D;&quot;required-data&quot;&gt;&lt;/ion-input&gt;
+                  &lt;/ion-col&gt;
+                &lt;/ion-row&gt;
+              &lt;/ion-grid&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item  class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-grid&gt;
+                &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+                  Número de identidad
+                &lt;/ion-row&gt;
+                &lt;ion-row&gt;
+                  &lt;ion-col size&#x3D;&quot;12&quot; style&#x3D;&quot;text-align: rigth;&quot;&gt;
+                    &lt;ion-input *ngIf&#x3D;&quot;identidadCliente&quot; value&#x3D;&quot;{{identidadCliente}}&quot; readonly&gt;&lt;/ion-input&gt;
+                    &lt;ion-input *ngIf&#x3D;&quot;!identidadCliente&quot; (ionChange)&#x3D;&quot;entraIdentidad($event)&quot; maxlength&#x3D;&quot;15&quot; class&#x3D;&quot;required-data&quot;&gt;&lt;/ion-input&gt;
+                    
+                  &lt;/ion-col&gt;
+                &lt;/ion-row&gt;
+              &lt;/ion-grid&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-grid&gt;
+                &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+                  Tipo de licencia
+                &lt;/ion-row&gt;
+                &lt;ion-row&gt;
+                  &lt;ion-col size&#x3D;&quot;12&quot; style&#x3D;&quot;text-align: rigth;&quot;&gt;
+                    &lt;ion-select id&#x3D;&quot;tipoLicenciaId&quot; class&#x3D;&quot;text-size-xs required-data&quot; [(ngModel)]&#x3D;&quot;elTipoLicencia&quot; multiple&#x3D;&quot;false&quot; (ionChange)&#x3D;&quot;getElTipoLicencia($event)&quot;
+                    style&#x3D;&quot;float: right;&quot;&gt;
+                      &lt;ion-select-option *ngFor&#x3D;&quot;let licencia of tipoLicencia&quot; [value]&#x3D;&quot;licencia.Id&quot;&gt;
+                        {{licencia.TipoLicencia}}
+                      &lt;/ion-select-option&gt;
+                    &lt;/ion-select&gt;
+                  &lt;/ion-col&gt;
+                &lt;/ion-row&gt;
+              &lt;/ion-grid&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-grid&gt;
+                &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+                  Tipo de género
+                &lt;/ion-row&gt;
+                &lt;ion-row&gt;
+                  &lt;ion-col size&#x3D;&quot;12&quot; style&#x3D;&quot;text-align: rigth;&quot;&gt;
+                    &lt;ion-select id&#x3D;&quot;tipoGeneroId&quot; class&#x3D;&quot;text-size-xs required-data&quot; [(ngModel)]&#x3D;&quot;elTipoGenero&quot; multiple&#x3D;&quot;false&quot; (ionChange)&#x3D;&quot;getElTipoGenero($event)&quot;
+                    style&#x3D;&quot;float: right;&quot;&gt;
+                      &lt;ion-select-option *ngFor&#x3D;&quot;let genero of tipoGeneros&quot; [value]&#x3D;&quot;genero.Id&quot;&gt;
+                        {{genero.Genero}}
+                      &lt;/ion-select-option&gt;
+                    &lt;/ion-select&gt;
+                  &lt;/ion-col&gt;
+                &lt;/ion-row&gt;
+              &lt;/ion-grid&gt;
+            &lt;/ion-item&gt;
+          &lt;/ion-col&gt;
+          &lt;ion-col id&#x3D;&quot;segmentVehicleAju&quot; size&#x3D;&quot;12&quot;&gt;
+            &lt;ion-item lines&#x3D;&quot;none&quot; class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-lg&quot; style&#x3D;&quot;padding-left: 5px;&quot;&gt;
+                &lt;ion-badge&gt;
+                  Datos del Vehículo Asegurado
+                &lt;/ion-badge&gt;
+              &lt;/ion-label&gt;
+            &lt;/ion-item&gt;
+          &lt;/ion-col&gt;
+          &lt;ion-col id&#x3D;&quot;segmentInfoAju&quot; size&#x3D;&quot;12&quot;&gt;
+            &lt;ion-item lines&#x3D;&quot;none&quot; class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-lg&quot; style&#x3D;&quot;padding-left: 5px;&quot;&gt;
+                &lt;ion-badge&gt;
+                  Características del vehículo
+                &lt;/ion-badge&gt; 
+              &lt;/ion-label&gt;
+            &lt;/ion-item&gt;
+          &lt;/ion-col&gt;
+          &lt;ion-col id&#x3D;&quot;segmentDamageAju&quot; size&#x3D;&quot;12&quot;&gt;
+            &lt;ion-item lines&#x3D;&quot;none&quot; class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-lg&quot; style&#x3D;&quot;padding-left: 5px;&quot;&gt;
+                &lt;ion-badge&gt;
+                  Descripción de Daño  
+                &lt;/ion-badge&gt;
+              &lt;/ion-label&gt;
+            &lt;/ion-item&gt;
+          &lt;/ion-col&gt;
+          &lt;ion-col id&#x3D;&quot;segmentAfiliatedAju&quot; size&#x3D;&quot;12&quot;&gt;
+            &lt;ion-item lines&#x3D;&quot;none&quot; class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-lg&quot; style&#x3D;&quot;padding-left: 5px;&quot;&gt;
+                &lt;ion-badge&gt;
+                  Firma Asegurado o conductor
+                &lt;/ion-badge&gt;
+              &lt;/ion-label&gt;
+            &lt;/ion-item&gt;
+          &lt;/ion-col&gt;
+          &lt;ion-col id&#x3D;&quot;segmentSignatureAju&quot; size&#x3D;&quot;12&quot; *ngIf&#x3D;&quot;cantidadNulos &#x3D;&#x3D; 0 || cantidadNulos &#x3D;&#x3D; null || cantidadNulos &#x3D;&#x3D; undefined&quot;&gt;
+            &lt;ion-item lines&#x3D;&quot;none&quot; class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+              &lt;ion-label class&#x3D;&quot;text-size-lg&quot; style&#x3D;&quot;padding-left: 5px;&quot;&gt;
+                &lt;ion-badge&gt;
+                  Firma Ajustador
+                &lt;/ion-badge&gt;
+              &lt;/ion-label&gt;
+            &lt;/ion-item&gt;
+          &lt;/ion-col&gt;
+        &lt;/ion-row&gt;
+      &lt;/ion-grid&gt;
+    &lt;/ion-content&gt;
+  &lt;/ion-menu&gt;
+  &lt;div class&#x3D;&quot;ion-page&quot; id&#x3D;&quot;main&quot; style&#x3D;&quot;border-left: 2px solid rgb(215, 215, 215);&quot;&gt;&lt;/div&gt;
+&lt;/ion-split-pane&gt;
+
+&lt;!--ion-content&gt;
+
+&lt;/!--ion-content --&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./ajustador.page.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">ion-radio {
+    width: 30px;
+    height: 30px;
+  }
+  
+  ion-radio::part(container) {
+    border-radius: 8px;
+    border: 2px solid #ddd;
+  }
+  
+  ion-radio::part(mark) {
+    background: none;
+    transition: none;
+    transform: none;
+    border-radius: 0;
+  }
+  
+  ion-radio.radio-checked::part(container) {
+    background: #0090D0;
+    border-color: transparent;
+  }
+  
+  ion-radio.radio-checked::part(mark) {
+    width: 6px;
+    height: 10px;
+  
+    border-width: 0px 2px 2px 0px;
+    border-style: solid;
+    border-color: #fff;
+  
+    transform: rotate(45deg);
+  }
+  canvas {
+    border: groove;
+    padding-top: 2px;
+  }
+
+  #button-back{
+    border-radius: 50%;
+    margin-bottom: 9px;
+    ion-fab-button{
+      padding-bottom: 25px;
+      ion-icon{color: white;}
+    }
+  }
+
+  
+
+  #save-ajustador-button, #nuevaFirma :not(#button-back) {
+    --background: #f14f23;
+    --background-activated: #a8462a;
+    --background-hover: #f66e48;
+    --border-radius: 15px;
+    --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    --color: white;
+  }
+
+  #aju-toolbar{
+    --background: transparent;
+    --ion-color-base: transparent !important;
+    
+  }
+
+  ion-segment {
+    --background: rgb(232, 231, 231);
+    ion-segment-button{
+      color: white;
+    }
+    ion-segment-button::part(indicator-background) {
+      background: #0090d0;
+    }
+    
+    /* Material Design styles */
+    ion-segment-button.md::part(native) {
+      color: #000;
+    }
+    
+    .segment-button-checked.md::part(native) {
+      color: #0090d0;
+    }
+    
+    ion-segment-button.md::part(indicator-background) {
+      height: 4px;
+    }
+    
+    /* iOS styles */
+    ion-segment-button.ios::part(native) {
+      color: #0090d0;
+    }
+    
+    .segment-button-checked.ios::part(native) {
+      color: #fff;
+    }
+    
+    ion-segment-button.ios::part(indicator-background) {
+      border-radius: 20px;
+    }
+
+    
+  }
+
+  ion-badge{
+    height: 25px;
+    padding-top: 5px;
+    font-size: 1rem;
+  }
+
+  ion-datetime{
+    width: 100%;
+    max-width: 100%;
+    height: 69%;
+  }
+
+  ion-split-pane {
+    --side-width: 50%;
+    --side-max-width: 50%;
+  }
+
+  #big-pane{
+    --side-width: 82%;
+    --side-max-width: 82%;
+  }
+
+  #pencil-pane{
+    --side-width: 50%;
+    --side-max-width: 50%;
+  }
+
+  .is-invalid{
+    color: red;
+  }
+
+  .is-valid{
+    color: inherit;
+  }
+
+  .is-keyboard{
+    display: none;
+  }
+
+  .no-keyboard{
+    display: inherit;
+  }
+
+  .item-segment{
+    background: red;
+    div{
+      padding: 0;
+      padding-start: 0;
+      
+    }
+  }
+
+  .segment-active{
+    color: #0090d0;
+    background: gray !important;
+    background-color: gray !important;
+  }
+
+  ion-spinner{
+    position: fixed;
+      top: 28%;
+      left: 40%;
+      z-index: 999;
+      width: 20%;
+      height: 20%;
+    //background-color: #00213f;
+  }
+  
+  ion-footer{
+    position: fixed;
+      background: black;
+      opacity: 0.6;
+      height: 100vh;
+      width: 100vw;
+      z-index: 900;
+      bottom: 0;
+  }
+
+  ion-menu{
+    margin-right: -7px;
+  }
+
+  .sig-edit {
+    modal-wrapper {
+      width:90%;
+    }
+  }
+
+  
+  ion-select::part(text) {
+    font-size: 1.1rem;
+    width: auto;
+    float: left;
+  }
+
+  ::ng-deep {
+    .alert-wrapper {
+    --min-width: 600px;
+    --max-width: 600px;
+    --width: 600px;
+  }
+}
+  .alert-wrapper{
+    max-width: 600px !important;
+    width: 600px;
+  }
+
+  .card-header-image {
+    position: relative;
+    ion-img{
+      height: 20vh;
+      object-fit: contain;
+    }
+    &amp;::before {
+      content: &quot;&quot;;
+      display: block;
+      height: 20vh;
+      width: 100%;
+      top: 0;
+      left: 0;
+      position: absolute;
+      pointer-events: none;
+      mix-blend-mode: var(--cs-mode-image);
+      background: var(--cs-gradient-damage);
+      z-index: 5;
+    }
+  
+    img {
+      width: 100% !important;
+      height: 20vh;
+      object-fit: contain;
+    }
+  }
+  .card-header-image-inactive {
+    position: relative;
+    ion-img{
+      height: 20vh;
+      object-fit: contain;
+    }
+    &amp;::before {
+      content: &quot;&quot;;
+      display: block;
+      height: 20vh;
+      width: 100%;
+      top: 0;
+      left: 0;
+      position: absolute;
+      pointer-events: none;
+      mix-blend-mode: var(--cs-mode-image);
+      background: var(--cs-gradient-linear);
+      z-index: 5;
+    }
+  
+    img {
+      width: 100% !important;
+      height: 20vh;
+      object-fit: contain;
+    }
+  }
+
+  .close-search{
+    --background: #f14f23;
+    --background-activated: #a8462a;
+    --background-hover: #f66e48;
+    --border-radius: 15px;
+    --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    --color: white;
+  }
+
+  .icono-buscar{
+    //--background: #f14f23;
+    //--background-activated: #a8462a;
+    //--background-hover: #f66e48;
+    //--border-radius: 15px;
+    //--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    //--color: white;
+    font-size: 2rem;position: absolute;right: 0;top: 1vh;color: #0090d0;font-weight: bolder;
+  }
+  
+ </code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><ion-header>  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>  <ion-footer *ngIf="isLoading == true"></ion-footer>  <ion-toolbar>    <ion-buttons slot="start">      <ion-back-button></ion-back-button>          </ion-buttons>    <ion-title>      <ion-grid>        <ion-row>          <ion-col size="4"></ion-col>          <ion-col size="4">Atención # {{idAtencion}} - {{miMoneda}}</ion-col>          <ion-col size="4"></ion-col>        </ion-row>      </ion-grid>    </ion-title>  </ion-toolbar></ion-header><ion-split-pane id="big-pane" when="xs" contentId="main">  <ion-menu contentId="main">    <ion-header>      <ion-toolbar color="tertiary">        <ion-title>Datos de Formulario</ion-title>      </ion-toolbar>    </ion-header>    <ion-content *ngIf="isSearch == true && daSegment == \'chatbox-ellipses\'" [hidden]="daSegment !== \'chatbox-ellipses\'" class="ion-padding">      <ion-grid>        <ion-row>          <ion-col size="10">            <ion-badge>              Daños Comunes A Vehículos            </ion-badge>          </ion-col>          <ion-col size="2">            <ion-button class="close-search" style="float: right ;" (click)="closeDanioSearch()">              <ion-icon name="return-up-back"></ion-icon>            </ion-button>          </ion-col>        </ion-row>      </ion-grid>      <ion-searchbar animated="true" placeholder="Escribe un Daño de Vehículo" show-clear-button="focus" show-cancel-button="focus" cancel-button-text="Cancelar"      cancel-button-icon="trash-bin" [debounce]="1000" (ionInput)="handleInput($event)"></ion-searchbar>      <ion-content color="light">        <ion-list [inset]="true" style="width: 97%;">          <ion-item *ngFor="let result of results" (click)="entraDanio(danioEntrada.value)" style="padding-left: 10px;border-radius:9px;">            {{ result.Descripcion }}            <ion-input [hidden]="true" #danioEntrada [value]="result.Id"></ion-input>          </ion-item>          <ion-item style="color: white;">Ajustadores Ficohsa por Porsalud</ion-item>          <br><br><br>        </ion-list>      </ion-content>          </ion-content>    <ion-content *ngIf="isSearch == false" class="ion-padding">      Contenido de Segmentos      <ion-button (click)="isSearch = true; daSegment = \'chatbox-ellipses\'">Click me</ion-button>      <ion-grid>        <ion-row id="dataSegment">          <ion-col id="segmentRequestAju" size="12">            <ion-item lines="none" class="ion-no-padding  input">              <ion-label class="text-size-lg" style="padding-left: 5px;">                <ion-badge>                  Datos Del Solicitante                </ion-badge>              </ion-label>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-grid>                <ion-row size="12" style="color: #00ccff;font-size:1rem;">                  Tipo de solicitante                </ion-row>                <ion-row>                  <ion-col size="12" style="text-align: left;">                    <ion-select id="tipoSolicitante" class="text-size-xs" [(ngModel)]="ajustador.TipoSolicitante" multiple="false" (ionChange)="setTipoSolicitante($event)" style="float: right;">                      <ion-select-option *ngFor="let tipo of tipoSolicitante"  [value]="tipo.Id">{{tipo.TipoSolicitante}}                       </ion-select-option>                    </ion-select>                  </ion-col>                </ion-row>              </ion-grid>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-grid>                <ion-row size="12" style="color: #00ccff;font-size:1rem;">                  Tipo de Cobertura                </ion-row>                <ion-row>                  <ion-col size="12" style="text-align: left;width: 100%;">                    <ion-select class="text-size-xs" (ionChange)="seleccionarTipoCobertura($event)" [(ngModel)]="datos.TipoAcuerdoFicohsa" multiple="false"                     style="float: left;width: 100%;">                      <ion-select-option *ngFor="let tipoC of tiposdeCobertura;let i = index"  [value]="tipoC.Descripcion">{{tipoC.Descripcion}}                      </ion-select-option>                    </ion-select>                  </ion-col>                </ion-row>              </ion-grid>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-grid>                <ion-row size="12" style="color: #00ccff;font-size:1rem;">                  Nombre del asegurado                </ion-row>                <ion-row>                  <ion-col size="12" style="text-align: rigth;">                    <ion-input *ngIf="nombreCliente" value="{{nombreCliente}}" readonly></ion-input>                    <ion-input *ngIf="nombreCliente == null || nombreCliente == \'\'" type="text"                 (ionChange)="entraNombre($event)" class="required-data"></ion-input>                  </ion-col>                </ion-row>              </ion-grid>            </ion-item>            <ion-item  class="ion-no-padding  input">              <ion-grid>                <ion-row size="12" style="color: #00ccff;font-size:1rem;">                  Número de identidad                </ion-row>                <ion-row>                  <ion-col size="12" style="text-align: rigth;">                    <ion-input *ngIf="identidadCliente" value="{{identidadCliente}}" readonly></ion-input>                    <ion-input *ngIf="!identidadCliente" (ionChange)="entraIdentidad($event)" maxlength="15" class="required-data"></ion-input>                                      </ion-col>                </ion-row>              </ion-grid>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-grid>                <ion-row size="12" style="color: #00ccff;font-size:1rem;">                  Tipo de licencia                </ion-row>                <ion-row>                  <ion-col size="12" style="text-align: rigth;">                    <ion-select id="tipoLicenciaId" class="text-size-xs required-data" [(ngModel)]="elTipoLicencia" multiple="false" (ionChange)="getElTipoLicencia($event)"                    style="float: right;">                      <ion-select-option *ngFor="let licencia of tipoLicencia" [value]="licencia.Id">                        {{licencia.TipoLicencia}}                      </ion-select-option>                    </ion-select>                  </ion-col>                </ion-row>              </ion-grid>            </ion-item>            <ion-item class="ion-no-padding  input">              <ion-grid>                <ion-row size="12" style="color: #00ccff;font-size:1rem;">                  Tipo de género                </ion-row>                <ion-row>                  <ion-col size="12" style="text-align: rigth;">                    <ion-select id="tipoGeneroId" class="text-size-xs required-data" [(ngModel)]="elTipoGenero" multiple="false" (ionChange)="getElTipoGenero($event)"                    style="float: right;">                      <ion-select-option *ngFor="let genero of tipoGeneros" [value]="genero.Id">                        {{genero.Genero}}                      </ion-select-option>                    </ion-select>                  </ion-col>                </ion-row>              </ion-grid>            </ion-item>          </ion-col>          <ion-col id="segmentVehicleAju" size="12">            <ion-item lines="none" class="ion-no-padding  input">              <ion-label class="text-size-lg" style="padding-left: 5px;">                <ion-badge>                  Datos del Vehículo Asegurado                </ion-badge>              </ion-label>            </ion-item>          </ion-col>          <ion-col id="segmentInfoAju" size="12">            <ion-item lines="none" class="ion-no-padding  input">              <ion-label class="text-size-lg" style="padding-left: 5px;">                <ion-badge>                  Características del vehículo                </ion-badge>               </ion-label>            </ion-item>          </ion-col>          <ion-col id="segmentDamageAju" size="12">            <ion-item lines="none" class="ion-no-padding  input">              <ion-label class="text-size-lg" style="padding-left: 5px;">                <ion-badge>                  Descripción de Daño                  </ion-badge>              </ion-label>            </ion-item>          </ion-col>          <ion-col id="segmentAfiliatedAju" size="12">            <ion-item lines="none" class="ion-no-padding  input">              <ion-label class="text-size-lg" style="padding-left: 5px;">                <ion-badge>                  Firma Asegurado o conductor                </ion-badge>              </ion-label>            </ion-item>          </ion-col>          <ion-col id="segmentSignatureAju" size="12" *ngIf="cantidadNulos == 0 || cantidadNulos == null || cantidadNulos == undefined">            <ion-item lines="none" class="ion-no-padding  input">              <ion-label class="text-size-lg" style="padding-left: 5px;">                <ion-badge>                  Firma Ajustador                </ion-badge>              </ion-label>            </ion-item>          </ion-col>        </ion-row>      </ion-grid>    </ion-content>  </ion-menu>  <div class="ion-page" id="main" style="border-left: 2px solid rgb(215, 215, 215);"></div></ion-split-pane><!--ion-content></!--ion-content --></div>'
+    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AjustadorPage', 'selector': 'app-ajustador'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'}];
+    var DIRECTIVES = [{'name': 'ParallaxHeader', 'selector': '[parallax-header]'},{'name': 'PressDirective', 'selector': '[appPress]'}];
+    var ACTUAL_COMPONENT = {'name': 'AjustadorPage'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'AjustadorPage.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

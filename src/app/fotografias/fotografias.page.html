@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>fotografias</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-button style="color: white;left: 0px; width: 30%; margin-left: 35%;margin-right: 35%;right: 0px; margin-top: 3%; margin-bottom: 3%;"  (click)="showMeaPic()" color="primary" expand="block" shape="round">
+    <ion-icon name="camera-outline"></ion-icon>
+  </ion-button>
+  <ion-grid fixed>
+    <ion-row>
+
+        <ion-col size="6" size-md="6" *ngFor="let item of fotos;let i = index">
+          <ion-card (click)="openImg(item.Foto)" class="ion-no-margin background-size ion-no-padding"
+            [ngStyle]="{'background-image': 'url('+'data:image/jpeg;base64,' + item.Foto + ')'}"
+            >
+            <!-- Card Content -->
+            <ion-card-content class="transparent ion-no-padding">
+              <ion-item class="transparent" lines="none" (click)="deleteFoto(i)">
+
+                <ion-label class="ion-float-left">
+                  <h2 class="text-size-lg"></h2>
+                </ion-label>
+                <ion-icon (click)="deleteFoto(i)" class="icon icon-small" slot="end" name="trash-outline"></ion-icon>
+                <!-- <i class="icon icon-small" slot="end"
+                (click)="onFavoriteFunc(item, $event)"
+                  [ngClass]="{ 'icon-trash-outline'}">
+                </i> -->
+              </ion-item>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-button style="color: white;left: 0px;top: 90%;position: sticky; width: 50%; margin-left: 25%;margin-right: 25%;right: 0px;" (click)="next()" shape="round">
+    Continuar
+  </ion-button>
+  <!-- <ion-fab  vertical="bottom" horizontal="end" slot="fixed" >
+    <ion-fab-button (click)="showMeaPic()" color="primary">
+      <ion-icon name="camera-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab> -->
+</ion-content>
+<ion-modal class="Img" #appointmentAlert [isOpen]="openFoto">
+	<ng-template>
+		<ion-content (click)="openFoto=false">
+			<ion-img [src]="'data:image/jpeg;base64,'+foto"></ion-img>
+		</ion-content>
+	</ng-template>
+</ion-modal>
