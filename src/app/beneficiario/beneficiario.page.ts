@@ -5,8 +5,9 @@ import { ToastService } from '../services/toast.service';
 import { finalize } from 'rxjs/operators';
 import { meses, calendarTitles } from '../environments/calendario';
 import { beneficiariosTipos } from '../environments/beneficiarios';
-import { title } from 'process';
 import * as $ from 'jquery';
+import { AlertController, AnimationController, ModalController } from '@ionic/angular';
+import { ModalGuardarPage } from '../Modales/modal-guardar/modal-guardar.page';
 
 @Component({
   selector: 'app-beneficiario',
@@ -15,13 +16,30 @@ import * as $ from 'jquery';
 })
 export class BeneficiarioPage implements OnInit {
 
+  public alertButtons = [
+  {
+    text: 'Continuar',
+    cssClass: 'alert-button-cancel',
+  },
+  {
+    text: 'Sí, Salir',
+    cssClass: 'alert-button-confirm',
+    handler: () => {
+      this.salir();
+    }
+  },
+];
+
 elFiniquito:any=[];beneficiarioTipos:any=[]; codigoReclamo:any;fechaDeFirma:any;tiposdeCobertura:any=[];isLoading:boolean=false;
 numeroDeReclamo:any;tipoFecha:number=0;formateada:any;laFecha:any;fechaInicio: any;fechaFinal: string;fechaCheque: string;
 fechaParrafo:any;fechaFirma:any;fechaPie:any;deviceWidth:any;isInit:boolean=false;now:any;diaPie :any;mesPie :any;
 anioPie:any;dia :any;mes :any;anio:any;numeroCheque:any;montoCheque:any;receptorNombre:any;receptorIdentidad:any;
 aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moneda: any;  miMoneda: string;
   calendarTitle: string; calendarTitles:any=[]=calendarTitles; chequeFecha:string; hastaFecha:string; desdeFecha:string;
-  constructor(private router:Router, private api:ApiService, private toaster:ToastService) { 
+  canDismiss: boolean = false;
+  constructor(private router:Router, private api:ApiService, private toaster:ToastService, private myModal:ModalController,
+    private animationCtrl: AnimationController, private alert: AlertController
+  ) { 
     this.idAtencion = localStorage.getItem('idAtencion');
     
     
@@ -52,6 +70,36 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
     this.getTiposDeCobertura();
   }
 
+
+  enterAnimation = (baseEl: HTMLElement) => {
+    const root = baseEl.shadowRoot;
+
+    const backdropAnimation = this.animationCtrl
+      .create()
+      .addElement(root!.querySelector('ion-backdrop')!)
+      .fromTo('opacity', '0.01', 'var(--backdrop-opacity)');
+
+    const wrapperAnimation = this.animationCtrl
+      .create()
+      .addElement(root!.querySelector('.modal-wrapper')!)
+      .keyframes([
+        { offset: 0, opacity: '0', transform: 'scale(0)' },
+        { offset: 1, opacity: '0.99', transform: 'scale(1)' },
+      ]);
+
+    return this.animationCtrl
+      .create()
+      .addElement(baseEl)
+      .easing('ease-out')
+      .duration(500)
+      .addAnimation([backdropAnimation, wrapperAnimation]);
+  };
+
+  leaveAnimation = (baseEl: HTMLElement) => {
+    return this.enterAnimation(baseEl).direction('reverse');
+  };
+
+
   ngOnInit() {
     this.isLoading = true;
     this.idAtencion = localStorage.getItem('idAtencion');
@@ -71,9 +119,9 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
 
           //alert(this.moneda)
           if (this.moneda == null) {
-            this.miMoneda = "Lempiras";
-          }else{
-            this.miMoneda = this.moneda.Moneda;
+            this.miMoneda = "LEMPIRAS";
+          }else{ 
+            this.miMoneda = this.moneda;
           }
           
          }
@@ -105,9 +153,58 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
   }
 
   goBack(){
-    this.toaster.presentToastSave('Salir del forumulario? Los datos se perderan sin haber guardado. Guardar?', 'middle', 'cliente', 'this.elExpediente');
-    
+    this.alertaSalir();
+    //this.toaster.presentToastSave('Salir del formulario? Los datos se perderan sin haber guardado. Salir?', 'middle', 'primary', 'this.elExpediente');
+    //this.openModalGuardar();
     //this.location.back();
+  }
+
+  salir(){
+    window.location.reload();
+  }
+
+  async alertaSalir() {
+    const alert = await this.alert.create({
+      header:'Salir del formulario?',
+      message:'Los datos se perderan sin haber guardado. Salir?',
+      buttons:this.alertButtons
+    });
+    await alert.present();
+  }
+
+
+  async openModalGuardar() {
+    console.log('openModalOTP');
+    alert('openModalGuardar');
+    const modal = await this.myModal.create({
+      component: ModalGuardarPage,
+      componentProps: {},
+      breakpoints: [0, 0.3, 0.5, 0.8, 0.9, 1],
+      initialBreakpoint: 0.3,
+      cssClass: 'modal-guardar custom-modal-size',
+      //enterAnimation: this.enterAnimation,
+      //canDismiss:this.canDismiss
+    });
+    
+    setTimeout(() => {
+      $('ion-modal').fadeIn('xslow');
+
+      let wrappers = $('ion-modal');
+      for (let index = 0; index < wrappers.length; index++) {
+        const element = wrappers[index];
+        $(element).find('.modal-wrapper').attr('style', ' transition: height 0.25s ease-in; height: 50vh; min-width: 60vw; max-width: 90vw; border-radius: 12px; align-self: center;');
+      }
+      //alert(wrappers.length);
+    }, 3000);
+    
+    setTimeout(() => {}, 6000);
+
+    modal.onDidDismiss().then(() => {
+      console.log('Modal cerrado');
+    });
+
+    return await modal.present();
+
   }
 
   entraAFavorDe(event) {

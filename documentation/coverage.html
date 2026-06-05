@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -60,20 +60,13 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="./" class="navbar-brand">help_ajustadores documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="./" class="navbar-brand">help_ajustadores documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -82,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -128,25 +121,49 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#topModalLeaveAnimation">src/app/Animaciones/top-modal-enter.ts</a>
+            </td>
+            <td>variable</td>
+            <td>topModalLeaveAnimation</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                <a href="./components/ModalEmpresaConductorPage.html">src/app/Modales/modal-empresa-conductor/modal-empresa-conductor.page.ts</a>
+            </td>
+            <td>component</td>
+            <td>ModalEmpresaConductorPage</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/3)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                <a href="./components/ModalGuardarPage.html">src/app/Modales/modal-guardar/modal-guardar.page.ts</a>
+            </td>
+            <td>component</td>
+            <td>ModalGuardarPage</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/6)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
                 <a href="./components/AdeudaPage.html">src/app/adeuda/adeuda.page.ts</a>
             </td>
             <td>component</td>
             <td>AdeudaPage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/40)</span>
-            </td>
-        </tr>
-        <tr class="low">
-            <td>
-                <!-- miscellaneous -->
-                <a href="./components/AjustadorPage.html">src/app/ajustador/ajustador.page.ts</a>
-            </td>
-            <td>component</td>
-            <td>AjustadorPage</td>
-            <td align="right" data-sort="0">
-                <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/52)</span>
+                <span class="coverage-count">(0/50)</span>
             </td>
         </tr>
         <tr class="low">
@@ -158,13 +175,13 @@
             <td>AjustadorhnPage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/296)</span>
+                <span class="coverage-count">(0/364)</span>
             </td>
         </tr>
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#USER_DATA">src/app/ajustadorhn/ajustadorhn.page.ts</a>
+                        <a href="./miscellaneous/variables.html#USER_DATA">src/app/ajustadorhn/ajustadorhn.page.ts</a>
             </td>
             <td>variable</td>
             <td>USER_DATA</td>
@@ -182,7 +199,7 @@
             <td>AppComponent</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/9)</span>
+                <span class="coverage-count">(0/11)</span>
             </td>
         </tr>
         <tr class="low">
@@ -194,7 +211,7 @@
             <td>BeneficiarioPage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/50)</span>
+                <span class="coverage-count">(0/65)</span>
             </td>
         </tr>
         <tr class="low">
@@ -206,7 +223,7 @@
             <td>ClientehnPage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/257)</span>
+                <span class="coverage-count">(0/338)</span>
             </td>
         </tr>
         <tr class="low">
@@ -230,7 +247,7 @@
             <td>CulpablePage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/47)</span>
+                <span class="coverage-count">(0/112)</span>
             </td>
         </tr>
         <tr class="low">
@@ -272,7 +289,19 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#beneficiariosTipos">src/app/environments/beneficiarios.ts</a>
+                <a href="./components/EndProcessPage.html">src/app/end-process/end-process.page.ts</a>
+            </td>
+            <td>component</td>
+            <td>EndProcessPage</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/14)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#beneficiariosTipos">src/app/environments/beneficiarios.ts</a>
             </td>
             <td>variable</td>
             <td>beneficiariosTipos</td>
@@ -284,7 +313,19 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#meses">src/app/environments/calendario.ts</a>
+                        <a href="./miscellaneous/variables.html#calendarTitles">src/app/environments/calendario.ts</a>
+            </td>
+            <td>variable</td>
+            <td>calendarTitles</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#meses">src/app/environments/calendario.ts</a>
             </td>
             <td>variable</td>
             <td>meses</td>
@@ -296,7 +337,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#banderaPais">src/app/environments/default-images.ts</a>
+                        <a href="./miscellaneous/variables.html#banderaPais">src/app/environments/default-images.ts</a>
             </td>
             <td>variable</td>
             <td>banderaPais</td>
@@ -308,7 +349,19 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#emptySignature">src/app/environments/default-images.ts</a>
+                        <a href="./miscellaneous/variables.html#editarFirmaIcono">src/app/environments/default-images.ts</a>
+            </td>
+            <td>variable</td>
+            <td>editarFirmaIcono</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#emptySignature">src/app/environments/default-images.ts</a>
             </td>
             <td>variable</td>
             <td>emptySignature</td>
@@ -320,7 +373,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#emptySignatureWhite">src/app/environments/default-images.ts</a>
+                        <a href="./miscellaneous/variables.html#emptySignatureWhite">src/app/environments/default-images.ts</a>
             </td>
             <td>variable</td>
             <td>emptySignatureWhite</td>
@@ -332,7 +385,19 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#firmaDemoAjustador">src/app/environments/default-images.ts</a>
+                        <a href="./miscellaneous/variables.html#errorImage">src/app/environments/default-images.ts</a>
+            </td>
+            <td>variable</td>
+            <td>errorImage</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#firmaDemoAjustador">src/app/environments/default-images.ts</a>
             </td>
             <td>variable</td>
             <td>firmaDemoAjustador</td>
@@ -344,7 +409,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#fondos">src/app/environments/default-images.ts</a>
+                        <a href="./miscellaneous/variables.html#fondos">src/app/environments/default-images.ts</a>
             </td>
             <td>variable</td>
             <td>fondos</td>
@@ -356,7 +421,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#imagePrefix">src/app/environments/default-images.ts</a>
+                        <a href="./miscellaneous/variables.html#imagePrefix">src/app/environments/default-images.ts</a>
             </td>
             <td>variable</td>
             <td>imagePrefix</td>
@@ -368,7 +433,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#logoFicohsa">src/app/environments/default-images.ts</a>
+                        <a href="./miscellaneous/variables.html#logoFicohsa">src/app/environments/default-images.ts</a>
             </td>
             <td>variable</td>
             <td>logoFicohsa</td>
@@ -380,7 +445,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#emailDomains">src/app/environments/domains.ts</a>
+                        <a href="./miscellaneous/variables.html#emailDomains">src/app/environments/domains.ts</a>
             </td>
             <td>variable</td>
             <td>emailDomains</td>
@@ -404,7 +469,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#iconColors">src/app/environments/mapas.ts</a>
+                        <a href="./miscellaneous/variables.html#iconColors">src/app/environments/mapas.ts</a>
             </td>
             <td>variable</td>
             <td>iconColors</td>
@@ -416,7 +481,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#iconWorlds">src/app/environments/mapas.ts</a>
+                        <a href="./miscellaneous/variables.html#iconWorlds">src/app/environments/mapas.ts</a>
             </td>
             <td>variable</td>
             <td>iconWorlds</td>
@@ -428,7 +493,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#Mapas">src/app/environments/mapas.ts</a>
+                        <a href="./miscellaneous/variables.html#Mapas">src/app/environments/mapas.ts</a>
             </td>
             <td>variable</td>
             <td>Mapas</td>
@@ -452,7 +517,55 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#ItemsData">src/app/environments/predeterminados.ts</a>
+                        <a href="./miscellaneous/variables.html#actionButtons">src/app/environments/predeterminados.ts</a>
+            </td>
+            <td>variable</td>
+            <td>actionButtons</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#adeudaEtiquetas">src/app/environments/predeterminados.ts</a>
+            </td>
+            <td>variable</td>
+            <td>adeudaEtiquetas</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#cacheIndexArray">src/app/environments/predeterminados.ts</a>
+            </td>
+            <td>variable</td>
+            <td>cacheIndexArray</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#datosAtencionKeys">src/app/environments/predeterminados.ts</a>
+            </td>
+            <td>variable</td>
+            <td>datosAtencionKeys</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#ItemsData">src/app/environments/predeterminados.ts</a>
             </td>
             <td>variable</td>
             <td>ItemsData</td>
@@ -464,7 +577,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#ItemsExpediente">src/app/environments/predeterminados.ts</a>
+                        <a href="./miscellaneous/variables.html#ItemsExpediente">src/app/environments/predeterminados.ts</a>
             </td>
             <td>variable</td>
             <td>ItemsExpediente</td>
@@ -476,7 +589,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#Predeterminados">src/app/environments/predeterminados.ts</a>
+                        <a href="./miscellaneous/variables.html#Predeterminados">src/app/environments/predeterminados.ts</a>
             </td>
             <td>variable</td>
             <td>Predeterminados</td>
@@ -488,7 +601,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#requiredData">src/app/environments/predeterminados.ts</a>
+                        <a href="./miscellaneous/variables.html#requiredData">src/app/environments/predeterminados.ts</a>
             </td>
             <td>variable</td>
             <td>requiredData</td>
@@ -500,7 +613,55 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#requiredDataLabels">src/app/environments/predeterminados.ts</a>
+                        <a href="./miscellaneous/variables.html#requiredData_Less">src/app/environments/predeterminados.ts</a>
+            </td>
+            <td>variable</td>
+            <td>requiredData_Less</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#requiredData_NOP">src/app/environments/predeterminados.ts</a>
+            </td>
+            <td>variable</td>
+            <td>requiredData_NOP</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#requiredDataAjustador">src/app/environments/predeterminados.ts</a>
+            </td>
+            <td>variable</td>
+            <td>requiredDataAjustador</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#requiredDataCliente">src/app/environments/predeterminados.ts</a>
+            </td>
+            <td>variable</td>
+            <td>requiredDataCliente</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#requiredDataLabels">src/app/environments/predeterminados.ts</a>
             </td>
             <td>variable</td>
             <td>requiredDataLabels</td>
@@ -512,7 +673,43 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#printerIcons">src/app/environments/printer-center.ts</a>
+                        <a href="./miscellaneous/variables.html#tipoBeneficiario">src/app/environments/predeterminados.ts</a>
+            </td>
+            <td>variable</td>
+            <td>tipoBeneficiario</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#tiposDeReparacion">src/app/environments/predeterminados.ts</a>
+            </td>
+            <td>variable</td>
+            <td>tiposDeReparacion</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#valoresPredeterminados">src/app/environments/predeterminados.ts</a>
+            </td>
+            <td>variable</td>
+            <td>valoresPredeterminados</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#printerIcons">src/app/environments/printer-center.ts</a>
             </td>
             <td>variable</td>
             <td>printerIcons</td>
@@ -524,7 +721,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#printerIcons_test">src/app/environments/printer-center.ts</a>
+                        <a href="./miscellaneous/variables.html#printerIcons_test">src/app/environments/printer-center.ts</a>
             </td>
             <td>variable</td>
             <td>printerIcons_test</td>
@@ -536,7 +733,19 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#responsableTipos">src/app/environments/responsable.ts</a>
+                        <a href="./miscellaneous/variables.html#printPrefix">src/app/environments/printer-center.ts</a>
+            </td>
+            <td>variable</td>
+            <td>printPrefix</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#responsableTipos">src/app/environments/responsable.ts</a>
             </td>
             <td>variable</td>
             <td>responsableTipos</td>
@@ -548,7 +757,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#segments">src/app/environments/segments.ts</a>
+                        <a href="./miscellaneous/variables.html#segments">src/app/environments/segments.ts</a>
             </td>
             <td>variable</td>
             <td>segments</td>
@@ -560,7 +769,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#segments_aju">src/app/environments/segments.ts</a>
+                        <a href="./miscellaneous/variables.html#segments_aju">src/app/environments/segments.ts</a>
             </td>
             <td>variable</td>
             <td>segments_aju</td>
@@ -572,7 +781,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#anySignature">src/app/environments/signatures.ts</a>
+                        <a href="./miscellaneous/variables.html#anySignature">src/app/environments/signatures.ts</a>
             </td>
             <td>variable</td>
             <td>anySignature</td>
@@ -584,7 +793,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#emptySignature">src/app/environments/signatures.ts</a>
+                        <a href="./miscellaneous/variables.html#emptySignature">src/app/environments/signatures.ts</a>
             </td>
             <td>variable</td>
             <td>emptySignature</td>
@@ -596,7 +805,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#emptySignatureWhite">src/app/environments/signatures.ts</a>
+                        <a href="./miscellaneous/variables.html#emptySignatureWhite">src/app/environments/signatures.ts</a>
             </td>
             <td>variable</td>
             <td>emptySignatureWhite</td>
@@ -608,7 +817,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#firmaDemoAjustador">src/app/environments/signatures.ts</a>
+                        <a href="./miscellaneous/variables.html#firmaDemoAjustador">src/app/environments/signatures.ts</a>
             </td>
             <td>variable</td>
             <td>firmaDemoAjustador</td>
@@ -620,7 +829,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#now">src/app/environments/talleres.ts</a>
+                        <a href="./miscellaneous/variables.html#now">src/app/environments/talleres.ts</a>
             </td>
             <td>variable</td>
             <td>now</td>
@@ -632,7 +841,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#rangoAnios">src/app/environments/talleres.ts</a>
+                        <a href="./miscellaneous/variables.html#rangoAnios">src/app/environments/talleres.ts</a>
             </td>
             <td>variable</td>
             <td>rangoAnios</td>
@@ -644,7 +853,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#Talleres">src/app/environments/talleres.ts</a>
+                        <a href="./miscellaneous/variables.html#Talleres">src/app/environments/talleres.ts</a>
             </td>
             <td>variable</td>
             <td>Talleres</td>
@@ -656,7 +865,31 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#thisYear">src/app/environments/talleres.ts</a>
+                        <a href="./miscellaneous/variables.html#TalleresCategorias">src/app/environments/talleres.ts</a>
+            </td>
+            <td>variable</td>
+            <td>TalleresCategorias</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#TalleresNoFiltrados">src/app/environments/talleres.ts</a>
+            </td>
+            <td>variable</td>
+            <td>TalleresNoFiltrados</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#thisYear">src/app/environments/talleres.ts</a>
             </td>
             <td>variable</td>
             <td>thisYear</td>
@@ -668,7 +901,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#marcasVehiculos">src/app/environments/vehicles.ts</a>
+                        <a href="./miscellaneous/variables.html#marcasVehiculos">src/app/environments/vehicles.ts</a>
             </td>
             <td>variable</td>
             <td>marcasVehiculos</td>
@@ -680,7 +913,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#tiposTransmision">src/app/environments/vehicles.ts</a>
+                        <a href="./miscellaneous/variables.html#tiposTransmision">src/app/environments/vehicles.ts</a>
             </td>
             <td>variable</td>
             <td>tiposTransmision</td>
@@ -698,7 +931,7 @@
             <td>EsignaturePage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/18)</span>
+                <span class="coverage-count">(0/20)</span>
             </td>
         </tr>
         <tr class="low">
@@ -710,7 +943,7 @@
             <td>ExpedientePage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/136)</span>
+                <span class="coverage-count">(0/176)</span>
             </td>
         </tr>
         <tr class="low">
@@ -746,7 +979,7 @@
             <td>FiniquitoPage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/30)</span>
+                <span class="coverage-count">(0/44)</span>
             </td>
         </tr>
         <tr class="low">
@@ -764,13 +997,25 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#google">src/app/formulario/formulario.page.ts</a>
+                        <a href="./miscellaneous/variables.html#google">src/app/formulario/formulario.page.ts</a>
             </td>
             <td>variable</td>
             <td>google</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
                 <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                <a href="./components/FormulariosPage.html">src/app/formularios/formularios.page.ts</a>
+            </td>
+            <td>component</td>
+            <td>FormulariosPage</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/3)</span>
             </td>
         </tr>
         <tr class="low">
@@ -806,7 +1051,7 @@
             <td>FotoshnPage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/57)</span>
+                <span class="coverage-count">(0/58)</span>
             </td>
         </tr>
         <tr class="low">
@@ -872,6 +1117,30 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#abogadosAudiencias">src/app/interfaces/arrays.ts</a>
+            </td>
+            <td>variable</td>
+            <td>abogadosAudiencias</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#culpableData">src/app/interfaces/arrays.ts</a>
+            </td>
+            <td>variable</td>
+            <td>culpableData</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
                 <a href="./interfaces/Atenciones.html">src/app/interfaces/atenciones.ts</a>
             </td>
             <td>interface</td>
@@ -903,6 +1172,18 @@
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
                 <span class="coverage-count">(0/83)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#Entidades">src/app/interfaces/extras.ts</a>
+            </td>
+            <td>variable</td>
+            <td>Entidades</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
             </td>
         </tr>
         <tr class="low">
@@ -1244,6 +1525,30 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#versionAndroid">src/app/interfaces/variables.ts</a>
+            </td>
+            <td>variable</td>
+            <td>versionAndroid</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#versionIOS">src/app/interfaces/variables.ts</a>
+            </td>
+            <td>variable</td>
+            <td>versionIOS</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
                 <a href="./components/MapaPage.html">src/app/mapa/mapa.page.ts</a>
             </td>
             <td>component</td>
@@ -1251,6 +1556,18 @@
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
                 <span class="coverage-count">(0/74)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                <a href="./components/MaterialesPage.html">src/app/materiales/materiales.page.ts</a>
+            </td>
+            <td>component</td>
+            <td>MaterialesPage</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/3)</span>
             </td>
         </tr>
         <tr class="low">
@@ -1268,13 +1585,37 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
+                <a href="./components/PrepareAudiencePage.html">src/app/prepare-audience/prepare-audience.page.ts</a>
+            </td>
+            <td>component</td>
+            <td>PrepareAudiencePage</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/25)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                <a href="./components/PrepareSendPage.html">src/app/prepare-send/prepare-send.page.ts</a>
+            </td>
+            <td>component</td>
+            <td>PrepareSendPage</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/81)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
                 <a href="./components/PrinterPage.html">src/app/printer/printer.page.ts</a>
             </td>
             <td>component</td>
             <td>PrinterPage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/22)</span>
+                <span class="coverage-count">(0/23)</span>
             </td>
         </tr>
         <tr class="low">
@@ -1298,7 +1639,55 @@
             <td>SegmentoCaracteristicasPage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/61)</span>
+                <span class="coverage-count">(0/69)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                <a href="./components/SegmentoCaseguradoPage.html">src/app/segmento-casegurado/segmento-casegurado.page.ts</a>
+            </td>
+            <td>component</td>
+            <td>SegmentoCaseguradoPage</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/3)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                <a href="./components/SegmentoCconductorPage.html">src/app/segmento-cconductor/segmento-cconductor.page.ts</a>
+            </td>
+            <td>component</td>
+            <td>SegmentoCconductorPage</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/3)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                <a href="./components/SegmentoCinformacionPage.html">src/app/segmento-cinformacion/segmento-cinformacion.page.ts</a>
+            </td>
+            <td>component</td>
+            <td>SegmentoCinformacionPage</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/3)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                <a href="./components/SegmentoCvehiculoPage.html">src/app/segmento-cvehiculo/segmento-cvehiculo.page.ts</a>
+            </td>
+            <td>component</td>
+            <td>SegmentoCvehiculoPage</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/3)</span>
             </td>
         </tr>
         <tr class="low">
@@ -1310,7 +1699,7 @@
             <td>SegmentoDanioPage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/61)</span>
+                <span class="coverage-count">(0/78)</span>
             </td>
         </tr>
         <tr class="low">
@@ -1358,7 +1747,7 @@
             <td>SegmentoSolicitantePage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/76)</span>
+                <span class="coverage-count">(0/86)</span>
             </td>
         </tr>
         <tr class="low">
@@ -1370,7 +1759,7 @@
             <td>SegmentoVehiculoPage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/50)</span>
+                <span class="coverage-count">(0/51)</span>
             </td>
         </tr>
         <tr class="low">
@@ -1382,13 +1771,13 @@
             <td>ApiService</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/70)</span>
+                <span class="coverage-count">(0/95)</span>
             </td>
         </tr>
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#ACCESS_TOKEN_KEY">src/app/services/api.service.ts</a>
+                        <a href="./miscellaneous/variables.html#ACCESS_TOKEN_KEY">src/app/services/api.service.ts</a>
             </td>
             <td>variable</td>
             <td>ACCESS_TOKEN_KEY</td>
@@ -1400,7 +1789,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#PUSH_TOKEN">src/app/services/api.service.ts</a>
+                        <a href="./miscellaneous/variables.html#PUSH_TOKEN">src/app/services/api.service.ts</a>
             </td>
             <td>variable</td>
             <td>PUSH_TOKEN</td>
@@ -1412,7 +1801,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#USER_DATA">src/app/services/api.service.ts</a>
+                        <a href="./miscellaneous/variables.html#USER_DATA">src/app/services/api.service.ts</a>
             </td>
             <td>variable</td>
             <td>USER_DATA</td>
@@ -1472,7 +1861,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#DB_USERS_N">src/app/services/database.service.ts</a>
+                        <a href="./miscellaneous/variables.html#DB_USERS_N">src/app/services/database.service.ts</a>
             </td>
             <td>variable</td>
             <td>DB_USERS_N</td>
@@ -1586,7 +1975,7 @@
             <td>StorageService</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/2)</span>
+                <span class="coverage-count">(0/3)</span>
             </td>
         </tr>
         <tr class="low">
@@ -1598,7 +1987,7 @@
             <td>ToastService</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/25)</span>
+                <span class="coverage-count">(0/27)</span>
             </td>
         </tr>
         <tr class="low">
@@ -1622,7 +2011,7 @@
             <td>LoginPage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/29)</span>
+                <span class="coverage-count">(0/37)</span>
             </td>
         </tr>
         <tr class="low">
@@ -1682,7 +2071,7 @@
             <td>Tab1Page</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/148)</span>
+                <span class="coverage-count">(0/176)</span>
             </td>
         </tr>
         <tr class="low">
@@ -1694,7 +2083,7 @@
             <td>Tab2Page</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/26)</span>
+                <span class="coverage-count">(0/30)</span>
             </td>
         </tr>
         <tr class="low">
@@ -1706,7 +2095,7 @@
             <td>Tab3Page</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/55)</span>
+                <span class="coverage-count">(0/62)</span>
             </td>
         </tr>
         <tr class="low">
@@ -1718,7 +2107,7 @@
             <td>TabsPage</td>
             <td align="right" data-sort="0">
                 <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/6)</span>
+                <span class="coverage-count">(0/10)</span>
             </td>
         </tr>
         <tr class="low">
@@ -1748,7 +2137,19 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#environment">src/environments/environment.prod.ts</a>
+                <a href="./components/VitalCorePage.html">src/app/vital-core/vital-core.page.ts</a>
+            </td>
+            <td>component</td>
+            <td>VitalCorePage</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/3)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#environment">src/environments/environment.prod.ts</a>
             </td>
             <td>variable</td>
             <td>environment</td>
@@ -1760,31 +2161,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#environment_production">src/environments/environment.prod.ts</a>
-            </td>
-            <td>variable</td>
-            <td>environment_production</td>
-            <td align="right" data-sort="0">
-                <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/1)</span>
-            </td>
-        </tr>
-        <tr class="low">
-            <td>
-                <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#environment">src/environments/environment.ts</a>
-            </td>
-            <td>variable</td>
-            <td>environment</td>
-            <td align="right" data-sort="0">
-                <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/1)</span>
-            </td>
-        </tr>
-        <tr class="low">
-            <td>
-                <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#environment_local">src/environments/environment.ts</a>
+                        <a href="./miscellaneous/variables.html#environment_local">src/environments/environment.prod.ts</a>
             </td>
             <td>variable</td>
             <td>environment_local</td>
@@ -1796,43 +2173,7 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#environment_local_files">src/environments/environment.ts</a>
-            </td>
-            <td>variable</td>
-            <td>environment_local_files</td>
-            <td align="right" data-sort="0">
-                <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/1)</span>
-            </td>
-        </tr>
-        <tr class="low">
-            <td>
-                <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#environment_local_videos">src/environments/environment.ts</a>
-            </td>
-            <td>variable</td>
-            <td>environment_local_videos</td>
-            <td align="right" data-sort="0">
-                <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/1)</span>
-            </td>
-        </tr>
-        <tr class="low">
-            <td>
-                <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#environment_test">src/environments/environment.ts</a>
-            </td>
-            <td>variable</td>
-            <td>environment_test</td>
-            <td align="right" data-sort="0">
-                <span class="coverage-percent">0 %</span>
-                <span class="coverage-count">(0/1)</span>
-            </td>
-        </tr>
-        <tr class="low">
-            <td>
-                <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#helpFilesUrl">src/environments/environment.ts</a>
+                        <a href="./miscellaneous/variables.html#helpFilesUrl">src/environments/environment.prod.ts</a>
             </td>
             <td>variable</td>
             <td>helpFilesUrl</td>
@@ -1844,7 +2185,43 @@
         <tr class="low">
             <td>
                 <!-- miscellaneous -->
-                <a href="./miscellaneous/variables.html#helpFilesUrlTest">src/environments/environment.ts</a>
+                        <a href="./miscellaneous/variables.html#environment">src/environments/environment.ts</a>
+            </td>
+            <td>variable</td>
+            <td>environment</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#environment_local">src/environments/environment.ts</a>
+            </td>
+            <td>variable</td>
+            <td>environment_local</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#helpFilesUrl">src/environments/environment.ts</a>
+            </td>
+            <td>variable</td>
+            <td>helpFilesUrl</td>
+            <td align="right" data-sort="0">
+                <span class="coverage-percent">0 %</span>
+                <span class="coverage-count">(0/1)</span>
+            </td>
+        </tr>
+        <tr class="low">
+            <td>
+                <!-- miscellaneous -->
+                        <a href="./miscellaneous/variables.html#helpFilesUrlTest">src/environments/environment.ts</a>
             </td>
             <td>variable</td>
             <td>helpFilesUrlTest</td>
@@ -1892,6 +2269,19 @@
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
        <script src="./js/libs/custom-elements.min.js"></script>
        <script src="./js/libs/lit-html.js"></script>
 
@@ -1903,7 +2293,6 @@
        <script src="./js/libs/es6-shim.min.js"></script>
        <script src="./js/libs/EventDispatcher.js"></script>
        <script src="./js/libs/promise.min.js"></script>
-       <script src="./js/libs/zepto.min.js"></script>
 
        <script src="./js/compodoc.js"></script>
 

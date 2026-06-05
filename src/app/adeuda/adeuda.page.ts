@@ -25,8 +25,8 @@ isLoading: boolean=false;openModal: boolean = false;fechaParrafo:any;fechaPie:an
 adeudaCompleta:boolean=false;deviceWidth:any;deviceHeight:any;idAtencion:any;telFijo:any;laPoliza:any;
 fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:any;isSigned:any;
   ya: boolean=false;  atencionId: number;  expediente: any;  moneda: any;  miMoneda: string; isEmptySignature:boolean=true;
-  deudaSent: any;  daniosSelectCulpable: any = []; daniosSelectC :any = [];
-  isDeudaSent: boolean;  danios: any = [];
+  deudaSent: any;  daniosSelectCulpable: any = []; daniosSelectC :any = [];  isDeudaSent: boolean;  danios: any = [];
+  daniosSelectAju:any = []; daniosCulpable:any=[];
 // datos a arreglar
 // poliza, agregar del cliente
 // fecha formato
@@ -98,6 +98,13 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
   }
 
   async getDanios(){
+    this.daniosSelectAju = [];
+    let losDanios:any;
+    losDanios = localStorage.getItem('daniosSelectAju');
+    this.daniosSelectAju = JSON.parse(losDanios);
+    console.log('Danios desde localstorage');
+    console.dir(this.daniosSelectAju);
+    
     this.isLoading = true;
     this.api.listDanios().pipe( 
       finalize(async ()=>{
@@ -177,9 +184,9 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
 
           //alert(this.moneda)
           if (this.moneda == null) {
-            this.miMoneda = "Lempiras";
-          }else{
-            this.miMoneda = this.moneda.Moneda;
+            this.miMoneda = "LEMPIRAS";
+          }else{ 
+            this.miMoneda = this.moneda;
           }
           
          }
@@ -239,6 +246,8 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
               console.log('Esto viene de la deuda');
               console.dir(res);
               this.isLoading = false;
+              localStorage.setItem('AcuerdoDeDeuda-'+this.idAtencion, 'true');
+
               if (this.daniosSelectCulpable.length > 0) {
                 for (let index = 0; index < this.daniosSelectCulpable.length; index++) {
                   const element = this.daniosSelectCulpable[index];
@@ -254,6 +263,7 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
                     TipoReparacion: elTipoReparacion
                   };
     
+                  
                     console.log('Esta es la data desde ajustador')
                     console.dir(reparaArray)
     
@@ -267,6 +277,7 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
                       async (res) =>{
                         console.log(res);
                         console.log("Convenio guardado");
+                        
                         if (index == (this.daniosSelectCulpable.length-1)) {
                           this.api.EnviarNotificacionEmail(this.idAtencion);
                         }

@@ -130,7 +130,6 @@ export class MapaPage implements OnInit {
     });
 
     this.platform.ready().then(() => {
-      this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
     });
   }
   ionViewDidEnter(){

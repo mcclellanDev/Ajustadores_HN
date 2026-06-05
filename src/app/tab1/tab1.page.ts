@@ -24,8 +24,11 @@ import { NativeGeocoder, NativeGeocoderResult } from '@ionic-native/native-geoco
 import { tipofotos } from './../interfaces/formulario';
 import { CountrydataService } from '../services/countrydata.service';
 import { versionAndroid } from '../interfaces/variables';
+
 import * as $ from 'jquery';
 import { datosAtencionKeys } from '../environments/predeterminados';
+import { parse } from 'path';
+import { NetworkInfo } from '../environments/network';
 
 @Component({
   selector: 'app-tab1',
@@ -37,29 +40,31 @@ import { datosAtencionKeys } from '../environments/predeterminados';
 export class Tab1Page implements OnInit {
   isAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
 
-  atenciones: Atenciones[];public results = [];
+  atenciones?: Atenciones[];public results = [];
   tipoFotos: tipofotos[]=[];canvasAseguradoWidth: any = 0;openFoto = false;foto:string='';cardWidth: any;canvasInterval: any;firma: any = []; idAtencion:any;
   hoy: any;firmaObtenida: any = [];tipoLicencia: any = [];lasFirmas: any = [];search: string = "";  elCliente: string = "";elServicio: string = "";
   elColorEstado: string = "";textoEmergente1: string = "";textoEmergente2: string = ""; androidVersion:any; canDismiss:boolean=false; updateIcon:any;
   firmaPrecargada: any;firmaPrecargadaAjustador: any;firmaDemo: any;firmaDemoAjustador: any = "";isSign: boolean = false;esAjustador: boolean = true;
   esClienteCompleto: boolean = false; esAjustadorCompleto: boolean = false;isLogout: boolean = false;address: any;laFecha: any;laImg: any;imagen:any;laImg2: any;laImg3: any;user: any = null;
-  atIndex: any;atIndexId: any = 0;atIndexInit: any;laAtencion: any;firstInterval: any;geoInterval: any;email: any;isSignature: boolean = false;conexion: ConnectionStatus;
-  screenlock: ScreenlockService;formBuilder: FormBuilder;emptySignature:any = emptySignature;stripeForm: any;conectividad: boolean;isLoading: boolean;laLocalidad: any;
-  latitud: any;longitud: any;miLocalidad: any;miPais: any;miPaisNombre: any;paisId: number;paisIdentidad: any;codigoPais: any = 'hn';banderaPais: string;
+  atIndex: any;atIndexId: any = 0;atIndexInit: any;laAtencion: any;firstInterval: any;geoInterval: any;email: any;isSignature: boolean = false;conexion?: ConnectionStatus;
+  screenlock?: ScreenlockService;formBuilder?: FormBuilder;emptySignature:any = emptySignature;stripeForm: any;conectividad?: boolean;isLoading: boolean;laLocalidad: any;
+  latitud: any;longitud: any;miLocalidad: any;miPais: any;miPaisNombre: any;paisId?: number;paisIdentidad: any;codigoPais: any = 'hn';banderaPais: string | undefined;
   imagePrefix: any = 'data:image/jpeg;base64,'; currentAccessToken: any; currentUser: any;notifications: any = [];presentingElement = null;notificationBadgeRight: any;
-  notificationBadgeTop: any;geopermissions:GeolocationPluginPermissions;filtroAtenciones:any=[];isSearch:boolean=false; iconWorld:any; iconIndex:any; isLoad:boolean=true;
+  notificationBadgeTop: any;geopermissions?:GeolocationPluginPermissions;filtroAtenciones:any=[];isSearch:boolean=false; iconWorld:any; iconIndex:any; isLoad:boolean=true;
   atencionLatitud:any;atencionLongitud:any;fHora:any;fFecha:any; openModal: boolean = false; clientCompleteArray:any=[]; bpmFicohsa:any; lasAtenciones:any=[];
   atencionesActivas:any=[]; readStatus:number; readStatusArray:any=[]; FechaSiniestro:any;
 
   //Firma
-  @ViewChild("canvas2", { static: true }) canvas: ElementRef;
-  @ViewChild(RouterOutlet) outlet: RouterOutlet;
-  sig: SignaturePad;
+  @ViewChild("canvas2", { static: true }) canvas?: ElementRef;
+  @ViewChild(RouterOutlet) outlet?: RouterOutlet;
+  sig?: SignaturePad;
   wait: any;  dataSiniestro: any;  elExpediente: any;  datosDeAtencion: any;  firstSegmentId: any;
-  dbVersion: any;
-  store: string;
-  atencionEnProcesoId: string;
-  idTabla: any;
+  dbVersion: any;  store: string | undefined;  atencionEnProcesoId: string | undefined;  idTabla: any;  ateIndex: string | undefined;
+  indexAtencion?: number; isKeyboard: boolean = false; isCacheClear: boolean = false;
+
+  emptySignatureWhite = emptySignatureWhite;
+  conectividadStat: string | undefined;  estadoConexion: string | undefined;  estadoConexionGPS: string | undefined; 
+  gpsOn: boolean = false;
 
 
   constructor(private router: Router, private loading: LoadingController,private alert: AlertController,private api: ApiService,private toast: ToastController,
@@ -68,7 +73,10 @@ export class Tab1Page implements OnInit {
     private countryService:CountrydataService, private storageService:StorageService) {
       
       // console.log(window.location.pathname);
+      
+
       this.readStatus = 1;
+      
       
       let previousPage = localStorage.getItem('previous');
       if (previousPage) {
@@ -103,7 +111,7 @@ export class Tab1Page implements OnInit {
 
     this.tostador.dismissToast();this.isLoading = false;this.user = this.api.currentUser;this.atIndexId = 0;this.inicializarFirma();
     localStorage.setItem('nombreAjustador', this.user.NombreAgente);
-    this.firstInterval = setInterval(() => { this.setFirstSegment() }, 1000);
+    this.firstInterval = setInterval(() => { this.handleFirstSegment() }, 1000);
 
     if (JSON.parse(window.localStorage.getItem('Push'))) {
       var $data: any = JSON.parse(window.localStorage.getItem('Push'));
@@ -132,7 +140,6 @@ export class Tab1Page implements OnInit {
   }
 
   goFotos(){
-    //alert('goFotos - Tab1');
     this.router.navigate(['./fotoshn']);
   }
 
@@ -145,44 +152,31 @@ export class Tab1Page implements OnInit {
   checkAtencionEnProceso(idAtencionSeleccionada, idAtencionEnProceso){
     
       let iguales = (idAtencionSeleccionada==idAtencionEnProceso);
-      //alert(iguales)
       if (iguales==false) {
-        //this.storageService.clearSiniestroArrays();
-        
         setTimeout(() => {
-          
-          //  localStorage.setItem('atencionEnProceso', idAtencionSeleccionada);
-          this.presentAlertClearCache(idAtencionSeleccionada, 'HELP', 'Ajustadores', 'Existen datos en caché para la atención '+idAtencionEnProceso+'. Deseas cambiar a la atención '+idAtencionSeleccionada);  
+          this.presentAlertClearCache(idAtencionSeleccionada, 'HELP', 'Ajustadores', 'Existen datos en caché para la atención '+idAtencionEnProceso+'. Deseas cambiar a la atención '+idAtencionSeleccionada+'? Si aceptas, se borrarán los datos de la atención '+idAtencionEnProceso+' y se cargarán los de la atención '+idAtencionSeleccionada+'.');  
         }, 1000);
         /**/
-        
-        //this.presentToastReloadCache('Actualmente existen datos de la atención '+idAtencionEnProceso.toString()+' en caché. Deseas borrarlos para trabajar con la atención '+this.idAtencion+'?', 'middle', 'cache');
-        
       }
   }
 
   
 
   ngOnInit() {
-    
+    $('ion-tab-button').eq(0).click();
 
     setTimeout(() => {
       
       console.log('clienteContent');
       let evaluator = window.location.pathname=='/login';
-      //alert(window.location.pathname+', '+evaluator);
       if (evaluator == false) {
         let myContent = document.getElementById('clienteContent');
         if (myContent) {
-          //alert(myContent.tagName)
-          
         }else{
-          //alert('Time');
           this.outletDeactivate();
           window.location.reload();
         }
       }
-      
     }, 3000);
 
     localStorage.setItem('origin', window.location.pathname);
@@ -208,21 +202,21 @@ export class Tab1Page implements OnInit {
             this.isLoad = true;
             this.idAtencion = this.atencionesActivas[0].IdAtencion;
             let idAtencionEnProceso = localStorage.getItem('atencionEnProceso');
-            if (idAtencionEnProceso) {
-              //this.checkAtencionEnProceso(this.idAtencion, idAtencionEnProceso);
-            }else{}
+            if (idAtencionEnProceso) {}else{}
           }
         }
         
       }
     )
     
-    
+    this.androidVersion = versionAndroid.versionCodigo;
     this.updateIntent();
 
     this.outletDeactivate();
     
   }
+
+  
 
   outletDeactivate(){
     this.router.events.subscribe(e => {
@@ -240,8 +234,6 @@ export class Tab1Page implements OnInit {
 
         let numbersDB = this.androidVersion.toString().replace(/[^0-9]/g,"");
         let numbersDV = this.dbVersion.toString().replace(/[^0-9]/g,"");
-
-        //alert(numbersDB==numbersDV)
         if (numbersDB==numbersDV) {}else{
           setTimeout(() => {
             $('#open-modal-update').click();  
@@ -249,10 +241,7 @@ export class Tab1Page implements OnInit {
         }
       }
 
-    }, async (res) => {
-      //console.log('Esta es la version en la DB ');
-     // console.dir(res)
-    })
+    }, async (res) => {})
   }
 
   openStore(store){
@@ -261,16 +250,90 @@ export class Tab1Page implements OnInit {
     window.open(store, '_system', 'location=yes');
   }
 
-  ionViewWillEnter(){for(let i = 0; i < 100; i++){}}
+  ionViewWillEnter(){
+    let gpsOn = localStorage.getItem('conectividad');
+
+    if (gpsOn) {
+      this.gpsOn = gpsOn === 'true' ? true : false;  
+    }
+
+    for(let i = 0; i < 100; i++){}
+}
 
   ionViewDidEnter() {
+    const permissionResult = Geolocation.checkPermissions();
+    let gpsOn = localStorage.getItem('conectividad');
+
+    if (gpsOn) {
+      this.gpsOn = gpsOn === 'true' ? true : false;  
+    }
+    
+
+    console.log('ionViewDidEnter checando los permisos de gelocacion ');
+    console.dir(permissionResult);
+    permissionResult.then((result) => { 
+      console.log('ionViewDidEnter checando los permisos de gelocacion con then result '); console.dir(result);
+      console.log(result.location);
+
+      if (result.location == 'granted') {
+        this.conectividad = true;
+        this.gpsOn = true;
+        this.estadoConexion = 'Conectado a Internet';
+        this.estadoConexionGPS = 'Permisos GPS activados';
+        //$('#gpsCard').css('display', 'none');
+        $('#saludoInicial').css('display', 'none');
+        $('#chipGPS').removeClass('gps-in');
+        $('#chipGPS').addClass('gps-out');
+        
+      }
+
+      if(result.location == 'denied'){
+        this.conectividad = false;
+        this.gpsOn = false;
+        this.estadoConexion = 'Sin conexión';
+        this.estadoConexionGPS = 'Permisos GPS denegados';
+        //$('#gpsCard').css('display', 'inherit');
+        $('#saludoInicial').css('display', 'inherit');
+        $('#chipGPS').removeClass('gps-out');
+        $('#chipGPS').addClass('gps-in');
+        
+      }
+
+      setTimeout(() => {
+        console.log('conectividad en ionViewDidEnter es '+this.conectividad);
+        if (this.conectividad) {
+          localStorage.setItem('conectividad', this.gpsOn.toString());
+        }
+
+        //alert('Vamos a checar los permisos de ubicación y la conectividad a internet para mostrar el indicador de conexión. Permisos de ubicación: '+result.location+'\nConectividad: '+this.conectividad+'\nEstado conexión: '+this.estadoConexion+'\nEstado conexión GPS: '+this.estadoConexionGPS);
+
+        if (this.conectividad == false) {
+          //Geolocation.requestPermissions();
+          
+          //alert('Tengo permisos GPS y conexión a internet');
+        }else{
+          //alert('No tengo conexión a internet, pero tengo permisos GPS');
+        }
+        //alert('Permisos de ubicación: '+result.location+'\nConectividad: '+this.conectividad+'\nEstado conexión: '+this.estadoConexion+'\nEstado conexión GPS: '+this.estadoConexionGPS);
+        //alert('Permisos de ubicación: '+result.location+'\nEstado conexión GPS: '+this.estadoConexionGPS);
+      }, 3000);
+    });
+
+    localStorage.setItem('coberturas', JSON.stringify([]));
+    this.ateIndex =  localStorage.getItem('indexAtencion-0');
+
+    if (this.ateIndex == null || this.ateIndex != undefined || this.ateIndex != '') {
+      this.setFirstSegment();
+    }else{
+      //alert(this.ateIndex);
+    }
+
     this.enterView();
   }
 
   enterView(){
     if (this.firmaPrecargadaAjustador != null && this.firmaPrecargadaAjustador != undefined) {this.isSign = true;} else {this.isSign = false;}
 
-    //this.getCountry();
     if (this.platform.is('android') == true) {
       this.geoCodeReverse();
     } else {
@@ -278,7 +341,6 @@ export class Tab1Page implements OnInit {
     }
 
     this.getAtencionesActivas();
-    //this.getAtenciones();
     
     this.sig = new SignaturePad(this.canvas.nativeElement);this.sig.backgroundColor = "rgb(255, 255, 255)";this.sig.minWidth = 1;this.sig.maxWidth = 1.5;
     this.sig.dotSize = 3;
@@ -288,15 +350,13 @@ export class Tab1Page implements OnInit {
       this.sig.clear();
     }, 1000);
 
-    
-    
     this.platform.ready().then(() => {this.tostador.presentToastReload('Tira hacia abajo para actualizar', 'top', 'tab');this.sendTokenPush();
       if (Network) {this.checkConnection();}
     });
-    this.getCanvasWith();
+    this.getCanvasWidth();
   }
 
-  getCanvasWith() {
+  getCanvasWidth() {
 
     this.cardWidth = (document.getElementById('cardAsegurado').clientWidth);
     if (this.platform.is('android') == true) {
@@ -313,16 +373,12 @@ export class Tab1Page implements OnInit {
 
   saveSignatureAsegurado(idAtencion) {
     idAtencion = this.atIndex;
-    //console.log(this.elColorEstado);
     this.hoy= new Date().toISOString();
     
     if (this.elColorEstado == "green") {this.isLoading = true;this.sig.backgroundColor = "rgb(255, 255, 255)";this.sig.minWidth = 1;this.sig.maxWidth = 1.5;
-    this.sig.dotSize = 3; const mySignature = this.sig.toDataURL("image/jpeg"); 
-    //console.log(mySignature);
+    this.sig.dotSize = 3; const mySignature = this.sig.toDataURL("image/jpeg");
       if (mySignature != emptySignature && mySignature != emptySignatureWhite) {
         this.firmaPrecargada = this.sig.toDataURL("image/jpeg");
-        //console.dir(this.firmasAsegurados);
-
         this.firma.push({
           IdAtencion: idAtencion,
           RefTipoFotoId: 3,
@@ -335,13 +391,13 @@ export class Tab1Page implements OnInit {
           finalize(async () => {this.isLoading = false;})
         ).subscribe(
           (res) => {
-            //console.log(res, 'token respuesta');
             this.tostador.presentToastNoButtons("Firma guardada exitosamente! Ya puedes reutilizarla cuando sea necesario.", "top", "firma");
             const element = document.getElementById('cardAsegurado');
             const elementInput = document.getElementById('nombreInput');
             element.setAttribute('style', 'border: none');
             elementInput.setAttribute('style', 'border: none');
             this.isSignature = true;
+            this.sig.clear();
           },
           async (res) => {
             this.tostador.presentToastDataMissing(res.error.Message, 'top', 'firma');
@@ -349,6 +405,10 @@ export class Tab1Page implements OnInit {
             this.isLoading = false;
           }
         )
+
+        setTimeout(() => {
+          this.sig.clear();
+        }, 300);
       } else {
         this.tostador.presentToastNoButtons("Necesitas escribir una firma para guardarla.", "top", "firma");
         this.isLoading = false;
@@ -360,7 +420,6 @@ export class Tab1Page implements OnInit {
   }
 
   saveSignature(agenteId) {
-    //console.log(this.elColorEstado);
     this.sig.backgroundColor = "rgb(255, 255, 255)";
     this.sig.minWidth = 1;
     this.sig.maxWidth = 1.5;
@@ -381,7 +440,6 @@ export class Tab1Page implements OnInit {
         })
       ).subscribe(
         (res) => {
-          //console.log(res, 'token respuesta');
           this.tostador.presentToastNoButtons("Firma guardada exitosamente! Ya puedes reutilizarla cuando sea necesario.", "top", "firma");
         },
         async (res) => {
@@ -423,16 +481,12 @@ export class Tab1Page implements OnInit {
   getfondo(atencionId) {
     this.api.obtenerFotoPorAtencion(atencionId, 1).pipe( 
       finalize(async ()=>{
-      //  console.log('fin')
       })
     ).subscribe(
        async (res) =>{
-        //console.log('Jue')
-        //console.dir(res[0].FotoFirma)
         this.laImg = imagePrefix+res[0].FotoFirma;
       },
       async (res) => {
-        //console.log(res.status)
         this.laImg = fondos[Math.floor(Math.random() * fondos.length)];
       }
     )
@@ -440,8 +494,6 @@ export class Tab1Page implements OnInit {
   }
 
   formatearFecha(mydate){
-    //console.log("Esta es mi fecha :");
-    //console.log(mydate);
     var dateFormat = mydate.split('T')[0]; 
     var timeFormat = mydate.split('T')[1];
 
@@ -450,8 +502,7 @@ export class Tab1Page implements OnInit {
     let mes = dateFormat.toString().substring(5, 7);
     let dia = dateFormat.toString().substring(8);
 
-    let laFormateada = dia+'-'+mes+'-'+anio;// +' '+timeFormat.toString().substring(0, 5); 
-     //console.log(laFormateada);
+    let laFormateada = dia+'-'+mes+'-'+anio;
      let fechaArray = {
       fechaF: laFormateada,
       horaF: this.fHora
@@ -461,13 +512,15 @@ export class Tab1Page implements OnInit {
 
   async getAtencionesActivas() {
     let atencionesCount = 0;
-    this.filtroAtenciones = [];
     localStorage.setItem('atencionesCount', atencionesCount.toString());
 
     this.isLoading = true;
     this.api.MisAtencionesActivas(this.api.currentUser.ProveedorAgenteId).pipe(
       finalize(async () => {
-        this.isLoading = false;
+        if (this.isCacheClear == false) {
+          this.isLoading = false;
+        }
+        
       })
     ).subscribe(
       (res) => {
@@ -479,10 +532,6 @@ export class Tab1Page implements OnInit {
         for (let indexFilter = 0; indexFilter < this.filtroAtenciones.length; indexFilter++) {
           const element = this.filtroAtenciones[indexFilter];
           let fechaFormateada = this.formatearFecha(element.Fecha);
-          //alert(element.LogEstado)
-          
-          
-
           this.filtroAtenciones[indexFilter].Fecha = fechaFormateada.fechaF;
           this.filtroAtenciones[indexFilter].Hora = fechaFormateada.horaF;
           if (indexFilter == 0) {
@@ -506,6 +555,19 @@ export class Tab1Page implements OnInit {
     )
   }
 
+  getActiveAttentionIndex() {
+    const storedIndex = localStorage.getItem('indexAtencion-0');
+    const selectedIndex = parseInt(storedIndex || '0', 10);
+
+    if (isNaN(selectedIndex) || selectedIndex < 0 || selectedIndex >= this.filtroAtenciones.length) {
+      localStorage.setItem('indexAtencion', '0');
+      localStorage.setItem('indexAtencion-0', '0');
+      return 0;
+    }
+
+    return selectedIndex;
+  }
+
   async getAtenciones() {
     
     this.isLoading = true;
@@ -526,7 +588,6 @@ export class Tab1Page implements OnInit {
         if (products.length > 0) {
           for (let index = 0; index < products.length; index++) {
             const element = products[index];
-            //console.log(element.Fecha)
             let fechaFormateada = this.formatearFecha(element.Fecha);
             this.results[index].Fecha = fechaFormateada.fechaF;
             this.results[index].Hora = fechaFormateada.horaF;
@@ -536,7 +597,6 @@ export class Tab1Page implements OnInit {
   
           setTimeout(() => {
             const atencionesIds = document.getElementsByClassName('atencion-id');
-            //alert(atencionesIds.length)  
             for (let index = 0; index < this.atenciones.length; index++) {
               const element = this.atenciones[index];
               atencionesIds[index].setAttribute('style', 'color:'+element.ColorEstado);
@@ -568,7 +628,6 @@ export class Tab1Page implements OnInit {
 
     setTimeout(() => {
       const atencionesIds = document.getElementsByClassName('atencion-id');
-      //alert(atencionesIds.length)  
       if (this.results.length == this.atenciones.length) {
         for (let index = 0; index < this.atenciones.length; index++) {
           const element = this.atenciones[index];
@@ -613,9 +672,20 @@ export class Tab1Page implements OnInit {
   }
 
   limpiarCache() {
+    this.isLoading = true;
+    this.isCacheClear = true;
     this.clearSegmentsStorage();
     this.getAtencionesActivas();
     this.outletDeactivate();
+
+    setTimeout(() => {
+      this.isLoading = false;
+      this.isCacheClear = false;
+    }, this.randomIntFromInterval(2000, 4000));
+  }
+
+  randomIntFromInterval(min, max) { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min)
   }
 
   async stopTrack() {
@@ -650,17 +720,11 @@ export class Tab1Page implements OnInit {
     actionSheet.present();
   }
   verExpediente(idAtencion: number) {
-    
     this.router.navigate(['./expediente'], { queryParams: { Id: idAtencion, Source:1 } });
-    //this.checkAtencionEnProceso
   }
 
   abrirMenu(idAtencion: number, indexInput){
-    
     this.openModal = true;
-
-    //alert(this.esClienteCompleto+', '+this.esAjustadorCompleto)
-    
   }
 
   verExpedienteBusqueda(idAtencion: number, indexInput) {
@@ -669,7 +733,8 @@ export class Tab1Page implements OnInit {
     
     localStorage.setItem('elColorEstado', this.elColorEstado);
     localStorage.setItem('idAtencion', idAtencion.toString());
-
+    localStorage.setItem('indexAtencion', indexInput.toString());
+    localStorage.setItem('indexAtencion-2', indexInput.toString());
     this.obtenerCacheCliente(idAtencion);
 
     this.api.DatosDeAtencion(idAtencion).pipe(
@@ -677,22 +742,10 @@ export class Tab1Page implements OnInit {
       })
     ).subscribe(
       async (res) => {
-        //console.log("Detalles de audiencia en ver expediente: " + res.length);
-        //console.dir(res);
         this.datosDeAtencion  = res;
         let identidadAsegurado = res[0].IdentidadCliente;
-        //alert(identidadAsegurado)
         localStorage.setItem('datosDeAtencion', this.datosDeAtencion);
         localStorage.setItem('identidadAsegurado', identidadAsegurado);
-        //alert(res[0].CodigoReclamoFicohsa)
-        //this.atencionLatitud = res.Latitud;
-        //this.atencionLongitud = res.Longitud;
-        //localStorage.setItem('atencionLatitud', this.atencionLatitud);
-        //localStorage.setItem('atencionLongitud', this.atencionLongitud);
-
-        // RefEstadoId IdentidaConductor IdEstadoAtencion
-        //alert(res[0].IdentidaConductor)
-
       },
       async (res) => {}
     )
@@ -701,8 +754,18 @@ export class Tab1Page implements OnInit {
   }
 
   goProfile() {this.router.navigate(['./tabs/tab3'], { queryParams: { Id: 'idAtencion' } });}
+
+  goESignature() {
+    const idAtencion = this.atIndex || this.idAtencion || localStorage.getItem('idAtencion');
+    if (idAtencion) {
+      localStorage.setItem('idAtencion', idAtencion.toString());
+    }
+    localStorage.setItem('elCliente', this.elCliente || localStorage.getItem('elCliente') || '');
+    localStorage.setItem('signatureReturnTo', '/tabs/tab1');
+    this.router.navigate(['./esignature']);
+  }
+
   abrirExpediente(){
-    //alert(this.isSignature)
     if (this.isSignature == true) {
       this.router.navigate(['./expediente'], { queryParams: { Id: this.atIndex } });
       localStorage.setItem('isSignature', this.isSignature.toString());
@@ -754,11 +817,24 @@ export class Tab1Page implements OnInit {
           text: 'CAMBIAR',
           role: 'confirm',
           handler: () => {
-            this.storageService.clearSiniestroArrays();
-            localStorage.removeItem('dataProcess-DescripcionTercerosMuertos');
-            localStorage.removeItem('dataProcess-DescripcionTercerosHeridos');
-            localStorage.removeItem('dataProcess-DescripcionAudiencia');
-            localStorage.setItem('atencionEnProceso', idAtencion);
+            this.isLoading = true;
+            setTimeout(() => {
+              this.storageService.clearSiniestroArrays();
+            }, 600);
+
+            setTimeout(() => {
+              this.limpiarCache();
+            }, 1200);
+            
+            setTimeout(() => {
+              localStorage.removeItem('dataProcess-DescripcionTercerosMuertos');
+              localStorage.removeItem('dataProcess-DescripcionTercerosHeridos');
+              localStorage.removeItem('dataProcess-DescripcionAudiencia');
+              localStorage.setItem('atencionEnProceso', idAtencion);
+              localStorage.setItem('estaEvaluado', 'false');
+              this.isLoading = false;
+            }, 1800);
+            
           },
         }
       ],
@@ -777,7 +853,6 @@ export class Tab1Page implements OnInit {
           text: 'EDITAR FIRMA',
           role: 'cancel',
           handler: () => {
-            //console.log('Alert canceled');
           },
         }
       ],
@@ -885,6 +960,80 @@ export class Tab1Page implements OnInit {
     await toast.present();
   }
 
+
+  checkConnection(){
+  //alert('Voy')
+  if(Network){
+    Network.getStatus().then((status)=>{
+    this.conexion=status;
+    console.log('status.connected');
+    console.log(status.connected);
+    this.conectividad = status.connected;
+    console.log('Mi estado de conectividad es '+this.conectividad)
+
+    for (let index = 0; index < NetworkInfo.status.length; index++) {
+      const element = NetworkInfo.status[index];
+      if (element.bool==this.conectividad) {
+        this.conectividadStat = element.stat;
+      }
+    }
+
+    if(this.conectividad == false){
+      //this.toaster.toastMessage = 'No hay conexión a internet';
+      //this.toaster.toastClass = 'conectividad';
+      //this.toaster.presentToastErrorConexion(this.toaster.toastMessage, this.toaster.toastPosition, this.toaster.toastClass);
+    }
+    })
+  }else{
+    this.conectividad = false;
+  }
+
+  Network.addListener("networkStatusChange", status=>{
+    this.conexion=status;
+    this.conectividad = status.connected;
+
+    for (let index = 0; index < NetworkInfo.status.length; index++) {
+      const element = NetworkInfo.status[index];
+      if (element.bool==this.conectividad) {
+        this.conectividadStat = element.stat;
+        localStorage.setItem('conectividad', this.conectividad.toString());
+      }
+    }
+
+    localStorage.setItem('conectividad', this.conectividad.toString());
+    if(this.conectividad == false){
+      //$('#connectIndicator').fadeIn();
+      //this.toaster.toastMessage = 'No hay conexión a internet';
+      //this.toaster.toastClass = 'conectividad';
+      //this.toaster.presentToastErrorConexion(this.toaster.toastMessage, this.toaster.toastPosition, this.toaster.toastClass);
+    }else{
+      //$('#connectIndicator').fadeOut();
+    }
+  })
+}
+
+
+permitirGPS(){
+  Geolocation.requestPermissions().then((result) => {
+    console.log('Permisos de ubicación solicitados:', result); 
+    if (result.location == 'granted') {
+      //this.conectividadStat = true;
+      this.estadoConexionGPS = 'Permisos de ubicación precisa';
+      $('#connectIndicatorLogin').fadeIn('xslow');
+      $('#chipGPS').removeClass('gps-in');
+      $('#chipGPS').addClass('gps-out');
+      //$('#gpsCard').css('display', 'none');
+      $('#saludoInicial').css('display', 'none');
+      
+        setTimeout(() => {
+          window.location.reload();
+        }, 600);
+    }
+  });
+}
+  
+
+  /*
   checkConnection() {
     if (Network) {
       Network.getStatus().then((status) => {
@@ -906,6 +1055,22 @@ export class Tab1Page implements OnInit {
       }
     })
   }
+  */
+
+  handleFirstSegment() {
+    // Handle the click event for the first segment
+    
+    this.ateIndex =  localStorage.getItem('indexAtencion');
+
+    if (this.ateIndex == null || this.ateIndex == undefined || this.ateIndex == '' || this.ateIndex == '0') {
+      this.setFirstSegment();
+    }else{
+      let indexa = this.getActiveAttentionIndex();
+      $('.segment-item-atenciones').eq(indexa).click();
+      clearInterval(this.firstInterval);
+    }
+    
+  }
 
   setFirstSegment() {
     let daFirstSegmentsButton = document.getElementsByClassName('segment-item-atenciones');
@@ -921,7 +1086,27 @@ export class Tab1Page implements OnInit {
 
       localStorage.setItem('idAtencionInicial', laIndex.toString());
       localStorage.setItem('idAtencion', laIndex.toString());
-      $('.segment-item-atenciones').eq(0).click();
+
+////////////////////////////////////////////////////
+      this.ateIndex =  localStorage.getItem('indexAtencion-0');
+
+      if (this.ateIndex != '0') {
+        //alert('El index de atención no es 0, es: '+this.ateIndex);
+        let indexa = this.getActiveAttentionIndex();
+        $('.segment-item-atenciones').eq(indexa).click();
+      }else{
+        localStorage.setItem('indexAtencion', '0');
+        localStorage.setItem('indexAtencion-0', '0');
+        $('.segment-item-atenciones').eq(0).click();
+      }
+      
+////////////////////////////////////////////////////
+
+      
+
+
+
+      
       clearInterval(this.firstInterval);
     }
   }
@@ -953,23 +1138,14 @@ export class Tab1Page implements OnInit {
           respuesta = respuesta+element;
           
           if (index== (res.length-1)) {
-            //alert(respuesta) 
-            //alert(respuesta.indexOf(indexFlag))
             verificacion = respuesta.indexOf(indexFlag);
-            //alert(verificacion)
             if (verificacion != -1) {
-              //alert('Voy para cliente')
               this.esClienteCompleto = false;
             }else{
-              //alert('Voy para ajustador')
               this.esClienteCompleto == true;
             }
           }
         }
-
-          //this.cacheCount = res.length;
-          //if (this.cacheCount>0) {}else{}
-          
         }else{
          this.esClienteCompleto = false;
         }
@@ -977,7 +1153,6 @@ export class Tab1Page implements OnInit {
       },
       async (error) => {
         this.esClienteCompleto = false;
-        //this.cacheCount = 0;
       }
     )
   }
@@ -991,19 +1166,15 @@ export class Tab1Page implements OnInit {
     if (idAtencionEnProceso) {
       this.checkAtencionEnProceso(idAtencion, idAtencionEnProceso);
     }else{
-      // ojo
-      //this.storageService.clearSiniestroArrays();
-      //localStorage.removeItem('dataProcess-DescripcionTercerosMuertos');
-      //localStorage.removeItem('dataProcess-DescripcionTercerosHeridos');
-      //localStorage.removeItem('dataProcess-DescripcionAudiencia');
     }
 
     this.elColorEstado = this.filtroAtenciones[indexInput].ColorEstado;
-    //alert(this.elColorEstado);
     localStorage.setItem('elColorEstado', this.elColorEstado);
     this.atIndex = idAtencion; this.idAtencion = this.atIndex;
     this.atIndexId = indexInput;
     localStorage.setItem('idAtencion', idAtencion);
+    localStorage.setItem('indexAtencion', indexInput.toString());
+    localStorage.setItem('indexAtencion-0', indexInput.toString());
     localStorage.setItem('elCliente', this.filtroAtenciones[indexInput].Cliente);
     this.getfondo(idAtencion);
 
@@ -1017,25 +1188,18 @@ export class Tab1Page implements OnInit {
         })
       ).subscribe(
         async (res) => {
-          //alert("HEre")
-          //console.log("Detalles de audiencia : " + res.length);
-          //console.dir(res);
           let identidadAsegurado = res[0].IdentidadCliente;
-          //alert(identidadAsegurado)
           this.datosDeAtencion = [];
 
           console.log("Los datos de atención")
           for (let indexa = 0; indexa < datosAtencionKeys.length; indexa++) {
             const elementa = datosAtencionKeys[indexa];
-             //console.log(elementa.nombre)
              let daKey = elementa.nombre;
              this.datosDeAtencion.push(
               {key:elementa.nombre, value:res[0][daKey]}
              );
              if (indexa==(datosAtencionKeys.length-1)) {
               console.log('Atención '+idAtencion);
-              //alert(res[0].FechaInicio)
-              //console.log('FechaHora'+res[0].FechaInicio.toString().split('T')[0]);
               let laFecha = res[0].FechaInicio.toString().split('T')[0];
               let laHora = res[0].HoraDeAccidente;
               console.log('FechaHora '+(laFecha+'T'+laHora))
@@ -1057,8 +1221,6 @@ export class Tab1Page implements OnInit {
         })
       ).subscribe(
         async (res) => {
-          //console.log("Firmas para este usuario : " + res.length);
-          //console.dir(res);
           for (let index = 0; index < res.length; index++) {
             const element = res[index];
             if (index == (res.length - 1)) {
@@ -1083,13 +1245,12 @@ export class Tab1Page implements OnInit {
     }
 
     let daSegmentsContainer = document.getElementsByClassName('segment-item-atenciones');
-    //alert(daSegmentsContainer.length)
     
     let daIndex = indexInput;
     for (let index = 0; index < daSegmentsContainer.length; index++) {
       const element = daSegmentsContainer[index];
       if (daIndex == index) {
-        element.setAttribute('style', 'color:#10069f;border:2px solid #10069f;');
+        element.setAttribute('style', 'color:#0058CB;border:2px solid #0058CB;');
       } else {
         element.setAttribute('style', 'color:gray;border:none');
       }
@@ -1130,7 +1291,6 @@ export class Tab1Page implements OnInit {
 
   async getCountry() {
 
-    //alert(this.atIndex)
     this.api.Expediente(this.atIndex).pipe(
       finalize(async () => {
         this.isLoading = false;
@@ -1138,28 +1298,16 @@ export class Tab1Page implements OnInit {
     ).subscribe(
       async (res) => {
         this.elExpediente = res;
-        //console.log("El expediente es : ");
-        //console.dir(res);
-        localStorage.setItem('elExpediente', this.elExpediente);
-        
-        //alert(this.elExpediente[0].Moneda);
 
         let laLatitud = localStorage.getItem('laLatitud');
-        //alert(laLatitud)
         let estaLatitud = parseFloat(laLatitud);
         this.latitud = this.elExpediente[0].LatitudCliente;
         this.longitud = this.elExpediente[0].LongitudCliente;
         this.FechaSiniestro = this.elExpediente[0].FechaRegistro;
         localStorage.setItem('FechaRegistro', this.FechaSiniestro);
-        //console.log('latitud de expediente es '+this.latitud+', la otra es '+laLatitud);
-        //alert('latitud de expediente es '+this.latitud+', la otra es '+this.longitud);
-
         if (this.platform.is('android')) {
-          //alert('reverseGeocode')
           this.geo.reverseGeocode(this.latitud, this.longitud).then((result: NativeGeocoderResult[]) => {
             this.laLocalidad = result;
-            //console.log("Mi localidad es ");
-            //console.dir(this.laLocalidad)
             this.miLocalidad = JSON.stringify(this.laLocalidad);
             this.miPais = this.laLocalidad[0].countryCode;
 
@@ -1168,7 +1316,6 @@ export class Tab1Page implements OnInit {
             this.miPaisNombre = this.laLocalidad[0].countryName;
             localStorage.setItem('codigoPais', this.miPais);
             localStorage.setItem('nombrePais', this.miPaisNombre);
-            //alert(this.miPais)
             localStorage.setItem('miLocalidad', this.miLocalidad);
             this.identificarPais();
           })
@@ -1189,15 +1336,9 @@ export class Tab1Page implements OnInit {
   geoCodeReverse(){
     let laLatitud = localStorage.getItem('laLatitud');
      let laLongitud = localStorage.getItem('laLongitud');
-     //alert('Hola '+ laLatitud)
-
-//alert('Antes del reverse geocode')
         if (this.platform.is('android')) {
           this.geo.reverseGeocode(parseFloat(laLatitud), parseFloat(laLongitud)).then((result: NativeGeocoderResult[]) => {
-            //alert('reverseGeocode')
             this.laLocalidad = result;
-            //console.log("Mi localidad es ");
-            //console.dir(this.laLocalidad)
             this.miLocalidad = JSON.stringify(this.laLocalidad);
             this.miPais = this.laLocalidad[0].countryCode;
             this.miPaisNombre = this.laLocalidad[0].countryName;
@@ -1212,14 +1353,9 @@ export class Tab1Page implements OnInit {
 
   tryIt(){
     this.router.navigate(['./clientehn']);
-    /*this.router.navigate(['./end-process'], { queryParams: { Id: this.idAtencion, CodigoReclamoFicohsa: '1690878',
-      CodigoBPMFicohsa: '112627' } });
-      */
-    //this.storageService.clearSiniestroArrays();
   }
 
   clearSegmentsStorage() {
-    //console.log('limpiando las variables de segmentos');
 
     // Segmento Solicitante
     localStorage.removeItem('dataProcess-CorreoElectronico');
@@ -1228,6 +1364,7 @@ export class Tab1Page implements OnInit {
     localStorage.removeItem('dataProcess-TerceroResponsable');
     
     localStorage.removeItem('elTipoLicencia');
+    localStorage.removeItem('elTipoLicenciaId');
     localStorage.removeItem('elGenero');
     localStorage.removeItem('elParentesco');
     localStorage.removeItem('tipoSolicitante');
@@ -1268,6 +1405,7 @@ export class Tab1Page implements OnInit {
     localStorage.removeItem('elCompromisoPago');
     localStorage.removeItem('elCompromisoPagoObservacion');
     localStorage.removeItem('laReserva');
+    localStorage.removeItem('bpmArray-ValorReserva');
     localStorage.removeItem('elTipoSiniestro');
     localStorage.removeItem('laDescripcion');
     localStorage.removeItem('lasObservaciones');
@@ -1275,11 +1413,6 @@ export class Tab1Page implements OnInit {
     localStorage.removeItem('coords-latitud');
     localStorage.removeItem('coords-longitud');
 
-
-    //let usoPoliza = localStorage.getItem('dataProcess-AseguradoUsoPoliza');
-    //alert(usoPoliza+1)
-
-    
       localStorage.removeItem('datos-Sexo');
       localStorage.removeItem('elGenero');
       localStorage.removeItem('elGeneroId');
@@ -1287,77 +1420,39 @@ export class Tab1Page implements OnInit {
       localStorage.removeItem('tipoCobertura');
       localStorage.removeItem('laCobertura');
       localStorage.removeItem('dataProcess-PorqueNoUsoServicioAsistencia');
+      localStorage.removeItem('dataProcess-DireccionEnvioCorrespondencia');
+      localStorage.removeItem('dataProcess-DescripcionTercerosMuertos');
+      localStorage.removeItem('dataProcess-DescripcionTercerosHeridos');
+      localStorage.removeItem('dataProcess-UbicacionVehiculoDetenido');
+      localStorage.removeItem('dataProcess-DondeSeEncuentraVehiculo');
+      localStorage.removeItem('dataProcess-NombreAtribuyeAccidente');
+      localStorage.removeItem('dataProcess-AutoridadInvolucrada');
+      localStorage.removeItem('dataProcess-DescripcionAudiencia');
+      localStorage.removeItem('dataProcess-DireccionConductor');
+      localStorage.removeItem('dataProcess-TelefonoConductor');
+      localStorage.removeItem('dataProcess-TelefonoAsegurado');
+      localStorage.removeItem('dataProcess-DescripcionDanio');
+      localStorage.removeItem('dataProcess-CelularConductor');
+      localStorage.removeItem('dataProcess-CelularAsegurado');
       localStorage.removeItem('dataProcess-NombreConductor');
+      localStorage.removeItem('dataProcess-NumeroUnidad');
+      localStorage.removeItem('dataProcess-Descripcion');
+      localStorage.removeItem('dataProcess-Licencia');
+      localStorage.removeItem('dataProcess-Vigencia');
+      localStorage.removeItem('datos-Kilometraje');
       localStorage.setItem('dataProcess-AseguradoUsoPoliza', '1');
+      localStorage.setItem('dataProcess-RefTipoConductorId', '1');
+      localStorage.setItem('dataProcess-TerceroResponsable', '3');
+      localStorage.setItem('dataProcess-AgendarAudiencia', '2');
+      localStorage.setItem('dataProcess-Parentesco', '37');
       localStorage.setItem('nombreConductor', '');
       localStorage.setItem('dataProcess-NombreConductor', '');
-
-
-    /*
-    localStorage.removeItem('datos-Sexo');
-    localStorage.removeItem('elGenero');
-    localStorage.removeItem('elGeneroId');
-
-    localStorage.setItem('datos-TipoAcuerdoFicohsa', this.coberturaDisplayName);
-localStorage.setItem('dataProcess-PorqueNoUsoServicioAsistencia', event.target.value);
-localStorage.setItem('dataProcess-PorqueNoUsoServicioAsistencia', porque);
-localStorage.setItem('tipoCobertura', event.target.value);
-localStorage.setItem('laCobertura', this.idAtencion.toString()+'-'+this.coberturaDisplayName);
-localStorage.setItem('datos-TipoAcuerdoFicohsa', this.coberturaDisplayName);
-localStorage.setItem('tipoCobertura', tipo);
-localStorage.setItem('laCobertura', this.idAtencion.toString()+'-'+this.coberturaDisplayName);
-localStorage.setItem('datos-TipoAcuerdoFicohsa', this.coberturaDisplayName);
-localStorage.setItem('atencionEnProceso', this.idAtencion);  
-localStorage.setItem('atencionEnProceso', this.idAtencion);
-localStorage.setItem('nombreConductor', this.cliente.NombreConductor);
-localStorage.setItem('dataProcess-NombreConductor', event.target.value);
-localStorage.setItem('nombreConductor', this.cliente.NombreConductor);
-localStorage.setItem('dataProcess-NombreConductor', nombre);
-localStorage.setItem("dSignatureAsegurado", this.firmaPrecargada);
-localStorage.setItem("dSignatureAsegurado", this.firmaPrecargada);
-localStorage.setItem('codigoPais', this.miPais);
-localStorage.setItem('nombrePais', this.miPaisNombre);
-localStorage.setItem('IdTablaAjustador', this.idTablaAjustador);
-localStorage.setItem('codigoBPMF', this.codigoBPMFicohsa);
-localStorage.setItem('codigoReclamo', resAtencion[0].numero_reclamo);
-localStorage.setItem('IdTablaAjustador', this.idTablaAjustador);
-localStorage.setItem('codigoBPMF', this.codigoBPMFicohsa);
-localStorage.setItem('codigoReclamo', resAtencion[0].numero_reclamo);
-localStorage.setItem('datos-Sexo', element.Id);
-localStorage.setItem('elGenero', this.idAtencion.toString()+'-'+this.elGenero);
-localStorage.setItem('elGeneroId', this.idAtencion.toString()+'-'+element.Id);
-localStorage.setItem('inicialGenero', this.inicialGenero);
-localStorage.setItem('datos-Sexo', this.elTipoGenero);
-localStorage.setItem('elGenero', this.idAtencion.toString()+'-'+this.elGenero);
-localStorage.setItem('inicialGenero', this.inicialGenero);
-
-    
-    for (var i = 0; i < localStorage.length; i++){
-      if (localStorage.key(i).indexOf('dataProcess-') == 0) {
-        localStorage.removeItem(localStorage.key(i));
-      }
-      if (localStorage.key(i).indexOf('datos-') == 0) {
-        localStorage.removeItem(localStorage.key(i));
-      }
-      if (localStorage.key(i).indexOf('daniosSelect') == 0) {
-        localStorage.removeItem(localStorage.key(i));
-      }
-      if (localStorage.key(i).indexOf('danioPic') == 0) {
-          localStorage.removeItem(localStorage.key(i));
-      } 
-      if (localStorage.key(i).indexOf('danioOtro') == 0) {
-        localStorage.removeItem(localStorage.key(i));
-    } 
-    }
-*/
-    
+      localStorage.setItem('estaEvaluado', 'false');
   }
 
   
 
   identificarPais() {
-    //alert('Identificando...')
-    //alert(this.miPais)
     if (this.miPais == "HN") {
       this.banderaPais = '../../assets/img/flag-round-hn.png';
       this.codigoPais = 'hn';
@@ -1368,9 +1463,7 @@ localStorage.setItem('inicialGenero', this.inicialGenero);
       this.getTipoLicencia(4);
     }else{
       this.iconIndex = this.randomize(0, 2);
-    //alert(this.iconIndex)
       let elIcono = iconWorlds[this.iconIndex];
-      //alert(elIcono.url)
       this.banderaPais = elIcono.url;
     }
   }
@@ -1384,8 +1477,6 @@ localStorage.setItem('inicialGenero', this.inicialGenero);
     ).subscribe(
       async (res) => {
         this.tipoLicencia = res;
-        //console.log("El tipo de licencia es : ");
-        //console.dir(res);
       },
       async (res) => {
         const alert = await this.alert.create({
@@ -1457,14 +1548,12 @@ localStorage.setItem('inicialGenero', this.inicialGenero);
     let tabsContainer = document.getElementsByTagName('ion-tab-button');
     let tabbarContainer = document.getElementsByTagName('ion-tab-bar');
     tabbarContainer[0].setAttribute('style', 'background: white; height:90px');
-    //alert(tabsContainer.length)
 
     for (let index = 0; index < tabsContainer.length; index++) {
       const element = tabsContainer[index];
       element.setAttribute('style', 'display: none');
     }
 
-    //this.router.navigate(['./tabs/tab2']);
   }
 
   closeSearch(){
@@ -1479,13 +1568,10 @@ localStorage.setItem('inicialGenero', this.inicialGenero);
     let tabsContainer = document.getElementsByTagName('ion-tab-button');
     let tabbarContainer = document.getElementsByTagName('ion-tab-bar');
     tabbarContainer[0].setAttribute('style', 'background: #0090d0;height:50px');
-    //alert(tabsContainer.length)
-
     for (let index = 0; index < tabsContainer.length; index++) {
       const element = tabsContainer[index];
       element.setAttribute('style', 'display: inherit');
     }
-    //this.router.navigate(['./tabs/tab2']);
   }
 
   grua(){

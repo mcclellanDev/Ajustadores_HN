@@ -328,7 +328,7 @@ ion-radio {
 
   .change-filled{
     fill-opacity: 1;
-    fill: #10069f;
+    fill: #0058CB;
   }
 
   .repair-filled{
@@ -352,13 +352,13 @@ ion-radio {
 
   ion-checkbox {
     --size: 25px;
-    --checkbox-background-checked: #10069f;
-    --background-checked: #10069f;
+    --checkbox-background-checked: #0058CB;
+    --background-checked: #0058CB;
   }
   
   ion-checkbox::part(container) {
     border-radius: 6px;
-    border: 2px solid #10069f;
+    border: 2px solid #0058CB;
   }
 
   ion-radio {

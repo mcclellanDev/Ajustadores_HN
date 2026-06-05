@@ -24,43 +24,43 @@
 <title>cluster_MapaPageModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="100,-70 100,-195 396,-195 396,-70 100,-70"/>
 </g>
-<g id="clust2" class="cluster">
-<title>cluster_MapaPageModule_declarations</title>
-<polygon fill="none" stroke="black" points="296,-78 296,-130 388,-130 388,-78 296,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_MapaPageModule_imports</title>
-<polygon fill="none" stroke="black" points="108,-78 108,-130 288,-130 288,-78 108,-78"/>
+<polygon fill="none" stroke="black" points="208,-78 208,-130 388,-130 388,-78 208,-78"/>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_MapaPageModule_declarations</title>
+<polygon fill="none" stroke="black" points="108,-78 108,-130 200,-130 200,-78 108,-78"/>
 </g>
 <!-- MapaPage -->
 <g id="node1" class="node">
 <title>MapaPage</title>
-<polygon fill="#ffffb3" stroke="black" points="379.59,-122 304.41,-122 304.41,-86 379.59,-86 379.59,-122"/>
-<text text-anchor="middle" x="342" y="-99.8" font-family="Times,serif" font-size="14.00">MapaPage</text>
+<polygon fill="#ffffb3" stroke="black" points="191.59,-122 116.41,-122 116.41,-86 191.59,-86 191.59,-122"/>
+<text text-anchor="middle" x="154" y="-99.8" font-family="Times,serif" font-size="14.00">MapaPage</text>
 </g>
 <!-- MapaPageModule -->
 <g id="node2" class="node">
 <title>MapaPageModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="322.14,-187 319.14,-191 298.14,-191 295.14,-187 203.86,-187 203.86,-151 322.14,-151 322.14,-187"/>
-<text text-anchor="middle" x="263" y="-164.8" font-family="Times,serif" font-size="14.00">MapaPageModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="291.14,-187 288.14,-191 267.14,-191 264.14,-187 172.86,-187 172.86,-151 291.14,-151 291.14,-187"/>
+<text text-anchor="middle" x="232" y="-164.8" font-family="Times,serif" font-size="14.00">MapaPageModule</text>
 </g>
 <!-- MapaPage&#45;&gt;MapaPageModule -->
 <g id="edge1" class="edge">
 <title>MapaPage&#45;&gt;MapaPageModule</title>
-<path fill="none" stroke="black" d="M313.39,-122.11C313.39,-122.11 313.39,-140.99 313.39,-140.99"/>
-<polygon fill="black" stroke="black" points="309.89,-140.99 313.39,-150.99 316.89,-140.99 309.89,-140.99"/>
+<path fill="none" stroke="black" d="M182.11,-122.11C182.11,-122.11 182.11,-140.99 182.11,-140.99"/>
+<polygon fill="black" stroke="black" points="178.61,-140.99 182.11,-150.99 185.61,-140.99 178.61,-140.99"/>
 </g>
 <!-- MapaPageRoutingModule -->
 <g id="node3" class="node">
 <title>MapaPageRoutingModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="279.75,-122 276.75,-126 255.75,-126 252.75,-122 116.25,-122 116.25,-86 279.75,-86 279.75,-122"/>
-<text text-anchor="middle" x="198" y="-99.8" font-family="Times,serif" font-size="14.00">MapaPageRoutingModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="379.75,-122 376.75,-126 355.75,-126 352.75,-122 216.25,-122 216.25,-86 379.75,-86 379.75,-122"/>
+<text text-anchor="middle" x="298" y="-99.8" font-family="Times,serif" font-size="14.00">MapaPageRoutingModule</text>
 </g>
 <!-- MapaPageRoutingModule&#45;&gt;MapaPageModule -->
 <g id="edge2" class="edge">
 <title>MapaPageRoutingModule&#45;&gt;MapaPageModule</title>
-<path fill="none" stroke="black" d="M241.78,-122.11C241.78,-122.11 241.78,-140.99 241.78,-140.99"/>
-<polygon fill="black" stroke="black" points="238.28,-140.99 241.78,-150.99 245.28,-140.99 238.28,-140.99"/>
+<path fill="none" stroke="black" d="M253.72,-122.11C253.72,-122.11 253.72,-140.99 253.72,-140.99"/>
+<polygon fill="black" stroke="black" points="250.22,-140.99 253.72,-150.99 257.22,-140.99 250.22,-140.99"/>
 </g>
 </g>
 </svg>

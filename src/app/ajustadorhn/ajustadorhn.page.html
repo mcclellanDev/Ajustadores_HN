@@ -175,67 +175,10 @@
       </ion-grid>
       <ion-grid>
         <ion-row id="dataSegment" *ngIf="cantidadNulos == 0 || cantidadNulos == null || cantidadNulos == undefined">
-          <!--ion-col size="6">
+          
+          <ion-col id="bpmCodeContainer" offset="6" size="6">
             <ion-grid>
               <ion-row>
-                <ion-col size="12">
-                  <ion-label class="text-size-lg" style="padding-left: 10px;color: #3171e0;">
-                     Firma Asegurado o conductor
-                  </ion-label>
-                    <ion-card style="height:202px">
-                      <img #imagen alt="Firmar" src="{{firmaPrecargada}}" [(ngModel)]="firmaPrecargada" onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'"
-                      style="    border: 6px dashed rgb(237, 233, 233);margin-top: 1%; width: 98%; height: 150px; margin-left: 1%;"/>
-                    
-                      <ion-card-content style="padding: 0; margin-bottom: 6px;padding-left: 1%;">
-                        {{aseguradoNombre}}
-                      </ion-card-content>
-                    </ion-card>
-                </ion-col>
-
-                <ion-col size="12">
-                  <ion-label class="text-size-lg" style="padding-left: 10px;color: #3171e0;">
-                     Firma Ajustador
-                  </ion-label>
-                    <ion-card style="height:202px" style="">
-                      <img #imagen alt="Firmar" src="{{firmaPrecargadaInspector}}" [(ngModel)]="firmaPrecargadaInspector" onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'"
-                      style="    border: 6px dashed rgb(237, 233, 233);margin-top: 1%; width: 98%; height: 150px; margin-left: 1%;"/>
-                    
-                      <ion-card-content id="ajustadorNombre" style="    padding: 0; margin-bottom: 6px;padding-left: 1%;">
-                        {{ajustadorNombre}}
-                      </ion-card-content>
-                    </ion-card>
-                </ion-col>
-                <ion-col size="12">
-                  <ion-label class="text-size-lg" style="padding-left: 10px;color: #3171e0;">
-                    Fecha del Siniestro
-                  </ion-label>
-                  <ion-card style="height:185px">
-                    <ion-card-content style="margin-top: 10%;">
-                      <ion-badge style="margin-left: 0px;padding: 20px;font-size: 1.1rem;height: 60px;width: 410px;">{{formateadaSiniestro}}</ion-badge>
-                    </ion-card-content>
-                  </ion-card>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-          </!--ion-col -->
-          <ion-col offset="6" size="6">
-            <ion-grid>
-              <ion-row>
-                
-                <!--ion-col size="12">
-                  <ion-label class="text-size-lg" style="padding-left: 10px;color: #7da1c4;">
-                    Cambia la Fecha de Inspección
-                  </ion-label>
-                  <ion-card style="height: 465px;">
-                    <ion-card-header>
-                    </ion-card-header>
-                    <ion-card-content>
-                      
-                      <ion-datetime [(ngModel)]="fechaInspeccion" (ionChange)="marcarFechaAjustador(fechaInspeccion)"></ion-datetime>
-                    </ion-card-content>
-                  </ion-card>
-                  
-                </!--ion-col -->
 
                 <ion-col size="12">
                   <ion-item lines="none" style="margin-left: -8px; margin-right: -8px;">
@@ -257,60 +200,146 @@
               </ion-row>
             </ion-grid>
           </ion-col>
-          
-          
-          <ion-col id="segmentAfiliatedAju" size="12">
-            <ion-grid>
-              <ion-row>
-                
-                <ion-col size="6">
-                <ion-content class="ion-no-padding">
-                  
-                </ion-content>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-            
-          </ion-col>
-          
-          
-          <ion-col id="segmentSignatureAju" size="12">
-            
-            <ion-grid>
-              <ion-row>
-                
-
-                <ion-col size="6">
-                <ion-content class="ion-no-padding">
-                  <ion-grid style="padding-top: 0;">
-                    <ion-row>
-                      
-                      
-                      
-                    </ion-row>
-                  </ion-grid>
-                </ion-content>
-                
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-            
-          </ion-col>
 
         </ion-row>
-        <ion-row id="dataNull" *ngIf="cantidadNulos > 0">
+        <ion-row id="dataNullAju" [hidden]="estaEvaluado == false">
           <ion-col size="12">
             <ion-card>
               <ion-card-header>
-                <ion-card-title>Elementos Incompletos</ion-card-title>
-                <ion-card-subtitle>Los siguientes campos aun no se han completado :</ion-card-subtitle>
+                <ion-card-subtitle>
+                  <div class="meter">
+                      <span id="spanProgressAju" style="width:100%;"><span class="progress"></span></span>
+                  </div>
+                </ion-card-subtitle>
+                <ion-card-subtitle id="infoText">
+                  {{textoInfo}}<br>
+                  <br>
+                  <span id="infoIncompleto" style="color: var(--pantoneRedColor);"
+                  [style.display]="cantidadNulos > 0 ? 'block' : 'none'">{{textoInfoIncompleto}}</span>
+                  <br>
+                  <span *ngIf="daniosSelectAju.length == 0" style="color: var(--yellowColor);">{{textoInfoDanios}}</span>
+                  <br>
+                  <span *ngIf="daniosSelectCulpa.length == 0" style="color: var(--yellowColor);">{{textoInfoDaniosCulpa}}</span>
+                  <br>
+                  <span *ngIf="fotosEnviadas == false" style="color: var(--yellowColor);">{{textoFotos}}</span>
+                </ion-card-subtitle>
               </ion-card-header>
               <ion-card-content>
-                <ion-list>
-                  <ion-item *ngFor="let nulo of validaNulosAju; let i = index" style="color: orangered;">
-                    <ion-label>{{i+1}}. {{nulo.etiqueta}}</ion-label>
+                <br>
+                  <ion-icon name="flag" color="danger"></ion-icon> Elementos Incompletos<br>
+                  <ion-icon name="flag" color="medium"></ion-icon> Elementos Completos
+                <br>
+                <ion-accordion-group #accordionGroup2 id="accordionGroup2" [multiple]="false" >
+                  <ion-accordion value="uno">
+                    <ion-item slot="header">
+                      <ion-label>Datos En Caché</ion-label>
+                    </ion-item>
+                    <div class="ion-padding" slot="content">
+                      
+                      <ion-list>
+                        <ion-item *ngFor="let cache of cacheClienteFix; let i = index">
+                          <ion-label style="color: gray;">{{i+1}}. {{cache.nombre}} : <span style="color: black;">{{cache.valor}}</span> </ion-label>
+                        </ion-item>
+                      </ion-list>
+                    </div>
+                  </ion-accordion>
+                  <ion-accordion value="dos">
+                    <ion-item slot="header">
+                      <ion-label>Datos Completados</ion-label>
+                    </ion-item>
+                    <div class="ion-padding" slot="content">
+                      
+                      <ion-list>
+                        <ion-item *ngFor="let dato of datosCompletados; let i = index">
+                          <ion-label style="color: gray;">{{i+1}}. {{dato.nombre}} : <span style="color: black;">{{dato.valor}}</span> </ion-label>
+                        </ion-item>
+                      </ion-list>
+                    </div>
+                  </ion-accordion>
+                  <ion-accordion value="tres">
+                    <ion-item slot="header">
+                      <ion-label style="color: var(--pantoneRedColor);">Datos Incompletos</ion-label>
+                    </ion-item>
+                    <div class="ion-padding" slot="content">
+                      
+                      <ion-list>
+                        <ion-item *ngFor="let dato of datosIncompletos; let i = index" (click)="analizaNulo(pagInputa.value, indexInputa.value)">
+                          <ion-label style="color: var(--pantoneRedColor);">{{i+1}}. {{dato.nombre}} </ion-label>
+                          
+                          <ion-input #pagInputa [hidden]="true" [value]="dato.elementSegmento" class="pag-inputa"></ion-input>
+                          <ion-input #indexInputa [hidden]="true" [value]="dato.indexSegmento" class="indexe-inputa-aju"></ion-input>
+                          <ion-chip *ngIf="dato.valor == 'undefined' || dato.valor == undefined || dato.valor == 'null'" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 7%; font-size: 1rem; height: 40px;
+                          color: red; border-color: red;">Ir</ion-chip>
+                        </ion-item>
+                      </ion-list>
+                    </div>
+                  </ion-accordion>
+
+                  <ion-accordion value="cuatro">
+                    <ion-item slot="header">
+                      <ion-label style="color: black;">Daños Al Vehículo Afiliado</ion-label>
+                    </ion-item>
+                    <div class="ion-padding" slot="content">
+                      <ion-list>
+                        <ion-item *ngFor="let danio of seleccionDeDanios; let i = index" (click)="'analizaNulo(pagInputa.value, indexInputa.value)'">
+                          <ion-label style="color: black;">{{i+1}}. {{danio.Descripcion}} </ion-label>
+                          <ion-chip *ngIf="danio.tipoId == 2" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4.25%; font-size: 1rem; height: 40px;
+                          color: black; border-color: black;">{{danio.tipo}}</ion-chip>
+                          <ion-chip *ngIf="danio.tipoId == 1" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 3%; font-size: 1rem; height: 40px;
+                          color: black; border-color: black;">{{danio.tipo}}</ion-chip>
+                        </ion-item>
+                      </ion-list>
+                    </div>
+                  </ion-accordion>
+
+                  <ion-accordion value="cinco">
+                    <ion-item slot="header">
+                      <ion-label style="color: black;">Daños Al Vehículo Culpable</ion-label>
+                      <ion-grid class="ion-no-padding">
+                        <ion-row id="loaderContainer" class="ion-no-padding" style="width: 100%; display: none;">
+                          <ion-col offset="4" size="4">
+                            <ion-spinner name="circular" color="primary" style="margin-top: 15%;    position: fixed;
+    top: 52%;
+    left: 46%;
+    z-index: 999;
+    width: 8%;
+    height: 8%;"></ion-spinner>
+                          </ion-col>
+                          <ion-col size="4"></ion-col>
+                        </ion-row>
+                      </ion-grid>
+                    </ion-item>
+                    <div class="ion-padding" slot="content">
+                      <ion-list *ngIf="seleccionDeDaniosCulpable.length > 0">
+                        <ion-item *ngFor="let danio of seleccionDeDaniosCulpable; let i = index" (click)="'analizaNulo(pagInputa.value, indexInputa.value)'">
+                          <ion-label style="color: black;">{{i+1}}. {{danio.Descripcion}} </ion-label>
+                          <ion-chip *ngIf="danio.tipoId == 2" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4.25%; font-size: 1rem; height: 40px;
+                          color: black; border-color: black;">{{danio.tipo}}</ion-chip>
+                          <ion-chip *ngIf="danio.tipoId == 1" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 3%; font-size: 1rem; height: 40px;
+                          color: black; border-color: black;">{{danio.tipo}}</ion-chip>
+                        </ion-item>
+                      </ion-list>
+                      <ion-list *ngIf="seleccionDeDaniosCulpable.length == 0">
+                        <ion-item>
+                          <ion-label style="color: gray;">No hay daños seleccionados. 
+                            <strong style="position: absolute; top: 0px; right: 0px;">Validar selección.
+                              <ion-icon id="reloadDaniosCulpa" name="reload" style="font-size: 1.6rem;  color: var(--blueGrayColor); float: right; margin-left: 5px; " 
+                              (click)="validarDaniosCulpa()">
+                              </ion-icon>
+                            </strong> 
+                            
+                          </ion-label>
+                        </ion-item>
+                      </ion-list>
+                    </div>
+                  </ion-accordion>
+                </ion-accordion-group>
+                
+                <!--ion-list> 
+                  <ion-item *ngFor="let nulo of validaNulosAju; let i = index" [style.color]="nulo.estado == false ? 'orangered' : 'gray'">
+                    <ion-label>{{i+1}}. {{nulo.nombre}}  {{nulo.estado}}</ion-label>
                   </ion-item>
-                </ion-list>
+                </ion-list -->
               </ion-card-content>
             </ion-card>
           </ion-col>
@@ -333,14 +362,14 @@
         class="segment-item-aju" [ngClass]="{ first: first, last: last }">
           <ion-input #segmentInput [hidden]="true" [value]="segment.name" readonly></ion-input>
           <ion-input #pagInput [hidden]="true" [value]="segment.pagSegmento" class="pag-input"></ion-input>
-          <ion-input #indexInput [hidden]="true" [value]="i" class="index-input"></ion-input>
+          <ion-input #indexInput [hidden]="true" [value]="i" class="index-input-aju"></ion-input>
           <ion-icon style="color: gray;" class="segment-icon-aju" name={{segment.name}}></ion-icon> <span class="segment-title-aju" style="margin-left: 9px;">{{segment.titulo}}</span>
         </ion-item>
       </ion-list>
      <br><br>
      <ion-card id="ioncardSelected" class="ion-no-padding" 
       style="margin: 0; border-radius: 0; max-height: 300px; height: 300px;">
-      <ion-card-header id="daniosCardHeader" style="background: #10069f;">
+      <ion-card-header id="daniosCardHeader" style="background: #0058CB;">
         <ion-card-subtitle id="daniosCardSubtitle">
           Daños Seleccionados 
           <ion-icon name="reload" style="font-size: 1.6rem; top: -5px; color: white; position: absolute; right: 0px; " 
@@ -365,8 +394,6 @@
                 <input #danioInputDescripcion [value]="dannio.Descripcion" hidden>
                 <input #danioIdInput [value]="i" hidden>
                 {{dannio.Descripcion}}
-                <!--ion-label class="danio-label">{{dannio.Descripcion}}</!--ion-label -->
-                <!--ion-badge (click)="elminaDanio(i, danioInputId.value)" class="badge-danio"><ion-icon class="icon icon-small icon-delete" name="trash-outline"></ion-icon></!--ion-badge -->
               </ion-item>
               <ion-item *ngIf="i == (daniosSelectAju.length-1)">
                 <br><br><br><br><br>
@@ -392,7 +419,7 @@
   <ion-icon name="refresh"></ion-icon>
 </!--ion-button -->
 
-<ion-button id="reloadDaniosButton" style="position: fixed;width: 16%;height: 60px;bottom: 11%;right: 1%; z-index: 999;--background: #f14f23;
+<!--ion-button id="reloadDaniosButton" style="position: fixed;width: 16%;height: 60px;bottom: 11%;right: 1%; z-index: 999;--background: #f14f23;
 --background-activated: #a8462a;
 --background-hover: #f66e48;
 --border-radius: 15px;
@@ -402,14 +429,83 @@
 </ion-button>
 
 <span>
-<ion-button id="submitClaim" style="position: fixed;width: 16%;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: #f14f23;
---background-activated: #a8462a;
---background-hover: #f66e48;
+<ion-button id="submitClaim" style="position: fixed;width: 16%;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: var(--blueGrayColor);
+  --background-activated: var(--blueGrayColor);
+  --background-hover: var(--blueGrayColor);
 --border-radius: 15px;
 --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
 --color: white;" vertical="bottom" horizontal="end" (click)="handleSave();isPressed=true">
   <ion-icon name="chevron-forward"></ion-icon>
-</ion-button>
+</ion-button -->
+<ion-footer id="footerAju">
+
+  <ion-button id="camButtonAju" style="position: fixed;width: 60px;height: 60px;bottom: 0%;left: 1%; z-index: 999;--background: var(--blueGrayColor);
+  --background-activated: var(--blueGrayColor);
+  --background-hover: var(--blueGrayColor);
+  --border-radius: 15px;
+  --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --color: white;" vertical="bottom" horizontal="end" (click)="goFotos()">
+    <ion-icon name="camera"></ion-icon>
+  </ion-button>
+
+  <ion-button id="validateButtona" style="position: absolute;width: 200px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: var(--blueGrayColor);
+    --background-activated: var(--blueGrayColor);
+    --background-hover: var(--blueGrayColor);
+    --border-radius: 15px;
+    --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    --color: white;" vertical="bottom" horizontal="end" (click)="handleSave();isPressed=true"
+    [style.display]="cantidadNulos > 0 ? 'block' : 'none'">
+    Validar Datos
+  </ion-button>
+
+  <ion-button id="cancelaButtona" fill="outline" color="--blueGrayColor" style="position: absolute;width: 200px;height: 60px;bottom: 1%;right: 35%; z-index: 999;
+  --border-radius: 15px; 
+  --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --color: var(--blueGrayColor);" vertical="bottom" horizontal="end" (click)="goBack()"
+  [style.display]="cantidadNulos == 0 ? 'block' : 'none'">
+    Cancelar Envío
+  </ion-button>
+
+  <ion-button id="validateAgainButtona" style="position: absolute;width: 200px;height: 60px;bottom: 1%;right: 18%; z-index: 999;--background: var(--blueGrayColor);
+    --background-activated: var(--blueGrayColor);
+    --background-hover: var(--blueGrayColor);
+  --border-radius: 15px;
+  --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --color: white;" vertical="bottom" horizontal="end" (click)="validarDatos(5)"
+  [style.display]="cantidadNulos == 0 ? 'block' : 'none'">
+    Validar Datos <ion-icon name="reload" style="    position: absolute;
+      right: 0px;
+      color: white;"></ion-icon>
+  </ion-button>
+
+  <ion-button id="saveDataButtona" style="position: absolute;width: 200px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: var(--primaryColor);
+    --background-activated: var(--primaryColor);
+    --background-hover: var(--primaryColor);
+  --border-radius: 15px;
+  --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --color: white;" vertical="bottom" horizontal="end" (click)="GuardarDatos()"
+  [style.display]="cantidadNulos == 0 ? 'block' : 'none'" [disabled]="esConduceSeguro == true">
+    Guardar Datos
+  </ion-button>
+
+
+  <ion-button id="resultsButtona" fill="outline" color="--blueGrayColor" style="position: absolute;width: 200px;height: 60px;bottom: 1%;right: 18%; z-index: 999;
+  --border-radius: 15px; 
+  --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --color: var(--blueGrayColor); display: none;" vertical="bottom" horizontal="end" (click)="goResults()">
+    Ver Resultados
+  </ion-button>
+
+  <ion-button id="goHomeButtona" style="position: absolute;width: 200px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: var(--primaryColor);
+    --background-activated: var(--primaryColor);
+    --background-hover: var(--primaryColor);
+  --border-radius: 15px;
+  --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --color: white;display: none;" vertical="bottom" horizontal="end" (click)="goHome()">
+    Ir a Inicio
+  </ion-button>
+</ion-footer>
+
 
 <!--ion-button [hidden]="isPressed==false" id="submitClaim" style="position: fixed;width: 16%;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: #f14f23;
 --background-activated: #a8462a;
@@ -419,7 +515,7 @@
 --color: white;" vertical="bottom" horizontal="end">
   <ion-icon name="chevron-forward"></ion-icon>
 </!--ion-button -->
-</span>
+
 
   <ion-modal trigger="open-modal" [initialBreakpoint]="1" [breakpoints]="[0, 1]">
     <ng-template>

@@ -16,6 +16,11 @@ ion-radio {
     border-radius: 0;
   }
 
+  ion-label {
+    color: var(--blueGrayColor);
+    font-size: 1.1rem;
+  }
+
   ion-accordion {
     margin: 0 auto;
     --width: 100% !important;
@@ -35,8 +40,8 @@ ion-radio {
   ion-accordion.accordion-collapsing ion-item[slot='header'],
   ion-accordion.accordion-collapsed ion-item[slot='header'] {
     --background: var(--ion-color-light);
-    --color: gray;//var(--ion-color-light-contrast);
-    color: gray;
+    --color: white;//var(--ion-color-light-contrast);
+    color: white;
 
   }
   
@@ -53,8 +58,11 @@ ion-radio {
   }
 
   ion-checkbox {
-    //--size: 32px;
-    --checkbox-background-checked: #7da1c4;
+        --checkbox-background-checked: #7da1c4;
+    width: 26px;
+    height: 26px;
+    border-radius: 30px;
+    --color-checked: #7da1c4;
   }
   
   ion-radio.radio-checked::part(mark) {

@@ -23,7 +23,7 @@
   <ion-list [inset]="true">
     <ion-item class="ion-no-padding  input">
       <ion-grid>
-        <ion-row size="12" style="color: #00ccff;font-size:1rem;">
+        <ion-row size="12" style="color: var(--primaryColor);font-size:1.2rem;">
           Tipo de Beneficiario
             </ion-row>
         <ion-row>
@@ -35,16 +35,16 @@
       </ion-grid>
       <ion-radio-group [(ngModel)]="elFiniquito.beneficiarioTipo" (ionChange)="seleccionarTipoBeneficiario($event);guardaCache(0)" >
         <ion-item lines="none" style="display: inline-block;">
-          <ion-label>Tercero</ion-label>
-          <ion-radio [value]="3"></ion-radio>
+          <ion-label class="etiqueta-opcion">Tercero</ion-label>
+          <ion-radio class="implicado-opcion" [value]="3"></ion-radio>
         </ion-item>
         <ion-item lines="none" style="display: inline-block;">
-          <ion-label>Beneficiario</ion-label>
-          <ion-radio [value]="2"></ion-radio>
+          <ion-label class="etiqueta-opcion">Beneficiario</ion-label>
+          <ion-radio class="implicado-opcion" [value]="2"></ion-radio>
         </ion-item>
         <ion-item lines="none"  style="display: inline-block;">
-          <ion-label>Asegurado</ion-label>
-          <ion-radio [value]="1"></ion-radio>
+          <ion-label class="etiqueta-opcion">Asegurado</ion-label>
+          <ion-radio class="implicado-opcion" [value]="1"></ion-radio>
         </ion-item>
       </ion-radio-group>
     </ion-item>
@@ -60,13 +60,14 @@
     <ion-item  class="ion-no-padding  input">
       <ion-grid>
         <ion-row style="padding-top: 6px;">
-          <ion-col size="9">
-            <ion-label class="text-size-sm">
-              Fecha Desde: <span style="color: black;width: 100%;">{{desdeFecha}}</span>
+          <ion-col size="3">
+            <ion-label class="text-size-sm etiqueta-fecha">
+              Fecha Desde <span style="float: right;"> :</span>
             </ion-label>
           </ion-col>
+          <ion-col size="6"><span style="color: black;width: 100%;">{{desdeFecha}}</span></ion-col>
           <ion-col size="3">
-            <ion-button expand="block" (click)="tipoFecha = 1; calendarTitle = calendarTitles[0].title; modal.present()" (ionChange)="guardaCache(1)">Seleccionar Fecha</ion-button>
+            <ion-button expand="block" class="date-button" (click)="tipoFecha = 1; calendarTitle = calendarTitles[0].title; modal.present()" (ionChange)="guardaCache(1)">Seleccionar Fecha</ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -75,13 +76,14 @@
     <ion-item  class="ion-no-padding  input">
       <ion-grid>
         <ion-row style="padding-top: 6px;">
-          <ion-col size="9">
-            <ion-label class="text-size-sm">
-              Fecha Hasta: <span style="color: black;width: 100%;">{{hastaFecha}}</span>
+          <ion-col size="3">
+            <ion-label class="text-size-sm etiqueta-fecha">
+              Fecha Hasta <span style="float: right;"> :</span>
             </ion-label>
           </ion-col>
+          <ion-col size="6"><span style="color: black;width: 100%;">{{hastaFecha}}</span></ion-col>
           <ion-col size="3">
-            <ion-button expand="block" (click)="tipoFecha = 2; calendarTitle = calendarTitles[1].title; modal.present()" (ionChange)="guardaCache(2)">Seleccionar Fecha</ion-button>
+            <ion-button expand="block" class="date-button" (click)="tipoFecha = 2; calendarTitle = calendarTitles[1].title; modal.present()" (ionChange)="guardaCache(2)">Seleccionar Fecha</ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -90,64 +92,65 @@
     <ion-item  class="ion-no-padding  input">
       <ion-grid>
         <ion-row style="padding-top: 6px;">
-          <ion-col size="9">
-            <ion-label class="text-size-sm">
-              Fecha Del Cheque: <span style="color: black;width: 100%;">{{chequeFecha}}</span>
+          <ion-col size="3">
+            <ion-label class="text-size-sm etiqueta-fecha">
+              Fecha Del Cheque <span style="float: right;"> :</span>
             </ion-label>
           </ion-col>
+          <ion-col size="6"><span style="color: black;width: 100%;">{{chequeFecha}}</span></ion-col>
           <ion-col size="3">
-            <ion-button expand="block" (click)="tipoFecha = 3; calendarTitle = calendarTitles[2].title; modal.present()" (ionChange)="guardaCache(3)">Seleccionar Fecha</ion-button>
+            <ion-button expand="block" class="date-button" (click)="tipoFecha = 3; calendarTitle = calendarTitles[2].title; modal.present()" (ionChange)="guardaCache(3)">Seleccionar Fecha</ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
       
     </ion-item>
     
-    <ion-item class="ion-no-padding  input">
-      <ion-label class="text-size-sm" position="floating">
-        Numero de Cheque</ion-label>
-      <ion-input type="text"[(ngModel)]="numeroCheque" (ionChange)="entraChequeNumero($event);guardaCache(4)"></ion-input>
+    <ion-item class="ion-no-padding  input" style="padding: 9px;">
+      <ion-label class="text-size-sm etiqueta-input" position="start">
+        Numero de Cheque <span style="float: right;"> :</span></ion-label>
+      <ion-input class="bene-input" type="text"[(ngModel)]="numeroCheque" (ionChange)="entraChequeNumero($event);guardaCache(4)"></ion-input>
     </ion-item>
 
-    <!--ion-item class="ion-no-padding  input">
-      <ion-label class="text-size-sm" position="floating">
-        Numero de Cheque</ion-label>
-      <ion-input type="text" [(ngModel)]="numeroCheque" (ionChange)="entraChequeNumero($event);guardaCache(4)"></ion-input>
+    <!--ion-item class="ion-no-padding  input" style="padding: 9px;">
+      <ion-label class="text-size-sm etiqueta-input" position="start">
+        Numero de Cheque <span style="float: right;"> :</span></ion-label>
+      <ion-input class="bene-input" type="text" [(ngModel)]="numeroCheque" (ionChange)="entraChequeNumero($event);guardaCache(4)"></ion-input>
     </!--ion-item -->
-    <ion-item class="ion-no-padding  input">
-      <ion-label class="text-size-sm" position="floating">
-        Monto de Cheque</ion-label>
-      <ion-input type="number" maxlength="10" [(ngModel)]="montoCheque" (ionChange)="entraChequeMonto($event);guardaCache(5)"></ion-input>
+    <ion-item class="ion-no-padding  input" style="padding: 9px;">
+      <ion-label class="text-size-sm etiqueta-input" position="start">
+        Monto de Cheque <span style="float: right;"> :</span></ion-label>
+      <ion-input class="bene-input" type="number" maxlength="10" [(ngModel)]="montoCheque" (ionChange)="entraChequeMonto($event);guardaCache(5)"></ion-input>
     </ion-item>
-    <ion-item class="ion-no-padding  input">
-      <ion-label class="text-size-sm" position="floating">
-        Receptor Nombre</ion-label>
-      <ion-input type="text"[(ngModel)]="receptorNombre" (ionChange)="entraReceptorNombre($event);guardaCache(6)"></ion-input>
+    <ion-item class="ion-no-padding  input" style="padding: 9px;">
+      <ion-label class="text-size-sm etiqueta-input" position="start">
+        Receptor Nombre <span style="float: right;"> :</span></ion-label>
+      <ion-input class="bene-input" type="text"[(ngModel)]="receptorNombre" (ionChange)="entraReceptorNombre($event);guardaCache(6)"></ion-input>
     </ion-item>
-    <ion-item class="ion-no-padding  input">
-      <ion-label class="text-size-sm" position="floating">
-        Receptor Identidad</ion-label>
-      <ion-input type="text" [(ngModel)]="receptorIdentidad" (ionChange)="entraentraReceptorIdentidad($event);guardaCache(7)"></ion-input>
+    <ion-item class="ion-no-padding  input" style="padding: 9px;">
+      <ion-label class="text-size-sm etiqueta-input" position="start">
+        Receptor Identidad <span style="float: right;"> :</span></ion-label>
+      <ion-input class="bene-input" type="text" [(ngModel)]="receptorIdentidad" (ionChange)="entraentraReceptorIdentidad($event);guardaCache(7)"></ion-input>
     </ion-item>
-    <ion-item class="ion-no-padding  input">
-      <ion-label class="text-size-sm" position="floating">
-        A Favor De?</ion-label>
-      <ion-input type="text" [(ngModel)]="aFavorDe" (ionChange)="entraAFavorDe($event);guardaCache(8)"></ion-input>
+    <ion-item class="ion-no-padding  input" style="padding: 9px;">
+      <ion-label class="text-size-sm etiqueta-input" position="start">
+        A Favor De? <span style="float: right;"> :</span></ion-label>
+      <ion-input class="bene-input" type="text" [(ngModel)]="aFavorDe" (ionChange)="entraAFavorDe($event);guardaCache(8)"></ion-input>
     </ion-item>
     
   </ion-list>  
 </ion-content>
 
-<ion-button style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: #f14f23;
---background-activated: #a8462a;
---background-hover: #f66e48;
+<ion-button style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: var(--blueGrayColor);
+  --background-activated: var(--blueGrayColor);
+  --background-hover: var(--blueGrayColor);
 --border-radius: 15px;
 --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
 --color: white;" vertical="bottom" horizontal="end" (click)="goFiniquito()">
   <ion-icon name="chevron-forward"></ion-icon>
 </ion-button>
 
-<ion-modal #modal trigger="open-modal-siniestro" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.25, 0.5, 0.75]">
+<ion-modal #modal trigger="open-modal-siniestro" [initialBreakpoint]="0.9" [breakpoints]="[0, 0.25, 0.5, 0.75, 0.9]">
   <ng-template><!--ion-button (click)="clickConfirm()">Guardar Fecha</!--ion-button -->
     <ion-content style="padding-bottom: 6px;">
       <ion-label style="margin-top: 3%;margin-left:3%;"><strong style="color: #0090d0;">{{calendarTitle}}</strong></ion-label>

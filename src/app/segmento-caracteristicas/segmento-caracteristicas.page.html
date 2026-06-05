@@ -26,7 +26,7 @@
 
         <ion-item lines="none" class="ion-no-padding  input">
           <ion-label class="text-size-lg" style="padding-left: 5px;">
-            <ion-badge color="tertiary">
+            <ion-badge color="primary">
               {{segmentoTitulo}}
             </ion-badge> 
           </ion-label>
@@ -42,11 +42,11 @@
               <ion-col size="3" style="text-align: right;">
                 <ion-radio-group [(ngModel)]="esTraslado" (ionChange)="entraTraslado($event)">
                   <ion-item lines="none" style="display: inline-block;">
-                    <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                    <ion-label color="primary" style="margin-left:5px">No</ion-label>&nbsp;
                     <ion-radio [value]="2"></ion-radio>
                   </ion-item>
                   <ion-item lines="none"  style="display: inline-block;">
-                    <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                    <ion-label color="primary" style="margin-left:5px">Si</ion-label>&nbsp;
                     <ion-radio [value]="1"></ion-radio>
                   </ion-item>
                 </ion-radio-group>
@@ -63,13 +63,13 @@
             <ion-row style="float: right;">
               <ion-radio-group [(ngModel)]="tipoGrua" (ionChange)="entraGrua($event)">
                 <ion-item lines="none" style="display: inline-block;">
-                  <ion-label color="tertiary">Ninguna</ion-label>&nbsp;<ion-radio [value]="0"></ion-radio>
+                  <ion-label color="primary">Ninguna</ion-label>&nbsp;<ion-radio [value]="0"></ion-radio>
                 </ion-item>
                 <ion-item lines="none" style="display: inline-block;">
-                  <ion-label color="tertiary">Liviana</ion-label>&nbsp;<ion-radio [value]="2"></ion-radio>
+                  <ion-label color="primary">Liviana</ion-label>&nbsp;<ion-radio [value]="2"></ion-radio>
                 </ion-item>
                 <ion-item lines="none"  style="display: inline-block;">
-                  <ion-label color="tertiary">Pesada (Mayor de 3.5 toneladas)</ion-label>&nbsp;<ion-radio [value]="1"></ion-radio>
+                  <ion-label color="primary">Pesada (Mayor de 3.5 toneladas)</ion-label>&nbsp;<ion-radio [value]="1"></ion-radio>
                 </ion-item>
               </ion-radio-group>
             </ion-row>
@@ -86,11 +86,11 @@
               <ion-col size="3" style="text-align: right;">
                 <ion-radio-group [(ngModel)]="esPesado" (ionChange)="entraPesado($event)">
                   <ion-item lines="none" style="display: inline-block;">
-                    <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                    <ion-label color="primary" style="margin-left:5px">No</ion-label>&nbsp;
                     <ion-radio [value]="2"></ion-radio>
                   </ion-item>
                   <ion-item lines="none"  style="display: inline-block;">
-                    <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                    <ion-label color="primary" style="margin-left:5px">Si</ion-label>&nbsp;
                     <ion-radio [value]="1"></ion-radio>
                   </ion-item>
                 </ion-radio-group>
@@ -103,6 +103,10 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Si el vehículo se encuentra en un taller, seleccione uno.
+              <ion-chip id="tallerSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+                color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
+                Seleccionar
+              </ion-chip>
             </ion-row>
             <ion-row>
               <ion-col id="tallerDisplay" size="9" class="select-label">{{tallerNombreDisplay}}</ion-col>
@@ -167,6 +171,10 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Tipo de combustible
+              <ion-chip id="fuelTypeSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+                color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
+                Seleccionar
+              </ion-chip>
             </ion-row>
             <ion-row>
               <ion-col id="tipoCombustibleDisplay" size="9" class="select-label">{{tipoDeCombustible}}</ion-col>
@@ -190,11 +198,11 @@
             <ion-row style="float: right;">
               <ion-radio-group [(ngModel)]="ajustador.AC" (ionChange)="entraAC($event)" class="required-data">
                 <ion-item lines="none" style="display: inline-block;">
-                  <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                  <ion-label color="primary" style="margin-left:5px">No</ion-label>&nbsp;
                   <ion-radio [value]="2"></ion-radio>
                 </ion-item>
                 <ion-item lines="none"  style="display: inline-block;">
-                  <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                  <ion-label color="primary" style="margin-left:5px">Si</ion-label>&nbsp;
                   <ion-radio [value]="1"></ion-radio>
                 </ion-item>
               </ion-radio-group>
@@ -211,11 +219,11 @@
             <ion-row style="float: right;">
               <ion-radio-group [(ngModel)]="ajustador.BolsasAire" (ionChange)="entraBolsaAire($event)" class="required-data">
                 <ion-item lines="none" style="display: inline-block;">
-                  <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                  <ion-label color="primary" style="margin-left:5px">No</ion-label>&nbsp;
                   <ion-radio [value]="2"></ion-radio>
                 </ion-item>
                 <ion-item lines="none"  style="display: inline-block;">
-                  <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                  <ion-label color="primary" style="margin-left:5px">Si</ion-label>&nbsp;
                   <ion-radio [value]="1"></ion-radio>
                 </ion-item>
               </ion-radio-group>
@@ -233,11 +241,11 @@
               <ion-radio-group [(ngModel)]="ajustador.CierreCentralizado" (ionChange)="entraCierreCentralizado($event)"
             class="required-data">
               <ion-item lines="none" style="display: inline-block;">
-                <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                <ion-label color="primary" style="margin-left:5px">No</ion-label>&nbsp;
                 <ion-radio [value]="2"></ion-radio>
               </ion-item>
               <ion-item lines="none"  style="display: inline-block;">
-                <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                <ion-label color="primary" style="margin-left:5px">Si</ion-label>&nbsp;
                 <ion-radio [value]="1"></ion-radio>
               </ion-item>
             </ion-radio-group>
@@ -249,6 +257,10 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Tipo de transmisión
+              <ion-chip id="misionTypeSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+                color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
+                Seleccionar
+              </ion-chip>
             </ion-row>
             <ion-row>
               <ion-col id="tiposTransmisionDisplay" size="9" class="select-label">{{tipotransmision}}</ion-col>
@@ -272,11 +284,11 @@
             <ion-row style="float: right;">
               <ion-radio-group [(ngModel)]="ajustador.Retrovisor" (ionChange)="entraRetrovisorElectronico($event)">
                 <ion-item lines="none" style="display: inline-block;">
-                  <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                  <ion-label color="primary" style="margin-left:5px">No</ion-label>&nbsp;
                   <ion-radio [value]="2"></ion-radio>
                 </ion-item>
                 <ion-item lines="none"  style="display: inline-block;">
-                  <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                  <ion-label color="primary" style="margin-left:5px">Si</ion-label>&nbsp;
                   <ion-radio [value]="1"></ion-radio>
                 </ion-item>
               </ion-radio-group>
@@ -293,11 +305,11 @@
             <ion-row style="float: right;">
               <ion-radio-group [(ngModel)]="ajustador.Overfenders" (ionChange)="entraOverfenders($event)">
                 <ion-item lines="none" style="display: inline-block;">
-                  <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                  <ion-label color="primary" style="margin-left:5px">No</ion-label>&nbsp;
                   <ion-radio [value]="2"></ion-radio>
                 </ion-item>
                 <ion-item lines="none"  style="display: inline-block;">
-                  <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                  <ion-label color="primary" style="margin-left:5px">Si</ion-label>&nbsp;
                   <ion-radio [value]="1"></ion-radio>
                 </ion-item>
               </ion-radio-group>
@@ -314,11 +326,11 @@
             <ion-row style="float: right;">
               <ion-radio-group [(ngModel)]="ajustador.ColaPato" (ionChange)="entraColaPato($event)">
                 <ion-item lines="none" style="display: inline-block;">
-                  <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                  <ion-label color="primary" style="margin-left:5px">No</ion-label>&nbsp;
                   <ion-radio [value]="2"></ion-radio>
                 </ion-item>
                 <ion-item lines="none"  style="display: inline-block;">
-                  <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                  <ion-label color="primary" style="margin-left:5px">Si</ion-label>&nbsp;
                   <ion-radio [value]="1"></ion-radio>
                 </ion-item>
               </ion-radio-group>
@@ -334,11 +346,11 @@
             <ion-row style="float: right;">
               <ion-radio-group [(ngModel)]="ajustador.CintaDecorativa" (ionChange)="entraCintaDecorativa($event)">
                 <ion-item lines="none" style="display: inline-block;">
-                  <ion-label color="tertiary" style="margin-left:5px">No</ion-label>&nbsp;
+                  <ion-label color="primary" style="margin-left:5px">No</ion-label>&nbsp;
                   <ion-radio [value]="2"></ion-radio>
                 </ion-item>
                 <ion-item lines="none"  style="display: inline-block;">
-                  <ion-label color="tertiary" style="margin-left:5px">Si</ion-label>&nbsp;
+                  <ion-label color="primary" style="margin-left:5px">Si</ion-label>&nbsp;
                   <ion-radio [value]="1"></ion-radio>
                 </ion-item>
               </ion-radio-group>
@@ -355,11 +367,11 @@
             <ion-row style="float: right;">
               <ion-radio-group [(ngModel)]="rinesId" (ionChange)="entraRines($event)">
                 <ion-item lines="none" style="display: inline-block;">
-                  <ion-label color="tertiary" style="margin-left:5px">Convencionales</ion-label>&nbsp;
+                  <ion-label color="primary" style="margin-left:5px">Convencionales</ion-label>&nbsp;
                   <ion-radio [value]="2"></ion-radio>
                 </ion-item>
                 <ion-item lines="none"  style="display: inline-block;">
-                  <ion-label color="tertiary" style="margin-left:5px">De Lujo</ion-label>&nbsp;
+                  <ion-label color="primary" style="margin-left:5px">De Lujo</ion-label>&nbsp;
                   <ion-radio [value]="1"></ion-radio>
                 </ion-item>
               </ion-radio-group>

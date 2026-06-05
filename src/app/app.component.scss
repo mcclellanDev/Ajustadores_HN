@@ -1,3 +1,37 @@
 #avatarPerfil{
     filter: none;
 }
+
+.app-connection-chip {
+    position: fixed;
+    top: calc(10px + env(safe-area-inset-top));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    min-width: 280px;
+    max-width: calc(100vw - 24px);
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 6px;
+    color: white;
+    font-weight: 700;
+    letter-spacing: 0;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
+}
+
+.app-connection-chip ion-label {
+    white-space: normal;
+}
+
+.app-connection-chip ion-icon {
+    color: white;
+    font-size: 1.25rem;
+}
+
+.app-connection-chip-offline {
+    --background: #b42318;
+}
+
+.app-connection-chip-slow {
+    --background: #b54708;
+}

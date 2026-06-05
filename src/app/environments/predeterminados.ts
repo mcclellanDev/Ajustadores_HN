@@ -373,6 +373,59 @@ export const ItemsData = [
 ]
 
 // required-data
+export const requiredDataAjustador = [
+    /*{name:'person', titulo: 'Datos Solicitante', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante'} */
+    //{nombre: 'Parentesco', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante', segmentIndex: 0, requerido: true, etiqueta: 'Parentesco', categoria: 'ajustador', storageKey: 'elParentesco'},
+    //{nombre: 'Cliente', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante', segmentIndex: 0, requerido: true, etiqueta: 'Nombre Del Conductor', categoria: 'ajustador', storageKey: 'elNombreCliente'},
+    //{nombre: 'RefTipoSolicitanteInformeAjusteId', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante', segmentIndex: 0, requerido: true, etiqueta: 'Tipo De Solicitante', categoria: 'ajustador', storageKey: 'tipoSolicitante'},
+    //{nombre: 'Kilometraje', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante', segmentIndex: 1, requerido: true, etiqueta: 'Kilometraje', categoria: 'ajustador', storageKey: 'elKilometraje'},
+    {nombre: 'Kilometraje', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-vehiculo', segmentIndex: 1, requerido: true, etiqueta: 'Kilometraje', categoria: 'ajustador', storageKey: 'elKilometraje'},
+    {nombre: 'RefTipoCombustibleId', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-caracteristicas', segmentIndex: 2, requerido: true, etiqueta: 'Tipo de Combustible', categoria: 'ajustador', storageKey: 'elTipoCombustible'},
+    {nombre: 'AC', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-caracteristicas', segmentIndex: 2, requerido: true, etiqueta: 'Aire Acondicionado', categoria: 'ajustador', storageKey: 'elAC'},
+    {nombre: 'Rines', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-caracteristicas', segmentIndex: 2, requerido: true, etiqueta: 'Rines', categoria: 'ajustador', storageKey: 'losRines'},
+    {nombre: 'BolsaAire', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-caracteristicas', segmentIndex: 2, requerido: true, etiqueta: 'Bolsa de Aire', categoria: 'ajustador', storageKey: 'elBA'},
+    {nombre: 'CierreCentralizado', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-caracteristicas', segmentIndex: 2, requerido: true, etiqueta: 'Cierre Centralizado', categoria: 'ajustador', storageKey: 'elCentra'},
+    {nombre: 'Mecanico', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-caracteristicas', segmentIndex: 2, requerido: true, etiqueta: 'Mecánico', categoria: 'ajustador', storageKey: 'laTransmisionId'},
+    {nombre: 'RetrovisorElectronico', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-caracteristicas', segmentIndex: 2, requerido: true, etiqueta: 'Retrovisor Electrónico', categoria: 'ajustador', storageKey: 'elRetrovisor'},
+    {nombre: 'Overfenders', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-caracteristicas', segmentIndex: 2, requerido: true, etiqueta: 'Overfenders', categoria: 'ajustador', storageKey: 'elOverfender'},
+    {nombre: 'ColaPato', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-caracteristicas', segmentIndex: 2, requerido: true, etiqueta: 'Cola De Pato', categoria: 'ajustador', storageKey: 'laColaPato'},
+    {nombre: 'CintaDecorativa', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-caracteristicas', segmentIndex: 2, requerido: true, etiqueta: 'Cinta Decorativa', categoria: 'ajustador', storageKey: 'laCinta'},
+    {nombre: 'ObservacionesFinales', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-danio', segmentIndex: 3, requerido: true, etiqueta: 'Observaciones Finales', categoria: 'ajustador', storageKey: 'lasObservaciones'},
+    {nombre: 'Observaciones', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-danio', segmentIndex: 3, requerido: true, etiqueta: 'Observaciones', categoria: 'ajustador', storageKey: 'laObservacionTaller'},
+    {nombre: 'TallerMecanicoId', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-caracteristicas', segmentIndex: 2, requerido: true, etiqueta: 'Taller', categoria: 'ajustador', storageKey: 'elTallerId'},
+]
+
+export const requiredDataCliente = [
+    {nombre: 'AseguradoUsoPoliza', requerido: true, etiqueta: 'Usó Póliza', categoria: 'cliente', segmentoId: 'segmentCoordinates', inputIndex: 0, segmentIndex: 0, segmentKey: 'location', storageKey: 'elAseguradoUsoPoliza'},
+    {nombre: 'Cliente', requerido: true, etiqueta: 'Cliente', categoria: 'cliente', segmentoId: 'segmentAfiliated', inputIndex: 1, segmentIndex: 1, segmentKey: 'person', storageKey: 'elNombreCliente'},
+    {nombre: 'Poliza', requerido: true, etiqueta: 'Póliza', categoria: 'cliente', segmentoId: 'segmentAfiliated', inputIndex: 2, segmentIndex: 1, segmentKey: 'person', storageKey: 'laPoliza'},
+    {nombre: 'DireccionEnvioCorrespondencia', requerido: true, etiqueta: 'Dirección Envío Correspondencia', categoria: 'cliente', segmentoId: 'segmentAfiliated', inputIndex: 4, segmentIndex: 1, segmentKey: 'person', storageKey: 'laDireccionEnmvio'},
+    {nombre: 'CorreoElectronico', requerido: true, etiqueta: 'Correo Electrónico', categoria: 'cliente', segmentoId: 'segmentAfiliated', inputIndex: 3, segmentIndex: 1, segmentKey: 'person', storageKey: 'elCorreoElectronico'},
+    {nombre: 'FechaHora', requerido: true, etiqueta: 'Fecha Hora Siniestro', categoria: 'cliente', segmentoId: 'segmentAfiliated', inputIndex: 4, segmentIndex: 1, segmentKey: 'person', storageKey: 'laFechaHora'},    
+    {nombre: 'MarcaVehiculo', requerido: true, etiqueta: 'Marca Vehículo', categoria: 'cliente', segmentoId: 'segmentVehicle', inputIndex: 5, segmentIndex: 2, segmentKey: 'car-sport', storageKey: 'laMarcaVehiculo'},
+    {nombre: 'ModeloVehiculo', requerido: true, etiqueta: 'Modelo Vehículo', categoria: 'cliente', segmentoId: 'segmentVehicle', inputIndex: 6, segmentIndex: 2, segmentKey: 'car-sport', storageKey: 'elModeloVehiculo'},
+    {nombre: 'AnioVehiculo', requerido: true, etiqueta: 'Año Vehículo', categoria: 'cliente', segmentoId: 'segmentVehicle', inputIndex: 7, segmentIndex: 2, segmentKey: 'car-sport', storageKey: 'elAnioVehiculo'},
+    {nombre: 'ChasisVehiculo', requerido: true, etiqueta: 'Chasis Vehículo', categoria: 'cliente', segmentoId: 'segmentVehicle', inputIndex: 8, segmentIndex: 2, segmentKey: 'car-sport', storageKey: 'elChasisVehiculo'},
+    {nombre: 'PlacaVehiculo', requerido: true, etiqueta: 'Placa Vehículo', categoria: 'cliente', segmentoId: 'segmentVehicle', inputIndex: 9, segmentIndex: 2, segmentKey: 'car-sport', storageKey: 'laPlacaVehiculo'},
+    {nombre: 'NumeroUnidad', requerido: true, etiqueta: 'Número de Unidad', segmentoId: 'segmentVehicle', inputIndex: 10, segmentIndex: 2, segmentKey: 'car-sport', storageKey: 'elNumeroUnidad'},
+    {nombre: 'NombreConductor', requerido: true, etiqueta: 'Nombre Conductor', categoria: 'cliente', segmentoId: 'segmentDriver', inputIndex: 11, segmentIndex: 3, segmentKey: 'speedometer', storageKey: 'elNombreCliente'},
+    //{nombre: 'IdentidaConductor', requerido: true, etiqueta: 'Identidad Conductor', categoria: 'cliente', segmentoId: 'segmentDriver', inputIndex: 12, segmentIndex: 3, segmentKey: 'speedometer', storageKey: 'laIdentidadCliente'},
+    {nombre: 'FechaNacimientoConductor', requerido: true, etiqueta: 'Fecha Nacimiento Conductor', categoria: 'cliente', segmentoId: 'segmentDriver', inputIndex: 13, segmentIndex: 3, segmentKey: 'speedometer', storageKey: 'laFechaNacimientoConductor'},
+    {nombre: 'Parentesco', requerido: true, etiqueta: 'Parentesco', categoria: 'cliente', segmentoId: 'segmentDriver', inputIndex: 14, segmentIndex: 3, segmentKey: 'speedometer', storageKey: 'elParentesco'},
+    {nombre: 'TipoLicencia', requerido: true, etiqueta: 'Tipo Licencia', categoria: 'cliente', segmentoId: 'segmentDriver', inputIndex: 23, segmentIndex: 3, segmentKey: 'speedometer', storageKey: 'elTipoLicencia'},
+    {nombre: 'Licencia', requerido: true, etiqueta: 'Licencia', categoria: 'cliente', segmentoId: 'segmentDriver', inputIndex: 15, segmentIndex: 3, segmentKey: 'speedometer', storageKey: 'laLicencia'},
+    {nombre: 'Vigencia', requerido: true, etiqueta: 'Vigencia', categoria: 'cliente', segmentoId: 'segmentDriver', inputIndex: 16, segmentIndex: 3, segmentKey: 'speedometer', storageKey: 'laVigencia'},
+    {nombre: 'DireccionConductor', requerido: true, etiqueta: 'Dirección Conductor', categoria: 'cliente', segmentoId: 'segmentDriver', inputIndex: 17, segmentIndex: 3, segmentKey: 'speedometer', storageKey: 'laDireccionConductor'},
+    {nombre: 'TelefonoConductor', requerido: true, etiqueta: 'Teléfono Conductor', categoria: 'cliente', segmentoId: 'segmentDriver', inputIndex: 18, segmentIndex: 3, segmentKey: 'speedometer', storageKey: 'elTelefonoOrigen'},
+    {nombre: 'CelularConductor', requerido: true, etiqueta: 'Celular Conductor', categoria: 'cliente', segmentoId: 'segmentDriver', inputIndex: 19, segmentIndex: 3, segmentKey: 'speedometer', storageKey: 'elTelefonoOrigen'},
+    {nombre: 'NombreAtribuyeAccidente', requerido: true, etiqueta: 'Nombre Del Responsable', categoria: 'cliente', segmentoId: 'segmentInfo', inputIndex: 20, segmentIndex: 4, segmentKey: 'help-circle', storageKey: 'elNombreAtribuyeAccidente'},
+    {nombre: 'AutoridadInvolucrada', requerido: true, etiqueta: 'Autoridad Involucrada', categoria: 'cliente', segmentoId: 'segmentInfo', inputIndex: 21, segmentIndex: 4, segmentKey: 'help-circle', storageKey: 'laAutoridadInvolucrada'},
+    {nombre: 'DondeSeEncuentraVehiculo', requerido: true, etiqueta: 'Dónde Se Encuentra El Vehículo', categoria: 'cliente', segmentoId: 'segmentInfo', inputIndex: 22, segmentIndex: 4, segmentKey: 'help-circle', storageKey: 'elDondeSeEncuentraVehiculo'},
+    {nombre: 'UbicacionVehiculoDetenido', requerido: true, etiqueta: 'Ubicación Vehículo Detenido', categoria: 'cliente', segmentoId: 'segmentInfo', inputIndex: 23, segmentIndex: 4, segmentKey: 'help-circle', storageKey: 'laUbicacionVehiculoDetenido'},
+    {nombre: 'DescripcionDanio', requerido: true, etiqueta: 'Descripción Daño', categoria: 'cliente', segmentoId: 'segmentInfo', inputIndex: 24, segmentIndex: 4, segmentKey: 'help-circle', storageKey: 'laDescripcion'},
+    {nombre: 'RefAtencionId', requerido: true, etiqueta: 'Id de Atención', categoria: 'cliente', segmentoId: '', inputIndex: 0, segmentIndex: 25, segmentKey: '', storageKey: 'laRefAtencionId'},
+]
+
 export const requiredData = [
     {nombre: 'Poliza', requerido: true, etiqueta: 'Póliza', categoria: 'cliente', storageKey: 'laPoliza'},
     {nombre: 'Cliente', requerido: true, etiqueta: 'Cliente', categoria: 'cliente', storageKey: 'elNombreCliente'},
@@ -387,22 +440,23 @@ export const requiredData = [
     {nombre: 'NumeroUnidad', requerido: true, etiqueta: 'Número de Unidad', storageKey: 'elNumeroUnidad'},
     {nombre: 'NombreConductor', requerido: true, etiqueta: 'Nombre Conductor', categoria: 'cliente', storageKey: 'elNombreCliente'},
     {nombre: 'Parentesco', requerido: true, etiqueta: 'Parentesco', categoria: 'cliente', storageKey: 'elParentesco'},
-    //{nombre: 'IdentidaConductor', requerido: true, etiqueta: 'Identidad Conductor', categoria: 'cliente', storageKey: 'laIdentidadCliente'},
-    //{nombre: 'FechaNacimientoConductor', requerido: true, etiqueta: 'Fecha Nacimiento Conductor', categoria: 'cliente', storageKey: 'laFechaNacimientoConductor'},
+    {nombre: 'IdentidaConductor', requerido: true, etiqueta: 'Identidad Conductor', categoria: 'cliente', storageKey: 'laIdentidadCliente'},
+    {nombre: 'FechaNacimientoConductor', requerido: true, etiqueta: 'Fecha Nacimiento Conductor', categoria: 'cliente', storageKey: 'laFechaNacimientoConductor'},
     {nombre: 'TipoLicencia', requerido: true, etiqueta: 'Tipo Licencia', categoria: 'cliente', storageKey: 'elTipoLicencia'},
     {nombre: 'Licencia', requerido: true, etiqueta: 'Licencia', categoria: 'cliente', storageKey: 'laLicencia'},
-    //{nombre: 'Vigencia', requerido: true, etiqueta: 'Vigencia', categoria: 'cliente', storageKey: 'laVigencia'},
+    {nombre: 'Vigencia', requerido: true, etiqueta: 'Vigencia', categoria: 'cliente', storageKey: 'laVigencia'},
     {nombre: 'DireccionConductor', requerido: true, etiqueta: 'Dirección Conductor', categoria: 'cliente', storageKey: 'laDireccionConductor'},
     {nombre: 'TelefonFijo', requerido: true, etiqueta: 'Teléfono Conductor', categoria: 'cliente', storageKey: 'elTelefonoOrigen'},
-    //{nombre: 'CelularConductor', requerido: true, etiqueta: 'Celular Conductor', categoria: 'cliente', storageKey: 'elTelefonoOrigen'},
+    {nombre: 'CelularConductor', requerido: true, etiqueta: 'Celular Conductor', categoria: 'cliente', storageKey: 'elTelefonoOrigen'},
     {nombre: 'NombreAtribuyeAccidente', requerido: true, etiqueta: 'Nombre Del Responsable', categoria: 'cliente', storageKey: 'elNombreAtribuyeAccidente'},
     {nombre: 'AutoridadInvolucrada', requerido: true, etiqueta: 'Autoridad Involucrada', categoria: 'cliente', storageKey: 'laAutoridadInvolucrada'},
     {nombre: 'DondeSeEncuentraVehiculo', requerido: true, etiqueta: 'Dónde Se Encuentra El Vehículo', categoria: 'cliente', storageKey: 'elDondeSeEncuentraVehiculo'},
     {nombre: 'UbicacionVehiculoDetenido', requerido: true, etiqueta: 'Ubicación Vehículo Detenido', categoria: 'cliente', storageKey: 'laUbicacionVehiculoDetenido'},
     {nombre: 'DescripcionDanio', requerido: true, etiqueta: 'Descripción Daño', categoria: 'cliente', storageKey: 'laDescripcion'},
-    {nombre: 'RefTipoSolicitanteInformeAjusteId', requerido: true, etiqueta: 'Tipo De Solicitante', categoria: 'ajustador', storageKey: 'tipoSolicitante'},
     {nombre: 'CorreoElectronico', requerido: true, etiqueta: 'Correo Electrónico', categoria: 'cliente', storageKey: 'elCorreoElectronico'},
     {nombre: 'RefAtencionId', requerido: true, etiqueta: 'Id de Atención', categoria: 'cliente', storageKey: 'laRefAtencionId'},
+
+    {nombre: 'RefTipoSolicitanteInformeAjusteId', requerido: true, etiqueta: 'Tipo De Solicitante', categoria: 'ajustador', storageKey: 'tipoSolicitante'},
     {nombre: 'Kilometraje', requerido: true, etiqueta: 'Kilometraje', categoria: 'ajustador', storageKey: 'elKilometraje'},
     {nombre: 'RefTipoCombustibleId', requerido: true, etiqueta: 'Tipo de Combustible', categoria: 'ajustador', storageKey: 'elTipoCombustible'},
     {nombre: 'AC', requerido: true, etiqueta: 'Aire Acondicionado', categoria: 'ajustador', storageKey: 'elAC'},
@@ -554,6 +608,12 @@ export const tipoBeneficiario = [
     {tipo:3, etiqueta:'Tercero'}
 ]
 
+export const tiposDeReparacion = [
+    {tipo:1, etiqueta:'Reparacion'},
+    {tipo:2, etiqueta:'Cambio'},
+    {tipo:3, etiqueta:'No Reparar'}
+]
+
 export const cacheIndexArray = [
     
         {title:'IdAtencion'},
@@ -616,3 +676,4 @@ export const valoresPredeterminados = [
       Causa: "A001"
     }
   ]
+

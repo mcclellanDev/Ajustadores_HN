@@ -23,41 +23,16 @@ export class Tab3Page {
     @ViewChild("canvas3", { static: true }) canvas: ElementRef;
     sig: SignaturePad;
 
-  miPais:any; elUsuario:any=[]; 
-  foto:string='';
-  openFoto = false;
-  codigoPais :any;
-  banderaPais:string=banderaPais;
-  deviceWidth:any;
-  deviceHeight:any;
-  laLocalidad:any;
-  atenciones:Atenciones[];
-  firmasAsegurados:any=[];
-  fotos: foto[]=[];
-  img: foto={};
-  dataFoto:any=[];
-  firma:any=[];
-  firmaObtenida:any=[];
-  fotoData:any=[];
-  isSignature:boolean = false;
-  isLoading:boolean = false;
-  isSign:boolean = false;
-  firmaPrecargadaAjustador:any;
-  firmaDemo:any;
-  atIndex:any;
-  atIndexId:any=0;
-  atIndexInit:any;
-  lasAtenciones:any=[];
-  atencionId:any;
-  nombreFirmante:any;
-  fechaFirma:any;
-  esTablet:boolean=true;
-  isLogout:boolean=false;
-  daPrompt:any;
-  imagePrefix:any=imagePrefix;
-  firmaPrecargadaInspector: string;
-  idAjustador: any;
-  ajustadorNombre: any;
+  miPais:any; elUsuario:any=[];   foto:string='';  openFoto = false;  codigoPais :any;  banderaPais:string=banderaPais;
+  deviceWidth:any;  deviceHeight:any;  laLocalidad:any;  atenciones:Atenciones[];  firmasAsegurados:any=[];
+  fotos: foto[]=[];  img: foto={};  dataFoto:any=[];  firma:any=[];  firmaObtenida:any=[];
+  fotoData:any=[];  isSignature:boolean = false;  isLoading:boolean = false;  isSign:boolean = false;
+  firmaPrecargadaAjustador:any;  firmaDemo:any;  atIndex:any;  atIndexId:any=0;  atIndexInit:any;
+  lasAtenciones:any=[];  atencionId:any;  nombreFirmante:any;  fechaFirma:any;  esTablet:boolean=true;
+  isLogout:boolean=false;  daPrompt:any;  imagePrefix:any=imagePrefix;  firmaPrecargadaInspector: string;
+  idAjustador: any;  ajustadorNombre: any; cardWidth: any;canvasInterval: any; canvasAseguradoWidth: any = 0;
+  emptySignatureWhite = emptySignatureWhite;
+  emptySignature = emptySignature;
 
   constructor(private api: ApiService,
     private alert: AlertController,
@@ -82,8 +57,8 @@ export class Tab3Page {
     localStorage.setItem('origin', window.location.pathname);
     this.sig = new SignaturePad(this.canvas.nativeElement);
     this.sig.backgroundColor = "rgb(255, 255, 255)";
-    this.sig.minWidth = 1;
-    this.sig.maxWidth = 1.5;
+    //this.sig.minWidth = 1;
+    //this.sig.maxWidth = 1.5;
     this.sig.dotSize = 3;
 
     this.sig.fromDataURL(emptySignatureWhite);
@@ -92,9 +67,21 @@ export class Tab3Page {
       this.sig.clear();
     }, 1000);
 
-    this.platform.ready().then(() => {
-      this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
-    });
+  }
+
+  ionViewDidEnter() {
+    this.getCanvasWidth();
+    this.firmarInspector();
+  }
+
+  getCanvasWidth() {
+
+    this.cardWidth = (document.getElementById('cardFirmaAjustador').clientWidth);
+    if (this.platform.is('android') == true) {
+      this.canvasAseguradoWidth = this.cardWidth - 40;
+    } else {
+      this.canvasAseguradoWidth = this.cardWidth - 50;
+    }
   }
 
   async cerrarSesion(){
@@ -135,7 +122,7 @@ export class Tab3Page {
       this.miPais = this.laLocalidad[0].countryCode;
       localStorage.setItem('codigoPais', this.miPais);
       localStorage.setItem('latitud', this.laLocalidad[0].latitude);
-      localStorage.setItem('longitud', this.laLocalidad[0].longitud);
+      localStorage.setItem('longitud', this.laLocalidad[0].longitude);
       this.isLoading = false;
       if(this.miPais == "HN"){
         this.banderaPais='../../assets/img/flag-round-hn.png';
@@ -218,6 +205,7 @@ const mySignature =this.sig.toDataURL("image/png");
 
 if(mySignature != emptySignature){
     this.firmaPrecargadaAjustador = this.sig.toDataURL("image/jpeg");
+    this.firmaPrecargadaInspector = this.sig.toDataURL("image/jpeg");
     localStorage.setItem("dSignature", this.firmaPrecargadaAjustador.toString());
     this.firmaObtenida = {
       IdAgente: this.api.currentUser.ProveedorAgenteId,
@@ -232,6 +220,7 @@ if(mySignature != emptySignature){
       (res) =>{
         console.log(res,'token respuesta');
         this.tostador.presentToastNoButtons("Firma guardada exitosamente! Ya puedes reutilizarla cuando sea necesario.", "top", "firma");
+        this.sig.clear();
       },
       async (res) => {
         this.tostador.presentToastDataMissing(res.error.Message, 'top', 'firma');
@@ -299,8 +288,42 @@ goPasswordChange(){
 }
 
 async firmarInspector(){
+  let usuarioActual:any = localStorage.getItem('correoActual');
+  let passwordActual:any = localStorage.getItem('passwordActual');
+
+  //alert(usuarioActual + ', ' + passwordActual + ' usuario y password actual');
+  let sendData = {
+    User: usuarioActual,
+    Password: passwordActual
+  }
+
+  this.api.login(sendData).subscribe(
+    async (res) => {
+      console.log(res, 'login response');
+      if (res.status == 200) {
+        //this.firmaPrecargadaInspector = imagePrefix + res.Firma;
+        
+      }
+    },
+    async (res) => {
+      console.log(res, 'error login');
+    }
+  );
+
+  setTimeout(() => {
+    let usuarioActual:any = localStorage.getItem('ajustadorActual');
+    let miUsuario = JSON.parse(usuarioActual);
+    let firmaAlmacenada = miUsuario.Firma;
+    console.log(firmaAlmacenada, 'firma almacenada');
+
+    if (firmaAlmacenada) {
+      this.firmaPrecargadaInspector = imagePrefix + firmaAlmacenada;
+      console.log(this.firmaPrecargadaInspector, 'firma precargada inspector');
+    }
+  }, 600);
+
   this.elUsuario = this.api.currentUser;
-  this.firmaPrecargadaInspector = imagePrefix+this.elUsuario.Firma;
+  
   this.idAjustador = this.elUsuario.ProveedorAgenteId;
 
   // aqui

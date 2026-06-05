@@ -19,9 +19,23 @@
   }
 
   #profile-toolbar{
-    --background:rgb(244, 242, 242);
-    background: rgb(244, 242, 242);
+    --background:var(--primaryColor);
+    background: var(--primaryColor);
+    height: 105px;
   }
+
+  .mi-logo{
+  width: 120px;
+  margin-top: 18px;
+}
+
+.toolbar-container{
+  height: 100px;
+}
+
+#firmaPrevisualizacion {
+  height: 180px;
+}
 
   ion-avatar {
     //    --border-radius: 4px;
@@ -53,3 +67,8 @@
         z-index: 900;
         bottom: 0;
     }
+
+    ion-split-pane {
+  --side-width: 400px;
+  --side-max-width: 400px;
+}

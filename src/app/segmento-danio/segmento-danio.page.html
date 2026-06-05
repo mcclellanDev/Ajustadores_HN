@@ -56,8 +56,8 @@
 <ion-content *ngIf="!isSearch">
   <ion-col id="segmentAfiliatedAju" size="12">
     <ion-item lines="none" class="ion-no-padding  input">
-      <ion-label color="tertiary" class="text-size-lg" style="padding-left: 5px;">
-        <ion-badge color="tertiary">
+      <ion-label color="primary" class="text-size-lg" style="padding-left: 5px;">
+        <ion-badge color="primary">
           {{segmentoTitulo}}
         </ion-badge>
       </ion-label>
@@ -119,7 +119,7 @@
                                     <ion-row style="width: 100%;">
                                       <ion-col size="2"></ion-col>
                                       <ion-col size="5">
-                                        <ion-button size="small" fill="outline" class="action-change" style="color: #10069f;width: 100%;" (click)="setReparacion(dannio.Id, 2, i, 1)">Cambio</ion-button>
+                                        <ion-button size="small" fill="outline" class="action-change" style="color: #0058CB;width: 100%;" (click)="setReparacion(dannio.Id, 2, i, 1)">Cambio</ion-button>
                                       </ion-col>
                                       <ion-col size="5">
                                         <ion-button size="small" fill="outline" class="action-repair" style="color: #7da1c4;width: 100%;" (click)="setReparacion(dannio.Id, 1, i, 1)">Repara</ion-button>
@@ -170,10 +170,10 @@
                                     <ion-row style="width: 100%;">
                                       <ion-col size="2"></ion-col>
                                       <ion-col size="5">
-                                        <ion-button size="small" [fill]="dannioX.TipoReparacion == 1 ? 'outline' : 'solid'" class="action-change-x" color="primary" style="color: #10069f;width: 100%;" (click)="setReparacionX(danioIdX.value, 2, i, 1)">Cambio</ion-button>
+                                        <ion-button size="small" [fill]="dannioX.TipoReparacion == 1 ? 'outline' : 'solid'" class="action-change-x" color="primary" style="color: #0058CB;width: 100%;" (click)="setReparacionX(danioIdX.value, 2, i, 1)">Cambio</ion-button>
                                       </ion-col>
                                       <ion-col size="5">
-                                        <ion-button size="small" [fill]="dannioX.TipoReparacion == 2 ? 'outline' : 'solid'" class="action-repair-x" color="tertiary" style="color: #7da1c4;width: 100%;" (click)="setReparacionX(danioIdX.value, 1, i, 1)">Repara</ion-button>
+                                        <ion-button size="small" [fill]="dannioX.TipoReparacion == 2 ? 'outline' : 'solid'" class="action-repair-x" color="primary" style="color: #7da1c4;width: 100%;" (click)="setReparacionX(danioIdX.value, 1, i, 1)">Repara</ion-button>
                                       </ion-col>
                                     </ion-row>
                                   </ion-grid>
@@ -201,12 +201,12 @@
                   <ion-row style="float: right;">
                     <ion-radio-group [(ngModel)]="datos.CompromisoPago" (ngModelChange)="entraCompromisoPago($event)">
                       <ion-item lines="none" style="display: inline-block;">
-                        <ion-label color="tertiary">No</ion-label>&nbsp;
-                        <ion-radio color="tertiary" [value]="2"></ion-radio>
+                        <ion-label color="primary">No</ion-label>&nbsp;
+                        <ion-radio color="primary" [value]="2"></ion-radio>
                       </ion-item>
                       <ion-item lines="none"  style="display: inline-block;">
-                        <ion-label color="tertiary">Si</ion-label>&nbsp;
-                        <ion-radio color="tertiary" [value]="1"></ion-radio>
+                        <ion-label color="primary">Si</ion-label>&nbsp;
+                        <ion-radio color="primary" [value]="1"></ion-radio>
                       </ion-item>
                     </ion-radio-group>  
                   </ion-row>
@@ -233,8 +233,11 @@
                     Valor Reservado
                   </ion-row>
                   <ion-row>
-                    <ion-col size="12">
-                      <ion-input type="number" maxlength="10" (ionChange)="setReserva(valorReserva)" [(ngModel)]="valorReserva"></ion-input>
+                    <ion-col size="9">
+                      <ion-input type="number" maxlength="10" (ionChange)="setReserva(valorReserva)" (ionBlur)="setReserva(valorReserva)" [(ngModel)]="valorReserva"></ion-input>
+                    </ion-col>
+                    <ion-col id="noReservaTexto" size="3" style="text-align: justify; color: red; display: inherit;">
+                      El valor de reserva está vacío. Se asignará un valor de 0 (cero) por defecto.
                     </ion-col>
                   </ion-row>
                 </ion-grid>
@@ -244,6 +247,10 @@
                 <ion-grid>
                   <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                     Tipo de siniestro
+                    <ion-chip id="caseTypeSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+                      color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
+                      Seleccionar
+                    </ion-chip>
                   </ion-row>
                   <ion-row>
                     <ion-col id="tipoSiniestrosDisplay" size="9">{{elTipoDeSiniestro}}</ion-col>
@@ -344,10 +351,10 @@
         <ion-row>
           <ion-col size="12">
             <ion-item  lines="none" style="--background: #7da1c4;" class="ion-no-padding  input">
-              <ion-label color="tertiary" class="text-size-lg" style="color: white; padding-left: 5px;">Agregue Un Daño </ion-label>
+              <ion-label color="primary" class="text-size-lg" style="color: white; padding-left: 5px;">Agregue Un Daño </ion-label>
             </ion-item>
             <ion-item  class="ion-no-padding transparent input">
-              <ion-label color="tertiary" class="text-size-sm" position="floating">
+              <ion-label color="primary" class="text-size-sm" position="floating">
                 Describa el daño</ion-label>
               <ion-input #inputDanio type="text"></ion-input>
             </ion-item>

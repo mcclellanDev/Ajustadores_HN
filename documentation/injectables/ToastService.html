@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -60,20 +60,13 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -82,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -182,6 +175,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#presentToastAlert" >presentToastAlert</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#presentToastArrival" >presentToastArrival</a>
                             </li>
                             <li>
@@ -203,6 +200,10 @@
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#presentToastErrorConexion" >presentToastErrorConexion</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#presentToastHome" >presentToastHome</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -403,8 +404,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="131"
-                                    class="link-to-prism">src/app/services/toast.service.ts:131</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="158"
+                                    class="link-to-prism">src/app/services/toast.service.ts:158</a></div>
                         </td>
                     </tr>
 
@@ -486,8 +487,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="168"
-                                    class="link-to-prism">src/app/services/toast.service.ts:168</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="195"
+                                    class="link-to-prism">src/app/services/toast.service.ts:195</a></div>
                         </td>
                     </tr>
 
@@ -560,6 +561,98 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="presentToastAlert"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>presentToastAlert</b></span>
+                        <a href="#presentToastAlert"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>presentToastAlert(message, position, clase, duration)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">src/app/services/toast.service.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>message</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>position</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>clase</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>duration</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="presentToastArrival"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -578,8 +671,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="101"
-                                    class="link-to-prism">src/app/services/toast.service.ts:101</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="128"
+                                    class="link-to-prism">src/app/services/toast.service.ts:128</a></div>
                         </td>
                     </tr>
 
@@ -661,8 +754,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="463"
-                                    class="link-to-prism">src/app/services/toast.service.ts:463</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="519"
+                                    class="link-to-prism">src/app/services/toast.service.ts:519</a></div>
                         </td>
                     </tr>
 
@@ -744,8 +837,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="490"
-                                    class="link-to-prism">src/app/services/toast.service.ts:490</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="546"
+                                    class="link-to-prism">src/app/services/toast.service.ts:546</a></div>
                         </td>
                     </tr>
 
@@ -827,8 +920,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="404"
-                                    class="link-to-prism">src/app/services/toast.service.ts:404</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="460"
+                                    class="link-to-prism">src/app/services/toast.service.ts:460</a></div>
                         </td>
                     </tr>
 
@@ -910,8 +1003,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="440"
-                                    class="link-to-prism">src/app/services/toast.service.ts:440</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="496"
+                                    class="link-to-prism">src/app/services/toast.service.ts:496</a></div>
                         </td>
                     </tr>
 
@@ -993,8 +1086,91 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="335"
-                                    class="link-to-prism">src/app/services/toast.service.ts:335</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="391"
+                                    class="link-to-prism">src/app/services/toast.service.ts:391</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>message</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>position</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>clase</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="presentToastHome"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>presentToastHome</b></span>
+                        <a href="#presentToastHome"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>presentToastHome(message, position, clase)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="329"
+                                    class="link-to-prism">src/app/services/toast.service.ts:329</a></div>
                         </td>
                     </tr>
 
@@ -1159,8 +1335,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">src/app/services/toast.service.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="97"
+                                    class="link-to-prism">src/app/services/toast.service.ts:97</a></div>
                         </td>
                     </tr>
 
@@ -1325,8 +1501,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="269"
-                                    class="link-to-prism">src/app/services/toast.service.ts:269</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="296"
+                                    class="link-to-prism">src/app/services/toast.service.ts:296</a></div>
                         </td>
                     </tr>
 
@@ -1417,8 +1593,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="207"
-                                    class="link-to-prism">src/app/services/toast.service.ts:207</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="234"
+                                    class="link-to-prism">src/app/services/toast.service.ts:234</a></div>
                         </td>
                     </tr>
 
@@ -1509,8 +1685,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="302"
-                                    class="link-to-prism">src/app/services/toast.service.ts:302</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="358"
+                                    class="link-to-prism">src/app/services/toast.service.ts:358</a></div>
                         </td>
                     </tr>
 
@@ -1592,8 +1768,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="381"
-                                    class="link-to-prism">src/app/services/toast.service.ts:381</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="437"
+                                    class="link-to-prism">src/app/services/toast.service.ts:437</a></div>
                         </td>
                     </tr>
 
@@ -1675,8 +1851,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="358"
-                                    class="link-to-prism">src/app/services/toast.service.ts:358</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="414"
+                                    class="link-to-prism">src/app/services/toast.service.ts:414</a></div>
                         </td>
                     </tr>
 
@@ -1758,8 +1934,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="241"
-                                    class="link-to-prism">src/app/services/toast.service.ts:241</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="268"
+                                    class="link-to-prism">src/app/services/toast.service.ts:268</a></div>
                         </td>
                     </tr>
 
@@ -2045,6 +2221,28 @@ export class ToastService {
     await toast.present();
   }
 
+  async presentToastAlert(message, position, clase, duration) {
+    const currentToast &#x3D; document.getElementsByTagName(&#x27;ion-toast&#x27;);
+    //console.log(&#x27;Tengo estos toasters : &#x27; + currentToast.length);
+
+    
+    if(currentToast.length &gt; 0){
+      this.toaster.dismiss();
+    }
+    //await this.toast.dismiss();
+    const toast &#x3D; await this.toaster.create({
+      message: message,
+      color: clase,
+      duration: duration,
+      position: position,
+      cssClass: [&#x27;custom-toast&#x27;, clase],
+      buttons: [],
+    });
+  
+  
+    await toast.present();
+  }
+
   async presentToastNoButtonsRed(message, position, clase) {
     const currentToast &#x3D; document.getElementsByTagName(&#x27;ion-toast&#x27;);
     //console.log(&#x27;Tengo estos toasters : &#x27; + currentToast.length);
@@ -2060,7 +2258,12 @@ export class ToastService {
       duration: 60000,
       position: position,
       cssClass: [&#x27;custom-toast&#x27;, clase],
-      buttons: [],
+      buttons: [
+        {
+          text: &#x27;OK&#x27;,
+          role: &#x27;confirm&#x27;,
+        }
+      ],
     });
   
   
@@ -2245,6 +2448,35 @@ export class ToastService {
     let laPlaca &#x3D; data.NumeroPlaca;
     let laAtencion &#x3D; data.Id;
     
+    if(currentToast.length &gt; 0){
+      this.toaster.dismiss();
+    }
+    //await this.toast.dismiss();
+    const toast &#x3D; await this.toaster.create({
+      message: message,
+      color: clase,
+      duration: 30000,
+      position: position,
+      cssClass: [&#x27;custom-toast&#x27;],
+      buttons: [
+        {
+          text: &#x27;NO SALIR&#x27;,
+          role: &#x27;cancel&#x27;
+        },
+        {
+          text: &#x27;SALIR&#x27;,
+          role: &#x27;reload&#x27;,
+          handler: () &#x3D;&gt; {
+            window.location.reload()
+          }
+        },
+      ],
+    });
+    await toast.present();
+  }
+
+  async presentToastHome(message, position, clase) {
+    const currentToast &#x3D; document.getElementsByTagName(&#x27;ion-toast&#x27;);
     if(currentToast.length &gt; 0){
       this.toaster.dismiss();
     }
@@ -2530,6 +2762,19 @@ export class ToastService {
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
 
@@ -2541,7 +2786,6 @@ export class ToastService {
        <script src="../js/libs/es6-shim.min.js"></script>
        <script src="../js/libs/EventDispatcher.js"></script>
        <script src="../js/libs/promise.min.js"></script>
-       <script src="../js/libs/zepto.min.js"></script>
 
        <script src="../js/compodoc.js"></script>
 

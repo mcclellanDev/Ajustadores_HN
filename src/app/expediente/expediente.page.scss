@@ -1,6 +1,6 @@
 
 modal{
-    --background: #10069f;// rgba(44,39,45,0.2);
+    --background: var(--primaryColor);// rgba(44,39,45,0.2);
     color:white;
     &::part(content){
         backdrop-filter: blur(6px);
@@ -47,9 +47,9 @@ ion-card{
 }
 
 ion-fab-button:not(#botonCerrarModal):not(#statusFlag):not(#gruaButton):not(#buttonsButton), .action-button {
-    --background: #ef5a22;
-    --background-activated: #a8462a;
-    --background-hover: #f66e48;
+    --background: var(--blueGrayColor);
+  --background-activated: var(--blueGrayColor);
+  --background-hover: var(--blueGrayColor);
     --border-radius: 15px;
     --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
     --color: white;
@@ -89,37 +89,8 @@ ion-fab-button:not(#botonCerrarModal):not(#statusFlag):not(#gruaButton):not(#but
     bottom: 0;
 }
 
-.introjs-helperLayer {
-    background: transparent;
-}
-
-.introjs-overlay {
-    opacity: 0 !important;
-}
-
-.introjs-helperLayer:before {
-    opacity: 0;
-    content: none;
-    position: fixed;
-    width: inherit;
-    height: inherit;
-    border-radius: 0.5em;
-    box-shadow: 0 0 0 1000em rgba(0,0,0, .7);
-    opacity: 1;
-}
-
-.introjs-helperLayer:after {
-    content: none;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    position: fixed;
-    z-index: 1000;
-}
-
 ion-item-divider{
-    background: #10069f;
+    background: var(--primaryColor);
     color: aliceblue;
 }
 
@@ -208,12 +179,12 @@ ion-modal.info-modal {
   }
   
   #pac-input:focus {
-    border-color: #10069f;
+    border-color: var(--primaryColor);
   }
   
   #title {
     color: #fff;
-    background-color: #10069f;
+    background-color: var(--primaryColor);
     font-size: 25px;
     font-weight: 500;
     padding: 6px 12px;

@@ -1,3 +1,13 @@
 <ion-app>
+  <ng-container *ngIf="connectionStatus$ | async as connection">
+    <ion-chip
+      *ngIf="connection.quality === 'offline' || connection.quality === 'slow'"
+      class="app-connection-chip"
+      [class.app-connection-chip-offline]="connection.quality === 'offline'"
+      [class.app-connection-chip-slow]="connection.quality === 'slow'">
+      <ion-icon [name]="connection.quality === 'offline' ? 'cloud-offline' : 'warning'"></ion-icon>
+      <ion-label>{{ connection.message }}</ion-label>
+    </ion-chip>
+  </ng-container>
   <ion-router-outlet></ion-router-outlet>
 </ion-app>

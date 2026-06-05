@@ -18,6 +18,12 @@ ion-spinner{
     bottom: 0;
 }
 
+.opcion-correccion{
+    margin-left: 5px;
+    --border-radius: 4px;
+  --inner-border-radius: 4px;
+  }
+
 ion-accordion {
     margin: 0 auto;
     --width: 100% !important;

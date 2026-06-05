@@ -16,8 +16,7 @@ export class PrepareAudiencePage implements OnInit {
   idAtencion: any; isLoading:boolean = false; results = []; abogadoNombre:string; lugarAudiencia:string;
   fechaAudiencia:any; formateadaAudiencia:any; idTablaDeAjustador:any;
   abogadosAudiencias = []; idAbogado: any;  laFecha: any;  formattedDate: any;
-  dateFormat: any;
-  timeFormat: any;
+  dateFormat: any;  timeFormat: any;  idAgente: any;
   
   
   constructor(private router: Router, private alert: AlertController, private api:ApiService, private toaster:ToastService) { 
@@ -32,6 +31,10 @@ export class PrepareAudiencePage implements OnInit {
   }
 
   ngOnInit() {
+    console.log('La atencion es '+this.idAtencion);
+    console.log('EL agente actual es '); console.dir(this.api.currentUser);
+    this.idAgente = this.api.currentUser.ProveedorAgenteId;
+
     setTimeout(() => {
       this.api.Abogados(3).pipe( 
         finalize(async ()=>{
@@ -65,11 +68,35 @@ export class PrepareAudiencePage implements OnInit {
         })
       ).subscribe(
          (res) =>{
+
+          //alert('Este es el id de tabla de ajustador '+res.length);
           if (res) {
-            let disId = res.toString();
-            this.idTablaDeAjustador = disId.replace(/,/g, '');
+
+            //alert('Este es el id de tabla de ajustador '+res);
+            if (res == null || res == undefined || res == '' || res == 0) {
+              $('#submitAudience').prop('disabled', true);
+              this.toaster.presentToastAlert('Esta solicitud aún no se ha completado. Para poder enviarla, es necesario que completes la solicitud BPM con los datos del formulario de cliente y el de ajustador.', 'top', 'danger', 10000);
+              return;
+            }else{
+              console.log('Este es el id de tabla de ajustador ');
+              console.dir(res);
+              //alert('Este es el id de tabla de ajustador '+res[0].IdAudiencia);
+              
+              let disId = res[0].IdAudiencia.toString();
+              this.idTablaDeAjustador = res[0].IdAudiencia.toString();//disId.replace(/,/g, '');
+              console.dir('Este es el id de tabla de ajustador '+this.idTablaDeAjustador);
+              console.dir(this.idTablaDeAjustador);
+              /**/
+            }
+            
           }
+
+         }, (error) => {
+          console.log('Este es el error '+error);
+          console.dir(error.error.Message);
+          this.toaster.presentToastAlert(error.error.Message, 'top', 'danger', 10000);
          }
+
         )
     }, 1000);
     
@@ -123,6 +150,8 @@ export class PrepareAudiencePage implements OnInit {
     this.formateadaAudiencia = new Date(fechaAudiencia).toLocaleString(); 
     this.dateFormat = fechaAudiencia.split('T')[0]; 
     let timeString = this.formateadaAudiencia.split(', ')[1];
+
+    console.log('Hora completa : '+fechaAudiencia.split('T')[1]);
     this.timeFormat = timeString.split(' ')[0];
 
     setTimeout(() => {
@@ -142,6 +171,10 @@ export class PrepareAudiencePage implements OnInit {
 }
 
   audienceSave(){
+    
+    let agente:any = localStorage.getItem('ajustadorActual');
+    let agenteActual:any = JSON.parse(agente);
+    //let idAgente = agenteActual.ProveedorAgenteId;
     this.isLoading = true;
     let jsonAudiencia = {
       IdAjustadorAudiencia: this.idTablaDeAjustador,
@@ -150,7 +183,8 @@ export class PrepareAudiencePage implements OnInit {
       FechaHora: this.formattedDate,
       Fecha: this.dateFormat,
       Hora: this.timeFormat,
-      Lugar: this.lugarAudiencia
+      Lugar: this.lugarAudiencia,
+      idAgente: this.idAgente
     }
 
     this.api.ActualizarAudicion(jsonAudiencia).pipe( 

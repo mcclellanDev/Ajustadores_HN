@@ -2,7 +2,7 @@
 <ion-header>
   <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
   <ion-footer id="spinFooter" *ngIf="isLoading == true"></ion-footer>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <!--ion-back-button defaultHref="/" (click)="Torval()"></!--ion-back-button -->
       <ion-button id="submitClaim" style="position: relative;width: 40px;height: 30px; z-index: 999;--background: transparent;
@@ -17,7 +17,7 @@
       <ion-grid>
         <ion-row>
           <ion-col size="4"></ion-col>
-          <ion-col size="4">Expediente atención # {{idAtencion}}</ion-col>
+          <ion-col size="4">Expediente atención # {{idAtencion}} - {{miMoneda}}</ion-col>
           <ion-col offset="8" size="2" style="text-align: left;">
             <ion-fab *ngIf="true" style="position: fixed;padding-right: 10px;width: 50%;" vertical="top" horizontal="end">
               <!--ion-searchbar animated="true" placeholder="Buscar Fecha, Atención o Asegurado" show-clear-button="focus" show-cancel-button="never" cancel-button-text="Cancelar"
@@ -35,16 +35,7 @@
 </ion-header>
 
 <ion-content id="expedienteContent"  style="--background:transparent" #page>
-  
-  
   <capacitor-google-map id="mapExpediente" #mapExpediente (mapClick)="'addMapMarker($event)'"></capacitor-google-map>
-  <input
-      id="pac-input"
-      class="controls"
-      type="text"
-      placeholder="Search Box"
-    />
-  
 </ion-content>
 <ion-content id="mapaContent" style="--background: transparent;display: none;">
   <ion-grid fixed style="overflow: hidden;">
@@ -93,7 +84,7 @@
     </ion-row>
     <ion-row id="mapInfo" *ngFor="let item of expediente" style="display: none;">
       <ion-col size="6">
-        <ion-card id="introjs-text">
+        <ion-card>
           <ion-card-header>
             <ion-card-title><ion-badge style="font-size: 1.2rem;">Datos del asegurado</ion-badge></ion-card-title>
             <ion-card-subtitle><ion-label class="text-size-sm;">
@@ -362,7 +353,7 @@ class="info-modal" style="overflow-y: scroll;width:100%">
               <div class="ion-padding" slot="content">
                 <strong>Nombre: {{item.Cliente| titlecase}}</strong><br><br>
                 Telefono: {{item.TelefonoOrigen}}<br>
-                Poliza: {{item.PolizaExterna| titlecase}}<br>
+                Poliza: {{item.PolizaExterna.split('-')[1]| titlecase}}<br>
                 Moneda: {{miMoneda}}
               </div>
             </ion-accordion>

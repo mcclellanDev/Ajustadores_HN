@@ -45,7 +45,6 @@ export class SegmentoVehiculoPage implements OnInit {
   constructor(private api: ApiService, public toaster:ToastService) { 
     this.idAtencion = localStorage.getItem('idAtencion');
     let dIdAtencion = parseInt(this.idAtencion);
-    this.miMoneda = localStorage.getItem('miMoneda');
     
     this.segmentoTitulo = localStorage.getItem('segmentoTitulo');
     if (this.segmentoTitulo) {
@@ -133,6 +132,29 @@ export class SegmentoVehiculoPage implements OnInit {
         }
     )
   }
+
+  ionViewDidEnter(){
+    setTimeout(() => {
+      this.api.Expediente(parseInt(this.idAtencion)).pipe( 
+      finalize(async ()=>{
+        console.log('So far so good as you should know my friend what we can do....')
+      })
+    ).subscribe(
+        async (res) => {
+          this.elExpediente = res;
+          localStorage.setItem('disExpediente', JSON.stringify(res));
+
+          this.moneda = this.elExpediente[0].Moneda;
+          if (this.moneda == null) {
+            this.miMoneda = "LEMPIRAS";
+          }else{ 
+            this.miMoneda = this.moneda;
+          }
+        }
+      )
+    }, 1500);
+  }
+
   ngOnInit() {
   }
 

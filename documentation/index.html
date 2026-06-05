@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -60,20 +60,13 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="./" class="navbar-brand">help_ajustadores documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="./" class="navbar-brand">help_ajustadores documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -82,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -91,14 +84,32 @@
 
 <h1>helpAjustadores</h1>
 <p>App de ajustadores help</p>
-<p>Ionic:</p>
+<p>Ionic:   v5.4.16</p>
 <p>   Ionic CLI : 6.20.1</p>
 <p>Utility:</p>
 <p>   cordova-res : not installed globally
    native-run  : not installed globally</p>
 <p>System:</p>
 <p>   NodeJS : v16.17.1
-   npm    : 8.15.0</p>
+   Node   : v22.11.0
+   npm    : 11.0.0</p>
+<p>Java:</p>
+<p>   java 21.0.5 2024-10-15 LTS
+   Java(TM) SE Runtime Environment (build 21.0.5+9-LTS-239)
+   Java HotSpot(TM) 64-Bit Server VM (build 21.0.5+9-LTS-239, mixed mode, sharing)</p>
+<p>Android:</p>
+<p>   Android Studio Jellyfish | 2023.3.1 Patch 2
+   Build #AI-233.14808.21.2331.11926650, built on June 4, 2024</p>
+<p>   Runtime version: 17.0.10+0--11572160 amd64
+   VM: OpenJDK 64-Bit Server VM by JetBrains s.r.o</p>
+<p>Windows:</p>
+<p>   Windows 11 Pro, versión 24H2
+   Versión de sistema operativo 26100.5074</p>
+<p>Mac OS:</p>
+<p>   macOS Sequoia Versión 15.6.1
+   Xcode 16.4</p>
+<p>Visual Studio:</p>
+<p>   Visual Studio Code versión 1.103.0</p>
 
 
 
@@ -150,6 +161,19 @@
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
        <script src="./js/libs/custom-elements.min.js"></script>
        <script src="./js/libs/lit-html.js"></script>
 
@@ -161,7 +185,6 @@
        <script src="./js/libs/es6-shim.min.js"></script>
        <script src="./js/libs/EventDispatcher.js"></script>
        <script src="./js/libs/promise.min.js"></script>
-       <script src="./js/libs/zepto.min.js"></script>
 
        <script src="./js/compodoc.js"></script>
 

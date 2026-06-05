@@ -1,4 +1,5 @@
 import { imagePrefix, fondos } from '../environments/default-images';
+import { Keyboard } from '@capacitor/keyboard';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, Platform } from '@ionic/angular';
@@ -16,12 +17,14 @@ import * as $ from 'jquery';
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss']
 })
+
 export class Tab2Page implements OnInit{
-  atenciones:Atenciones[];  imagenes:any=[];  public results = [];  public iconos = printerIcons;  dateAt:number= Date.now();
-  idAtencion:any;  elColorEstado:any;  isKeyboard: boolean;  esClienteCompleto:boolean;  isLoading: boolean;  searchInterval:any;
+  atenciones:Atenciones[] | undefined;  imagenes:any=[];  public results = [];  public iconos = printerIcons;  dateAt:number= Date.now();
+  idAtencion:any;  elColorEstado:any;  isKeyboard: boolean | undefined;  esClienteCompleto:boolean | undefined;  isLoading: boolean | undefined;  searchInterval:any;
   timer:number=0;  busca:string="";  laImg: any;  printUrl:any; isPrint:boolean=true;
 
-  @ViewChild("searchCase", { static: true }) inputS;
+  @ViewChild("searchCase", { static: true }) inputS: any;
+  datosDeAtencion: any;
 
   constructor(private router: Router,    private alert: AlertController,    private api: ApiService,    private platform:Platform,
     private so: ScreenOrientation,    private tostador: ToastService, private tabsator:TabsPage) {
@@ -37,10 +40,29 @@ export class Tab2Page implements OnInit{
   ngOnInit() {
     let origin = localStorage.getItem('origin');
     
+    this.platform.ready().then(() => {
+      Keyboard.addListener('keyboardDidShow', info => {
+        console.log('keyboard did show with height:', info.keyboardHeight)
+        this.isKeyboard = true;
+
+        setTimeout(() => {
+          
+        }, 50);
+      });
+
+      Keyboard.addListener('keyboardDidHide', () => {
+        console.log('el teclado se escondio keyboardDidHide');
+        this.isKeyboard = false;
+      });
+
+        
+    });
+
+    this.getAtenciones();
     //alert(window.location.pathname+', '+origin)
     //alert(parseInt(localStorage.getItem('atencionesCount'))+1)
-    this.isLoading  = true;
-    let atencionesCounter = parseInt(localStorage.getItem('atencionesCount'));
+    //this.isLoading  = true;
+    let atencionesCounter:any = parseInt(localStorage.getItem('atencionesCount') || '0');
     //alert(atencionesCounter)
     if (atencionesCounter == 0) {
 //      this.router.navigate(['./tab1']);
@@ -54,8 +76,6 @@ export class Tab2Page implements OnInit{
     }else{
       /*
       this.platform.ready().then(() => {
-        this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
-        
         setTimeout(() => {
           this.isLoading = false;
 
@@ -95,6 +115,22 @@ export class Tab2Page implements OnInit{
         this.results = res;
         this.atenciones= res;
         this.isLoading = false;
+
+        localStorage.setItem('atenciones-ajustador', JSON.stringify(this.atenciones));
+
+        this.atenciones?.sort((a,b)=> b.IdAtencion-a.IdAtencion);
+        
+        setTimeout(() => {
+            const atencionesIds = document.getElementsByClassName('atencion-id');
+            //alert(atencionesIds.length)  
+            if (this.atenciones) {
+              for (let index = 0; index < this.atenciones.length; index++) {
+              const element = this.atenciones[index];
+              atencionesIds[index].setAttribute('style', 'color:'+element.ColorEstado);
+            }
+            }
+            
+          }, 1000);
 /*
         for (let index = 0; index < this.atenciones.length; index++) {
           const element = this.atenciones[index];
@@ -163,7 +199,7 @@ export class Tab2Page implements OnInit{
     )
   }
 
-  abreAtencion(atencionId, atencionEstadoColor){
+  abreAtencion(atencionId:any, atencionEstadoColor:any){
 
     console.log(atencionId+', '+atencionEstadoColor);
     localStorage.setItem('elColorEstado', atencionEstadoColor);
@@ -201,12 +237,94 @@ export class Tab2Page implements OnInit{
   getRandomInt(max) {
     return Math.floor(Math.random() * max);
   }
-  handleInput(event){
-    const query = event.target.value.toLowerCase();
-    this.results = this.atenciones.filter((d) => d.Cliente.toLowerCase().indexOf(query) > -1);
+
+  verExpedienteBusqueda(idAtencion: number, indexInput:any) {
+    setTimeout(() => {
+      console.log('idAtencion: '+idAtencion+', indexInput: '+indexInput);
+      console.dir(this.results);
+      this.elColorEstado = this.results[indexInput].ColorEstado;
+      
+      localStorage.setItem('elColorEstado', this.elColorEstado);
+      localStorage.setItem('idAtencion', idAtencion.toString());
+      localStorage.setItem('indexAtencion-2', indexInput.toString());
+      this.obtenerCacheCliente(idAtencion);
+
+      this.api.DatosDeAtencion(idAtencion).pipe(
+        finalize(async () => {
+        })
+      ).subscribe(
+        async (res) => {
+          this.datosDeAtencion  = res;
+          let identidadAsegurado = res[0].IdentidadCliente;
+          localStorage.setItem('datosDeAtencion', this.datosDeAtencion);
+          localStorage.setItem('identidadAsegurado', identidadAsegurado);
+        },
+        async (res) => {}
+      )
+      this.router.navigate(['./expediente'], { queryParams: { Id: idAtencion, Source:2 } });
+    }, 300);
+    
   }
 
-  imprimirPDF(tipo, indexPrinter){
+  obtenerCacheCliente(AtencionId:any){
+    this.api.ObtenercacheCliente(this.idAtencion).pipe(
+      finalize(async () => {
+        this.isLoading = false;
+      })
+    ).subscribe(
+      async (res) => {
+        
+
+        console.log("Detalles de cache en ver expediente: " + res.length);
+        console.dir(res);
+        if (res) {
+          let indexFlag = 'no tiene';
+        let respuesta = '';
+        let verificacion:any;
+        for (let index = 0; index < res.length; index++) {
+          const element = res[index];
+          respuesta = respuesta+element;
+          
+          if (index== (res.length-1)) {
+            verificacion = respuesta.indexOf(indexFlag);
+            if (verificacion != -1) {
+              this.esClienteCompleto = false;
+            }else{
+              this.esClienteCompleto == true;
+            }
+          }
+        }
+        }else{
+         this.esClienteCompleto = false;
+        }
+        
+      },
+      async (error) => {
+        this.esClienteCompleto = false;
+      }
+    )
+  }
+
+  handleInput(event:any){
+    const query = event.target.value.toLowerCase();
+    this.results = this.atenciones?.filter((d) => 
+      d.Cliente.toLowerCase().indexOf(query) > -1 ||
+      d.Fecha.toString().toLowerCase().indexOf(query) > -1 ||
+      d.IdAtencion.toString().toLowerCase().indexOf(query) > -1
+    );
+
+    setTimeout(() => {
+      const atencionesIds = document.getElementsByClassName('atencion-id');
+      if (this.results.length == this.atenciones?.length) {
+        for (let index = 0; index < this.atenciones?.length; index++) {
+          const element = this.atenciones[index];
+          atencionesIds[index].setAttribute('style', 'color:'+element.ColorEstado);
+        }  
+      }
+    }, 400);
+  }
+
+  imprimirPDF(tipo:any, indexPrinter:any){
     if (tipo == 1) {
       this.printUrl = printerIcons[indexPrinter].urlPreview+this.idAtencion;
     }else{
@@ -219,6 +337,8 @@ export class Tab2Page implements OnInit{
   goPrinters(){
     this.router.navigate(['./printer'])
   }
+
+  
 
   /*
   getfondo(atencionId) {

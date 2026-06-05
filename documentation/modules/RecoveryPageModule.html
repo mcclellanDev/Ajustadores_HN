@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -60,20 +60,13 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -82,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -124,43 +117,43 @@
 <title>cluster_RecoveryPageModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="79,-70 79,-195 417,-195 417,-70 79,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_RecoveryPageModule_imports</title>
-<polygon fill="none" stroke="black" points="207,-78 207,-130 409,-130 409,-78 207,-78"/>
-</g>
 <g id="clust2" class="cluster">
 <title>cluster_RecoveryPageModule_declarations</title>
-<polygon fill="none" stroke="black" points="87,-78 87,-130 199,-130 199,-78 87,-78"/>
+<polygon fill="none" stroke="black" points="297,-78 297,-130 409,-130 409,-78 297,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_RecoveryPageModule_imports</title>
+<polygon fill="none" stroke="black" points="87,-78 87,-130 289,-130 289,-78 87,-78"/>
 </g>
 <!-- RecoveryPage -->
 <g id="node1" class="node">
 <title>RecoveryPage</title>
-<polygon fill="#ffffb3" stroke="black" points="191.35,-122 94.65,-122 94.65,-86 191.35,-86 191.35,-122"/>
-<text text-anchor="middle" x="143" y="-99.8" font-family="Times,serif" font-size="14.00">RecoveryPage</text>
+<polygon fill="#ffffb3" stroke="black" points="401.35,-122 304.65,-122 304.65,-86 401.35,-86 401.35,-122"/>
+<text text-anchor="middle" x="353" y="-99.8" font-family="Times,serif" font-size="14.00">RecoveryPage</text>
 </g>
 <!-- RecoveryPageModule -->
 <g id="node2" class="node">
 <title>RecoveryPageModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="302.4,-187 299.4,-191 278.4,-191 275.4,-187 161.6,-187 161.6,-151 302.4,-151 302.4,-187"/>
-<text text-anchor="middle" x="232" y="-164.8" font-family="Times,serif" font-size="14.00">RecoveryPageModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="333.4,-187 330.4,-191 309.4,-191 306.4,-187 192.6,-187 192.6,-151 333.4,-151 333.4,-187"/>
+<text text-anchor="middle" x="263" y="-164.8" font-family="Times,serif" font-size="14.00">RecoveryPageModule</text>
 </g>
 <!-- RecoveryPage&#45;&gt;RecoveryPageModule -->
 <g id="edge1" class="edge">
 <title>RecoveryPage&#45;&gt;RecoveryPageModule</title>
-<path fill="none" stroke="black" d="M176.61,-122.11C176.61,-122.11 176.61,-140.99 176.61,-140.99"/>
-<polygon fill="black" stroke="black" points="173.11,-140.99 176.61,-150.99 180.11,-140.99 173.11,-140.99"/>
+<path fill="none" stroke="black" d="M318.89,-122.11C318.89,-122.11 318.89,-140.99 318.89,-140.99"/>
+<polygon fill="black" stroke="black" points="315.39,-140.99 318.89,-150.99 322.39,-140.99 315.39,-140.99"/>
 </g>
 <!-- RecoveryPageRoutingModule -->
 <g id="node3" class="node">
 <title>RecoveryPageRoutingModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="400.52,-122 397.52,-126 376.52,-126 373.52,-122 215.48,-122 215.48,-86 400.52,-86 400.52,-122"/>
-<text text-anchor="middle" x="308" y="-99.8" font-family="Times,serif" font-size="14.00">RecoveryPageRoutingModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="280.52,-122 277.52,-126 256.52,-126 253.52,-122 95.48,-122 95.48,-86 280.52,-86 280.52,-122"/>
+<text text-anchor="middle" x="188" y="-99.8" font-family="Times,serif" font-size="14.00">RecoveryPageRoutingModule</text>
 </g>
 <!-- RecoveryPageRoutingModule&#45;&gt;RecoveryPageModule -->
 <g id="edge2" class="edge">
 <title>RecoveryPageRoutingModule&#45;&gt;RecoveryPageModule</title>
-<path fill="none" stroke="black" d="M258.72,-122.11C258.72,-122.11 258.72,-140.99 258.72,-140.99"/>
-<polygon fill="black" stroke="black" points="255.22,-140.99 258.72,-150.99 262.22,-140.99 255.22,-140.99"/>
+<path fill="none" stroke="black" d="M236.78,-122.11C236.78,-122.11 236.78,-140.99 236.78,-140.99"/>
+<polygon fill="black" stroke="black" points="233.28,-140.99 236.78,-150.99 240.28,-140.99 233.28,-140.99"/>
 </g>
 </g>
 </svg>
@@ -304,6 +297,19 @@ export class RecoveryPageModule {}
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
 
@@ -315,7 +321,6 @@ export class RecoveryPageModule {}
        <script src="../js/libs/es6-shim.min.js"></script>
        <script src="../js/libs/EventDispatcher.js"></script>
        <script src="../js/libs/promise.min.js"></script>
-       <script src="../js/libs/zepto.min.js"></script>
 
        <script src="../js/compodoc.js"></script>
 

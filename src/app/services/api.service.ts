@@ -5,7 +5,7 @@ import { helpFilesUrl } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { tap, switchMap } from 'rxjs/operators';
+import { tap, switchMap, finalize } from 'rxjs/operators';
 import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { CapacitorHttp, HttpResponse } from '@capacitor/core';
@@ -14,6 +14,8 @@ import { RequestOptions } from 'https';
 import { promise } from 'protractor';
 import * as xml2js from 'xml2js';
 import * as $ from 'jquery';
+import { ToastService } from './toast.service';
+import { error } from 'console';
 //Constantes
 const ACCESS_TOKEN_KEY = 'MY_ACCESS_CODE' //this change maybe later
 const USER_DATA = 'MY_USER_DATA' // CHANGE LATER TOO
@@ -44,7 +46,9 @@ export class ApiService {
 
   filesUrl = helpFilesUrl.api_url;
   idAtencion: string;
-  constructor(private http: HttpClient, private router: Router){ 
+  siniestroData: any = [];
+  coberturas: any = [];
+  constructor(private http: HttpClient, private router: Router, private toaster:ToastService){ 
     localStorage.setItem('apiUrl', this.apiUrl);
     this.loadToken();
   }
@@ -262,6 +266,33 @@ export class ApiService {
    )
    }
 
+   // POST /api/FicohsaHN/Valida_Lista_Coberturas
+   Valida_Lista_Coberturas(cobertura:any): Observable<any> {
+    console.log('cobertura'); console.dir(cobertura)
+
+    let body = {
+      pNumPoliza: cobertura.pNumPoliza,
+      pNumSiniestro: cobertura.pNumSiniestro,
+      pNumCertificado: cobertura.pNumCertificado,
+      pNumEndoso: cobertura.pNumEndoso,
+      pNumAsegurado: cobertura.pNumAsegurado
+    }
+    return this.http.post(`${this.apiUrl}/FicohsaHN/Valida_Lista_Coberturas`,body).pipe(
+     //switchMap((tokens: {accessToken, refreshToken }) => {
+       switchMap(( res: any  ) => {
+        if (res.length == 0) {
+          this.toaster.presentToastAlert('Esta póliza no cuenta con cobertura para servicios legales. Consulte con su proveedor de servicios. ', 'top', 'danger', 10000);
+        }else{
+          localStorage.setItem('coberturas', JSON.stringify(res));
+        }
+       return from(Promise.all(res));
+     }),
+     tap(_ => {
+       this.isAuthenticated.next(true);
+     })
+   )
+   }
+
   //Guardar fotos
   GuardarFotos(credentials:any): Observable<any> {
     return this.http.post(`${this.apiUrl}/Proveedor/SubirFotosSiniestro`,credentials).pipe(
@@ -326,17 +357,16 @@ export class ApiService {
     console.dir(credentials)
     let cacheData = {};
 
-    
     for (let index = 0; index < cacheIndexArray.length; index++) {
       const element = cacheIndexArray[index];
-      //alert(element.title)
       let key = element.title;
       let valor = credentials[key];
-      //alert(key+' : '+valor)
       cacheData[key] = valor;
 
       if (index == (cacheIndexArray.length-1)) {
         cacheData['IdAtencion'] = parseInt(this.idAtencion); 
+
+        console.log('Esta data voy a enviar'); console.dir(cacheData);
       }
     }
 
@@ -350,135 +380,58 @@ export class ApiService {
     )
    }
 
-   GuardarSiniestroHN(credentials:any): Observable<any> {
-    //console.log('Siniestro en api');
-    //console.dir(credentials)
-    let siniestroData = {}
-    for (let index = 0; index < ItemsData.length; index++) {
-      const element = ItemsData[index];
-      console.log(element.nombre)
-      for (let indexc = 0; indexc < credentials.length; indexc++) {
-        const elementc = credentials[indexc];
+   handleSiniestroData(siniestroData:any) {
+    let nombre:any; let valor:any;
+    console.log('Siniestro en api');
+    console.dir(siniestroData);
 
-        if (element.nombre==elementc.nombre) {
-          console.log(elementc.valor)
-          let valor = elementc.valor;
-          
-          if (valor != null && valor != undefined) {
-            siniestroData[element.nombre] =valor;
-          }else{
-            siniestroData[element.nombre] =null;
-          }
-        }
-        
+
+    for (let index = 0; index < siniestroData.length; index++) {
+      const elementE = siniestroData[index];
+      const duplicados = this.siniestroData.filter(item => item.nombre === elementE.nombre);
+      console.log('Duplicados de '+elementE.nombre+' son: '+duplicados.length);
+
+      if (duplicados.length === 0) {
+        nombre = elementE.nombre; valor = elementE.valor;
+        this.siniestroData[nombre] = valor;
+        //this.siniestroData.push({nombre: valor});
       }
 
-      if (index == (ItemsData.length-1)) {
-        console.log('Siniestro en api');
-        console.dir(siniestroData)
-        siniestroData['FechaHora'] = localStorage.getItem('FechaHora');
+      if (index == (siniestroData.length-1)) {
+        console.log('Siniestro corregido en api');
+        console.dir(this.siniestroData)
+        setTimeout(() => {
+          this.GuardarSiniestroHN(this.siniestroData).pipe( 
+                finalize(async ()=>{
+                  })
+                ).subscribe(
+                  async (res) =>{
+                    console.log('Siniestro guardado');
+                    console.dir(res);
+                  }
+                )
+        }, 600);
       }
     }
-    return this.http.post(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`,siniestroData).pipe(
+   }
+
+   GuardarSiniestroHN(envioData:any): Observable<any> {
+  console.log('Siniestro en api');
+  console.dir(envioData)
+    return this.http.post(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`,envioData).pipe(
       switchMap(( res: any  ) => {
         return of(res);
-      }),
+      }
+    ),
       tap(_ => {
         this.isAuthenticated.next(true);
       })
     )
    }
 
-   GuardarSiniestroHN_Sin_Poliza(credentials:any): Observable<any> {
-    let siniestroData = {
-      RefAtencionId:  credentials.RefAtencionId,
-      RefProveedorAgenteId:  credentials.RefProveedorAgenteId,
-      RefProveedorAgenteAbogadoId:  credentials.RefProveedorAgenteAbogadoId,
-      AgendarAudiencia:  credentials.AgendarAudiencia,
-      AseguradoUsoPoliza:  credentials.AseguradoUsoPoliza,
-      TerceroResponsable:  credentials.TerceroResponsable,
-      LesionadosSinAudiencia:  credentials.LesionadosSinAudiencia,
-      DescripcionAudiencia:  credentials.DescripcionAudiencia,
-      Poliza:  credentials.Poliza,
-      Identificacion:  credentials.Identificacion,
-      Nombre:  credentials.Nombre,
-      ConductorAfiliado:  credentials.ConductorAfiliado,
-      ConductorDetenido:  credentials.ConductorDetenido,
-      Descripcion:  credentials.Descripcion,
-      MarcaVehiculo:  credentials.MarcaVehiculo,
-      ModeloVehiculo:  credentials.ModeloVehiculo,
-      AnioVehiculo:  credentials.AnioVehiculo,
-      PlacaVehiculo:  credentials.PlacaVehiculo,
-      ChasisVehiculo:  credentials.ChasisVehiculo,
-      ColorVehiculo:  credentials.ColorVehiculo,
-      VehiculoDetenido:  credentials.VehiculoDetenido,
-      DescripcionVehiculo:  credentials.DescripcionVehiculo,
-      TercerosHeridos:  credentials.TercerosHeridos,
-      TercerosMuertos:  credentials.TercerosMuertos,
-      DescripcionTercerosHeridos:  credentials.DescripcionTercerosHeridos,
-      DescripcionTercerosMuertos:  credentials.DescripcionTercerosMuertos,
-      DanioFrontal:  credentials.DanioFrontal,
-      DanioTrasero:  credentials.DanioTrasero,
-      DanioLateralDerecho:  credentials.DanioLateralDerecho,
-      DanioLataralIzquierdo:  credentials.DanioLataralIzquierdo,
-      VehiculoVolcado:  credentials.VehiculoVolcado,
-      DescripcionDanio:  credentials.DescripcionDanio,
-      RefPaisId:  credentials.RefPaisId,
-      RefCiudadId:  credentials.RefCiudadId,
-      RefDeptoId:  credentials.RefDeptoId,
-      RefMunicipioId:  credentials.RefMunicipioId,
-      FechaHora:  credentials.FechaHora,
-      Lugar:  credentials.Lugar,
-      RefUsuarioId:  credentials.RefUsuarioId,
-      TallerMecanicoId:  credentials.TallerMecanicoId,
-      Blindado:  credentials.Blindado,
-      ObservacionTaller:  credentials.ObservacionTaller,
-      ReclamoAsegurado:  credentials.ReclamoAsegurado,
-      Observaciones:  credentials.Observaciones,
-      Latitud:  credentials.Latitud,
-      Longitud:  credentials.Longitud,
-      NombreConductor:  credentials.NombreConductor,
-      IdentidaConductor:  credentials.IdentidaConductor,
-      DPI_Pasaporte:credentials.IdentidaConductor,
-      TelefonoConductor:  credentials.TelefonoConductor,
-      CelularConductor:  credentials.CelularConductor,
-      Edad:  credentials.Edad,
-      Licencia:  credentials.Licencia,
-      TipoLicencia:  credentials.TipoLicencia,
-      Vigencia:  credentials.Vigencia,
-      DireccionConductor:  credentials.DireccionConductor,
-      Sexo:  credentials.Sexo,
-      RefTipoConductorId:  credentials.RefTipoConductorId,
-      DireccionEnvioCorrespondencia:  credentials.DireccionEnvioCorrespondencia,
-      CorreoElectronico:  credentials.CorreoElectronico,
-      RefTipoLicenciaId:  credentials.RefTipoLicenciaId,
-      NombreAtribuyeAccidente:  credentials.NombreAtribuyeAccidente,
-      AutoridadInvolucrada:  credentials.AutoridadInvolucrada,
-      UbicacionVehiculoDetenido:  credentials.UbicacionVehiculoDetenido,
-      PruebaAlcoholemia:  credentials.PruebaAlcoholemia,
-      RefTipoCombustibleId:  credentials.RefTipoCombustibleId,
-      AC:  credentials.AC,
-      Rines:  credentials.Rines,
-      BolsaAire:  credentials.BolsaAire,
-      CierreCentralizado:  credentials.CierreCentralizado,
-      Mecanico:  credentials.Mecanico,
-      RetrovisorElectronico:  credentials.RetrovisorElectronico,
-      Overfenders:  credentials.Overfenders,
-      ColaPato:  credentials.ColaPato,
-      CintaDecorativa:  credentials.CintaDecorativa,
-      LicenciaEstado:  credentials.LicenciaEstado,
-      ObservacionesFinales:  credentials.ObservacionesFinales,
-      RefTipoSolicitanteInformeAjusteId:  credentials.RefTipoSolicitanteInformeAjusteId,
-      TipoAcuerdoFicohsa:  credentials.TipoAcuerdoFicohsa,
-      DondeSeEncuentraVehiculo:  credentials.DondeSeEncuentraVehiculo,
-      NumeroUnidad:  credentials.NumeroUnidad,
-      Parentesco:  credentials.Parentesco,
-      FechaNacimientoConductor:  credentials.FechaNacimientoConductor,
-      CulpableCompromisoPago:  credentials.CulpableCompromisoPago,
-      ObservacionCompromisoPago:  credentials.ObservacionCompromisoPago,
-      PorqueNoUsoServicioAsistencia:  credentials.PorqueNoUsoServicioAsistencia,
-      Kilometraje:  credentials.Kilometraje,
-    }
+   GuardarSiniestroHN_Sin_Poliza(siniestroData:any): Observable<any> {
+    //alert('Aqui voy otra vez');
+    console.log('Soy un feliz envío sin póliza =) '); console.dir(siniestroData);
 
     return this.http.post(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`,siniestroData).pipe(
       switchMap(( res: any  ) => {
@@ -498,8 +451,6 @@ export class ApiService {
     for (let index = 0; index < credentials.length; index++) {
       const element = credentials[index];
       console.log(element.nombre+', '+element.valor)
-      //alert(element.nombre+', '+element.valor)
-
       if (element.valor != null || element.valor != undefined) {
         siniestroData[element.nombre] =element.valor
       }
@@ -719,11 +670,11 @@ export class ApiService {
 
   //Datos de expedientes
   Expediente(credentials:any): Observable<any> {
-    //alert('Id atención : '+credentials)
    return this.http.get(`${this.apiUrl}/Proveedor/ObtenerDatosExpedientes?IdAtencion=${credentials}`).pipe(
     //switchMap((tokens: {accessToken, refreshToken }) => {
       switchMap(( res: any  ) => {
-        localStorage.setItem('elExpediente', res);
+        localStorage.setItem('elExpediente', JSON.stringify(res));
+
       return from(Promise.all(res));
     }),
     tap(_ => {
@@ -845,7 +796,7 @@ export class ApiService {
    ActualizarAudicion(audicion): Observable<any> {
 
     return this.http.post(`${this.apiUrl}/Proveedor/ActualizarAudicion?IdAjustadorAudiencia=${audicion.IdAjustadorAudiencia}&RefProveedorAgenteAbogadoId=${audicion.RefProveedorAgenteAbogadoId}
-      &AgendarAudiencia=${audicion.AgendarAudiencia}&FechaHora=${audicion.FechaHora}&Fecha=${audicion.Fecha}&Hora=${audicion.Hora}&Lugar=${audicion.Lugar}`,{audicion}).pipe(
+      &AgendarAudiencia=${audicion.AgendarAudiencia}&FechaHora=${audicion.FechaHora}&Fecha=${audicion.Fecha}&Hora=${audicion.Hora}&Lugar=${audicion.Lugar}&idAgente=${audicion.idAgente}`,{audicion}).pipe(
        switchMap(( res: any  ) => {
        return from(Promise.all(res));
      }),
@@ -871,7 +822,6 @@ export class ApiService {
 
   // POST /api/Proveedor/ObtenerEstadoLog
   ObtenerEstadoLog(IdAtencion:any): Observable<any> {
-    //alert('Id atención : '+IdAtencion)
    return this.http.post(`${this.apiUrl}/Proveedor/ObtenerEstadoLog?IdAtencion=${IdAtencion}`,{}).pipe(
        switchMap(( res: any  ) => {
        return from(Promise.all(res));
@@ -945,6 +895,8 @@ export class ApiService {
 
   
   login(credentials:any): Observable<any> {
+    console.log('Login credentials:', credentials);
+    console.dir(credentials);
     return this.http.post(`${this.apiUrl}/Login/Autenticacion`, credentials).pipe(
       //switchMap((tokens: {accessToken, refreshToken }) => {
         switchMap(( Data:{ ProveedorAgenteId,
@@ -966,6 +918,10 @@ export class ApiService {
         console.log(Data[0], 'los datos');
         this.currentAccessToken = Data[0].Token;
         this.currentUser = Data[0];
+
+        localStorage.setItem('ajustadorActual', JSON.stringify(Data[0]));
+        localStorage.setItem('correoActual', credentials.User);
+        localStorage.setItem('passwordActual', credentials.Password);
        // this.userData.next(Data[0].Data[0]);
         //this.user = Data.Data;
         const storeAccess = Preferences.set({key: ACCESS_TOKEN_KEY, value: Data[0].Token});
@@ -1052,6 +1008,7 @@ export class ApiService {
 //    console.log("Aqui llamo a los tipos de conductor");
     return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeConductor`).pipe(
       switchMap(( res: any  ) => {
+        localStorage.setItem('tiposDeConductor', JSON.stringify(res));
       return from(Promise.all(res));
       }),
       tap(_ => {
@@ -1226,7 +1183,7 @@ export class ApiService {
       RefUsuarioId: credentials.RefUsuarioId,
       Contador: credentials.Contador
     }
-    //alert(credentials.RefUsuarioId+' setAjuPosition ')
+    
     return this.http.post(`${this.apiUrl}/Proveedor/ActualizarCordenadasAjustador?Longitud=${credentials.Longitud}&Latitud=${credentials.Latitud}&IdProveedorAgente=${credentials.RefUsuarioId}`, {}).pipe(
       switchMap(( res: any  ) => {
         console.log('Respuesta de insertar coordenadas del ajustador inicialmente');
@@ -1252,9 +1209,6 @@ export class ApiService {
       FechaRegistro: new Date().toISOString(),
       Contador: credentials.Contador
     }
-
-    //alert(credentials.Contador+1)
-    //alert(credentials.RefUsuarioId+' setPositionNRoute ')
     return this.http.post(`${this.apiUrl}/Proveedor/InsertarCoordenadasAtencionAgenteProveedor`, jsonPosition).pipe(
     switchMap(( res: any  ) => {
       console.log('Respuesta de insertar coordenadas ');
@@ -1277,7 +1231,9 @@ export class ApiService {
         Fotografia: credentials.fotografia,
         IdAtencion: credentials.idAtencion,
         RefTipoFotoId: credentials.refTipofotoId,
-        TipoEntidad: credentials.TipoEntidad
+        TipoEntidad: credentials.TipoEntidad,
+        TipoReparacion: credentials.TipoReparacion,
+        FechaRegistro: new Date().toISOString(),
       }
       
       return this.http.post(`${this.apiUrl}/Proveedor/InsertarConvenioReparacionTaller`, jsonRepara).pipe(

@@ -70,11 +70,14 @@ export class RecoveryPage implements OnChanges {
   async otpController(event,next,prev, index){
 
 
+    
     if(index == 4) {
      
       const otp = this.oTP.first + this.oTP.second +  this.oTP.third + this.oTP.forth;
       console.log(otp);
-      if (otp.length === 4 && this.oTP.forth != (null && '') ){
+      alert(' OTP: '+otp+', tamaño: '+otp.length);
+
+      if (otp.length === 4 && this.oTP.forth != ('') ){
         const loading = await  this.loading.create({
         })
         loading.present();

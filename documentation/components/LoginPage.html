@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -60,20 +60,13 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -82,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -206,6 +199,9 @@
                                 <a href="#currentUrl" >currentUrl</a>
                             </li>
                             <li>
+                                <a href="#dataDeEnvio" >dataDeEnvio</a>
+                            </li>
+                            <li>
                                 <a href="#dominios" >dominios</a>
                             </li>
                             <li>
@@ -230,6 +226,9 @@
                                 <a href="#isUsernameValid" >isUsernameValid</a>
                             </li>
                             <li>
+                                <a href="#isVisible" >isVisible</a>
+                            </li>
+                            <li>
                                 <a href="#item" >item</a>
                             </li>
                             <li>
@@ -242,10 +241,16 @@
                                 <a href="#onLogin" >onLogin</a>
                             </li>
                             <li>
+                                <a href="#passwordCache" >passwordCache</a>
+                            </li>
+                            <li>
                                 <a href="#previousUrl" >previousUrl</a>
                             </li>
                             <li>
                                 <a href="#screenlock" >screenlock</a>
+                            </li>
+                            <li>
+                                <a href="#usuarioCache" >usuarioCache</a>
                             </li>
                             <li>
                                 <a href="#valorMarca" >valorMarca</a>
@@ -263,11 +268,17 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                <a href="#hideRegister" >hideRegister</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#login" >login</a>
                             </li>
                             <li>
                                 <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#obtenerCacheUsuario" >obtenerCacheUsuario</a>
                             </li>
                             <li>
                                 <a href="#onLoginFunc" >onLoginFunc</a>
@@ -283,6 +294,12 @@
                             </li>
                             <li>
                                 <a href="#show" >show</a>
+                            </li>
+                            <li>
+                                <a href="#showRegister" >showRegister</a>
+                            </li>
+                            <li>
+                                <a href="#toggleVisual" >toggleVisual</a>
                             </li>
                             <li>
                                 <a href="#validateEmail" >validateEmail</a>
@@ -316,7 +333,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/app/sesion/login/login.page.ts:42</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/app/sesion/login/login.page.ts:48</a></div>
                             </td>
                         </tr>
 
@@ -463,6 +480,43 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="hideRegister"></a>
+                    <span class="name">
+                        <span ><b>hideRegister</b></span>
+                        <a href="#hideRegister"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>hideRegister()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="209"
+                                    class="link-to-prism">src/app/sesion/login/login.page.ts:209</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="login"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -481,8 +535,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">src/app/sesion/login/login.page.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="118"
+                                    class="link-to-prism">src/app/sesion/login/login.page.ts:118</a></div>
                         </td>
                     </tr>
 
@@ -518,8 +572,45 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">src/app/sesion/login/login.page.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">src/app/sesion/login/login.page.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="obtenerCacheUsuario"></a>
+                    <span class="name">
+                        <span ><b>obtenerCacheUsuario</b></span>
+                        <a href="#obtenerCacheUsuario"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>obtenerCacheUsuario()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">src/app/sesion/login/login.page.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -555,8 +646,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="121"
-                                    class="link-to-prism">src/app/sesion/login/login.page.ts:121</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="160"
+                                    class="link-to-prism">src/app/sesion/login/login.page.ts:160</a></div>
                         </td>
                     </tr>
 
@@ -592,8 +683,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="166"
-                                    class="link-to-prism">src/app/sesion/login/login.page.ts:166</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="205"
+                                    class="link-to-prism">src/app/sesion/login/login.page.ts:205</a></div>
                         </td>
                     </tr>
 
@@ -629,8 +720,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="184"
-                                    class="link-to-prism">src/app/sesion/login/login.page.ts:184</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="237"
+                                    class="link-to-prism">src/app/sesion/login/login.page.ts:237</a></div>
                         </td>
                     </tr>
 
@@ -666,8 +757,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">src/app/sesion/login/login.page.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="104"
+                                    class="link-to-prism">src/app/sesion/login/login.page.ts:104</a></div>
                         </td>
                     </tr>
 
@@ -703,8 +794,82 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="189"
-                                    class="link-to-prism">src/app/sesion/login/login.page.ts:189</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="242"
+                                    class="link-to-prism">src/app/sesion/login/login.page.ts:242</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="showRegister"></a>
+                    <span class="name">
+                        <span ><b>showRegister</b></span>
+                        <a href="#showRegister"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>showRegister()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="214"
+                                    class="link-to-prism">src/app/sesion/login/login.page.ts:214</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="toggleVisual"></a>
+                    <span class="name">
+                        <span ><b>toggleVisual</b></span>
+                        <a href="#toggleVisual"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>toggleVisual()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="233"
+                                    class="link-to-prism">src/app/sesion/login/login.page.ts:233</a></div>
                         </td>
                     </tr>
 
@@ -740,8 +905,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="140"
-                                    class="link-to-prism">src/app/sesion/login/login.page.ts:140</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="179"
+                                    class="link-to-prism">src/app/sesion/login/login.page.ts:179</a></div>
                         </td>
                     </tr>
 
@@ -777,8 +942,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="170"
-                                    class="link-to-prism">src/app/sesion/login/login.page.ts:170</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="219"
+                                    class="link-to-prism">src/app/sesion/login/login.page.ts:219</a></div>
                         </td>
                     </tr>
 
@@ -814,8 +979,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="154"
-                                    class="link-to-prism">src/app/sesion/login/login.page.ts:154</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="193"
+                                    class="link-to-prism">src/app/sesion/login/login.page.ts:193</a></div>
                         </td>
                     </tr>
 
@@ -882,7 +1047,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/app/sesion/login/login.page.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/app/sesion/login/login.page.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -908,7 +1073,38 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app/sesion/login/login.page.ts:40</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/app/sesion/login/login.page.ts:43</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dataDeEnvio"></a>
+                    <span class="name">
+                        <span ><b>dataDeEnvio</b></span>
+                        <a href="#dataDeEnvio"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/app/sesion/login/login.page.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -939,7 +1135,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/app/sesion/login/login.page.ts:28</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/app/sesion/login/login.page.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -965,7 +1161,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/app/sesion/login/login.page.ts:32</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/app/sesion/login/login.page.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -996,7 +1192,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/app/sesion/login/login.page.ts:35</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/app/sesion/login/login.page.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -1027,7 +1223,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/app/sesion/login/login.page.ts:36</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/app/sesion/login/login.page.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -1058,7 +1254,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/app/sesion/login/login.page.ts:37</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app/sesion/login/login.page.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -1083,7 +1279,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="188" class="link-to-prism">src/app/sesion/login/login.page.ts:188</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="241" class="link-to-prism">src/app/sesion/login/login.page.ts:241</a></div>
                         </td>
                     </tr>
 
@@ -1108,7 +1304,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/app/sesion/login/login.page.ts:34</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/app/sesion/login/login.page.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -1133,7 +1329,38 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/app/sesion/login/login.page.ts:33</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/app/sesion/login/login.page.ts:36</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isVisible"></a>
+                    <span class="name">
+                        <span ><b>isVisible</b></span>
+                        <a href="#isVisible"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/app/sesion/login/login.page.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -1167,7 +1394,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/sesion/login/login.page.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/sesion/login/login.page.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -1193,7 +1420,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/app/sesion/login/login.page.ts:38</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/sesion/login/login.page.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -1219,7 +1446,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/app/sesion/login/login.page.ts:31</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/app/sesion/login/login.page.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -1244,7 +1471,33 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/app/sesion/login/login.page.ts:42</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/sesion/login/login.page.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="passwordCache"></a>
+                    <span class="name">
+                        <span ><b>passwordCache</b></span>
+                        <a href="#passwordCache"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/app/sesion/login/login.page.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -1270,7 +1523,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/app/sesion/login/login.page.ts:39</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/app/sesion/login/login.page.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -1296,7 +1549,33 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/app/sesion/login/login.page.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/app/sesion/login/login.page.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="usuarioCache"></a>
+                    <span class="name">
+                        <span ><b>usuarioCache</b></span>
+                        <a href="#usuarioCache"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/app/sesion/login/login.page.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -1327,7 +1606,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/sesion/login/login.page.ts:41</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/sesion/login/login.page.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -1345,6 +1624,7 @@ import { HttpService } from &#x27;./../../services/http.service&#x27;;
 import { ResponseUser, User } from &#x27;./../../interfaces/user&#x27;;
 import { ApiService } from &#x27;./../../services/api.service&#x27;;
 import { Component, OnInit } from &#x27;@angular/core&#x27;;
+import { Keyboard } from &#x27;@capacitor/keyboard&#x27;;
 import { Router } from &#x27;@angular/router&#x27;;
 import { AlertController, LoadingController, Platform } from &#x27;@ionic/angular&#x27;;
 import { FormBuilder, FormControl, FormGroup, Validators } from &#x27;@angular/forms&#x27;;
@@ -1354,6 +1634,8 @@ import { ScreenOrientation } from &#x27;@ionic-native/screen-orientation/ngx&#x2
 import { ToastService } from &#x27;src/app/services/toast.service&#x27;;
 import { environment } from &#x27;src/environments/environment&#x27;;
 import { emailDomains } from &#x27;src/app/environments/domains&#x27;;
+import { SecureStoragePlugin } from &#x27;capacitor-secure-storage-plugin&#x27;;
+import * as $ from &#x27;jquery&#x27;;
 
 @Component({
   selector: &#x27;app-login&#x27;,
@@ -1366,7 +1648,7 @@ export class LoginPage implements OnInit {
     password:&#x27;&#x27;
   }
 
-  dominios:any&#x3D;[];
+  dominios:any&#x3D;[]; isVisible:boolean&#x3D;false;
   screenlock:ScreenlockService;
   credenciales: FormGroup;
   marcasArray:Marca;
@@ -1381,6 +1663,9 @@ export class LoginPage implements OnInit {
   currentUrl:any;
   valorMarca:any&#x3D;[];
   onLogin&#x3D;false;
+  dataDeEnvio: any &#x3D; [];
+  usuarioCache: string;
+  passwordCache: string;
   constructor( 
         private router: Router,
         private alert: AlertController,
@@ -1401,8 +1686,31 @@ export class LoginPage implements OnInit {
 
   }
 
+  obtenerCacheUsuario() {
+    SecureStoragePlugin.get({ key: &#x27;User&#x27; }).then((result) &#x3D;&gt; {
+      this.item.user &#x3D; result.value;
+      this.usuarioCache &#x3D; this.item.user;
+      console.log(&#x27;User retrieved from secure storage:&#x27;, this.item.user);
+    });
+    SecureStoragePlugin.get({ key: &#x27;Password&#x27; }).then((result) &#x3D;&gt; {
+      this.item.password &#x3D; result.value;
+      this.passwordCache &#x3D; this.item.password;
+      console.log(&#x27;Password retrieved from secure storage:&#x27;, this.item.password);
+    });
+  }
+
   ngOnInit() {
     this.platform.ready().then(() &#x3D;&gt; {
+      this.obtenerCacheUsuario();
+
+      setTimeout(() &#x3D;&gt; {
+        //alert(&#x27;Estas credenciales ... usuario&#x27;+this.usuarioCache+&#x27; ... contraseña&#x27;+this.passwordCache)
+        
+      }, 900);
+      Keyboard.addListener(&#x27;keyboardDidHide&#x27;, () &#x3D;&gt; {
+        this.showRegister();
+      });
+
       //this.screenlock.lockToLandscape();
       this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
     });
@@ -1431,11 +1739,21 @@ export class LoginPage implements OnInit {
     this.isLoading &#x3D;true;
     console.log(this.credenciales.value)
     let data &#x3D; this.credenciales.value;
+    this.dataDeEnvio.push({ key: &#x27;User&#x27;, value: data.user });
+    this.dataDeEnvio.push({ key: &#x27;Password&#x27;, value: data.password });
     let sendData &#x3D; {
       User: data.user,
       Password: data.password
     }
     console.log(sendData);
+
+    console.log(&#x27;Success&#x27;);
+    for (let indexD &#x3D; 0; indexD &lt; this.dataDeEnvio.length; indexD++) {
+      const element &#x3D; this.dataDeEnvio[indexD];
+      SecureStoragePlugin.set({ key: element.key, value: element.value }).then((success) &#x3D;&gt; 
+        console.dir(success)
+      );
+    }
   
     this.api.login(sendData).subscribe(
       async (res) &#x3D;&gt;{
@@ -1485,7 +1803,7 @@ export class LoginPage implements OnInit {
     // 
     if (!emailRegex.test(this.item.user)) {
       this.isUsernameValid &#x3D; false;
-      this.toaster.presentToastNoButtonsRed(&#x27;El correo no es válido&#x27;, &#x27;bottom&#x27;, &#x27;login&#x27;);
+      this.toaster.presentToastNoButtonsRed(&#x27;El correo no es válido&#x27;, &#x27;top&#x27;, &#x27;login&#x27;);
     }else{
       this.toaster.dismissToast();
     }
@@ -1508,6 +1826,16 @@ export class LoginPage implements OnInit {
     console.log(&quot;El correo es &quot;+this.item.user)
   }
 
+  hideRegister(){
+    $(&#x27;#logoHelp&#x27;).fadeOut();
+    $(&#x27;#olaAbajo&#x27;).fadeOut();
+  }
+
+  showRegister(){
+    $(&#x27;#logoHelp&#x27;).fadeIn();
+    $(&#x27;#olaAbajo&#x27;).fadeIn();
+  }
+
   validatePassword(): boolean {
     this.isPasswordValid &#x3D; true;
     console.log(this.item.password+&#x27;, &#x27;+this.item.password.length)
@@ -1520,6 +1848,10 @@ export class LoginPage implements OnInit {
 
     console.log(this.item.password)
     return this.isPasswordValid;
+  }
+
+  toggleVisual(){
+    this.isVisible &#x3D; !this.isVisible;
   }
 
   recoveryPassword(){
@@ -1541,167 +1873,131 @@ export class LoginPage implements OnInit {
     </div>
 
     <div class="tab-pane fade " id="templateData">
-        <pre class="line-numbers"><code class="language-html">
-&lt;!-- lOGIN FROMA --COMPONENT 1 --&gt;
+        <pre class="line-numbers"><code class="language-html">&lt;!-- lOGIN FROMA --COMPONENT 1 --&gt;
     &lt;!-- Content --&gt;
-    &lt;ion-content style&#x3D;&quot;position: absolute;bottom:0;left:0&quot;&gt;
+    &lt;ion-content style&#x3D;&quot;position: absolute;bottom:0;left:0; overflow: hidden; overflow-y: hidden;&quot;&gt;
       &lt;ion-spinner color&#x3D;&quot;primary&quot; name&#x3D;&quot;lines&quot; *ngIf&#x3D;&quot;isLoading &#x3D;&#x3D; true&quot;&gt;&lt;/ion-spinner&gt;
       &lt;ion-footer *ngIf&#x3D;&quot;isLoading &#x3D;&#x3D; true&quot;&gt;&lt;/ion-footer&gt;
-      &lt;ion-split-pane when&#x3D;&quot;xs&quot; contentId&#x3D;&quot;main&quot;&gt;
-        &lt;ion-menu contentId&#x3D;&quot;main&quot;&gt;
-          &lt;ion-header&gt;
-            &lt;!--ion-toolbar color&#x3D;&quot;tertiary&quot;&gt;
-              &lt;ion-title&gt;Menu&lt;/ion-title&gt;
-            &lt;/!--ion-toolbar --&gt;
-          &lt;/ion-header&gt;
-          &lt;ion-content class&#x3D;&quot;ion-padding&quot;&gt;
-            &lt;ion-footer style&#x3D;&quot;position:fixed; bottom: 0; left: 0; height: 100%;&quot;&gt;
-              &lt;ion-grid&gt;
-                &lt;ion-row justify-content-center align-items-end &gt;
-                  &lt;ion-col size&#x3D;&quot;12&quot;&gt;
-                    &lt;ion-img src&#x3D;&quot;../../../assets/logos/help.png&quot;&gt;&lt;/ion-img&gt;
-                  &lt;/ion-col&gt;
-                &lt;/ion-row&gt;
-              &lt;/ion-grid&gt;&lt;/ion-footer&gt;
-            
-          &lt;/ion-content&gt;
-        &lt;/ion-menu&gt;
-      
-        &lt;div class&#x3D;&quot;ion-page&quot; id&#x3D;&quot;main&quot;&gt;
-          &lt;ion-header&gt;
-          &lt;/ion-header&gt;
-          &lt;ion-content class&#x3D;&quot;ion-padding&quot;&gt;
-            &lt;ion-grid&gt;
-              &lt;ion-row&gt;
-                &lt;ion-col size&#x3D;&quot;12&quot;&gt;
-                  &lt;form (ngSubmit)&#x3D;&quot;login()&quot; [formGroup]&#x3D;&quot;credenciales&quot; id&#x3D;&quot;loginform&quot;&gt;
-                    &lt;ion-col class&#x3D;&quot;ion-padding&quot; size&#x3D;&quot;12&quot; size-md&#x3D;&quot;10&quot; push-md&#x3D;&quot;1&quot;&gt;
-                        &lt;ion-item class&#x3D;&quot;ion-no-padding input&quot;&gt;
-                          &lt;ion-label  class&#x3D;&quot;text-size-xs&quot; position&#x3D;&quot;floating&quot;&gt;Correo
-                          &lt;/ion-label&gt;
-                          &lt;ion-input required type&#x3D;&quot;email&quot; formControlName&#x3D;&quot;user&quot; (ionChange)&#x3D;&quot;walkEmail($event)&quot; (ionBlur)&#x3D;&quot;validateEmail()&quot; [(ngModel)]&#x3D;&quot;item.user&quot; 
-                          onfocusin&#x3D;&quot;readInput($event)&quot; name&#x3D;&quot;usernamevalue&quot;&gt; 
-                          &lt;/ion-input&gt;
-                          &lt;ion-icon *ngIf&#x3D;&quot;!isUsernameValid&quot; class&#x3D;&quot;icon-small&quot; name&#x3D;&quot;remove-circle&quot;&gt;
-                          &lt;/ion-icon&gt;
-                        &lt;/ion-item&gt;
-                        &lt;ion-item class&#x3D;&quot;ion-no-padding input&quot;&gt;
-                          &lt;ion-label class&#x3D;&quot;text-size-xs&quot; position&#x3D;&quot;floating&quot;&gt;Contraseña
-                          &lt;/ion-label&gt;
-                          &lt;ion-input required type&#x3D;&quot;password&quot; formControlName&#x3D;&quot;password&quot; (ionChange)&#x3D;&quot;validatePassword()&quot; [(ngModel)]&#x3D;&quot;item.password&quot; name&#x3D;&quot;passwordvalue&quot;&gt;
-                          &lt;/ion-input&gt;
-                          &lt;ion-icon *ngIf&#x3D;&quot;!isPasswordValid&quot; class&#x3D;&quot;icon-small&quot; name&#x3D;&quot;remove-circle&quot;&gt;
-                          &lt;/ion-icon&gt;
-                        &lt;/ion-item&gt;
-                    &lt;/ion-col&gt;
-                    &lt;ion-col class&#x3D;&quot;ion-padding&quot; size&#x3D;&quot;12&quot; size-md&#x3D;&quot;10&quot; push-md&#x3D;&quot;1&quot;&gt;
-                      &lt;ion-row class&#x3D;&quot;ion-padding-top ion-margin-top&quot;&gt;
-                        &lt;ion-col size&#x3D;&quot;12&quot; class&#x3D;&quot;ion-no-padding ion-align-self-center&quot;&gt;
-                          &lt;ion-button class&#x3D;&quot;button-round ion-text-capitalize&quot; expand&#x3D;&quot;full&quot; shape&#x3D;&quot;round&quot; type&#x3D;&quot;submit&quot; [disabled]&#x3D;&quot;!credenciales.valid&quot;
-                          fill&#x3D;&quot;outline&quot;&gt;
-                            Iniciar Sesion
-                          &lt;/ion-button&gt;
-                        &lt;/ion-col&gt;
-                      &lt;/ion-row&gt;
-                      &lt;ion-row class&#x3D;&quot;ion-padding-top ion-margin-top&quot;&gt;
-                        &lt;ion-col size&#x3D;&quot;12&quot; class&#x3D;&quot;ion-no-padding ion-align-self-center&quot;&gt;
-                          &lt;ion-button class&#x3D;&quot;button-round ion-text-capitalize warning-button ion-align-self-right&quot; shape&#x3D;&quot;round&quot;
-                          style&#x3D;&quot;color: #F04F23;float: right;&quot;
-                          fill&#x3D;&quot;outline&quot; (click)&#x3D;&quot;recoveryPassword()&quot; &gt;
-                            Recuperar Contraseña
-                          &lt;/ion-button&gt;
-      
-                        &lt;/ion-col&gt;
-                      &lt;/ion-row&gt;
-                    &lt;/ion-col&gt; 
-                &lt;/form&gt;
-                &lt;/ion-col&gt;
-              &lt;/ion-row&gt;
-            &lt;/ion-grid&gt;
-          &lt;/ion-content&gt;
-        &lt;/div&gt;
-      &lt;/ion-split-pane&gt;
 
-      &lt;!--ion-grid&gt;
-        &lt;ion-row class&#x3D;&quot;ion-align-items-center&quot;&gt;
-          &lt;ion-col class&#x3D;&quot;ion-padding&quot; size&#x3D;&quot;12&quot; size-md&#x3D;&quot;10&quot; push-md&#x3D;&quot;1&quot;&gt;
-            
-            
-            &lt;ion-img src&#x3D;&quot;../../../assets/logos/help.png&quot;&gt;&lt;/ion-img&gt;
-          &lt;/ion-col&gt;
-          &lt;form (ngSubmit)&#x3D;&quot;login()&quot; [formGroup]&#x3D;&quot;credenciales&quot;&gt;
-              &lt;ion-col class&#x3D;&quot;ion-padding&quot; size&#x3D;&quot;12&quot; size-md&#x3D;&quot;10&quot; push-md&#x3D;&quot;1&quot;&gt;
-                
-              
-                
-                    &lt;ion-item class&#x3D;&quot;ion-no-padding input&quot;&gt;
-                      &lt;ion-label  class&#x3D;&quot;text-size-xs&quot; position&#x3D;&quot;floating&quot;&gt;Correo
-                      &lt;/ion-label&gt;
-                      &lt;ion-input required type&#x3D;&quot;text&quot; formControlName&#x3D;&quot;user&quot;&gt; 
+      &lt;strong&gt;&lt;/strong&gt;
+      &lt;img id&#x3D;&quot;logoHelp&quot; class&#x3D;&quot;mi-logo&quot; src&#x3D;&quot;../../../assets/logos/help.png&quot; alt&#x3D;&quot;Ficohsa Waves&quot; /&gt;
+
+      &lt;img id&#x3D;&quot;olaAbajo&quot; class&#x3D;&quot;mi-imagen&quot; src&#x3D;&quot;../../../assets/materiales/ola_abajo.svg&quot; alt&#x3D;&quot;Ficohsa Waves&quot; /&gt;
+      &lt;img id&#x3D;&quot;olaArriba&quot; class&#x3D;&quot;mi-imagensita&quot; src&#x3D;&quot;../../../assets/materiales/ola_arriba.svg&quot; alt&#x3D;&quot;Ficohsa Waves&quot;/&gt;
+      &lt;ion-footer style&#x3D;&quot;position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 50%;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      box-shadow: none;
+      border: none;
+      margin-left: 26%;
+      z-index: 1050;&quot;&gt;
+        &lt;ion-grid id&#x3D;&quot;someGrid&quot; style&#x3D;&quot;background: transparent;&quot; class&#x3D;&quot;login-grid&quot;&gt;
+          &lt;ion-row style&#x3D;&quot;margin-left: -5px; margin-right: 2px;&quot; class&#x3D;&quot;login-row&quot;&gt;
+            &lt;ion-col size&#x3D;&quot;12&quot;&gt;
+              &lt;form (ngSubmit)&#x3D;&quot;login()&quot; [formGroup]&#x3D;&quot;credenciales&quot; id&#x3D;&quot;loginform&quot;&gt;
+                &lt;ion-col class&#x3D;&quot;ion-padding&quot; size&#x3D;&quot;12&quot; size-md&#x3D;&quot;10&quot; push-md&#x3D;&quot;1&quot;&gt;
+
+                  &lt;ion-label style&#x3D;&quot;padding-left: 0; margin-left: -15px; color: #0058CB;&quot;&gt;Correo electrónico&lt;/ion-label&gt;
+                  &lt;ion-input class&#x3D;&quot;sesion-dato&quot; required type&#x3D;&quot;email&quot; formControlName&#x3D;&quot;user&quot; (ionChange)&#x3D;&quot;walkEmail($event)&quot; (ionBlur)&#x3D;&quot;validateEmail()&quot; [(ngModel)]&#x3D;&quot;item.user&quot; 
+                      (click)&#x3D;&quot;hideRegister()&quot; onfocusin&#x3D;&quot;readInput($event)&quot; name&#x3D;&quot;usernamevalue&quot; placeholder&#x3D;&quot;Introduzca su dirección email&quot; label&#x3D;&quot;Correo electrónico&quot;&gt; 
                       &lt;/ion-input&gt;
-                      &lt;ion-icon *ngIf&#x3D;&quot;!isUsernameValid&quot; class&#x3D;&quot;icon-small&quot; name&#x3D;&quot;remove-circle&quot;&gt;
+
+                      &lt;br&gt;
+                      &lt;ion-label style&#x3D;&quot;padding-left: 0; margin-left: 0px; color: #0058CB;&quot;&gt;Contraseña&lt;/ion-label&gt;
+                      &lt;ion-input class&#x3D;&quot;sesion-dato&quot; required [type]&#x3D;&quot;isVisible ? &#x27;text&#x27; : &#x27;password&#x27;&quot; formControlName&#x3D;&quot;password&quot; (ionChange)&#x3D;&quot;validatePassword()&quot; [(ngModel)]&#x3D;&quot;item.password&quot;
+                      (click)&#x3D;&quot;hideRegister()&quot; placeholder&#x3D;&quot;Introduzca su clave de acceso&quot;&gt;&lt;/ion-input&gt;
+
+                      &lt;ion-icon id&#x3D;&quot;eyeButton&quot; [name]&#x3D;&quot;isVisible ? &#x27;eye-off&#x27; : &#x27;eye&#x27;&quot; aria-hidden&#x3D;&quot;true&quot; color&#x3D;&quot;primary&quot; style&#x3D;&quot;    float: right;
+                        font-size: 1.5rem;
+                        z-index: 1090;
+                        position: absolute;
+                        right: -500px;
+                        bottom: 23%;&quot;
+                        (click)&#x3D;&quot;toggleVisual()&quot;&gt;
                       &lt;/ion-icon&gt;
-                    &lt;/ion-item&gt;
-                   
-                    &lt;ion-item class&#x3D;&quot;ion-no-padding input&quot;&gt;
-                      &lt;ion-label class&#x3D;&quot;text-size-xs&quot; position&#x3D;&quot;floating&quot;&gt;Contraseña
-                      &lt;/ion-label&gt;
-                      &lt;ion-input required type&#x3D;&quot;password&quot; formControlName&#x3D;&quot;password&quot;&gt;
-                      &lt;/ion-input&gt;
-                      &lt;ion-icon *ngIf&#x3D;&quot;!isPasswordValid&quot; class&#x3D;&quot;icon-small&quot; name&#x3D;&quot;remove-circle&quot;&gt;
-                      &lt;/ion-icon&gt;
-                    &lt;/ion-item&gt;
-                  
-                
-                
-              &lt;/ion-col&gt;
-              &lt;ion-col class&#x3D;&quot;ion-padding&quot; size&#x3D;&quot;12&quot; size-md&#x3D;&quot;10&quot; push-md&#x3D;&quot;1&quot;&gt;
-                &lt;ion-row class&#x3D;&quot;ion-padding-top ion-margin-top&quot;&gt;
-                  &lt;ion-col size&#x3D;&quot;12&quot; class&#x3D;&quot;ion-no-padding ion-align-self-center&quot;&gt;
                     
-                    &lt;ion-button class&#x3D;&quot;button-round ion-text-capitalize&quot; expand&#x3D;&quot;full&quot; shape&#x3D;&quot;round&quot; type&#x3D;&quot;submit&quot; [disabled]&#x3D;&quot;!credenciales.valid&quot;
-                    fill&#x3D;&quot;outline&quot;&gt; 
-                      Iniciar Sesion
-                    &lt;/ion-button&gt;
-                  &lt;/ion-col&gt;
-                &lt;/ion-row&gt;
-                &lt;ion-row class&#x3D;&quot;ion-padding-top ion-margin-top&quot;&gt;
-                  &lt;ion-col size&#x3D;&quot;12&quot; class&#x3D;&quot;ion-no-padding ion-align-self-center&quot;&gt;
-                   
-                    &lt;ion-button class&#x3D;&quot;button-round ion-text-capitalize warning-button ion-align-self-right&quot; shape&#x3D;&quot;round&quot;
-                    style&#x3D;&quot;color: #F04F23;float: right;&quot;
-                    fill&#x3D;&quot;outline&quot; (click)&#x3D;&quot;recoveryPassword()&quot; &gt;
-                      Recuperar Contraseña
-                    &lt;/ion-button&gt;
-
-                  &lt;/ion-col&gt;
-                &lt;/ion-row&gt;
-              &lt;/ion-col&gt;
-              
-          &lt;/form&gt;
-        &lt;/ion-row&gt;
-      &lt;/!--ion-grid --&gt;
-    &lt;/ion-content&gt;
-</code></pre>
+                &lt;/ion-col&gt;
+                &lt;ion-col class&#x3D;&quot;ion-padding&quot; size&#x3D;&quot;12&quot; size-md&#x3D;&quot;10&quot; push-md&#x3D;&quot;1&quot;&gt;
+                  &lt;ion-row class&#x3D;&quot;ion-padding-top ion-margin-top&quot;&gt;
+                    &lt;ion-col size&#x3D;&quot;12&quot; class&#x3D;&quot;ion-no-padding ion-align-self-center&quot;&gt;
+                      &lt;ion-button class&#x3D;&quot;button-round ion-text-capitalize&quot; expand&#x3D;&quot;full&quot; shape&#x3D;&quot;round&quot; type&#x3D;&quot;submit&quot; [disabled]&#x3D;&quot;!credenciales.valid&quot;
+                      color&#x3D;&quot;primary&quot; style&#x3D;&quot;height: 50px;&quot;&gt;
+                        Iniciar Sesion
+                      &lt;/ion-button&gt;
+                    &lt;/ion-col&gt;
+                  &lt;/ion-row&gt;
+                  &lt;ion-row class&#x3D;&quot;ion-padding-top ion-margin-top login-row&quot;&gt;
+                    &lt;ion-col size&#x3D;&quot;12&quot; class&#x3D;&quot;ion-no-padding ion-align-self-center&quot;&gt;
+                      &lt;ion-button class&#x3D;&quot;button-round ion-text-capitalize warning-button ion-align-self-right&quot; shape&#x3D;&quot;round&quot;
+                      style&#x3D;&quot;color: #F04F23;float: right;&quot;
+                      fill&#x3D;&quot;outline&quot; (click)&#x3D;&quot;recoveryPassword()&quot; &gt;
+                        Recuperar Contraseña
+                      &lt;/ion-button&gt;
+  
+                    &lt;/ion-col&gt;
+                  &lt;/ion-row&gt;
+                &lt;/ion-col&gt; 
+              &lt;/form&gt;
+            &lt;/ion-col&gt;
+          &lt;/ion-row&gt;
+        &lt;/ion-grid&gt;
+      &lt;/ion-footer&gt;
+      
+    &lt;/ion-content&gt;</code></pre>
     </div>
 
     <div class="tab-pane fade " id="styleData">
                 <p class="comment">
                     <code>./login.page.scss</code>
                 </p>
-                <pre class="line-numbers"><code class="language-scss">
-:host {
+                <pre class="line-numbers"><code class="language-scss">:host {
     --img-logo: 30vh;
   }
   
   form{
     width: 86%;
   }
-  ion-grid,
-  ion-row {
+  ion-grid:not(.login-grid),
+  ion-row:not(.login-row)  {
     height: 100%;
     background: var(--cs-background-primary, #fff);
   }
+
+  ion-input.sesion-dato {
+  --background: transparent;
+  --color: black;
+  --placeholder-color: #7a85c4;
+  --placeholder-opacity: 0.8;
+
+  --padding-bottom: 10px;
+  --padding-end: 10px;
+  --padding-start: 10px;
+  --padding-top: 10px;
+  border: 1px solid lightgray;
+  border-radius: 30px;
+  --highlight-color-focused : white;
+  height: 50px;
+}
+
+ion-input.login-dato{
+  --background: var(--quaterniaryColor);
+  --color: var(--primaryColor);
+  --placeholder-color: #7a85c4;
+  --placeholder-opacity: 0.8;
+
+  --padding-bottom: 10px;
+  --padding-end: 10px;
+  --padding-start: 10px;
+  --padding-top: 10px;
+  border: 1px solid var(--quaterniaryColor);
+  border-radius: 30px;
+  --highlight-color-focused : white;
+  font-weight: bold;
+}
   
   
   ion-img {
@@ -1755,6 +2051,53 @@ export class LoginPage implements OnInit {
     ion-menu{
       border-radius:30%;
     }
+  }
+
+  #formularioInicio{
+    background: transparent;
+    z-index: 1050;
+  }
+
+  #someGrid{
+    background: transparent;
+  }
+
+  .mi-logo{
+        width: 190px;
+    position: fixed;
+    top: 4%;
+    left: 28%;
+  }
+
+  .mi-imagen{
+    border: none;
+    box-shadow: none;
+    position: fixed;
+    bottom: -182px;
+    left: 0;
+    width: 100%;
+    height: 1000px;
+    transform: rotate(0deg);
+    object-fit: contain;   /* Equivalente a background-size: contain */
+    object-position: left; /* Equivalente a background-position: left */
+    z-index: 999;
+  }
+
+  .mi-imagensita{
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    width: auto;
+    height: auto;
+    transform: rotate(0deg);
+    background-size: contain;
+    background-position: left;
+    background-color: transparent;
+    image-rendering: crisp-edges;
+    z-index: 999;
   }
 
   ion-split-pane:before {
@@ -1819,7 +2162,7 @@ ion-spinner{
     --padding-bottom: 10px;
     
   }
-*/  </code></pre>
+*/</code></pre>
     </div>
 
     <div class="tab-pane fade " id="tree">
@@ -1847,8 +2190,8 @@ ion-spinner{
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><!-- lOGIN FROMA --COMPONENT 1 -->    <!-- Content -->    <ion-content style="position: absolute;bottom:0;left:0">      <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>      <ion-footer *ngIf="isLoading == true"></ion-footer>      <ion-split-pane when="xs" contentId="main">        <ion-menu contentId="main">          <ion-header>            <!--ion-toolbar color="tertiary">              <ion-title>Menu</ion-title>            </!--ion-toolbar -->          </ion-header>          <ion-content class="ion-padding">            <ion-footer style="position:fixed; bottom: 0; left: 0; height: 100%;">              <ion-grid>                <ion-row justify-content-center align-items-end >                  <ion-col size="12">                    <ion-img src="../../../assets/logos/help.png"></ion-img>                  </ion-col>                </ion-row>              </ion-grid></ion-footer>                      </ion-content>        </ion-menu>              <div class="ion-page" id="main">          <ion-header>          </ion-header>          <ion-content class="ion-padding">            <ion-grid>              <ion-row>                <ion-col size="12">                  <form (ngSubmit)="login()" [formGroup]="credenciales" id="loginform">                    <ion-col class="ion-padding" size="12" size-md="10" push-md="1">                        <ion-item class="ion-no-padding input">                          <ion-label  class="text-size-xs" position="floating">Correo                          </ion-label>                          <ion-input required type="email" formControlName="user" (ionChange)="walkEmail($event)" (ionBlur)="validateEmail()" [(ngModel)]="item.user"                           onfocusin="readInput($event)" name="usernamevalue">                           </ion-input>                          <ion-icon *ngIf="!isUsernameValid" class="icon-small" name="remove-circle">                          </ion-icon>                        </ion-item>                        <ion-item class="ion-no-padding input">                          <ion-label class="text-size-xs" position="floating">Contraseña                          </ion-label>                          <ion-input required type="password" formControlName="password" (ionChange)="validatePassword()" [(ngModel)]="item.password" name="passwordvalue">                          </ion-input>                          <ion-icon *ngIf="!isPasswordValid" class="icon-small" name="remove-circle">                          </ion-icon>                        </ion-item>                    </ion-col>                    <ion-col class="ion-padding" size="12" size-md="10" push-md="1">                      <ion-row class="ion-padding-top ion-margin-top">                        <ion-col size="12" class="ion-no-padding ion-align-self-center">                          <ion-button class="button-round ion-text-capitalize" expand="full" shape="round" type="submit" [disabled]="!credenciales.valid"                          fill="outline">                            Iniciar Sesion                          </ion-button>                        </ion-col>                      </ion-row>                      <ion-row class="ion-padding-top ion-margin-top">                        <ion-col size="12" class="ion-no-padding ion-align-self-center">                          <ion-button class="button-round ion-text-capitalize warning-button ion-align-self-right" shape="round"                          style="color: #F04F23;float: right;"                          fill="outline" (click)="recoveryPassword()" >                            Recuperar Contraseña                          </ion-button>                              </ion-col>                      </ion-row>                    </ion-col>                 </form>                </ion-col>              </ion-row>            </ion-grid>          </ion-content>        </div>      </ion-split-pane>      <!--ion-grid>        <ion-row class="ion-align-items-center">          <ion-col class="ion-padding" size="12" size-md="10" push-md="1">                                    <ion-img src="../../../assets/logos/help.png"></ion-img>          </ion-col>          <form (ngSubmit)="login()" [formGroup]="credenciales">              <ion-col class="ion-padding" size="12" size-md="10" push-md="1">                                                                  <ion-item class="ion-no-padding input">                      <ion-label  class="text-size-xs" position="floating">Correo                      </ion-label>                      <ion-input required type="text" formControlName="user">                       </ion-input>                      <ion-icon *ngIf="!isUsernameValid" class="icon-small" name="remove-circle">                      </ion-icon>                    </ion-item>                                       <ion-item class="ion-no-padding input">                      <ion-label class="text-size-xs" position="floating">Contraseña                      </ion-label>                      <ion-input required type="password" formControlName="password">                      </ion-input>                      <ion-icon *ngIf="!isPasswordValid" class="icon-small" name="remove-circle">                      </ion-icon>                    </ion-item>                                                                </ion-col>              <ion-col class="ion-padding" size="12" size-md="10" push-md="1">                <ion-row class="ion-padding-top ion-margin-top">                  <ion-col size="12" class="ion-no-padding ion-align-self-center">                                        <ion-button class="button-round ion-text-capitalize" expand="full" shape="round" type="submit" [disabled]="!credenciales.valid"                    fill="outline">                       Iniciar Sesion                    </ion-button>                  </ion-col>                </ion-row>                <ion-row class="ion-padding-top ion-margin-top">                  <ion-col size="12" class="ion-no-padding ion-align-self-center">                                       <ion-button class="button-round ion-text-capitalize warning-button ion-align-self-right" shape="round"                    style="color: #F04F23;float: right;"                    fill="outline" (click)="recoveryPassword()" >                      Recuperar Contraseña                    </ion-button>                  </ion-col>                </ion-row>              </ion-col>                        </form>        </ion-row>      </!--ion-grid -->    </ion-content></div>'
-    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AjustadorPage', 'selector': 'app-ajustador'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'}];
+        var COMPONENT_TEMPLATE = '<div><!-- lOGIN FROMA --COMPONENT 1 -->    <!-- Content -->    <ion-content style="position: absolute;bottom:0;left:0; overflow: hidden; overflow-y: hidden;">      <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>      <ion-footer *ngIf="isLoading == true"></ion-footer>      <strong></strong>      <img id="logoHelp" class="mi-logo" src="../../../assets/logos/help.png" alt="Ficohsa Waves" />      <img id="olaAbajo" class="mi-imagen" src="../../../assets/materiales/ola_abajo.svg" alt="Ficohsa Waves" />      <img id="olaArriba" class="mi-imagensita" src="../../../assets/materiales/ola_arriba.svg" alt="Ficohsa Waves"/>      <ion-footer style="position: fixed;      bottom: 0;      left: 0;      width: 50%;      margin: 0;      padding: 0;      height: 100%;      box-shadow: none;      border: none;      margin-left: 26%;      z-index: 1050;">        <ion-grid id="someGrid" style="background: transparent;" class="login-grid">          <ion-row style="margin-left: -5px; margin-right: 2px;" class="login-row">            <ion-col size="12">              <form (ngSubmit)="login()" [formGroup]="credenciales" id="loginform">                <ion-col class="ion-padding" size="12" size-md="10" push-md="1">                  <ion-label style="padding-left: 0; margin-left: -15px; color: #0058CB;">Correo electrónico</ion-label>                  <ion-input class="sesion-dato" required type="email" formControlName="user" (ionChange)="walkEmail($event)" (ionBlur)="validateEmail()" [(ngModel)]="item.user"                       (click)="hideRegister()" onfocusin="readInput($event)" name="usernamevalue" placeholder="Introduzca su dirección email" label="Correo electrónico">                       </ion-input>                      <br>                      <ion-label style="padding-left: 0; margin-left: 0px; color: #0058CB;">Contraseña</ion-label>                      <ion-input class="sesion-dato" required [type]="isVisible ? \'text\' : \'password\'" formControlName="password" (ionChange)="validatePassword()" [(ngModel)]="item.password"                      (click)="hideRegister()" placeholder="Introduzca su clave de acceso"></ion-input>                      <ion-icon id="eyeButton" [name]="isVisible ? \'eye-off\' : \'eye\'" aria-hidden="true" color="primary" style="    float: right;                        font-size: 1.5rem;                        z-index: 1090;                        position: absolute;                        right: -500px;                        bottom: 23%;"                        (click)="toggleVisual()">                      </ion-icon>                                    </ion-col>                <ion-col class="ion-padding" size="12" size-md="10" push-md="1">                  <ion-row class="ion-padding-top ion-margin-top">                    <ion-col size="12" class="ion-no-padding ion-align-self-center">                      <ion-button class="button-round ion-text-capitalize" expand="full" shape="round" type="submit" [disabled]="!credenciales.valid"                      color="primary" style="height: 50px;">                        Iniciar Sesion                      </ion-button>                    </ion-col>                  </ion-row>                  <ion-row class="ion-padding-top ion-margin-top login-row">                    <ion-col size="12" class="ion-no-padding ion-align-self-center">                      <ion-button class="button-round ion-text-capitalize warning-button ion-align-self-right" shape="round"                      style="color: #F04F23;float: right;"                      fill="outline" (click)="recoveryPassword()" >                        Recuperar Contraseña                      </ion-button>                      </ion-col>                  </ion-row>                </ion-col>               </form>            </ion-col>          </ion-row>        </ion-grid>      </ion-footer>          </ion-content></div>'
+    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'EndProcessPage', 'selector': 'app-end-process'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FormulariosPage', 'selector': 'app-formularios'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'MaterialesPage', 'selector': 'app-materiales'},{'name': 'ModalEmpresaConductorPage', 'selector': 'app-modal-empresa-conductor'},{'name': 'ModalGuardarPage', 'selector': 'app-modal-guardar'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrepareAudiencePage', 'selector': 'app-prepare-audience'},{'name': 'PrepareSendPage', 'selector': 'app-prepare-send'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoCaseguradoPage', 'selector': 'app-segmento-casegurado'},{'name': 'SegmentoCconductorPage', 'selector': 'app-segmento-cconductor'},{'name': 'SegmentoCinformacionPage', 'selector': 'app-segmento-cinformacion'},{'name': 'SegmentoCvehiculoPage', 'selector': 'app-segmento-cvehiculo'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'},{'name': 'VitalCorePage', 'selector': 'app-vital-core'}];
     var DIRECTIVES = [{'name': 'ParallaxHeader', 'selector': '[parallax-header]'},{'name': 'PressDirective', 'selector': '[appPress]'}];
     var ACTUAL_COMPONENT = {'name': 'LoginPage'};
 </script>
@@ -1900,6 +2243,19 @@ ion-spinner{
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
 
@@ -1911,7 +2267,6 @@ ion-spinner{
        <script src="../js/libs/es6-shim.min.js"></script>
        <script src="../js/libs/EventDispatcher.js"></script>
        <script src="../js/libs/promise.min.js"></script>
-       <script src="../js/libs/zepto.min.js"></script>
 
        <script src="../js/compodoc.js"></script>
 

@@ -27,7 +27,7 @@
       <ion-col id="segmentVehicleAju" size="12">
         <ion-item lines="none" class="ion-no-padding  input">
           <ion-label class="text-size-lg" style="padding-left: 5px;">
-            <ion-badge color="tertiary">
+            <ion-badge color="primary">
               {{segmentoTitulo}}
             </ion-badge>
           </ion-label>
@@ -37,6 +37,10 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Marca
+              <ion-chip id="marcaSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+                color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
+                Seleccionar
+              </ion-chip>
             </ion-row>
             <ion-row>
               <ion-col *ngIf="isMarca" id="marcaDisplay" size="12">{{laMarcaAsegurado}}</ion-col>
@@ -57,6 +61,10 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Modelo
+              <ion-chip id="modelSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+                color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
+                Seleccionar
+              </ion-chip>
             </ion-row>
             <ion-row>
               <ion-col *ngIf="isModelo" id="modeloDisplay" size="12">{{elModeloAsegurado}}</ion-col>

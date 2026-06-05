@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -60,20 +60,13 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -82,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -258,6 +251,9 @@
                             </li>
                             <li>
                                 <a href="#isFirstTime" >isFirstTime</a>
+                            </li>
+                            <li>
+                                <a href="#isLoading" >isLoading</a>
                             </li>
                             <li>
                                 <a href="#isMarca" >isMarca</a>
@@ -466,8 +462,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="217"
-                                    class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:217</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="218"
+                                    class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:218</a></div>
                         </td>
                     </tr>
 
@@ -547,8 +543,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="250"
-                                    class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:250</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="251"
+                                    class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:251</a></div>
                         </td>
                     </tr>
 
@@ -584,8 +580,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="246"
-                                    class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:246</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="247"
+                                    class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:247</a></div>
                         </td>
                     </tr>
 
@@ -784,8 +780,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="221"
-                                    class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:221</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="222"
+                                    class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:222</a></div>
                         </td>
                     </tr>
 
@@ -847,8 +843,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="190"
-                                    class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:190</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="191"
+                                    class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:191</a></div>
                         </td>
                     </tr>
 
@@ -1047,8 +1043,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="255"
-                                    class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:255</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="256"
+                                    class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:256</a></div>
                         </td>
                     </tr>
 
@@ -1084,8 +1080,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="238"
-                                    class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:238</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="239"
+                                    class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:239</a></div>
                         </td>
                     </tr>
 
@@ -1685,6 +1681,37 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="isLoading"></a>
+                    <span class="name">
+                        <span ><b>isLoading</b></span>
+                        <a href="#isLoading"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/segmento-vehiculo/segmento-vehiculo.page.ts:44</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="isMarca"></a>
                     <span class="name">
                         <span ><b>isMarca</b></span>
@@ -2210,7 +2237,7 @@ export class SegmentoVehiculoPage implements OnInit {
   elAnioAsegurado:any; elChasisAsegurado:any; elNumeroPlacaAsegurado:any; elMotorAsegurado:any; isFirstTime:boolean&#x3D;true; clickCount:number&#x3D;0;
   laPolizaExternaAsegurado: any;contadorSegmentos:number&#x3D;0; marcasVehiculos:any&#x3D;marcasVehiculos; modelosMarca:any&#x3D;[]; elExpediente:any;
   isMarca:boolean&#x3D;false; isModelo:boolean&#x3D;false; talleresFiltrados:any&#x3D;[];  esPesado: any; elExpedienteKilometraje:any; ajustador: ajustadorHn&#x3D;{};
-  datos:any&#x3D;[]; esKilometraje:boolean&#x3D;false;  elExpedienteSerie: any; segmentoTitulo:any;
+  datos:any&#x3D;[]; esKilometraje:boolean&#x3D;false;  elExpedienteSerie: any; segmentoTitulo:any; isLoading:boolean &#x3D; false;
   constructor(private api: ApiService, public toaster:ToastService) { 
     this.idAtencion &#x3D; localStorage.getItem(&#x27;idAtencion&#x27;);
     let dIdAtencion &#x3D; parseInt(this.idAtencion);
@@ -2352,13 +2379,14 @@ export class SegmentoVehiculoPage implements OnInit {
     console.log(this.esPesado);
     localStorage.setItem(&#x27;elTipoPesado&#x27;, this.idAtencion.toString()+&#x27;-&#x27;+this.esPesado);
 
-    this.filtrarTalleres();
+    //this.talleresFiltrados &#x3D; Talleres;
+    //this.filtrarTalleres();
     this.setAtencionActual();
   }
 
   filtrarTalleres(){
     if (this.esPesado &#x3D;&#x3D; &#x27;2&#x27;) {
-      if (this.between(this.elExpediente[0].Year, rangoAnios[0].min, rangoAnios[0].max) &#x3D;&#x3D; true) {
+      if (this.between(this.elExpediente[0].Year, rangoAnios[0].min10, rangoAnios[0].max) &#x3D;&#x3D; true) {
         console.log(this.between(this.elExpediente[0].Year, 2019, rangoAnios[0].max));
         if(this.between(this.elExpediente[0].Year, 2019, rangoAnios[0].max)&#x3D;&#x3D;true){
           // agregar al filtro talleres categoria A
@@ -2465,7 +2493,7 @@ export class SegmentoVehiculoPage implements OnInit {
       &lt;ion-col id&#x3D;&quot;segmentVehicleAju&quot; size&#x3D;&quot;12&quot;&gt;
         &lt;ion-item lines&#x3D;&quot;none&quot; class&#x3D;&quot;ion-no-padding  input&quot;&gt;
           &lt;ion-label class&#x3D;&quot;text-size-lg&quot; style&#x3D;&quot;padding-left: 5px;&quot;&gt;
-            &lt;ion-badge&gt;
+            &lt;ion-badge color&#x3D;&quot;primary&quot;&gt;
               {{segmentoTitulo}}
             &lt;/ion-badge&gt;
           &lt;/ion-label&gt;
@@ -2473,8 +2501,12 @@ export class SegmentoVehiculoPage implements OnInit {
 
         &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
           &lt;ion-grid&gt;
-            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #7da1c4;font-size:1rem;&quot;&gt;
               Marca
+              &lt;ion-chip id&#x3D;&quot;marcaSelect&quot; [outline]&#x3D;&quot;true&quot; style&#x3D;&quot;position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+                color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;&quot;&gt;
+                Seleccionar
+              &lt;/ion-chip&gt;
             &lt;/ion-row&gt;
             &lt;ion-row&gt;
               &lt;ion-col *ngIf&#x3D;&quot;isMarca&quot; id&#x3D;&quot;marcaDisplay&quot; size&#x3D;&quot;12&quot;&gt;{{laMarcaAsegurado}}&lt;/ion-col&gt;
@@ -2493,8 +2525,12 @@ export class SegmentoVehiculoPage implements OnInit {
 
         &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
           &lt;ion-grid&gt;
-            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #7da1c4;font-size:1rem;&quot;&gt;
               Modelo
+              &lt;ion-chip id&#x3D;&quot;modelSelect&quot; [outline]&#x3D;&quot;true&quot; style&#x3D;&quot;position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+                color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;&quot;&gt;
+                Seleccionar
+              &lt;/ion-chip&gt;
             &lt;/ion-row&gt;
             &lt;ion-row&gt;
               &lt;ion-col *ngIf&#x3D;&quot;isModelo&quot; id&#x3D;&quot;modeloDisplay&quot; size&#x3D;&quot;12&quot;&gt;{{elModeloAsegurado}}&lt;/ion-col&gt;
@@ -2517,7 +2553,7 @@ export class SegmentoVehiculoPage implements OnInit {
 
         &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
           &lt;ion-grid&gt;
-            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #7da1c4;font-size:1rem;&quot;&gt;
               Año
             &lt;/ion-row&gt;
             &lt;ion-row&gt;
@@ -2529,9 +2565,9 @@ export class SegmentoVehiculoPage implements OnInit {
           &lt;/ion-grid&gt;
         &lt;/ion-item&gt;
 
-        &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
+        &lt;!--ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
           &lt;ion-grid&gt;
-            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #7da1c4;font-size:1rem;&quot;&gt;
               Equipo Es Pesado?
                 &lt;/ion-row&gt;
             &lt;ion-row&gt;
@@ -2550,11 +2586,11 @@ export class SegmentoVehiculoPage implements OnInit {
               &lt;/ion-col&gt;
             &lt;/ion-row&gt;
           &lt;/ion-grid&gt;
-        &lt;/ion-item&gt;
+        &lt;/!--ion-item --&gt;
 
         &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
           &lt;ion-grid&gt;
-            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #7da1c4;font-size:1rem;&quot;&gt;
               Kilomentraje
             &lt;/ion-row&gt;
             &lt;ion-row&gt;
@@ -2572,7 +2608,7 @@ export class SegmentoVehiculoPage implements OnInit {
 
         &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
           &lt;ion-grid&gt;
-            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #7da1c4;font-size:1rem;&quot;&gt;
               Serie/Vin
             &lt;/ion-row&gt;
             &lt;ion-row&gt;
@@ -2586,7 +2622,7 @@ export class SegmentoVehiculoPage implements OnInit {
 
         &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
           &lt;ion-grid&gt;
-            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #7da1c4;font-size:1rem;&quot;&gt;
               Placa
             &lt;/ion-row&gt;
             &lt;ion-row&gt;
@@ -2600,7 +2636,7 @@ export class SegmentoVehiculoPage implements OnInit {
 
         &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
           &lt;ion-grid&gt;
-            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #7da1c4;font-size:1rem;&quot;&gt;
               No. del motor
             &lt;/ion-row&gt;
             &lt;ion-row&gt;
@@ -2614,7 +2650,7 @@ export class SegmentoVehiculoPage implements OnInit {
 
         &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
           &lt;ion-grid&gt;
-            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #7da1c4;font-size:1rem;&quot;&gt;
               Chasis
             &lt;/ion-row&gt;
             &lt;ion-row&gt;
@@ -2628,7 +2664,7 @@ export class SegmentoVehiculoPage implements OnInit {
 
         &lt;ion-item class&#x3D;&quot;ion-no-padding  input&quot;&gt;
           &lt;ion-grid&gt;
-            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #00ccff;font-size:1rem;&quot;&gt;
+            &lt;ion-row size&#x3D;&quot;12&quot; style&#x3D;&quot;color: #7da1c4;font-size:1rem;&quot;&gt;
               Póliza
             &lt;/ion-row&gt;
             &lt;ion-row&gt;
@@ -2679,8 +2715,8 @@ export class SegmentoVehiculoPage implements OnInit {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><ion-header>  <ion-header>    <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>    <ion-footer *ngIf="isLoading == true"></ion-footer>        <ion-toolbar>      <ion-buttons slot="start">        <ion-back-button></ion-back-button>              </ion-buttons>      <ion-title>        <ion-grid>          <ion-row>            <ion-col size="3"></ion-col>            <ion-col size="6">{{segmentoTitulo}} - Atención # {{idAtencion}} - {{miMoneda}}</ion-col>            <ion-col size="3" style="float: right;color:blue;"></ion-col>          </ion-row>        </ion-grid>      </ion-title>    </ion-toolbar>  </ion-header></ion-header><ion-content>  <ion-grid>    <ion-row>      <ion-col id="segmentVehicleAju" size="12">        <ion-item lines="none" class="ion-no-padding  input">          <ion-label class="text-size-lg" style="padding-left: 5px;">            <ion-badge>              {{segmentoTitulo}}            </ion-badge>          </ion-label>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #00ccff;font-size:1rem;">              Marca            </ion-row>            <ion-row>              <ion-col *ngIf="isMarca" id="marcaDisplay" size="12">{{laMarcaAsegurado}}</ion-col>              <ion-col *ngIf="!isMarca" id="marcaDisplay" size="9">{{laMarcaAsegurado}}</ion-col>              <ion-col *ngIf="!isMarca" size="3" style="text-align: rigth;">                <ion-select id="marcaId" class="text-size-xs required-data" [(ngModel)]="laMarcaAsegurado" multiple="false" (ionChange)="seleccionarMarca($event)"                style="float: right;">                  <ion-select-option *ngFor="let marca of marcasVehiculos" [value]="marca.Id">                    {{marca.nombre}}                  </ion-select-option>                </ion-select>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #00ccff;font-size:1rem;">              Modelo            </ion-row>            <ion-row>              <ion-col *ngIf="isModelo" id="modeloDisplay" size="12">{{elModeloAsegurado}}</ion-col>              <!--ion-col  *ngIf="isModelo" size="1" style="text-align: rigth;" (click)="editarModelo()">                <ion-img src="../../assets/img/lapiz.svg" style="width: 25px; float: right;"></ion-img>              </!--ion-col -->              <ion-col *ngIf="!isModelo" id="modeloDisplay" size="9">{{elModeloAsegurado}}</ion-col>              <ion-col *ngIf="!isModelo" size="3" style="text-align: rigth;">                <ion-select id="marcaId" class="text-size-xs required-data" [(ngModel)]="elModeloAsegurado" multiple="false" (ionChange)="seleccionarModelo($event)"                style="float: right; color: white;">                  <ion-select-option *ngFor="let modelo of modelosMarca" [value]="modelo">                    {{modelo}}                  </ion-select-option>                </ion-select>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #00ccff;font-size:1rem;">              Año            </ion-row>            <ion-row>              <ion-col size="12">                <ion-input *ngIf="elAnioAsegurado != null" readonly [value]="elAnioAsegurado"></ion-input>            <ion-input *ngIf="elAnioAsegurado == null" maxlength="4" [(ngModel)]="elAnioAsegurado" (ionChange)="entrarAnio($event)"></ion-input>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #00ccff;font-size:1rem;">              Equipo Es Pesado?                </ion-row>            <ion-row>              <ion-col size="9"></ion-col>              <ion-col size="3" style="text-align: right;">                <ion-radio-group [(ngModel)]="esPesado" (ionChange)="entraPesado($event)">                  <ion-item lines="none" style="display: inline-block;">                    <ion-label style="margin-left:5px">No</ion-label>&nbsp;                    <ion-radio [value]="2"></ion-radio>                  </ion-item>                  <ion-item lines="none"  style="display: inline-block;">                    <ion-label style="margin-left:5px">Si</ion-label>&nbsp;                    <ion-radio [value]="1"></ion-radio>                  </ion-item>                </ion-radio-group>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #00ccff;font-size:1rem;">              Kilomentraje            </ion-row>            <ion-row>              <ion-col *ngIf="esKilometraje" size="11">{{ajustador.Kilometraje}}</ion-col>              <ion-col *ngIf="esKilometraje"  size="1" style="text-align: rigth;" (click)="editarKilo()">                <ion-img src="../../assets/img/lapiz.svg" style="width: 25px; float: right;"></ion-img>              </ion-col>              <ion-col *ngIf="!esKilometraje" size="12">                <ion-input type="number" maxlength="7" [(ngModel)]="ajustador.Kilometraje" placeholder="0"            (ionBlur)="evaluateKm($event)" class="required-data"></ion-input>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #00ccff;font-size:1rem;">              Serie/Vin            </ion-row>            <ion-row>              <ion-col size="12">                <ion-input *ngIf="elExpedienteSerie" readonly [value]="elChasisAsegurado"></ion-input>                <ion-input *ngIf="!elExpedienteSerie" type="text" [(ngModel)]="elChasisAsegurado"></ion-input>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #00ccff;font-size:1rem;">              Placa            </ion-row>            <ion-row>              <ion-col size="12">                <ion-input *ngIf="elNumeroPlacaAsegurado != null" readonly [value]="elNumeroPlacaAsegurado"></ion-input>                <ion-input *ngIf="elNumeroPlacaAsegurado == null" type="text" [(ngModel)]="elNumeroPlacaAsegurado"></ion-input>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #00ccff;font-size:1rem;">              No. del motor            </ion-row>            <ion-row>              <ion-col size="12">                <ion-input *ngIf="elMotorAsegurado" readonly [value]="elMotorAsegurado"></ion-input>                <ion-input *ngIf="!elMotorAsegurado" type="text" [(ngModel)]="elMotorAsegurado"></ion-input>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #00ccff;font-size:1rem;">              Chasis            </ion-row>            <ion-row>              <ion-col size="12">                <ion-input *ngIf="elChasisAsegurado != null" readonly [value]="elChasisAsegurado"></ion-input>                <ion-input *ngIf="elChasisAsegurado == null || elChasisAsegurado == \'\' || elChasisAsegurado == \'N/D\'" type="text" [(ngModel)]="elChasisAsegurado"></ion-input>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #00ccff;font-size:1rem;">              Póliza            </ion-row>            <ion-row>              <ion-col size="12">                <ion-input *ngIf="laPolizaExternaAsegurado != null" readonly [value]="laPolizaExternaAsegurado"></ion-input>                <ion-input *ngIf="laPolizaExternaAsegurado == null || laPolizaExternaAsegurado == \'\' || laPolizaExternaAsegurado == \'N/D\'" type="text" [(ngModel)]="laPolizaExternaAsegurado" class="required-data"></ion-input>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>      </ion-col>          </ion-row>  </ion-grid></ion-content></div>'
-    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AjustadorPage', 'selector': 'app-ajustador'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'}];
+        var COMPONENT_TEMPLATE = '<div><ion-header>  <ion-header>    <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>    <ion-footer *ngIf="isLoading == true"></ion-footer>        <ion-toolbar>      <ion-buttons slot="start">        <ion-back-button></ion-back-button>              </ion-buttons>      <ion-title>        <ion-grid>          <ion-row>            <ion-col size="3"></ion-col>            <ion-col size="6">{{segmentoTitulo}} - Atención # {{idAtencion}} - {{miMoneda}}</ion-col>            <ion-col size="3" style="float: right;color:blue;"></ion-col>          </ion-row>        </ion-grid>      </ion-title>    </ion-toolbar>  </ion-header></ion-header><ion-content>  <ion-grid>    <ion-row>      <ion-col id="segmentVehicleAju" size="12">        <ion-item lines="none" class="ion-no-padding  input">          <ion-label class="text-size-lg" style="padding-left: 5px;">            <ion-badge color="primary">              {{segmentoTitulo}}            </ion-badge>          </ion-label>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">              Marca              <ion-chip id="marcaSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;                color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">                Seleccionar              </ion-chip>            </ion-row>            <ion-row>              <ion-col *ngIf="isMarca" id="marcaDisplay" size="12">{{laMarcaAsegurado}}</ion-col>              <ion-col *ngIf="!isMarca" id="marcaDisplay" size="9">{{laMarcaAsegurado}}</ion-col>              <ion-col *ngIf="!isMarca" size="3" style="text-align: rigth;">                <ion-select id="marcaId" class="text-size-xs required-data" [(ngModel)]="laMarcaAsegurado" multiple="false" (ionChange)="seleccionarMarca($event)"                style="float: right;">                  <ion-select-option *ngFor="let marca of marcasVehiculos" [value]="marca.Id">                    {{marca.nombre}}                  </ion-select-option>                </ion-select>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">              Modelo              <ion-chip id="modelSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;                color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">                Seleccionar              </ion-chip>            </ion-row>            <ion-row>              <ion-col *ngIf="isModelo" id="modeloDisplay" size="12">{{elModeloAsegurado}}</ion-col>              <!--ion-col  *ngIf="isModelo" size="1" style="text-align: rigth;" (click)="editarModelo()">                <ion-img src="../../assets/img/lapiz.svg" style="width: 25px; float: right;"></ion-img>              </!--ion-col -->              <ion-col *ngIf="!isModelo" id="modeloDisplay" size="9">{{elModeloAsegurado}}</ion-col>              <ion-col *ngIf="!isModelo" size="3" style="text-align: rigth;">                <ion-select id="marcaId" class="text-size-xs required-data" [(ngModel)]="elModeloAsegurado" multiple="false" (ionChange)="seleccionarModelo($event)"                style="float: right; color: white;">                  <ion-select-option *ngFor="let modelo of modelosMarca" [value]="modelo">                    {{modelo}}                  </ion-select-option>                </ion-select>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">              Año            </ion-row>            <ion-row>              <ion-col size="12">                <ion-input *ngIf="elAnioAsegurado != null" readonly [value]="elAnioAsegurado"></ion-input>            <ion-input *ngIf="elAnioAsegurado == null" maxlength="4" [(ngModel)]="elAnioAsegurado" (ionChange)="entrarAnio($event)"></ion-input>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <!--ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">              Equipo Es Pesado?                </ion-row>            <ion-row>              <ion-col size="9"></ion-col>              <ion-col size="3" style="text-align: right;">                <ion-radio-group [(ngModel)]="esPesado" (ionChange)="entraPesado($event)">                  <ion-item lines="none" style="display: inline-block;">                    <ion-label style="margin-left:5px">No</ion-label>&nbsp;                    <ion-radio [value]="2"></ion-radio>                  </ion-item>                  <ion-item lines="none"  style="display: inline-block;">                    <ion-label style="margin-left:5px">Si</ion-label>&nbsp;                    <ion-radio [value]="1"></ion-radio>                  </ion-item>                </ion-radio-group>              </ion-col>            </ion-row>          </ion-grid>        </!--ion-item -->        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">              Kilomentraje            </ion-row>            <ion-row>              <ion-col *ngIf="esKilometraje" size="11">{{ajustador.Kilometraje}}</ion-col>              <ion-col *ngIf="esKilometraje"  size="1" style="text-align: rigth;" (click)="editarKilo()">                <ion-img src="../../assets/img/lapiz.svg" style="width: 25px; float: right;"></ion-img>              </ion-col>              <ion-col *ngIf="!esKilometraje" size="12">                <ion-input type="number" maxlength="7" [(ngModel)]="ajustador.Kilometraje" placeholder="0"            (ionBlur)="evaluateKm($event)" class="required-data"></ion-input>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">              Serie/Vin            </ion-row>            <ion-row>              <ion-col size="12">                <ion-input *ngIf="elExpedienteSerie" readonly [value]="elChasisAsegurado"></ion-input>                <ion-input *ngIf="!elExpedienteSerie" type="text" [(ngModel)]="elChasisAsegurado"></ion-input>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">              Placa            </ion-row>            <ion-row>              <ion-col size="12">                <ion-input *ngIf="elNumeroPlacaAsegurado != null" readonly [value]="elNumeroPlacaAsegurado"></ion-input>                <ion-input *ngIf="elNumeroPlacaAsegurado == null" type="text" [(ngModel)]="elNumeroPlacaAsegurado"></ion-input>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">              No. del motor            </ion-row>            <ion-row>              <ion-col size="12">                <ion-input *ngIf="elMotorAsegurado" readonly [value]="elMotorAsegurado"></ion-input>                <ion-input *ngIf="!elMotorAsegurado" type="text" [(ngModel)]="elMotorAsegurado"></ion-input>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">              Chasis            </ion-row>            <ion-row>              <ion-col size="12">                <ion-input *ngIf="elChasisAsegurado != null" readonly [value]="elChasisAsegurado"></ion-input>                <ion-input *ngIf="elChasisAsegurado == null || elChasisAsegurado == \'\' || elChasisAsegurado == \'N/D\'" type="text" [(ngModel)]="elChasisAsegurado"></ion-input>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item class="ion-no-padding  input">          <ion-grid>            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">              Póliza            </ion-row>            <ion-row>              <ion-col size="12">                <ion-input *ngIf="laPolizaExternaAsegurado != null" readonly [value]="laPolizaExternaAsegurado"></ion-input>                <ion-input *ngIf="laPolizaExternaAsegurado == null || laPolizaExternaAsegurado == \'\' || laPolizaExternaAsegurado == \'N/D\'" type="text" [(ngModel)]="laPolizaExternaAsegurado" class="required-data"></ion-input>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>      </ion-col>          </ion-row>  </ion-grid></ion-content></div>'
+    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'EndProcessPage', 'selector': 'app-end-process'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FormulariosPage', 'selector': 'app-formularios'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'MaterialesPage', 'selector': 'app-materiales'},{'name': 'ModalEmpresaConductorPage', 'selector': 'app-modal-empresa-conductor'},{'name': 'ModalGuardarPage', 'selector': 'app-modal-guardar'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrepareAudiencePage', 'selector': 'app-prepare-audience'},{'name': 'PrepareSendPage', 'selector': 'app-prepare-send'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoCaseguradoPage', 'selector': 'app-segmento-casegurado'},{'name': 'SegmentoCconductorPage', 'selector': 'app-segmento-cconductor'},{'name': 'SegmentoCinformacionPage', 'selector': 'app-segmento-cinformacion'},{'name': 'SegmentoCvehiculoPage', 'selector': 'app-segmento-cvehiculo'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'},{'name': 'VitalCorePage', 'selector': 'app-vital-core'}];
     var DIRECTIVES = [{'name': 'ParallaxHeader', 'selector': '[parallax-header]'},{'name': 'PressDirective', 'selector': '[appPress]'}];
     var ACTUAL_COMPONENT = {'name': 'SegmentoVehiculoPage'};
 </script>
@@ -2732,6 +2768,19 @@ export class SegmentoVehiculoPage implements OnInit {
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
 
@@ -2743,7 +2792,6 @@ export class SegmentoVehiculoPage implements OnInit {
        <script src="../js/libs/es6-shim.min.js"></script>
        <script src="../js/libs/EventDispatcher.js"></script>
        <script src="../js/libs/promise.min.js"></script>
-       <script src="../js/libs/zepto.min.js"></script>
 
        <script src="../js/compodoc.js"></script>
 

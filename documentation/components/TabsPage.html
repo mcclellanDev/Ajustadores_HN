@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -60,20 +60,13 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -82,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -200,8 +193,16 @@
                                 <a href="#elCliente" >elCliente</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                <a href="#inicio" >inicio</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                 <a href="#navEnd" >navEnd</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#outlet" >outlet</a>
                             </li>
                         </ul>
                     </td>
@@ -216,7 +217,13 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#getCurrentUrl" >getCurrentUrl</a>
+                                <a href="#handleNavigation" >handleNavigation</a>
+                            </li>
+                            <li>
+                                <a href="#navigateTab1" >navigateTab1</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
                             </li>
                         </ul>
                     </td>
@@ -241,7 +248,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/tabs/tabs.page.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/tabs/tabs.page.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -316,24 +323,128 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getCurrentUrl"></a>
+                    <a name="handleNavigation"></a>
                     <span class="name">
-                        <span ><b>getCurrentUrl</b></span>
-                        <a href="#getCurrentUrl"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>handleNavigation</b></span>
+                        <a href="#handleNavigation"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>getCurrentUrl()</code>
+<code>handleNavigation(origin: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">src/app/tabs/tabs.page.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">src/app/tabs/tabs.page.ts:39</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>origin</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="navigateTab1"></a>
+                    <span class="name">
+                        <span ><b>navigateTab1</b></span>
+                        <a href="#navigateTab1"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>navigateTab1()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">src/app/tabs/tabs.page.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">src/app/tabs/tabs.page.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -374,7 +485,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/tabs/tabs.page.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/tabs/tabs.page.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -400,7 +511,43 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/tabs/tabs.page.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/tabs/tabs.page.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="inicio"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>inicio</b></span>
+                        <a href="#inicio"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ElementRef&lt;HTMLElement&gt;</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ViewChild(&#x27;inicio&#x27;)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/tabs/tabs.page.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -434,14 +581,50 @@
 
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="outlet"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>outlet</b></span>
+                        <a href="#outlet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>RouterOutlet</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ViewChild(RouterOutlet)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/tabs/tabs.page.ts:16</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
 </section>
 
 </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component } from &#x27;@angular/core&#x27;;
-import { Router, NavigationEnd } from &#x27;@angular/router&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, ElementRef, ViewChild } from &#x27;@angular/core&#x27;;
+import { Router, NavigationEnd, RouterOutlet, ActivationStart } from &#x27;@angular/router&#x27;;
 import { ToastService } from &#x27;../services/toast.service&#x27;;
 import { CallNumber } from &#x27;@awesome-cordova-plugins/call-number/ngx&#x27;;
 import { Observable } from &#x27;rxjs&#x27;;
@@ -454,31 +637,47 @@ import * as $ from &#x27;jquery&#x27;;
 })
 export class TabsPage {
   private navEnd: Observable&lt;NavigationEnd&gt;;
+  @ViewChild(&#x27;inicio&#x27;) inicio: ElementRef&lt;HTMLElement&gt;;
+  @ViewChild(RouterOutlet) outlet: RouterOutlet;
   currentUrl:any;
   elCliente: any;
-  constructor(private router:Router, private toaster:ToastService, private call: CallNumber) {}
-
-  getCurrentUrl(){
-    let daFirstSegmentsButton &#x3D; document.getElementsByClassName(&#x27;segment-item-atenciones&#x27;);
-    let howManySegments &#x3D; daFirstSegmentsButton.length;
-    //alert(daFirstSegmentsButton.length)
-
-    if (daFirstSegmentsButton.length &gt; 0) {
-      setTimeout(() &#x3D;&gt; {
-        $(&#x27;.segment-item-atenciones&#x27;).eq(0).click();  
-      }, 1000);
-      
-    }
-    this.currentUrl &#x3D; this.router.url;
-    console.log(this.currentUrl);
-    localStorage.setItem(&#x27;thisURL&#x27;, this.currentUrl);
-    if (this.currentUrl &#x3D;&#x3D; &#x27;/tabs/tab2&#x27;) {
-      //this.toaster.presentToastNoButtonsRed(this.currentUrl, &#x27;bottom&#x27;, &#x27;url&#x27;);
-    }
-    
+  constructor(private router:Router, private toaster:ToastService, private call: CallNumber) {
+    //console.log(this.outlet.isActivated.valueOf()) 
+    console.log(&#x27;Este outlet&#x27;);
+    console.dir(this.outlet); 
+    //this.handleNavigation(0);
   }
 
-  
+  ngOnInit(){
+    //alert(window.location.pathname);
+    let previousPage &#x3D; localStorage.getItem(&#x27;previous&#x27;);
+      if (previousPage) {
+        //console.log(&#x27;La pagina anterior ha sido &#x27;+previousPage);
+      }
+
+      this.router.events.subscribe(e &#x3D;&gt; {
+        if (e instanceof ActivationStart &amp;&amp; e.snapshot.outlet &#x3D;&#x3D;&#x3D; &quot;tabs&quot;)
+          this.outlet.deactivate();
+      });
+  }
+
+  handleNavigation(origin:any){
+    //alert(&#x27;handleNavigation: &#x27;+origin);
+    localStorage.setItem(&#x27;origin&#x27;, origin);
+
+    let contenedor &#x3D; document.getElementsByTagName(&#x27;ion-tab-button&#x27;);
+    $(&#x27;ion-tab-button&#x27;).removeAttr(&#x27;style&#x27;);
+    $(&#x27;ion-tab-button&#x27;).eq(origin).attr(&#x27;style&#x27;, &#x27;    color: var(--primaryColor); background: white; border-radius: 30px;&#x27;);
+    //localStorage.setItem(&#x27;atencionIndex&#x27;, origin.toString());
+  }
+
+  navigateTab1(){
+    setTimeout(() &#x3D;&gt; {
+      let contenedor &#x3D; document.getElementsByTagName(&#x27;ion-tab-button&#x27;);
+      $(&#x27;ion-tab-button&#x27;).eq(0).click();
+    }, 2000);
+  }
+
 
 
 }
@@ -486,25 +685,25 @@ export class TabsPage {
     </div>
 
     <div class="tab-pane fade " id="templateData">
-        <pre class="line-numbers"><code class="language-html">&lt;ion-tabs&gt;
+        <pre class="line-numbers"><code class="language-html">&lt;ion-tabs color&#x3D;&quot;tertiary&quot;&gt;
 
-  &lt;ion-tab-bar&gt;
+  &lt;ion-tab-bar color&#x3D;&quot;tertiary&quot;&gt;
 
     
 
-    &lt;ion-tab-button tab&#x3D;&quot;tab1&quot; (click)&#x3D;&quot;getCurrentUrl()&quot;&gt;
+    &lt;ion-tab-button #inicio id&#x3D;&quot;inicio&quot; tab&#x3D;&quot;tab1&quot; (click)&#x3D;&quot;handleNavigation(0)&quot;&gt;
       &lt;ion-icon name&#x3D;&quot;apps-outline&quot;&gt;&lt;/ion-icon&gt;
       &lt;ion-label&gt;Inicio&lt;/ion-label&gt;
     &lt;/ion-tab-button&gt;
 
-    &lt;ion-tab-button tab&#x3D;&quot;tab2&quot; (click)&#x3D;&quot;getCurrentUrl()&quot;&gt;
-      &lt;ion-icon name&#x3D;&quot;print&quot;&gt;&lt;/ion-icon&gt;
-      &lt;ion-label&gt;Impresiones&lt;/ion-label&gt;
+    &lt;ion-tab-button tab&#x3D;&quot;tab2&quot; (click)&#x3D;&quot;handleNavigation(1)&quot;&gt;
+      &lt;ion-icon name&#x3D;&quot;search&quot;&gt;&lt;/ion-icon&gt;
+      &lt;ion-label&gt;Mis Atenciones&lt;/ion-label&gt;
     &lt;/ion-tab-button&gt;
 
-    &lt;ion-tab-button tab&#x3D;&quot;tab3&quot; (click)&#x3D;&quot;getCurrentUrl()&quot;&gt;
-      &lt;ion-icon name&#x3D;&quot;settings-outline&quot;&gt;&lt;/ion-icon&gt;
-      &lt;ion-label&gt;Más&lt;/ion-label&gt;
+    &lt;ion-tab-button tab&#x3D;&quot;tab3&quot; (click)&#x3D;&quot;handleNavigation(2)&quot;&gt;
+      &lt;ion-icon name&#x3D;&quot;person-outline&quot;&gt;&lt;/ion-icon&gt;
+      &lt;ion-label&gt;Perfil&lt;/ion-label&gt;
     &lt;/ion-tab-button&gt;
   &lt;/ion-tab-bar&gt;
 
@@ -517,44 +716,15 @@ export class TabsPage {
                     <code>tabs.page.scss</code>
                 </p>
                 <pre class="line-numbers"><code class="language-scss">
-// ion-tab-bar {
-//     --background: #08749F;
-//     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
-//     bottom: 20px;
-//     position: relative;
-//     border-radius: 16px;
-//     width: 92%;
-//     border-top: none;
-//     margin: 0 auto;
-//     height: 10vh;
-//   }
-  
-//   ion-tab-button {
-//     --color: #ffff;
-//     --color-selected: #ffff;
-//     --padding-bottom: 8px;
-//     --padding-top: 8px;
-//     &amp;::before {
-//       background-color: transparent;
-//       display: block;
-//       content: &quot;&quot;;
-//       margin: 0 auto;
-//       width: 20px;
-//       height: 2px;
-//     }
-  
-//     &amp;.tab-selected::before {
-//       background-color: #ffff;
-//     }
-//     ion-icon{
-//         color:white;
-//         font-size: 30px;
-//     }
-//     ion-label{
-//         font-size: 20px;
-//     }
-//   }
-</code></pre>
+ion-tab-bar {
+    background: var(--secondaryColor);
+    color: white;
+  }
+
+  ion-tab-button {
+    background: var(--secondaryColor);
+    color: white;
+  }</code></pre>
     </div>
 
     <div class="tab-pane fade " id="tree">
@@ -582,8 +752,8 @@ export class TabsPage {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><ion-tabs>  <ion-tab-bar>        <ion-tab-button tab="tab1" (click)="getCurrentUrl()">      <ion-icon name="apps-outline"></ion-icon>      <ion-label>Inicio</ion-label>    </ion-tab-button>    <ion-tab-button tab="tab2" (click)="getCurrentUrl()">      <ion-icon name="print"></ion-icon>      <ion-label>Impresiones</ion-label>    </ion-tab-button>    <ion-tab-button tab="tab3" (click)="getCurrentUrl()">      <ion-icon name="settings-outline"></ion-icon>      <ion-label>Más</ion-label>    </ion-tab-button>  </ion-tab-bar></ion-tabs></div>'
-    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AjustadorPage', 'selector': 'app-ajustador'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'}];
+        var COMPONENT_TEMPLATE = '<div><ion-tabs color="tertiary">  <ion-tab-bar color="tertiary">        <ion-tab-button #inicio id="inicio" tab="tab1" (click)="handleNavigation(0)">      <ion-icon name="apps-outline"></ion-icon>      <ion-label>Inicio</ion-label>    </ion-tab-button>    <ion-tab-button tab="tab2" (click)="handleNavigation(1)">      <ion-icon name="search"></ion-icon>      <ion-label>Mis Atenciones</ion-label>    </ion-tab-button>    <ion-tab-button tab="tab3" (click)="handleNavigation(2)">      <ion-icon name="person-outline"></ion-icon>      <ion-label>Perfil</ion-label>    </ion-tab-button>  </ion-tab-bar></ion-tabs></div>'
+    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'EndProcessPage', 'selector': 'app-end-process'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FormulariosPage', 'selector': 'app-formularios'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'MaterialesPage', 'selector': 'app-materiales'},{'name': 'ModalEmpresaConductorPage', 'selector': 'app-modal-empresa-conductor'},{'name': 'ModalGuardarPage', 'selector': 'app-modal-guardar'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrepareAudiencePage', 'selector': 'app-prepare-audience'},{'name': 'PrepareSendPage', 'selector': 'app-prepare-send'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoCaseguradoPage', 'selector': 'app-segmento-casegurado'},{'name': 'SegmentoCconductorPage', 'selector': 'app-segmento-cconductor'},{'name': 'SegmentoCinformacionPage', 'selector': 'app-segmento-cinformacion'},{'name': 'SegmentoCvehiculoPage', 'selector': 'app-segmento-cvehiculo'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'},{'name': 'VitalCorePage', 'selector': 'app-vital-core'}];
     var DIRECTIVES = [{'name': 'ParallaxHeader', 'selector': '[parallax-header]'},{'name': 'PressDirective', 'selector': '[appPress]'}];
     var ACTUAL_COMPONENT = {'name': 'TabsPage'};
 </script>
@@ -635,6 +805,19 @@ export class TabsPage {
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
 
@@ -646,7 +829,6 @@ export class TabsPage {
        <script src="../js/libs/es6-shim.min.js"></script>
        <script src="../js/libs/EventDispatcher.js"></script>
        <script src="../js/libs/promise.min.js"></script>
-       <script src="../js/libs/zepto.min.js"></script>
 
        <script src="../js/compodoc.js"></script>
 

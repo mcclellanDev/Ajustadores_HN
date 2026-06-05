@@ -11,6 +11,14 @@ import { ViewChild, ElementRef } from '@angular/core';
 import { Geolocation } from '@capacitor/geolocation';
 import { Router, NavigationEnd, RouterOutlet, ActivationStart } from '@angular/router';
 import { Cordova } from '@awesome-cordova-plugins/core';
+import { Network, ConnectionStatus } from '@capacitor/network';
+import { emptySignature } from './environments/default-images';
+import { ConnectionService } from './services/connection.service';
+import { NetworkInfo } from './environments/network';
+import { Observable } from 'rxjs';
+import { AppConnectionStatus } from './services/connection.service';
+import * as $ from 'jquery';
+
 
 
 @Component({
@@ -19,21 +27,103 @@ import { Cordova } from '@awesome-cordova-plugins/core';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  @ViewChild("canvas", { static: true }) canvas: ElementRef;
-  @ViewChild(RouterOutlet) outlet: RouterOutlet;
-  screenlock:ScreenlockService;
-  
+  @ViewChild("canvas", { static: true }) canvas: ElementRef | undefined;
+  @ViewChild(RouterOutlet) outlet: RouterOutlet | undefined;
+  screenlock:ScreenlockService | undefined;
+  conexion: ConnectionStatus | undefined;
+  emptySignature:any = emptySignature;stripeForm: any;
+  connectionStatus$: Observable<AppConnectionStatus>;
+  conectividad?: boolean;  conectividadStat: string | undefined;
 
   constructor(private plt: Platform, 
     private api: ApiService,
     private platform: Platform,
     private so: ScreenOrientation,
     private tostador:ToastService,
-    private router:Router
+    private router:Router,
+    private connectionService: ConnectionService
   ) 
   {
+    this.connectionStatus$ = this.connectionService.status$;
     this.initializeApp();
   }
+
+
+  checkConnection(){
+  //alert('Voy')
+  if(Network){
+    Network.getStatus().then((status)=>{
+    this.conexion=status;
+    console.log('status.connected');
+    console.log(status.connected);
+    this.conectividad = status.connected;
+    console.log('Mi estado de conectividad es '+this.conectividad)
+
+    for (let index = 0; index < NetworkInfo.status.length; index++) {
+      const element = NetworkInfo.status[index];
+      if (element.bool==this.conectividad) {
+        this.conectividadStat = element.stat;
+      }
+    }
+
+    if(this.conectividad == false){
+      //this.toaster.toastMessage = 'No hay conexión a internet';
+      //this.toaster.toastClass = 'conectividad';
+      //this.toaster.presentToastErrorConexion(this.toaster.toastMessage, this.toaster.toastPosition, this.toaster.toastClass);
+    }
+    })
+  }else{
+    this.conectividad = false;
+  }
+
+  Network.addListener("networkStatusChange", status=>{
+    this.conexion=status;
+    this.conectividad = status.connected;
+
+    for (let index = 0; index < NetworkInfo.status.length; index++) {
+      const element = NetworkInfo.status[index];
+      if (element.bool==this.conectividad) {
+        this.conectividadStat = element.stat;
+        localStorage.setItem('conectividad', this.conectividad.toString());
+      }
+    }
+
+    localStorage.setItem('conectividad', this.conectividad.toString());
+    if(this.conectividad == false){
+      $('#connectIndicator').fadeIn();
+      //this.toaster.toastMessage = 'No hay conexión a internet';
+      //this.toaster.toastClass = 'conectividad';
+      //this.toaster.presentToastErrorConexion(this.toaster.toastMessage, this.toaster.toastPosition, this.toaster.toastClass);
+    }else{
+      $('#connectIndicator').fadeOut();
+    }
+  })
+}
+  
+  /*
+  checkConnection() {
+    if (Network) {
+      Network.getStatus().then((status) => {
+        this.conexion = status;
+        this.conectividad = status.connected;
+        if (this.conectividad == false) {
+          //this.presentToastErrorConexion('No hay conexión a internet', 'top', 'conexion');
+        }
+      })
+    } else {
+      this.conectividad = false;
+    }
+
+    Network.addListener("networkStatusChange", status => {
+      this.conexion = status;
+      this.conectividad = status.connected;
+      console.log('Mi estado de conectividad es '+this.conectividad)
+      if (this.conectividad == false) {
+        //this.presentToastErrorConexion('No hay conexión a internet', 'top', 'conexion');
+      }
+    })
+  }
+  */
 
   initializeApp(){
     this.plt.ready().then(async ()=>{
@@ -43,16 +133,12 @@ export class AppComponent {
       this.geolocation();
       this.OneSignalInit();
 
-      // does not work on web, devices only. It's a brake on web
-      let currentOrietation = this.so.type.toString();
-      this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
-
     })
 
   }
   OneSignalInit() {
     //alert('inicialicemos el onesignal')
-    var iosSettings = {};
+    var iosSettings:any = {};
     iosSettings["kOSSettingsKeyAutoPrompt"] = true;
     iosSettings["kOSSettingsKeyInAppLaunchURL"] = true;
     
@@ -72,7 +158,8 @@ export class AppComponent {
         //this.openmodal($data.Direction);
       }else{
         if($data.Type=="InternalView"){
-          if(JSON.parse(window.localStorage.getItem('remenber'))){
+          let localVariable = JSON.parse(localStorage.getItem('remenber') || 'false');
+          if(JSON.parse(localVariable) == true){
             window.localStorage.setItem('InternalView',JSON.stringify($data)); //datos.additionalData.DirectionData));
             //this.openData($data.Direction, $data.DirectionData);
           }
@@ -114,9 +201,14 @@ export class AppComponent {
   }  
 
   ngOnInit(){
+
+    //alert('ngOnInit hay red '+Network.getStatus());
+    
+    this.connectionService.startMonitoring();
+
     this.router.events.subscribe(e => {
       if (e instanceof ActivationStart && e.snapshot.outlet === "root")
-        this.outlet.deactivate();
+        this.outlet?.deactivate();
     });
 
     this.outletDeactivate();
@@ -147,12 +239,13 @@ export class AppComponent {
   outletDeactivate(){
     this.router.events.subscribe(e => {
       if (e instanceof ActivationStart && e.snapshot.outlet === "tab1")
-        this.outlet.deactivate();
+        this.outlet?.deactivate();
     });
   }
 
   ionViewDidEnter(){
     this.platform.ready().then(() => {
+      //this.checkConnection();
       //document.getElementById('avatarPerfil').setAttribute('style', 'filter:none');
      });
   }

@@ -12,7 +12,6 @@ import { ToastService } from '../services/toast.service';
 import { ConnectionStatus } from '@capacitor/network';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { NativeGeocoder} from '@ionic-native/native-geocoder/ngx';
-import * as introJs from 'intro.js/intro.js';
 import { GoogleMap } from '@capacitor/google-maps';
 import { iconColors } from '../environments/mapas';
 //import { GoogleMaps } from '@ionic-native/google-maps';
@@ -70,8 +69,7 @@ export class ExpedientePage implements OnInit {
     FirmaCliente: string;
   };
   now: Date;  diaPie: number;  mesPie: number;  anioPie: number;  daDate: Date;  dia: any;  mes: any;  anio: any;  fechaParrafo: string;  fechaPie: string;
-  formateadaSiniestro: string;
-  identidadAsegurado: any;
+  formateadaSiniestro: string;  identidadAsegurado: any;  laExpediente: any = [];
   
 
   constructor(private router: Router,private loading: LoadingController,private alert: AlertController,private toaster: ToastController,private toastr: ToastService,
@@ -108,9 +106,44 @@ export class ExpedientePage implements OnInit {
   }
 
   ionViewDidEnter(){
+  let polNum:any;
+  let cerNum:any;
    this.getExpediente();
    this.getAtenciones();
    //alert(this.idAtencion);
+
+   
+
+      setTimeout(() => {
+      let exped:any = localStorage.getItem('elExpediente'); let numPol:any;
+      this.laExpediente = JSON.parse(exped);
+      polNum = this.laExpediente[0].PolizaExterna.split('-')[1];
+      cerNum = this.laExpediente[0].Certificado;
+
+      const cobertura = {
+      pNumPoliza: parseInt(polNum),
+      pNumSiniestro: '',
+      pNumCertificado: parseInt(cerNum),
+      pNumEndoso: '',
+      pNumAsegurado: ''
+    }
+    
+        this.api.Valida_Lista_Coberturas(cobertura).pipe( 
+          finalize(async ()=>{
+            this.isLoading = false;
+          })
+        ).subscribe(
+          (res) =>{
+            console.log('Cobertura de póliza ')
+            console.dir(res)
+
+            //localStorage.setItem('coberturas', JSON.stringify(res));
+       
+          }
+        )
+          
+        }, 2000);
+        
    this.api.ObtenerFiniquito(parseInt(this.idAtencion)).pipe(
     finalize(async () => {
       this.isLoading = false;
@@ -143,7 +176,6 @@ export class ExpedientePage implements OnInit {
     this.platform.ready().then(() => {
       this.elColorEstado = localStorage.getItem('elColorEstado');
       //alert(this.elColorEstado)
-      this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
     });
 
     // Maneo de carga de atenciones y características de logística
@@ -228,10 +260,13 @@ export class ExpedientePage implements OnInit {
     this.isLoading = true;
     this.obtenerCacheCliente(this.idAtencion);
 
+    //alert('El cliente completo es '+ this.esClienteCompleto);
     setTimeout(() => {
       if (this.esClienteCompleto==true) {
+        //alert('Voy a ajustar el HN');
         this.ajustadorHn();      
       }else{
+        //alert('Voy a ir al cliente');
         this.goCliente();
       }  
       this.isLoading = false;
@@ -322,9 +357,14 @@ export class ExpedientePage implements OnInit {
   
 
   goBack(){
+    localStorage.setItem('coberturas', JSON.stringify([]));
     this.clearIntervals();
     this.toastr.dismissToast();
     this.Torval();
+    if (this.source == 2) {
+      this.router.navigate(['./tabs/tab2']);
+      return;
+    }
     window.location.reload();
     //this.location.back();
     //this.router.navigate(['./tab1']);
@@ -333,17 +373,6 @@ export class ExpedientePage implements OnInit {
   centroDeImpresion(){
     localStorage.setItem('idAtencion', this.idAtencion);
     this.router.navigate(['./printer']);
-  }
-
-  intro() {
-    introJs(document.querySelector('app-expediente')).setOptions({
-      steps: [{
-        intro: "Hello world!"
-      }, {
-        element: document.querySelector('#introjs-text'),
-        intro: "Click here to login!"
-      }]
-    }).start();
   }
 
   async getExpediente(){
@@ -360,11 +389,17 @@ export class ExpedientePage implements OnInit {
         console.dir(this.expediente);
         console.log('la zona es : '+ this.expediente[0].Zona);
 
+        this.moneda = this.expediente[0].Moneda;
+
+//alert(this.moneda)
+        if (this.moneda == null) {
+            this.miMoneda = "LEMPIRAS";
+          }else{ 
+            this.miMoneda = this.moneda;
+          }
         
         this.latitud = this.expediente[0].LatitudCliente;
         this.longitud = this.expediente[0].LongitudCliente;
-
-        
 
         let direccionCabina = this.expediente[0].Direccion;
         localStorage.setItem('direccionCabina', direccionCabina);
@@ -449,18 +484,11 @@ export class ExpedientePage implements OnInit {
           }
         }
         this.miExpediente = res[0];
-        this.moneda = this.expediente[0].Moneda;
-
-//alert(this.moneda)
-        if (this.moneda == null) {
-          this.miMoneda = "Lempiras";
-        }else{
-          this.miMoneda = "Dolares";
-        }
+        
 
         console.log("Este expediente es ");
         console.dir(this.miExpediente);
-        localStorage.setItem('elExpediente', JSON.stringify(this.miExpediente));
+        //localStorage.setItem('elExpediente', JSON.stringify(this.miExpediente));
       },
       async (res) => {
         
@@ -557,8 +585,7 @@ export class ExpedientePage implements OnInit {
     window.location.reload();
   }
 
-  obtenerCacheCliente(AtencionId){
-    //alert(AtencionId)
+  obtenerCacheCliente(AtencionId:any){
     this.api.ObtenercacheCliente(AtencionId).pipe(
       finalize(async () => {
         this.isLoading = false;
@@ -573,12 +600,23 @@ export class ExpedientePage implements OnInit {
             let indexFlag = 'no tiene';
           let respuesta = '';
           let verificacion:any;
+          let answer:any = '';
+
+          /*
           for (let index = 0; index < res.length; index++) {
             const element = res[index];
+            
+            answer = answer + element;
+            verificacion = answer.indexOf(indexFlag);
+
+            alert('El elemento es '+element+ ' y la palabra es '+answer+ ' y la verificacion es '+verificacion);
+            console.log('El elemento es '+element+ ' y la palabra es '+answer+ ' y la verificacion es '+verificacion);
+            console.dir(element)
+
             respuesta = respuesta+element;
             
             if (index== (res.length-1)) {
-              verificacion = respuesta.indexOf(indexFlag);
+              verificacion = answer.indexOf(indexFlag);
               console.log('verificacion '+ verificacion)
               if (verificacion != -1) {
                 this.esClienteCompleto = false;
@@ -587,11 +625,21 @@ export class ExpedientePage implements OnInit {
               if (verificacion == -1 || verificacion == '-1') {
                 this.esClienteCompleto = true;
               }
+
+              setTimeout(() => {
+                //alert('El cliente completo es '+ this.esClienteCompleto);
+              }, 600);
             }
           }
+          */
 
           this.cacheCount = res.length;
-          //if (this.cacheCount>0) {}else{}
+          //alert('La cache tiene '+ this.cacheCount+ ' elementos, mas '+(this.cacheCount+1)+ ' evaluacion '+(this.cacheCount>0));
+          if (this.cacheCount>1) {
+            this.esClienteCompleto = false;
+          }else{
+            this.esClienteCompleto = true;
+          }
           
         }else{
          //this.esClienteCompleto = false;
@@ -611,9 +659,12 @@ export class ExpedientePage implements OnInit {
   }
 
   handleBack(){
+    localStorage.setItem('coberturas', JSON.stringify([]));
     this.Torval();
-    //this.router.navigate(['./tabs/tab2']);
-    //window.location.reload();
+    if (this.source == 2) {
+      this.router.navigate(['./tabs/tab2']);
+      return;
+    }
     this.router.navigate(['./tabs/tab1'], { queryParams: { Id: this.idAtencion, Source:1 } });
   }
 
@@ -633,7 +684,7 @@ export class ExpedientePage implements OnInit {
           (res) =>{
             console.dir(res.length)
             //alert(res.length)
-            //if (res.length > 0) {
+            if (res.length > 0) {
               //this.Torval();
               this.clearIntervals();
               this.openModal = false;
@@ -651,14 +702,16 @@ export class ExpedientePage implements OnInit {
               }
               //$('#clickButton').fadeOut('slow');
               //$('#trackButton').attr('style', 'border: none');
+
+              //alert(navigateExtras.state.data[0].forma[0].Cliente);
               this.router.navigate(['./clientehn'],navigateExtras);
-            /*
+            
             }else{
               $('#clickButton').fadeIn('slow');
               //$('#trackButton').attr('style', 'border: 1px solid red');
               this.toastr.presentToastNoButtonsRed('Aun no has activado la geolocalización en vivo. Presiona el botón de ruta e intenta nuevamente tomar la atención.', 'top', 'ruta');
             }
-            */
+            /**/
           }
       )
     }else{
@@ -836,7 +889,7 @@ export class ExpedientePage implements OnInit {
       localStorage.setItem('nombrePais', this.miPaisNombre);
       this.miPaisLocalidadSub = this.laLocalidad[0].subLocality;
       localStorage.setItem('latitud', this.laLocalidad[0].latitude);
-      localStorage.setItem('longitud', this.laLocalidad[0].longitud);
+      localStorage.setItem('longitud', this.laLocalidad[0].longitude);
       this.isLoading = false;
       if(this.miPais == "HN"){
         this.miPaisBandera = '../../assets/img/flag-hn.png';
@@ -1099,7 +1152,7 @@ export class ExpedientePage implements OnInit {
                         Longitud: this.proveedorLongitud,
                         RefAtencionId: this.idAtencion,
                         RefUsuarioId: this.api.currentUser.ProveedorAgenteId,
-                        Tipo: 'PRO_INI',
+                        Tipo: 'AJU_INI',
                         Contador: 0
                       }
       
@@ -1503,8 +1556,6 @@ export class ExpedientePage implements OnInit {
 
     this.latitudAju = localStorage.getItem('laLatitud');
     this.longitudAju = localStorage.getItem('laLongitud');
-
-    //alert(this.latitudAju)
 
     const jsonAjuPosition = {
       Latitud: parseFloat(this.latitudAju),

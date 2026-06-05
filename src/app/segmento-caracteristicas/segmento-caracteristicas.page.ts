@@ -19,12 +19,13 @@ export class SegmentoCaracteristicasPage implements OnInit {
   tallerOtro: any;  tallerOtroDireccion: any; esPesado:any; anioAsegurado:any; isLoading:boolean=false; tiposTransmision= tiposTransmision;
   tallerNombreDisplay: any; tipoCombustible:tipoCombustible[]=[]; ajustador: ajustadorHn={};  tipoDeCombustible: string; tipotransmision:any;
   rinesId: number; contadorTallerOtro:number = 0; esTallerOtro:boolean=false; tallerCategoria:any=[]; tallerCategoriaA:any=[];tallerCategoriaB:any=[];
-  tallerCategoriaC:any=[]; talleresCategorias:any=[];
+  tallerCategoriaC:any=[]; talleresCategorias:any=[];  elExpediente: any = [];  ciudad: any;
+  talleresTGU: any = [];  talleresSPS: any = [];
+
   constructor(private api: ApiService, private alert: AlertController, private toaster:ToastService) { 
     this.talleresCategorias = TalleresCategorias
     this.idAtencion = localStorage.getItem('idAtencion');
     let dIdAtencion = parseInt(this.idAtencion);
-    this.miMoneda = localStorage.getItem('miMoneda');
     this.anioAsegurado = parseInt(localStorage.getItem('anioAsegurado'));
     this.esPesado = localStorage.getItem('elTipoPesado');
     let tallerId = localStorage.getItem('elTallerId');
@@ -188,9 +189,53 @@ export class SegmentoCaracteristicasPage implements OnInit {
   ngOnInit() {
     setTimeout(() => {
       this.getTipoCombustible();
-      this.getTalleres();
+      
     }, 2000);
     
+  }
+
+  ionViewDidEnter(){
+    setTimeout(() => {
+      this.api.Expediente(parseInt(this.idAtencion)).pipe( 
+      finalize(async ()=>{
+        console.log('So far so good as you should know my friend what we can do....')
+      })
+    ).subscribe(
+        async (res) => {
+          this.elExpediente = res;
+          localStorage.setItem('disExpediente', JSON.stringify(res));
+
+          this.moneda = this.elExpediente[0].Moneda;
+          this.ciudad = this.elExpediente[0].Ciudad;
+          localStorage.setItem('ciudadAtencion', this.ciudad ? this.ciudad.toString() : '');
+          
+          if (this.moneda == null) {
+            this.miMoneda = "LEMPIRAS";
+          }else{ 
+            this.miMoneda = this.moneda;
+          }
+
+          this.getTalleres();
+        }
+      )
+    }, 1500);
+  }
+
+  normalizarCiudad(ciudad:any){
+    return (ciudad ? ciudad.toString() : '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toUpperCase();
+  }
+
+  esCiudadTegucigalpa(ciudad:any){
+    const ciudadNormalizada = this.normalizarCiudad(ciudad);
+    return ciudadNormalizada.indexOf('TEGUCIGALPA') >= 0 || ciudadNormalizada.indexOf('DISTRITO CENTRAL') >= 0;
+  }
+
+  talleresPorCiudad(){
+    return this.esCiudadTegucigalpa(this.ciudad) ? this.talleresTGU : this.talleresSPS;
   }
 
   entraTraslado(event){
@@ -245,6 +290,9 @@ export class SegmentoCaracteristicasPage implements OnInit {
   }
 
   entraTaller(event){
+    this.talleresFiltrados = this.talleresPorCiudad();
+
+    //alert('Taller seleccionado : '+event.target.value);
     this.datos.TallerMecanicoId = event.target.value;
     this.datos['TallerMecanicoId'] = event.target.value;
     localStorage.setItem('datos-TallerMecanicoId', event.target.value);
@@ -258,8 +306,11 @@ export class SegmentoCaracteristicasPage implements OnInit {
     console.dir(this.talleresFiltrados)
     for (let index = 0; index < this.talleresFiltrados.length; index++) {
       const element = this.talleresFiltrados[index];
+
+
       if (element.Id == event.target.value) {
         this.tallerNombreDisplay = element.NombreTaller;
+        //alert('Taller seleccionado : '+this.tallerNombreDisplay);
         localStorage.setItem('elTallerId', this.idAtencion.toString()+'-'+event.target.value);
         localStorage.setItem('elTallernombre', this.idAtencion.toString()+'-'+this.tallerNombreDisplay);
         
@@ -268,6 +319,8 @@ export class SegmentoCaracteristicasPage implements OnInit {
   }
 
   setTaller(tallerId){
+    this.talleresFiltrados = this.talleresPorCiudad();
+    
     this.datos.TallerMecanicoId = tallerId;
     if (tallerId == 1) {
       this.esTallerOtro = true;
@@ -598,6 +651,9 @@ export class SegmentoCaracteristicasPage implements OnInit {
 
   async getTalleres(){
     //alert('obteniendo los talleres');
+    this.talleresTGU = [];
+    this.talleresSPS = [];
+    this.talleresFiltrados = [];
 
     this.api.ListTalleres().pipe( 
       finalize(async ()=>{
@@ -607,7 +663,39 @@ export class SegmentoCaracteristicasPage implements OnInit {
        async (res) =>{
         console.log('Los talleres');
         console.dir(res);
-        this.talleresFiltrados = res;
+
+        //alert('Mi ciudad es '+this.ciudad);
+
+        for (let index = 0; index < res.length; index++) {
+          const element = res[index]; 
+          const esTallerSinCiudad = !element.Ciudad || element.Id == 1;
+
+          if (esTallerSinCiudad) {
+            this.talleresTGU.push(element);
+            this.talleresSPS.push(element);
+            continue;
+          }
+          
+          if (this.esCiudadTegucigalpa(element.Ciudad)) {
+            this.talleresTGU.push(element);
+          }else{
+            this.talleresSPS.push(element);
+          }
+
+          /*
+          if (mismaCiudad == true && element.Ciudad == 'TEGUCIGALPA') {
+            this.talleresFiltrados.push(element);
+          }else{
+            console.log('Comparando ciudad '+element.Ciudad+' con TEGUCIGALPA');
+            console.log('Es la misma ciudad ? '+mismaCiudad+', Resultado de la comparación : '+(element.Ciudad == 'TEGUCIGALPA'));
+            
+            if (mismaCiudad == false && element.Ciudad != 'TEGUCIGALPA') {
+              this.talleresFiltrados.push(element);
+            }
+          }
+          */
+        }
+        this.talleresFiltrados = this.talleresPorCiudad();
       },
       async (res) => {
         const alert = await this.alert.create({

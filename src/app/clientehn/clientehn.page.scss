@@ -2,6 +2,12 @@ ion-radio {
     width: 30px;
     height: 30px;
   }
+
+  .uso-opcion{
+    margin-left: 5px;
+    --border-radius: 4px;
+  --inner-border-radius: 4px;
+  }
   
   ion-radio::part(container) {
     border-radius: 8px;
@@ -105,6 +111,10 @@ ion-radio {
   }
 }
 
+ion-icon{
+  color: black;
+}
+
 ion-label{
   padding-top: 8px;
   text-overflow: inherit;
@@ -136,7 +146,7 @@ ion-badge:not(#esMenorLabel){
   font-size: 1.4rem;
 }
 
-ion-button{
+ion-button:not(#cancelaButton){
   color: white;
 }
 
@@ -152,6 +162,7 @@ ion-split-pane {
 
 ion-select::part(text) {
   font-size: 1.1rem;
+  //color: var(--blueGrayColor);
 }
 
 ::ng-deep {
@@ -180,7 +191,9 @@ ion-select::part(text) {
    border-radius: 15px;
  }
 }
-ion-spinner{
+ion-spinner:not(.top-spinner){
+  width: 30px;
+  height: 30px;
 	position: fixed;
     top: 28%;
     left: 40%;
@@ -188,6 +201,56 @@ ion-spinner{
     width: 20%;
     height: 20%;
 	//background-color: #00213f;
+}
+
+.chip-firma{
+  position: absolute;
+    right: 8%;
+    bottom: 10%;
+    width: 80%;
+}
+
+.meter { 
+    height: 5px;
+    position: relative;
+    background: #f3efe6;
+    overflow: hidden;
+}
+
+.meter span {
+    display: block;
+    height: 100%;
+}
+
+.progress-end {
+    background-color: var(--blueGrayColor);
+    animation: progressBarEnd 3s ease-in-out;
+    animation-fill-mode:both; 
+}
+
+.progress {
+    background-color: var(--blueGrayColor);
+    animation: progressBar infinite 3s ease-in-out;
+    animation-fill-mode:both; 
+}
+
+@keyframes progressBar {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+.required-index{
+  display: none;
+}
+
+.required-missing{
+  border: 2px solid red;
+  border-radius: 30px;
+}
+
+@keyframes progressBarEnd {
+  0% { width: 100%; }
+  100% { width: 100%; }
 }
 
 #spinFooter{
@@ -242,6 +305,10 @@ ion-accordion-group {
 
 .select-label{
   text-transform: uppercase;
+}
+
+.select-icon{
+  color: var(--blueGrayColor);
 }
 
 ion-accordion.accordion-expanding,

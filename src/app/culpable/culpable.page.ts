@@ -21,7 +21,7 @@ import { Entidades } from '../interfaces/extras';
 export class CulpablePage implements OnInit {
   @ViewChild(RouterOutlet) outlet: RouterOutlet;
   
-  readonly predicateCliente: MaskitoElementPredicateAsync = async (el) =>(el as HTMLIonInputElement).getInputElement();
+  readonly predicateCliente: MaskitoElementPredicateAsync = async (el) =>(el as unknown as HTMLIonInputElement).getInputElement();
   readonly idMask: MaskitoOptions = {
     mask: [/\d/, /\d/,/\d/, /\d/, '-', /\d/, /\d/,/\d/, /\d/, '-', /\d/, /\d/,/\d/, /\d/,/\d/,],
   }
@@ -162,8 +162,8 @@ export class CulpablePage implements OnInit {
         $('.action-repair-culpable').eq(i).attr("style","background:#7da1c4;border-radius:10px; width: 100%"); 
         $('.action-change-culpable').eq(i).attr("style","background:transparent;color:#7da1c4; width: 100%");  
       }else{
-        $('.action-repair-culpable').eq(i).attr("style","background:transparent; color:#10069f; width: 100%"); 
-        $('.action-change-culpable').eq(i).attr("style","background:#10069f;border-radius:10px; width: 100%"); 
+        $('.action-repair-culpable').eq(i).attr("style","background:transparent; color:#0058CB; width: 100%"); 
+        $('.action-change-culpable').eq(i).attr("style","background:#0058CB;border-radius:10px; width: 100%"); 
       }
     }
     
@@ -240,9 +240,9 @@ export class CulpablePage implements OnInit {
 
           //alert(this.moneda)
           if (this.moneda == null) {
-            this.miMoneda = "Lempiras";
-          }else{
-            this.miMoneda = this.moneda.Moneda;
+            this.miMoneda = "LEMPIRAS";
+          }else{ 
+            this.miMoneda = this.moneda;
           }
           
          }
@@ -386,8 +386,8 @@ export class CulpablePage implements OnInit {
          $('.action-repair-x').eq(i).attr("style","background:#7da1c4;border-radius:10px;width:100%"); 
          $('.action-change-x').eq(i).attr("style","background:transparent;color:#7da1c4;width:100%");  
        }else{
-         $('.action-repair-x').eq(i).attr("style","background:transparent; color:#10069f;width:100%"); 
-         $('.action-change-x').eq(i).attr("style","background:#10069f;border-radius:10px;width:100%"); 
+         $('.action-repair-x').eq(i).attr("style","background:transparent; color:#0058CB;width:100%"); 
+         $('.action-change-x').eq(i).attr("style","background:#0058CB;border-radius:10px;width:100%"); 
        }
      }
      */
@@ -657,8 +657,8 @@ export class CulpablePage implements OnInit {
             $('.action-repair-culpable').eq(daIndex).attr("style","background:#7da1c4;border-radius:10px; width: 100%"); 
             $('.action-change-culpable').eq(daIndex).attr("style","background:transparent;color:#7da1c4; width: 100%");  
           }else{
-            $('.action-repair-culpable').eq(daIndex).attr("style","background:transparent; color:#10069f; width: 100%"); 
-            $('.action-change-culpable').eq(daIndex).attr("style","background:#10069f;border-radius:10px; width: 100%"); 
+            $('.action-repair-culpable').eq(daIndex).attr("style","background:transparent; color:#0058CB; width: 100%"); 
+            $('.action-change-culpable').eq(daIndex).attr("style","background:#0058CB;border-radius:10px; width: 100%"); 
           }  
         }, 2000);
         
@@ -719,8 +719,8 @@ export class CulpablePage implements OnInit {
           $('.action-repair-xx').eq(elIndex).attr("style","background:#7da1c4;border-radius:10px; width: 100%"); 
           $('.action-change-xx').eq(elIndex).attr("style","background:transparent;color:#7da1c4; width: 100%");  
         }else{
-          $('.action-repair-xx').eq(elIndex).attr("style","background:transparent; color:#10069f; width: 100%"); 
-          $('.action-change-xx').eq(elIndex).attr("style","background:#10069f;border-radius:10px; width: 100%"); 
+          $('.action-repair-xx').eq(elIndex).attr("style","background:transparent; color:#0058CB; width: 100%"); 
+          $('.action-change-xx').eq(elIndex).attr("style","background:#0058CB;border-radius:10px; width: 100%"); 
         }  
       }
 

@@ -24,11 +24,18 @@ import { meses } from '../environments/calendario';
 import { Talleres, rangoAnios } from '../environments/talleres';
 import domtoimage from 'dom-to-image';
 import { FormatosService } from '../services/formatos.service';
-import { Predeterminados, ItemsData, requiredData, requiredDataLabels, valoresPredeterminados } from '../environments/predeterminados';
+import { Predeterminados, ItemsData, requiredData, requiredDataLabels, valoresPredeterminados, requiredDataAjustador, tiposDeReparacion } from '../environments/predeterminados';
+import { validateClaimStage } from '../validation/claim-validation';
+import {
+  ajustadorScreenValidationRules,
+  ficohsaBpmConfirmationRules,
+  ficohsaBpmValidationRules
+} from '../validation/claim-validation.rules';
 
 import * as $ from 'jquery';
 import { parse } from 'path';
 import { Entidades } from '../interfaces/extras';
+import { error } from 'console';
 
 const USER_DATA = 'MY_USER_DATA';
 @Component({
@@ -38,11 +45,26 @@ const USER_DATA = 'MY_USER_DATA';
 })
 export class AjustadorhnPage implements OnInit {
   @ViewChild('accordionGroup', { static: true }) accordionGroup: IonAccordionGroup;
+  @ViewChild('accordionGroup2', { static: true }) accordionGroup2: IonAccordionGroup;
   @ViewChild('modalNulosAju') modal: IonModal;
     //DECLARACION
     //@ViewChild('imagen') imagen: ElementRef;
+
+  public alertButtons = [
+    {
+      text: 'Continuar',
+      cssClass: 'alert-button-cancel',
+    },
+    {
+      text: 'Sí, Salir',
+      cssClass: 'alert-button-confirm',
+      handler: () => {
+        window.location.reload();
+      }
+    },
+  ];
   
-  readonly predicate: MaskitoElementPredicateAsync = async (el) =>(el as HTMLIonInputElement).getInputElement();
+  readonly predicate: MaskitoElementPredicateAsync = async (el) =>(el as unknown as HTMLIonInputElement).getInputElement();
   readonly idMask: MaskitoOptions = {
     mask: [/\d/, /\d/,/\d/, /\d/, '-', /\d/, /\d/,/\d/, /\d/, '-', /\d/, /\d/,/\d/, /\d/,/\d/,],
   }
@@ -89,8 +111,8 @@ export class AjustadorhnPage implements OnInit {
   fechaParrafo:any;  fechaPie:any;  now:any;  diaPie :any;  mesPie :any;  anioPie:any;  dia :any;  mes :any;  anio:any;  talleresFiltrados:any=[];  tipoDeCobertura:any;
   
   //sig: SignaturePad;
-  menu=[false,false,false,false,false,false,false,false,false,false];  inputInicialGenero: any;  esPesado: any = '2';  idAjustador: any;  validaNulosAju: any[];
-  AjustadorFiltro: any[]; requiredD = requiredData;  requiredDLabels = requiredDataLabels;  cantidadNulos: number;  fechaValida: boolean=true; // Debug : fechaValida
+  menu=[false,false,false,false,false,false,false,false,false,false];  inputInicialGenero: any;  esPesado: any = '2';  idAjustador: any;  validaNulosAju: any = [];
+  AjustadorFiltro: any[]; requiredD = requiredDataAjustador;  requiredDLabels = requiredDataLabels;  cantidadNulos: number;  fechaValida: boolean=true; // Debug : fechaValida
   atencionId: number; expediente: any; moneda: any;  miMoneda: string; isBPMcomplete:boolean=false;
   daDate: Date;  identidadCliente: any;  nombreCliente: any;  elTelefonoOrigen: any; elCorreoElectronico:any; laMarcaAsegurado:any;  elModeloAsegurado: any;
   elAnioAsegurado:any; elChasisAsegurado:any; elNumeroPlacaAsegurado:any; elMotorAsegurado:any; isFirstTime:boolean=true; clickCount:number=0;
@@ -98,8 +120,19 @@ export class AjustadorhnPage implements OnInit {
   danioMessage:string; danioPosition:string; danioClass:string; storageArrayFilter:any=[];  idSelect: any;  storageArrayIndexs: any[];  storageArrayStrings: any[];
   sucessIcon:any; ssucessIconRecycle:any; losParentescos:any=[];  idTabla: any;  audienciaId: any;  cacheCliente: any[]; OtrosTalleres:any;
   elParentesco: any; refreshIcon:any; isRefreshing:boolean = false; isPressed:boolean=false; deudaSent:boolean;
-  acompaniantes: any = [];  testigos: any = [];  lesionados: any = [];  propiedades: any = [];
-  fechaInspeccionLocal: string;
+  acompaniantes: any = [];  testigos: any = [];  lesionados: any = [];  propiedades: any = []; formularioCompleto:boolean=false;
+  fechaInspeccionLocal: string;  clienteFiltroAju: any = [];  nullsIndexAju: any = [];
+  textoInfo = 'Validando ... Cuando todos los datos estén completos, se habilitará el botón de guardar.';
+  textoInfoIncompleto = 'Faltan datos por completar. Por favor, revisa el formulario.';
+  textoInfoDanios = 'Aún no se han seleccionado daños. Puedes guardar la atención, sin embargo no se reflejarán daños en los informes.';
+  textoNoFotos = 'No hay fotografías o las fotografías se eliminaron.'; textoFotosNoEnviadas = 'No se enviaron fotografías';  textoFotos:any;
+  textoFotosInfo = 'Puedes continuar, pero no se reflejarán tus fotos en los informes.';
+  textoInfoDaniosCulpa = 'Falta completar el acuerdo de deuda. Puedes guardar la atención, sin embargo no se reflejarán datos del culpable en los informes.';
+  cacheClienteFix: any = []; datosCompletados:any = []; datosIncompletos:any = [];  datosComunes: any = [];
+  estaEvaluado: boolean = false; daniosSelectCulpa:any=[];  datosDeEnvio: any = [];
+  datosDeEnvioFix: any = [];  fotos: any = [];  fotosEnviadas: boolean; AcuerdoDeDeuda: boolean;
+  seleccionDeDanios: any = []; seleccionDeDaniosCulpable: any = [];  arregloDeEnvio: any = [] ;  isRefreshingCulpa: boolean;
+  coberturas:any = [];  producto: string;  esConduceSeguro: boolean = false;
 
   // INICIALIZACION
   constructor(private router: Router, private loading: LoadingController, private alert: AlertController,
@@ -107,7 +140,12 @@ export class AjustadorhnPage implements OnInit {
     private geo:NativeGeocoder, public toaster:ToastService, private popControl:PopoverController, private sanitizer: DomSanitizer,
     private formateador:FormatosService, private animationCtrl: AnimationController, private thisModal:ModalController) { 
 
+      
+
       this.OtrosTalleres = localStorage.getItem('OtrosTalleres');
+      
+
+    
 
       for (var i = 0; i < localStorage.length; i++){
         if (localStorage.key(i).indexOf('acompaniante') == 0) {
@@ -162,12 +200,23 @@ export class AjustadorhnPage implements OnInit {
       this.fechaPie = (this.diaPie)+ ' días'+' del mes de '+ meses[this.mesPie].mes+' de '+this.anioPie;
 
       this.firmaPrecargada = localStorage.getItem("dSignatureAsegurado");
-      //this.ajustadorNombre = localStorage.getItem('nombreAjustador');
-
-      
 
       setTimeout(() => {
-        this.setFirstSegment()
+        
+        let evaluado:any = localStorage.getItem('estaEvaluado');
+        this.estaEvaluado = (evaluado === 'true');
+        console.log('El estado de evaluación es : '+this.estaEvaluado);
+
+        this.validarDatos(1);
+        if (this.estaEvaluado == true) {
+          //$('#validateButtona').fadeOut();
+            //$('#saveDataButtona').fadeIn();
+            //$('#validateAgainButtona').fadeIn();
+            //$('#cancelaButtona').fadeIn();
+          
+        }
+        //this.validarDatos();
+        //this.setFirstSegment()
       }, 1000);
 
 
@@ -175,6 +224,14 @@ export class AjustadorhnPage implements OnInit {
       console.log('La atencion es '+this.idAtencion)
       this.atencionId = parseInt(this.idAtencion);
       let dIdAtencion = parseInt(this.idAtencion);
+
+      /*
+      let fotosLocal = JSON.parse(localStorage.getItem('fotos-'+this.atencionId));
+        if (fotosLocal) {
+          this.fotos = fotosLocal;
+        }
+        */
+
       this.api.DatosDeAtencion(dIdAtencion).pipe( 
         finalize(async ()=>{
           this.isLoading = false;
@@ -217,6 +274,7 @@ export class AjustadorhnPage implements OnInit {
           console.dir(this.elExpediente)
           console.log(this.elExpediente[0].Cliente);
 
+          
           // Setups date from register, if there is not a date set it up as today
           
           
@@ -314,11 +372,9 @@ export class AjustadorhnPage implements OnInit {
 
           this.moneda = this.elExpediente[0].Moneda;
           if (this.moneda == null) {
-            this.miMoneda = "Lempiras";
-            localStorage.setItem('miMoneda', this.miMoneda);
-          }else{
-            this.miMoneda = this.moneda.Moneda;
-            localStorage.setItem('miMoneda', this.miMoneda);
+            this.miMoneda = "LEMPIRAS";
+          }else{ 
+            this.miMoneda = this.moneda;
           }
 
 
@@ -404,6 +460,8 @@ export class AjustadorhnPage implements OnInit {
           
             }
         )
+
+        
     }
 
 
@@ -412,20 +470,104 @@ export class AjustadorhnPage implements OnInit {
       nativeEl.value = position;
     };
 
+    toogleAccordion2 = (position) => {
+      const nativeEl = this.accordionGroup2;
+      nativeEl.value = position;
+    }
+
     closeAccordions(){
       const nativeEl = this.accordionGroup;
       nativeEl.value = undefined;
     }
 
+    
+
     ngOnInit() {
       const nativeEl = this.accordionGroup;
-      nativeEl.value = 'second';
+      this.daniosSelectAju = [];
+      //nativeEl.value = 'second';
 
+      setTimeout(() => {
+        let cobert:any = localStorage.getItem('coberturas');
+        this.coberturas = JSON.parse(cobert);
+
+        console.log('Las coberturas en ajustador hn'); console.dir(this.coberturas);
+
+      }, 6000);
+      
       setTimeout(() => {
         //this.setFirstSegment();
         this.getDanios();
         this.listarDanios();
+        //this.insertarConvenioReparacion();
       }, 1000);
+
+      setTimeout(() => {
+        
+        for (var i = 0; i < localStorage.length; i++){
+
+          if (localStorage.key(i).indexOf('daniosSelect-') == 0) {
+            let indexSelect = parseInt(localStorage.getItem(localStorage.key(i)));
+            for (let indexDanio = 0; indexDanio < this.danios.length; indexDanio++) {
+              const elementD = this.danios[indexDanio];
+              if (indexSelect == elementD.Id) {
+                let tipo:any;
+                this.daniosSelectAju.push(elementD);
+                let tipoIndex = parseInt(localStorage.getItem('TipoReparacionIndex-'+indexSelect));
+                let tipoId = parseInt(localStorage.getItem('TipoReparacion-'+indexSelect));
+
+                if (tipoId == 1) {tipo = 'Reparación';}else{tipo = 'Cambio';}
+
+                this.seleccionDeDanios.push({Codigo: elementD.Codigo, Descripcion: elementD.Descripcion, Id: elementD.Id, tipo:tipo, tipoId:tipoId});
+                //console.dir(elementD);
+              } 
+            }
+          }
+
+          if (localStorage.key(i).indexOf('daniosSelectCulpa-') == 0) {
+            let indexSelect = parseInt(localStorage.getItem(localStorage.key(i)));
+            for (let indexDanio = 0; indexDanio < this.danios.length; indexDanio++) {
+              const elementD = this.danios[indexDanio];
+              if (indexSelect == elementD.Id) {
+                let tipo:any;
+                this.daniosSelectAju.push(elementD);
+                let tipoIndex = parseInt(localStorage.getItem('TipoReparacionCulpaIndex-'+indexSelect));
+                let tipoId = parseInt(localStorage.getItem('TipoReparacionCulpa-'+indexSelect));
+
+                if (tipoId == 1) {tipo = 'Reparación';}else{tipo = 'Cambio';}
+
+                this.seleccionDeDaniosCulpable.push({Codigo: elementD.Codigo, Descripcion: elementD.Descripcion, Id: elementD.Id, tipo:tipo, tipoId:tipoId});
+                //console.dir(elementD);
+              } 
+            }
+          }
+
+          if (i == (localStorage.length-1)) {}
+        }
+      }, 1500);
+
+      setTimeout(() => {
+        const nativeEl = this.accordionGroup;
+        nativeEl.value = undefined;
+        //$('.segment-item-aju').eq(0).click();
+      }, 1500);
+
+      setTimeout(() => {
+        this.eliminarDuplicadosDanios(this.daniosSelectAju, 3);
+
+/*
+        if (localStorage.key(i).indexOf('daniosSelect-') == 0) {
+          let elCodigo = localStorage.getItem(localStorage.key(i));
+          let daCode = parseInt(elCodigo);
+
+          let elTipo = localStorage.getItem('TipoReparacion-'+daCode);
+          let daType = parseInt(elTipo);
+          let elIndex = localStorage.getItem('TipoReparacionIndex-'+daCode);
+          let daIndex = parseInt(elIndex);
+        }
+*/
+
+      }, 5000);
 
       
       this.getTipoSolicitante();
@@ -453,22 +595,11 @@ export class AjustadorhnPage implements OnInit {
 
       this.platform.ready().then(() => {
         this.isTablet = this.platform.is('android');
-        //alert(this.isTablet)
-        //this.screenlock.lockToLandscape();
-        if (this.isTablet) {
-          this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
-        }
-        
-        
-  
       });
   /**/
 
-      //this.setFirstSegment();
-      
     }
 
-    // PROCESO
     handleCanvas(){
       this.isEditSig = true;
       
@@ -477,7 +608,6 @@ export class AjustadorhnPage implements OnInit {
     loadCacheCliente(){
       this.api.ObtenercacheCliente(this.idAtencion).pipe( 
         finalize(async ()=>{
-          //alert('Finalice')
           this.isLoading = false;
           //this.isComplete = true;
         })
@@ -485,6 +615,7 @@ export class AjustadorhnPage implements OnInit {
         async (res) =>{
           let parentescoId:number; 
           this.cacheCliente = res[0];
+          localStorage.setItem('cacheCliente', JSON.stringify(this.cacheCliente));
           //console.log('Cache de cliente');
           //console.dir(this.cacheCliente);
           //console.dir(this.tipoParentescos);
@@ -493,12 +624,923 @@ export class AjustadorhnPage implements OnInit {
           this.loadParentescos();
           for (let index = 0; index < this.tipoParentescos.length; index++) {
             const element = this.tipoParentescos[index];
-            //console.dir
-            //alert(parentescoId)  
           }
           
         }
       )
+    }
+
+    analizaNulo(pagSegmento, segmentIndex){
+      this.setSegment(pagSegmento, segmentIndex);
+      /*
+      let segmentKey = requiredDataAjustador[indexFront].segmentKey;
+      let segmentId = requiredDataAjustador[indexFront].segmentoId; 
+      let segmentIndex = requiredDataAjustador[indexFront].segmentIndex;
+      this.indexFront = $('.index-input').eq(indexFront).val(); //segmentIndex;
+      */
+    }
+
+    GuardarDatos(){
+      $('#camButtonAju').fadeOut();
+      this.switchButtonsAll(1);
+
+      this.isLoading = true;
+      this.datosDeEnvio = [];
+      console.log('Datos en cacheCliente');
+      console.dir(this.cacheClienteFix);
+
+      this.producto = localStorage.getItem('coberturaId');
+      
+      if (this.producto) {}else{console.log('Mi producto es '+this.producto);}
+      let afiliado:any = localStorage.getItem('dataProcess-ConductorAfiliado');
+
+      
+
+      this.datosCompletados.push({nombre: 'ConductorAfiliado', valor: parseInt(afiliado?afiliado:1)});
+
+      let danioIzq:any; let danioDer:any; let danioFrontal:any; let danioTrasero:any;
+      danioIzq = localStorage.getItem('datos-DanioLataralIzquierdo');
+      danioDer = localStorage.getItem('datos-DanioLateralDerecho');
+      danioFrontal = localStorage.getItem('datos-DanioFrontal');
+      danioTrasero = localStorage.getItem('datos-DanioTrasero');
+
+      if (!danioIzq) {
+        this.datosCompletados.push({nombre: 'DanioLataralIzquierdo', valor: 0});
+      }else{
+        this.datosCompletados.push({nombre: 'DanioLataralIzquierdo', valor: parseInt(danioIzq)});
+      }
+
+      if (!danioDer) {
+        this.datosCompletados.push({nombre: 'DanioLateralDerecho', valor: 0});
+      }else{
+        this.datosCompletados.push({nombre: 'DanioLateralDerecho', valor: parseInt(danioDer)});
+      }
+
+      if (!danioFrontal) {
+        this.datosCompletados.push({nombre: 'DanioFrontal', valor: 0});
+      }else{
+        this.datosCompletados.push({nombre: 'DanioFrontal', valor: parseInt(danioFrontal)});
+      }
+
+      if (!danioTrasero) {
+        this.datosCompletados.push({nombre: 'DanioTrasero', valor: 0});
+      }else{
+        this.datosCompletados.push({nombre: 'DanioTrasero', valor: parseInt(danioTrasero)});
+      }
+
+      
+
+      let descripcionV:any = localStorage.getItem('dataProcess-DescripcionVehiculo');
+      
+
+      this.datosCompletados.push({nombre: 'DescripcionVehiculo', valor: descripcionV?descripcionV:'Vehículo no identificado adecuadamente'});
+
+      let identidad:any = localStorage.getItem('datos-IdentidaConductor');
+      
+
+      let dpi:any = localStorage.getItem('datos-DPI_Pasaporte');
+
+      if (!dpi) {
+        this.datosCompletados.push({nombre: 'DPI_Pasaporte', valor: identidad?identidad:''});
+      }else{
+        this.datosCompletados.push({nombre: 'DPI_Pasaporte', valor: dpi?dpi:''});
+      }
+
+      
+
+      this.datosCompletados.push({nombre: 'LesionadosSinAudiencia', valor: 0});
+
+      let lugar:any = localStorage.getItem('dataProcess-Lugar');
+      
+
+      this.datosCompletados.push({nombre: 'Lugar', valor: lugar?lugar:'Lugar no identificado adecuadamente'});
+
+      let tallerOtroString:any = localStorage.getItem('elTallerOtro');
+      let tallerOtroDireccion:any = localStorage.getItem('elTallerOtroDireccion');
+      let tallerOtro:any;
+      let tallerIdString:any = localStorage.getItem('datos-TallerMecanicoId');
+      let tallerId:any = parseInt(tallerIdString);
+
+      this.datosCompletados.push({nombre: 'TallerMecanicoId', valor: parseInt(tallerId)});
+      
+      //let tallerOtro:any = localStorage.getItem('datos-OtrosTalleres');
+
+   
+      if (tallerId == 1) {
+        tallerOtro = tallerOtroString.split('-')[1]+', '+tallerOtroDireccion.split('-')[1];
+        this.datosCompletados.push({nombre: 'OtrosTalleres', valor: tallerOtro});
+      }else{
+        this.datosCompletados.push({nombre: 'OtrosTalleres', valor: 'N/A'});
+      }
+
+
+      let reclamo:any = localStorage.getItem('dataProcess-ReclamoAsegurado');
+      this.datosCompletados.push({nombre: 'ReclamoAsegurado', valor: reclamo?reclamo:'No especificado'});
+      let ciudadId:any = localStorage.getItem('dataProcess-RefCiudadId');
+      this.datosCompletados.push({nombre: 'RefCiudadId', valor: parseInt(ciudadId?ciudadId:0)});
+
+      let deptoId:any = localStorage.getItem('dataProcess-RefDepartamentoId');
+      this.datosCompletados.push({nombre: 'RefDeptoId', valor: parseInt(deptoId?deptoId:0)});
+
+      this.datosCompletados.push({nombre: 'RefMunicipioId', valor: ''});
+
+      let paisId:any = localStorage.getItem('dataProcess-RefPaisId');
+      this.datosCompletados.push({nombre: 'RefPaisId', valor: parseInt(paisId?paisId:0)});
+
+      this.datosCompletados.push({nombre: 'RefProveedorAgenteAbogadoId', valor: 0});
+
+      let agenteId:any = localStorage.getItem('dataProcess-RefProveedorAgenteId');
+      this.datosCompletados.push({nombre: 'RefProveedorAgenteId', valor: parseInt(agenteId?agenteId:0)});
+      this.datosCompletados.push({nombre: 'RefUsuarioId', valor: parseInt(agenteId?agenteId:0)});
+
+      for (let indexf = 0; indexf < this.cacheClienteFix.length; indexf++) {
+        const element = this.cacheClienteFix[indexf];
+        console.log('Buscando '+element.nombre+' en datos Cache' );
+        if (element.nombre == 'IdAtencion') {
+          element.nombre = 'RefAtencionId';
+        }
+      }
+
+      console.log('Datos en datosCompletados');
+      console.dir(this.datosCompletados);
+      console.log('Datos en datosIncompletos');
+      console.dir(this.datosIncompletos);
+      console.log('Datos en daniosSelectAju');
+      console.dir(this.daniosSelectAju);
+      console.log('Datos en daniosSelectCulpa');
+      console.dir(this.daniosSelectCulpa);
+
+      setTimeout(() => {
+        this.datosDeEnvio = this.cacheClienteFix.concat(this.datosCompletados);
+        console.log('Datos para envio');
+        console.dir(this.datosDeEnvio);
+        localStorage.setItem('datosDeEnvio', JSON.stringify(this.datosDeEnvio));
+        localStorage.setItem('daniosSelectAju', JSON.stringify(this.daniosSelectAju));
+        localStorage.setItem('daniosSelectCulpa', JSON.stringify(this.daniosSelectCulpa));
+
+
+      }, 900);
+
+      setTimeout(() => {
+        this.eliminarDuplicadosEnvio(this.datosDeEnvio);
+        const arregloParaEnviar = {}; let polizaTrunk:any;
+        
+        this.latitud = this.elExpediente[0].LatitudCliente;
+        this.longitud = this.elExpediente[0].LongitudCliente;
+        for (let indexE = 0; indexE < this.datosDeEnvio.length; indexE++) {
+          let element = this.datosDeEnvio[indexE];
+
+          if (element.nombre == "CelularConductor") {
+            console.log('Celular Conductor encontrado en datosDeEnvio');
+            arregloParaEnviar[element.nombre] = localStorage.getItem('dataProcess-CelularConductor')?localStorage.getItem('dataProcess-CelularAsegurado'):'';
+          }
+
+          if (element.nombre == "Parentesco") {
+            if (element.valor == 37 || element.valor == '37') {
+              arregloParaEnviar[element.nombre] = '0001';
+            }else{
+              arregloParaEnviar[element.nombre] = element.valor;
+            }
+          }else{
+            arregloParaEnviar[element.nombre] = element.valor;
+          }
+
+          if (element.nombre == "Licencia") {
+            console.log('Buscando licencia en cacheClienteFix '+this.cacheClienteFix.find(e => e.nombre == 'Licencia'));
+            console.log('Valor de licencia en cacheClienteFix '+this.cacheClienteFix[10].nombre +', valor : '+this.cacheClienteFix[10].valor);
+            console.dir(this.cacheClienteFix);
+            arregloParaEnviar[element.nombre] = this.cacheClienteFix[10].valor;
+          }else{}
+            
+
+          if (indexE == this.datosDeEnvio.length - 1) {
+            console.log('Arreglo final para envio');
+            console.dir(arregloParaEnviar);
+
+
+            this.latitud = this.elExpediente[0].LatitudCliente;
+            this.longitud = this.elExpediente[0].LongitudCliente;
+            let reserva:any = localStorage.getItem('bpmArray-ValorReserva');
+                      this.valorReserva = reserva;
+                      this.datos['valorReserva'] = reserva;
+            
+            let fechaToString = localStorage.getItem('datos-FechaHora');
+                      let fechaSplit = fechaToString.split('T')[0];
+
+            
+
+                      this.nombreDelConductor = localStorage.getItem('datos-NombreConductor');
+                      
+                      if (!this.nombreDelConductor) {
+                        this.nombreDelConductor = localStorage.getItem('NombreConductor');
+                      }
+
+                      this.inicialGenero = localStorage.getItem('inicialGenero');
+
+                      if (this.valorReserva == null || this.valorReserva == undefined) {
+                        this.valorReserva = '0';
+                      }
+                      
+
+                        if (this.elExpediente[0].PolizaExterna.indexOf('-') != -1) {
+                        polizaTrunk = this.elExpediente[0].PolizaExterna.split('-')[1];
+                      }else{
+                        polizaTrunk = this.elExpediente[0].PolizaExterna;
+                      }
+
+                      if (this.valorReserva == null || this.valorReserva == undefined) {
+                        this.valorReserva = '0';
+                      }
+
+                      let elParentesco = arregloParaEnviar['Parentesco'];
+
+
+                               console.log('He aqui la data siniestro');
+                                console.dir(arregloParaEnviar);
+
+                              
+            this.api.GuardarSiniestroHN(arregloParaEnviar).pipe( 
+                finalize(async ()=>{
+                  })
+                ).subscribe(
+                  async (res) =>{
+                    let polizaTrunk:any;
+                    console.log('Siniestro guardado');
+                    console.dir(res);
+
+                    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                    this.audienciaId = res;
+                    this.idTablaAjustador = res.toString();
+
+                    
+                    if (this.propiedades.length >0) {
+                      for (let index = 0; index < this.propiedades.length; index++) {
+                        const element = this.propiedades[index];
+                        
+                        const dataPropiedad = [
+                          {
+                            "RefAjustadorAudienciaId": res, // Id de la audiencia del res clienteHn
+                            "Nombre": element.NombrePropietario, // Nombre del 
+                            "Direccion": element.DireccionDelBien,
+                            "DaniosPrivado": element.DescripcionDelDanio,
+                            "RefAjustadorId": this.api.currentUser.ProveedorAgenteId,
+                            "Telefono": element.Telefono,
+                            "DescripcionDelBien": element.DescripcioDelBien,
+                            "DireccionDelBien": element.DireccionDelBien,
+                            "DescripcionDelDanio": element.DescripcionDelDanio,
+                            "NombreDelBienAfectado": element.BienAfectado
+                          }
+                        ]
+
+                        this.api.GuardarPropiedadTercero(dataPropiedad).pipe( 
+                          finalize(async ()=>{})
+                        ).subscribe(
+                          async (res) =>{
+                          },
+                          async (res) => {
+                            this.toaster.presentToast(res.error.Message, 'top', 'propiedad');
+                          }
+                    
+                        )
+                      }
+                      
+                    }
+                    
+                    if (this.acompaniantes.length > 0) {
+                      for (let index = 0; index < this.acompaniantes.length; index++) {
+                          const element = this.acompaniantes[index];
+              
+
+                          const dataTercero = {
+                            Nombre: element.Nombre,
+                            Telefono: element.Telefono,
+                            Direccion: element.Direccion,
+                            DescripcionLesion: null,
+                            DireccionHospitalizacion: null,
+                            TipoPersonaSiniestro: 1,
+                            RefAjustadorAudienciaId: this.audienciaId
+                          }
+
+                          
+                          console.dir(dataTercero);
+                  
+                          this.api.GuardarPersonaSiniestro(dataTercero).pipe( 
+                            finalize(async ()=>{
+                            })
+                          ).subscribe(
+                            async (res) =>{
+                            },
+                            async (res) => {
+                              this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
+                            }
+                      
+                          )
+                      }
+                    }
+    
+                    if (this.testigos.length > 0) {
+                      for (let index = 0; index < this.testigos.length; index++) {
+                        const element = this.testigos[index];
+              
+                        const dataTercero = {
+                          Nombre: element.Nombre,
+                          Telefono: element.Telefono,
+                          Direccion: element.Direccion,
+                          DescripcionLesion: null,
+                          DireccionHospitalizacion: null,
+                          TipoPersonaSiniestro: 2,
+                          RefAjustadorAudienciaId: this.audienciaId
+                        }
+
+                        
+                        console.dir(dataTercero);
+                
+                        this.api.GuardarPersonaSiniestro(dataTercero).pipe( 
+                          finalize(async ()=>{
+                            //await load.dismiss();
+                          })
+                        ).subscribe(
+                          async (res) =>{
+                          },
+                          async (res) => {
+                            this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
+                          }
+                    
+                        )
+                      
+                      }
+                      
+                    }
+            
+                    if (this.lesionados.length > 0) {
+                      for (let index = 0; index < this.lesionados.length; index++) {
+                        const element = this.lesionados[index];
+                
+                        const dataTercero = {
+                          Nombre: element.Nombre,
+                          Telefono: element.Telefono,
+                          Direccion: element.Direccion,
+                          DescripcionLesion: element.TipoLesion,
+                          DireccionHospitalizacion: element.DireccionHospitalizacion,
+                          TipoPersonaSiniestro: 3,
+                          RefAjustadorAudienciaId: this.audienciaId
+                        }
+
+                        
+                        console.dir(dataTercero);
+                
+                        this.api.GuardarPersonaSiniestro(dataTercero).pipe( 
+                          finalize(async ()=>{
+                            //await load.dismiss();
+                          })
+                        ).subscribe(
+                          async (res) =>{
+                          },
+                          async (res) => {
+                            this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
+                          }
+                    
+                        )
+                      
+                      }
+                    }
+
+
+                    this.insertarConvenioReparacion();
+
+                    this.api.GuardarIdTablaAjustador(this.idAtencion, this.idTablaAjustador).pipe( 
+                      finalize(async ()=>{
+                        console.log('Fin de guardar Id de Tabla');
+                      })
+                    ).subscribe(
+                      async (resTabla) =>{
+                        console.log(resTabla);
+                      }
+                    )
+
+                    
+                      setTimeout(() => {
+                        $('#camButtonAju').fadeIn();
+                        if (!this.elExpediente[0].NombreConductor) {
+                        this.elExpediente.NombreConductor = this.nombreDelConductor;
+                      }
+
+
+                      this.nombreDelConductor = localStorage.getItem('datos-NombreConductor');
+                      
+                      if (!this.nombreDelConductor) {
+                        this.nombreDelConductor = localStorage.getItem('NombreConductor');
+                      }
+                      let fechaToString = localStorage.getItem('datos-FechaHora');
+                      let fechaSplit = fechaToString.split('T')[0];
+
+                      let reserva:any = localStorage.getItem('bpmArray-ValorReserva');
+                      this.valorReserva = reserva;
+                      
+                      this.inicialGenero = localStorage.getItem('inicialGenero');
+
+                      let elParentesco = arregloParaEnviar['Parentesco'];
+
+                      if (this.elExpediente[0].PolizaExterna.indexOf('-') != -1) {
+                        polizaTrunk = this.elExpediente[0].PolizaExterna.split('-')[1];
+                      }else{
+                        polizaTrunk = this.elExpediente[0].PolizaExterna;
+                      }
+
+                      if (this.valorReserva == null || this.valorReserva == undefined) {
+                        this.valorReserva = '0';
+                      }
+
+
+                      this.dataBPM =  {
+                        Chasis: this.elExpediente[0].Chasis,
+                        puntoServicio: valoresPredeterminados[0].puntoServicio, // Predeterminado : 504
+                        Poliza: polizaTrunk, // 
+                        Certificado: this.elExpediente[0].Certificado.toString(),//parseInt(this.elExpediente[0].Certificado), // Pendiente
+                        NombreAsegurado: this.elExpediente[0].Cliente,
+                        Sucursal: valoresPredeterminados[0].Sucursal, // Predeterminado : 0001
+                        Producto: this.producto, //valoresPredeterminados[0].Producto, // Predeterminado : AU01
+                        Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
+                        FechaOcurrencia: fechaSplit,//fechaSplit,//this.elExpediente[0].FechaRegistro, OJO
+                        Causa: valoresPredeterminados[0].Causa, // Pendiente
+                        ValorReserva: this.valorReserva.toString(), // Formulario
+                        UsuarioBPM: this.elUsuario.UsuarioBPM, // Login
+                        Latitud: this.latitud,//"14.0985125",//localStorage.getItem('latitud'), // Formulario
+                        Longitud: this.longitud,//"-87.1849219",//localStorage.getItem('longitud'), // Formulario
+                        NombreConductor: this.nombreDelConductor, // Formulario
+                        Genero: this.inicialGenero, // Formulario
+                        Parentesco: elParentesco, // Formulario
+                        Observacion: this.idTablaAjustador // Guardar Siniestro
+                      }
+
+                                console.log('He aqui la data BPM');
+                                console.dir(this.dataBPM);
+                                this.isLoading = true;
+                                this.estaCompleto = true;
+
+                                const bpmValidation = validateClaimStage(this.dataBPM, ficohsaBpmValidationRules);
+                                if (!bpmValidation.complete) {
+                                  this.isLoading = false;
+                                  this.estaCompleto = false;
+                                  const missingBpm = bpmValidation.missing.map((item) => item.label).join(', ');
+                                  this.toaster.presentToastDataMissing('Faltan datos para enviar BPM Ficohsa: '+missingBpm, 'top', 'bpm');
+                                  return;
+                                }
+                                
+                                this.api.GuardarBPM(this.dataBPM).pipe(finalize(async ()=>{
+                                  this.isBPMcomplete = true;
+                                  })
+                                ).subscribe(
+                                  async (resAtencion) =>{
+                                    console.log("Estoy guardando la data ");
+                                    if(resAtencion){
+                                      console.dir(resAtencion);
+                                      if (resAtencion[0].codigo == 0 || resAtencion[0].codigo == "0") {
+                                        this.toaster.presentToastNoButtons(resAtencion[0].descripcion, 'top', 'bpm');
+                                        this.codigoBPMFicohsa = resAtencion[0].solicitud_bpm;
+                                        this.codigoReclamoFicohsa = resAtencion[0].numero_reclamo;
+                                        this.elFiniquito.NumeroReclamo = resAtencion[0].numero_reclamo;
+                                        
+                                        localStorage.setItem('IdTablaAjustador', this.idTablaAjustador);
+                                        localStorage.setItem('codigoBPMF', this.codigoBPMFicohsa);
+                                        localStorage.setItem('codigoReclamo', resAtencion[0].numero_reclamo);
+                                        
+              
+                                        let dataBPMupdate = 
+                                        {
+                                          IdTablaAjustador: parseInt(this.idTablaAjustador),
+                                          CodigoReclamoFicohsa: this.codigoReclamoFicohsa.toString(),
+                                          CodigoBPMFicohsa: this.codigoBPMFicohsa.toString()
+                                        }
+
+                                        const bpmConfirmation = validateClaimStage(dataBPMupdate, ficohsaBpmConfirmationRules);
+                                        if (!bpmConfirmation.complete) {
+                                          this.isLoading = false;
+                                          const missingConfirmation = bpmConfirmation.missing.map((item) => item.label).join(', ');
+                                          this.toaster.presentToastDataMissing('Faltan datos de confirmaciÃ³n BPM Ficohsa: '+missingConfirmation, 'top', 'bpm');
+                                          return;
+                                        }
+
+                                        if (this.atencionId && this.codigoReclamoFicohsa && this.tipoDeCobertura) {
+                                            let updateFiniquito = {
+                                              RefAtencionId: this.atencionId,
+                                              NumeroReclamo: this.codigoReclamoFicohsa.toString(),
+                                              TipoCoberturaFicohsa: this.tipoDeCobertura
+                                            }
+
+                                            this.api.ActualizarFiniquito(updateFiniquito).pipe( 
+                                              finalize(async ()=>{
+                                                console.log('This is the end finiquito');
+                                              })
+                                            ).subscribe(
+                                              async (res) =>{}
+                                            )
+                                        }
+                                        
+                                        
+                                        this.api.ActualizarBPM(dataBPMupdate).pipe( 
+                                          finalize(async ()=>{
+                                            console.log('This is the end')
+                                            this.isLoading = false;
+                                            this.clearSegmentsStorage();
+                                              
+                                          })
+                                        ).subscribe(
+                                          async (res) =>{
+                                            console.log('Eeeeeeexitooooo! ');
+                                            this.isEeexittoooo = true;
+                                            this.miLogRespuesta = res;
+                                            console.dir(res);
+                                            setTimeout(() => {
+                                                this.switchButtons(1);
+                                              }, 6000);
+                                          },
+                                          async (error) => {
+                                            this.isLoading = false;
+                                            let errorKey = 'acsel';
+                                            let elError = error.error.Message;
+
+                                            setTimeout(() => {
+                                                this.switchButtons(2);
+                                              }, 6000);
+
+                                            console.log('El resdultado del intento con el bpm es '+elError.toString().toLowerCase().includes(errorKey));
+                                            console.log('El resdultado indexOf del intento con el bpm es '+elError.toString().toLowerCase().indexOf(errorKey));
+                                            console.dir(res);
+                                            if (elError.toString().toLowerCase().includes(errorKey)) {
+                                              this.toaster.presentToast('Este chasis no está registrado en un programa de Seguros Ficohsa. Esta atención deberá ser procesada de diferente forma. Consulta a tu administrador de operaciones para una mejor resolución.', 'top', 'solicitante');  
+                                            }else{
+                                              this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
+                                              this.miLogRespuesta = res;
+                                            }
+                                            
+                                          }
+                                        )
+                      
+                                      }else{
+                                        setTimeout(() => {
+                                                this.switchButtons(2);
+                                              }, 6000);
+                                        this.isLoading = false;
+                                        this.toaster.presentToastDataMissing("Código :  "+resAtencion[0].codigo+', error :'+resAtencion[0].descripcion, 'top', 'bpm');  
+                                      }
+                                      
+                                    }else{
+                                      setTimeout(() => {
+                                                this.switchButtons(2);
+                                              }, 6000);
+                                      this.isLoading = false;
+                                      this.toaster.presentToast(resAtencion.error.Message, 'top', 'solicitante');
+                                    }
+                                },
+                                async (error) => {
+                                  this.isLoading = false;
+                                  this.toaster.presentToast(error.error.Message, 'top', 'solicitante');
+                                }
+                          
+                              )
+                      }, 6000);//this.randomize(3, 6));
+                    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                  },
+                  async (error) => {
+                    
+                  }
+                )
+                  /**/
+          }
+        }
+      }, 1500);
+
+      setTimeout(() => {
+        console.log('Datos para envio corregido?');
+        console.dir(this.datosDeEnvio);
+      }, 1800);
+    }
+
+    validarDatos(origen:any){
+
+      this.isLoading = true;
+      this.datosComunes = [];
+      this.cacheCliente = [];
+      this.validaNulosAju = [];
+      this.cacheClienteFix = [];
+      this.datosIncompletos = [];
+      this.datosCompletados = [];
+      
+      this.evaluarFotos();
+      this.evaluarDeuda();
+      this.cantidadNulos = 1;
+      $('#dataNullAju').fadeIn('xslow');
+      $('#camButtonAju').fadeOut();
+      
+      this.accordionGroup.value = [];
+      this.toogleAccordion2('second');
+      
+      let fotosLocal = JSON.parse(localStorage.getItem('fotos-'+this.atencionId));
+        if (fotosLocal) {
+          this.fotos = fotosLocal;
+        }
+
+      this.api.ObtenercacheCliente(this.idAtencion).pipe( 
+      finalize(async ()=>{
+        })
+      ).subscribe(
+        async (res) =>{
+        this.cacheCliente = res[0];
+        
+        }
+      )
+      
+
+      setTimeout(() => {
+        const texto = JSON.stringify(this.cacheCliente); //"Arreglo { variable1: valor1, variable2: valor2, variable3: valor3 }";
+
+          // Extraer todo lo que está dentro de las llaves
+          const contenido = texto.match(/\{([^}]+)\}/)[1];
+
+          // Separar por comas
+          const pares = contenido.split(",").map(p => p.trim());
+
+          // Separar clave y valor
+          const resultado = pares.map(p => {
+            const [nombre, valor] = p.split(":").map(x => x.trim().replace('"', '').replace('"', ''));
+            return { nombre, valor };
+          });
+
+          this.cacheClienteFix = resultado;
+          
+          console.log('resultado'); console.dir(resultado);
+
+          for (var i = 0; i < localStorage.length; i++){
+            if (localStorage.key(i).indexOf('datos-') == 0) {
+              console.log('Para datos 1')
+              let storageKey = localStorage.key(i)?.split('-')[1];
+              let storageVal = localStorage.getItem(localStorage.key(i));
+              let tryValue = parseInt(storageVal);
+
+              console.log('storage key : '+storageKey+', storage val : '+storageVal+', try value : '+tryValue);
+
+              this.datosCompletados.push({nombre: storageKey, valor: storageVal});
+
+              if (typeof tryValue == 'number' && !isNaN(tryValue) && (storageVal.length < 7)) {
+                this.datos.push(
+                  {nombre: storageKey, valor: tryValue}
+                  )
+              }else{
+                this.datos.push(
+                  {nombre: storageKey, valor: storageVal}
+                  )
+                }
+          }
+        }
+
+      }, 900);
+
+      setTimeout(() => {
+        console.log('Los datos listos ');
+        console.dir(this.datosCompletados);
+      }, 1300);
+      
+      setTimeout(() => {
+        const datosAjustador = this.buildAjustadorValidationRecord();
+        const validationResult = validateClaimStage(datosAjustador, ajustadorScreenValidationRules);
+
+        this.datosIncompletos = validationResult.missing.map((issue) => {
+          const item = requiredDataAjustador.find((requiredItem) => requiredItem.nombre === issue.field);
+          return {
+            nombre: issue.label,
+            valor: 'null',
+            elementSegmento: item?.pagSegmento,
+            indexSegmento: item?.segmentIndex
+          };
+        });
+        this.datosComunes = ajustadorScreenValidationRules
+          .filter((rule) => !validationResult.missing.some((issue) => issue.field === rule.field))
+          .map((rule) => ({ nombre: rule.field, valor: datosAjustador[rule.field] }));
+      }, 1600);
+      
+      
+      setTimeout(() => {
+        $('#camButtonAju').fadeIn();
+        this.cantidadNulos = this.datosIncompletos.length;
+        
+        this.isLoading = false;
+        if (this.cantidadNulos == 0) {
+          this.estaEvaluado = true;
+          
+          localStorage.setItem('estaEvaluado', 'true');
+          
+          this.evaluarDanios();
+
+          let iconoContenedor = document.getElementById('infoText');
+            let iconoAprobado = document.createElement('img');
+            iconoAprobado.src = '../../assets/img/aprobar.svg';
+            iconoAprobado.style.width = '45px';
+            iconoAprobado.style.height = '45px';
+            iconoAprobado.style.position = 'absolute';
+            iconoAprobado.style.top = '-5px';
+            iconoAprobado.style.right = '-5px';
+            iconoContenedor.appendChild(iconoAprobado);
+
+          //$('#validateButtona').fadeOut();
+            //$('#saveDataButtona').fadeIn();
+            //$('#validateAgainButtona').fadeIn();
+            //$('#cancelaButtona').fadeIn();
+            //clearInterval(this.progInterval);
+            this.textoInfo = 'Datos completados con éxito! Ahora puedes proceder a enviarlos haciendo click en GUARDAR DATOS';
+            $('#spanProgressAju').removeClass('progress');
+            $('#spanProgressAju').addClass('progress-end');
+            
+        }else{
+          this.estaEvaluado = false;
+          setTimeout(() => {
+            localStorage.setItem('estaEvaluado', 'true');
+            $('#dataNullAju').fadeIn(); $('#dataNullAju').attr('style', 'display:inherit !important;');
+
+            if (this.cantidadNulos > 0) {
+              //$('#validateButtona').fadeIn();
+              //$('#infoIncompleto').fadeIn();
+              
+              //$('#saveDataButtona').fadeOut();
+              //$('#validateAgainButtona').fadeOut();
+              //$('#cancelaButtona').fadeOut();
+              //$('#dataNullAju').fadeOut(); $('#dataNullAju').attr('style', 'display:none !important;');
+            }else{
+              //$('#validateButtona').fadeOut();
+              //$('#infoIncompleto').fadeOut();
+
+              //$('#saveDataButtona').fadeIn();
+              //$('#validateAgainButtona').fadeIn();
+              //$('#cancelaButtona').fadeIn();
+              
+            }
+          }, 2500);
+          
+        }
+      }, 2800);
+
+    }
+  evaluarDeuda() {
+    let adeuda:any = localStorage.getItem('AcuerdoDeDeuda-'+this.idAtencion);
+    this.AcuerdoDeDeuda = ( adeuda === 'true');
+    if (this.AcuerdoDeDeuda == true) {
+    }else{
+    }
+  }
+
+    evaluarFotos(){
+      let fotosLocal = JSON.parse(localStorage.getItem('fotos-'+this.atencionId)); let enviadas:any;
+      if (fotosLocal) {
+        this.fotos = fotosLocal;
+
+        enviadas = localStorage.getItem('fotosEnviadas-'+this.atencionId);
+        this.fotosEnviadas = (enviadas == 'true');
+
+        if (this.fotos.length == 0) {
+          if (this.fotosEnviadas == false) {
+            this.textoFotos = this.textoNoFotos +'. '+ this.textoFotosNoEnviadas +'. '+ this.textoFotosInfo;
+          }else{
+            this.textoFotos = this.textoNoFotos +'. '+ this.textoFotosInfo;
+          }
+        }else{
+          if (this.fotosEnviadas == false) {
+            this.textoFotos = this.textoFotosNoEnviadas +'. '+ this.textoFotosInfo;
+          }else{
+            this.textoFotos ='';
+          }
+        }
+      }
+      
+      
+      
+    }
+
+    evaluarDanios(){
+      console.log('Los daños seleccionados son ');
+      console.dir(this.daniosSelectAju);
+      if (this.daniosSelectAju.length == 0) {
+        this.danioMessage = 'No se han seleccionado daños';
+        this.danioPosition = 'top';
+        this.danioClass = 'danioToast';
+        this.textoInfo = 'Faltan daños por seleccionar. Puedes guardar la atención, sin embargo no se reflejarán daños en los informes.';
+        $('#infoTexto').fadeIn();
+      }else{
+
+        for (let index = 0; index < this.daniosSelectAju.length; index++) {
+          const element = this.daniosSelectAju[index];
+          let codigoDanio = element.Id;
+          let elTipo = localStorage.getItem('TipoReparacion-'+codigoDanio);
+          if (index == (this.daniosSelectAju.lenght-1)) {
+            localStorage.setItem('daniosSeleccionados', JSON.stringify(this.daniosSelectAju));
+          }
+        }
+        //this.eliminarDuplicadosDanios(this.daniosSelectAju, 2);
+      }
+
+      if (this.datosIncompletos.length > 0) {
+              //$('#validateButtona').fadeIn();
+              //$('#infoIncompleto').fadeIn();
+              //$('#dataNullAju').fadeOut(); $('#dataNullAju').attr('style', 'display:none !important;');
+            }else{
+              //$('#validateButtona').fadeOut();
+              //$('#infoIncompleto').fadeOut();
+              
+            }
+
+      if (this.daniosSelectCulpa.length == 0) {
+        this.textoInfoDaniosCulpa = 'Falta completar el acuerdo de deuda. Puedes guardar la atención, sin embargo no se reflejarán datos del culpable en los informes.';
+        
+      }else{
+        //this.eliminarDuplicadosDanios(this.daniosSelectCulpa, 2);
+      }
+    }
+
+    switchButtons(type:any){
+      if (type == 1) {
+        //$('#validateButtona').fadeOut();
+        //$('#infoIncompleto').fadeIn();
+        //$('#saveDataButtona').fadeOut();
+        //$('#validateAgainButtona').fadeOut();
+        //$('#cancelaButtona').fadeOut();
+
+        $('#resultsButtona').fadeIn();
+        $('#goHomeButtona').fadeIn();
+      }else{
+        //$('#validateButtona').fadeIn();
+        //$('#infoIncompleto').fadeIn();
+        //$('#saveDataButtona').fadeIn();
+        //$('#validateAgainButtona').fadeIn();
+        //$('#cancelaButtona').fadeIn();
+
+        $('#resultsButtona').fadeOut();
+        $('#goHomeButtona').fadeOut();
+      }
+
+    }
+
+    switchButtonsAll(type:any){
+      if (type == 1) {
+        //$('#validateButtona').fadeOut();
+        //$('#infoIncompleto').fadeIn();
+        //$('#saveDataButtona').fadeOut();
+        //$('#validateAgainButtona').fadeOut();
+        //$('#cancelaButtona').fadeOut();
+
+        $('#resultsButtona').fadeOut();
+        $('#goHomeButtona').fadeOut();
+      }else{
+        //$('#validateButtona').fadeOut();
+        //$('#infoIncompleto').fadeIn();
+        //$('#saveDataButtona').fadeIn();
+        //$('#validateAgainButtona').fadeIn();
+        //$('#cancelaButtona').fadeIn();
+
+        $('#resultsButtona').fadeOut();
+        $('#goHomeButtona').fadeOut();
+      }
+
+    }
+
+    goResults(){
+      this.router.navigate(['./end-process'], { queryParams: { Id: this.atencionId, CodigoReclamoFicohsa: this.codigoReclamoFicohsa.toString(),
+        CodigoBPMFicohsa: this.codigoBPMFicohsa.toString() } });
+    }
+
+    goHome() {
+      window.location.reload();
+    }
+
+    toValidationRecord(items: any[]){
+      return (items || []).reduce((record, item) => {
+        if (item && item.nombre) {
+          record[item.nombre] = item.valor;
+        }
+        return record;
+      }, {});
+    }
+
+    buildAjustadorValidationRecord(){
+      const datosAjustador = this.toValidationRecord(this.datosCompletados);
+      const currentAttention = this.idAtencion?.toString();
+
+      return requiredDataAjustador.reduce((record, item) => {
+        const storageValue = localStorage.getItem(item.storageKey);
+        const belongsToCurrentAttention = storageValue?.startsWith(currentAttention+'-');
+
+        if (belongsToCurrentAttention) {
+          record[item.nombre] = datosAjustador[item.nombre] ?? storageValue.split('-').slice(1).join('-');
+        }
+
+        return record;
+      }, {});
+    }
+
+    evaluarDatosComunes(completados, incompletos){
+      const nombresArr2 = new Set(incompletos.map(e => e.nombre));
+      const comunes = completados.filter(e => nombresArr2.has(e.nombre));
+      this.datosComunes = comunes;
+      console.log('comunes ');
+      console.dir(comunes);
     }
 
     evaluateKm(event){
@@ -514,7 +1556,7 @@ export class AjustadorhnPage implements OnInit {
       
     }
 
-    async presentToastEditSig(message, position, clase) {
+    async presentToastEditSig(message:any, position:any, clase:any) {
       
       const toast = await this.toast.create({
         message: message,
@@ -543,24 +1585,84 @@ export class AjustadorhnPage implements OnInit {
       await toast.present();
     }
 
-    inicializarCanvas(){
-      var node = document.getElementById('my-node');
-  
-        domtoimage.toPng(node)
-      .then(function (dataUrl) {
-        this.myCanvasImage =dataUrl;
-        //console.log('mi imagen + '+this.myCanvasImage)
-      })
-    }
+    
 
     hasNonDigit(str) {
       return /\D/g.test(str.toString());
     }
     
-  
+  checarCoberturas(){
+    setTimeout(() => {
+      let cobert:any = localStorage.getItem('coberturas');
+      this.coberturas = JSON.parse(cobert);
+
+      console.log('Las coberturas en segmento solicitante'); console.dir(this.coberturas);
+
+      if (this.coberturas.length == 0) {
+        this.toaster.presentToastAlert('Esta póliza no cuenta con cobertura para servicios legales. Consulte con su proveedor de servicios.', 'top', 'danger', 10000);
+        this.esConduceSeguro = true;
+      }else{
+        this.esConduceSeguro = false;
+      }
+
+      
+    }, 300);
+  }
 
   ionViewDidEnter(){
-    //this.getCountry();
+
+    let polNum:any;
+    let cerNum:any;
+
+    setTimeout(() => {
+      polNum = this.elExpediente[0].PolizaExterna.split('-')[1];
+      cerNum = this.elExpediente[0].Certificado;
+
+      const cobertura = {
+      pNumPoliza: parseInt(polNum),
+      pNumSiniestro: '',
+      pNumCertificado: parseInt(cerNum),
+      pNumEndoso: '',
+      pNumAsegurado: ''
+    }
+    
+        this.api.Valida_Lista_Coberturas(cobertura).pipe( 
+          finalize(async ()=>{
+            this.isLoading = false;
+          })
+        ).subscribe(
+          (res) =>{
+            console.log('Cobertura de póliza ')
+            console.dir(res)
+
+            //localStorage.setItem('coberturas', JSON.stringify(res));
+       
+          }
+        )
+          
+        }, 3000);
+
+    setTimeout(() => {
+
+      
+        let evaluado:any = localStorage.getItem('estaEvaluado');
+        this.estaEvaluado = true;//(evaluado === 'true');
+        console.log('El estado de evaluación es : '+this.estaEvaluado);
+
+        if (this.estaEvaluado == true) {
+          //$('#validateButtona').fadeOut();
+            //$('#saveDataButtona').fadeIn();
+            //$('#validateAgainButtona').fadeIn();
+            //$('#cancelaButtona').fadeIn();
+          this.validarDatos(2);
+          this.listarDanios();
+        }
+        //this.validarDatos();
+        //this.setFirstSegment()
+      }, 1000);
+
+      
+      
   }
 
   damagePosition(valor:number){
@@ -759,15 +1861,12 @@ export class AjustadorhnPage implements OnInit {
   }
 
   handleSave(){
-    //alert(this.platform.is('android'))
-    //this.router.navigate(['./end-process'], { queryParams: { Id: this.atencionId } });
-    
-    if (this.platform.is('android')) {
-      this.getCountry();      
-    }else{
-      this.validarFormulario();
-    }
-    /**/
+    // se elimina getcountry
+    this.validarDatos(3);
+  }
+
+  goFotos() {
+    this.router.navigate(['./fotoshn']);
   }
 
   goESignature(){
@@ -792,28 +1891,23 @@ export class AjustadorhnPage implements OnInit {
     //console.dir(this.laLocalidad)
     this.miLocalidad = JSON.stringify(this.laLocalidad);
     this.miPais = this.laLocalidad[0].countryCode;
-    //alert('Codigo de país '+this.miPais)
     this.miPaisNombre = this.laLocalidad[0].countryName;
     localStorage.setItem('codigoPais', this.miPais);
     localStorage.setItem('nombrePais', this.miPaisNombre);
     this.latitud = this.laLocalidad[0].latitude;
     this.longitud = this.laLocalidad[0].longitude;
-    this.validarFormulario();
+    this.validarDatos(4);
 
     
   }
 
   scrollToElement() {
-    alert('I am gonna scroll')
-
-    
     $('#elemAju').animate({scrollTop:200}, 1000);
   }
 
   getCanvasWith() {
 
     this.panelWidth = (document.getElementById('cardAseguradoFinal').clientWidth);
-    //alert(this.panelWidth)
     if (this.platform.is('android') == true) {
       this.canvasAseguradoWidth = this.panelWidth - 40;
     } else {
@@ -823,7 +1917,6 @@ export class AjustadorhnPage implements OnInit {
 
   identificarPais(){
     this.miPais = localStorage.getItem('codigoPais');
-    //alert(this.miPais);
     if (this.miPais == "HN"){
       this.codigoPais = 'hn';
     }else if(this.miPais == "GT"){
@@ -832,9 +1925,6 @@ export class AjustadorhnPage implements OnInit {
   }
 
   async getTipoSolicitante(){
-//    const load = await this.loading.create();
-//    await  load.present();
-//alert('VOY POR EL SOLICITANTE')
     this.isLoading = true;
     this.api.ListTipoDeSolicitanteInformeAjuste().pipe( 
       finalize(async ()=>{
@@ -858,7 +1948,6 @@ export class AjustadorhnPage implements OnInit {
   }
 
   async getTipoFirma(){
-    //alert('Firma')
 //    const load = await this.loading.create();
 //    await  load.present();
     this.isLoading = true;
@@ -930,7 +2019,6 @@ export class AjustadorhnPage implements OnInit {
     for (let index = 0; index < this.tipoLicencia.length; index++) {
       const element = this.tipoLicencia[index];
       const laLicenciaTipo = element.TipoLicencia;
-      //alert(laLicenciaTipo)
       if (element.Id == this.elTipoLicenciaId) {
         $('#tipoLicenciaDisplay').text(laLicenciaTipo)
       }
@@ -1002,8 +2090,6 @@ export class AjustadorhnPage implements OnInit {
       if (this.elTipoParentesco == element.CODIGO) {
         $('#parentescoDisplay').text(element.DESCRIPCION);
       }
-      //alert(this.elTipoParentesco+', '+element.CODIGO+', '+element.DESCRIPCION)
-      //alert(element.)
     }
     
   }
@@ -1027,638 +2113,6 @@ export class AjustadorhnPage implements OnInit {
       this.menu[i]= !this.menu[i];
   }
 
-  
-  validarFormulario(){
-    //this.dataSiniestro.push(this.dataAppend);
-console.log('Predeterminados');
-console.dir(valoresPredeterminados[0].puntoServicio)
-   
-    this.isLoading = true;
-
-    this.api.ObtenercacheCliente(this.idAtencion).pipe( 
-      finalize(async ()=>{
-        //alert('Finalice')
-//        this.isLoading = false;
-        //this.isComplete = true;
-      })
-    ).subscribe(
-      async (res) =>{
-        this.cacheCliente = res[0];
-        console.log('Cache de cliente');
-        console.dir(this.cacheCliente);
-        this.elParentesco = this.cacheCliente['Parentesco'];
-      }
-    )
-    
-    setTimeout(() => {
-      
-    
-    this.validaNulosAju = [];
-    this.AjustadorFiltro = [];
-    this.storageArrayFilter = [];
-    this.storageArrayIndexs = [];
-    this.storageArrayStrings = [];
-    
-    for (let index = 0; index < this.requiredD.length; index++) {
-      const element = this.requiredD[index];
-      let elnombre = element.nombre;
-      let laEtiqueta = element.etiqueta;
-      let laCategoria = element.categoria;
-      let elValorDP; let elValorC; let laStorageKey; let evaluacion;
-      
-      if (laCategoria == 'ajustador') {
-        //console.log(laEtiqueta)
-        this.AjustadorFiltro.push(element);
-
-        
-      }
-
-      if (index == (this.requiredD.length-1)) {
-        //console.dir(this.AjustadorFiltro)
-        for (let indexDP = 0; indexDP < this.AjustadorFiltro.length; indexDP++) {
-          const elementCLiente = this.AjustadorFiltro[indexDP];
-          elnombre = elementCLiente.nombre;
-          laEtiqueta = elementCLiente.etiqueta;
-          laStorageKey = elementCLiente.storageKey;
-          elValorDP = this.datos[elnombre];
-          if (!elValorDP || elValorDP == '') {
-            elValorC = this.elExpediente[elnombre];
-            if (!elValorC || elValorC === ''){
-              this.validaNulosAju.push(
-                {etiqueta:laEtiqueta, index:indexDP}
-                );
-              this.storageKeys.push(
-                {etiqueta:laEtiqueta, key:laStorageKey, index: indexDP}
-              )
-            }
-            //console.log(elnombre+', '+laEtiqueta+', '+elValorC)
-          }
-
-          if (indexDP==(this.AjustadorFiltro.length-1)) {
-            
-            //console.log('Hey, listen!')
-           // console.dir(this.validaNulosAju)
-            this.cantidadNulos = this.validaNulosAju.length;
-
-            console.log('La cantidad de nulos es '+this.cantidadNulos);
-            //alert(('La cantidad de nulos es '+this.cantidadNulos))
-            if (this.cantidadNulos > 0) {
-              
-            this.isLoading = false;
-            //alert('Voy a cerrar el acordion')
-            //this.toggleAccordion('second');
-            this.accordionGroup.value = [];
-
-
-            setTimeout(() => {
-              $('#accordionGroup').fadeOut();
-              //this.scrollToElement();
-            }, 2000);
-            
-
-              //alert("Cantidad de Nulos es "+this.cantidadNulos+', Cantida en Localstorage es '+localStorage.length)
-              for (let indexS = 0; indexS < localStorage.length; indexS++) {
-                const elementS = localStorage.key(indexS);
-                let elementV = localStorage.getItem(localStorage.key(indexS));
-                
-                for (let indexK = 0; indexK < this.storageKeys.length; indexK++) {
-                  const element = this.storageKeys[indexK];
-                  
-                  if (elementS.indexOf(element.key) == 0) {
-                    console.log('Evaluación de '+element.etiqueta)
-                    //console.log(element.etiqueta+', index '+element.index);
-                    for (let indexD = 0; indexD < this.validaNulosAju.length; indexD++) {
-                      const elementNulo = this.validaNulosAju[indexD];
-                      if (element.index == elementNulo.index) {
-                        this.validaNulosAju.splice(indexD, 1);
-                      }
-                      
-                      //alert('A evaluar')
-                      this.cantidadNulos = this.validaNulosAju.length;
-                      //alert('Hola 4, y cantidad de nulos es '+this.cantidadNulos);
-                      if (this.cantidadNulos == 0) {
-
-                        // Envio de Datos Siniestro
-                        evaluacion = true;                        
-                        // iniciar el proceso de envío de datos
-                        
-                        //console.log('La data del siniestro');
-                        //console.dir(this.datos)    
-                        localStorage.setItem('elFiniquito', JSON.stringify(this.elFiniquito));
-                      
-                        this.miPais = "HN";
-
-                        if (this.miPais == "HN") {
-                          console.dir(this.datos)
-                        }
-                      }
-                      if (indexD==(this.validaNulosAju.length)) {
-                        this.cantidadNulos = this.validaNulosAju.length;
-                        if (this.cantidadNulos == 0) {
-                          console.log('Asi está el arreglo de datos ');
-                          console.dir(this.datos)
-
-                          // Inicio Envio de Datos
-                          evaluacion = true;
-                          localStorage.setItem('elFiniquito', JSON.stringify(this.elFiniquito));
-                          
-                          if (localStorage.length > 0) {
-
-                            let siniestro = localStorage.getItem('elTipoSiniestro');
-                            this.elTipoSiniestro = siniestro.split('-')[1];
-
-                            this.elTipoParentesco = localStorage.getItem('dataProcess-Parentesco');
-                            if (this.elTipoParentesco) {
-                            }else{
-                              this.elTipoParentesco = localStorage.getItem('datos-Parentesco');
-                            }
-
-                            this.inicialGenero = localStorage.getItem('inicialGenero');
-
-                            for (var i = 0; i < localStorage.length; i++){
-                              if (localStorage.key(i).indexOf('bpmArray-') == 0) {
-                                this.valorReserva = localStorage.getItem(localStorage.key(i));
-                              }
-
-                              if (localStorage.key(i).indexOf('dataProcess-') == 0) {
-                                console.log('Para dataProcess')
-                                let storageKey = localStorage.key(i).split('-')[1];
-                                let storageVal = localStorage.getItem(localStorage.key(i));
-                                let tryValue = parseInt(storageVal);
-
-                                if (typeof tryValue == 'number' && !isNaN(tryValue) && (storageVal.length < 7)) {
-                                  this.datos.push(
-                                    {nombre: storageKey, valor: tryValue}
-                                    )
-
-                                  this.storageArrayFilter.push(
-                                    {key: storageKey, val: tryValue, index: i}
-                                  )
-                                }else{
-                                  this.datos.push(
-                                    {nombre: storageKey, valor: storageVal}
-                                    )
-
-                                  this.storageArrayStrings.push(
-                                    {key: storageKey, val: storageVal, index: i}
-                                  )
-                                }
-                              }
-
-                              if (localStorage.key(i).indexOf('datos-') == 0) {
-                                console.log('Para datos')
-                                  let storageKey = localStorage.key(i).split('-')[1];
-                                  let storageVal = localStorage.getItem(localStorage.key(i));
-                                  let tryValue = parseInt(storageVal);
-
-                                  if (typeof tryValue == 'number' && !isNaN(tryValue) && (storageVal.length < 7)) {
-                                    this.datos.push(
-                                      {nombre: storageKey, valor: tryValue}
-                                      )
-
-                                    this.storageArrayFilter.push(
-                                      {key: storageKey, val: tryValue, index: i}
-                                    )
-                                  }else{
-                                    this.datos.push(
-                                      {nombre: storageKey, valor: storageVal}
-                                      )
-
-                                    this.storageArrayStrings.push(
-                                      {key: storageKey, val: storageVal, index: i}
-                                    )
-                                  }
-
-                              }
-
-                              if (i == (localStorage.length-1)) {
-                                console.dir(this.storageArrayFilter);
-                                console.dir(this.storageArrayStrings);
-                                
-
-                                this.OtrosTalleres = localStorage.getItem('OtrosTalleres');
-
-                                this.datos.push(
-                                  {nombre: 'RefAtencionId', valor: this.atencionId},
-                                  {nombre: 'RefProveedorAgenteId', valor: this.idAjustador},
-                                  {nombre: 'Parentesco', valor: this.elParentesco},
-                                  {nombre: 'OtrosTalleres', valor: this.OtrosTalleres}
-                                  )
-
-                                console.log('El arreglo listo para envios es ');
-                                console.dir(this.datos);
-                                console.log('Y la firma es ');
-                                console.log(this.firmaPrecargada);
-                                console.log('Y la firma inspeccion es ');
-                                console.log(this.firmaPrecargadaInspector);
-
-                                this.miPais = "HN";
-
-                                if (this.miPais == "HN") {
-
-                                  console.log('Ta daaaaaaa')
-                                  console.dir(this.datos)
-                                  if (this.fechaValida == false) {
-                                    this.toaster.presentToastNoButtonsRed('La fecha de inspección debe ser las misma fecha del siniestro o posterior.', 'top', 'validacion');
-                                  }else{
-                                    //alert(this.firmaPrecargada)
-                                    if((this.firmaPrecargada == emptySignature) || (this.firmaPrecargada==emptySignatureWhite)){
-                                      this.toaster.presentToastNoButtonsRed('Se debe firmar para guardar los datos.', 'top', 'firma-siniestro');
-                                    }else{
-                                      
-                                      console.log('Los terceros');
-                                      console.dir(this.acompaniantes);
-                                      console.dir(this.testigos);
-                                      console.dir(this.lesionados);
-                                      console.dir(this.propiedades);
-                                      console.log('El taller : ' +this.datos[0].TallerMecanicoId);
-
-
-                                      //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-                                      //setTimeout(() => {
-                                        
-                                        this.api.GuardarSiniestroHN(this.datos).pipe( 
-                                          finalize(async ()=>{})
-                                        ).subscribe(
-                                          async (res) =>{
-                                          //console.log(res);
-                                          this.audienciaId = res;
-                                          this.idTablaAjustador = res.toString();
-
-                                          //////////////////////////////////////
-
-                                          if (this.propiedades.length >0) {
-                                            for (let index = 0; index < this.propiedades.length; index++) {
-                                              const element = this.propiedades[index];
-                                              
-                                              const dataPropiedad = [
-                                                {
-                                                  "RefAjustadorAudienciaId": res, // Id de la audiencia del res clienteHn
-                                                  "Nombre": element.NombrePropietario, // Nombre del 
-                                                  "Direccion": element.DireccionDelBien,
-                                                  "DaniosPrivado": element.DescripcionDelDanio,
-                                                  "RefAjustadorId": this.api.currentUser.ProveedorAgenteId,
-                                                  "Telefono": element.Telefono,
-                                                  "DescripcionDelBien": element.DescripcioDelBien,
-                                                  "DireccionDelBien": element.DireccionDelBien,
-                                                  "DescripcionDelDanio": element.DescripcionDelDanio,
-                                                  "NombreDelBienAfectado": element.BienAfectado
-                                                }
-                                              ]
-    
-                                              this.api.GuardarPropiedadTercero(dataPropiedad).pipe( 
-                                                finalize(async ()=>{})
-                                              ).subscribe(
-                                                async (res) =>{
-                                                },
-                                                async (res) => {
-                                                  this.toaster.presentToast(res.error.Message, 'top', 'propiedad');
-                                                }
-                                          
-                                              )
-                                            }
-                                            
-                                          }
-                                          
-                                  
-                                  
-                                          if (this.acompaniantes.length > 0) {
-                                            for (let index = 0; index < this.acompaniantes.length; index++) {
-                                                const element = this.acompaniantes[index];
-                                    
-
-                                                const dataTercero = {
-                                                  Nombre: element.Nombre,
-                                                  Telefono: element.Telefono,
-                                                  Direccion: element.Direccion,
-                                                  DescripcionLesion: null,
-                                                  DireccionHospitalizacion: null,
-                                                  TipoPersonaSiniestro: 1,
-                                                  RefAjustadorAudienciaId: this.audienciaId
-                                                }
-
-                                                
-                                                console.dir(dataTercero);
-                                        
-                                                this.api.GuardarPersonaSiniestro(dataTercero).pipe( 
-                                                  finalize(async ()=>{
-                                                  })
-                                                ).subscribe(
-                                                  async (res) =>{
-                                                  },
-                                                  async (res) => {
-                                                    this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
-                                                  }
-                                            
-                                                )
-                                            }
-                                          }
-                          
-                                          if (this.testigos.length > 0) {
-                                            for (let index = 0; index < this.testigos.length; index++) {
-                                              const element = this.testigos[index];
-                                    
-                                              const dataTercero = {
-                                                Nombre: element.Nombre,
-                                                Telefono: element.Telefono,
-                                                Direccion: element.Direccion,
-                                                DescripcionLesion: null,
-                                                DireccionHospitalizacion: null,
-                                                TipoPersonaSiniestro: 2,
-                                                RefAjustadorAudienciaId: this.audienciaId
-                                              }
-
-                                              
-                                              console.dir(dataTercero);
-                                      
-                                              this.api.GuardarPersonaSiniestro(dataTercero).pipe( 
-                                                finalize(async ()=>{
-                                                  //await load.dismiss();
-                                                })
-                                              ).subscribe(
-                                                async (res) =>{
-                                                },
-                                                async (res) => {
-                                                  this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
-                                                }
-                                          
-                                              )
-                                            
-                                            }
-                                            
-                                          }
-                                  
-                                          if (this.lesionados.length > 0) {
-                                            for (let index = 0; index < this.lesionados.length; index++) {
-                                              const element = this.lesionados[index];
-                                      
-                                              const dataTercero = {
-                                                Nombre: element.Nombre,
-                                                Telefono: element.Telefono,
-                                                Direccion: element.Direccion,
-                                                DescripcionLesion: element.TipoLesion,
-                                                DireccionHospitalizacion: element.DireccionHospitalizacion,
-                                                TipoPersonaSiniestro: 3,
-                                                RefAjustadorAudienciaId: this.audienciaId
-                                              }
-
-                                              
-                                              console.dir(dataTercero);
-                                      
-                                              this.api.GuardarPersonaSiniestro(dataTercero).pipe( 
-                                                finalize(async ()=>{
-                                                  //await load.dismiss();
-                                                })
-                                              ).subscribe(
-                                                async (res) =>{
-                                                },
-                                                async (res) => {
-                                                  this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
-                                                }
-                                          
-                                              )
-                                            
-                                            }
-                                          }
-
-                                          this.insertarConvenioReparacion();
-
-                                          //////////////////////////////////////////////////
-  
-                                          this.api.GuardarIdTablaAjustador(this.idAtencion, this.idTablaAjustador).pipe( 
-                                            finalize(async ()=>{
-                                              console.log('Fin de guardar Id de Tabla');
-                                            })
-                                          ).subscribe(
-                                            async (resTabla) =>{
-                                              console.log(resTabla);
-                                            }
-                                          )
-  
-                                            if (!this.elExpediente[0].NombreConductor) {
-                                              this.elExpediente.NombreConductor = this.nombreDelConductor;
-                                            }
-  
-                                            this.nombreDelConductor = localStorage.getItem('datos-NombreConductor');
-  
-                                            // DEBUG Fecha
-                                            let fechaToString = localStorage.getItem('datos-FechaHora');//this.laFechaSiniestroInspeccion.toString();
-                                            let fechaSplit = fechaToString.split('.')[0];
-  
-                                            
-                                  
-                                            this.dataBPM =  {
-                                              Chasis: this.elExpediente[0].Chasis,
-                                              puntoServicio: valoresPredeterminados[0].puntoServicio, // Predeterminado : 504
-                                              Poliza: this.elExpediente[0].PolizaExterna, // 
-                                              Certificado: this.elExpediente[0].Certificado.toString(),//parseInt(this.elExpediente[0].Certificado), // Pendiente
-                                              NombreAsegurado: this.elExpediente[0].Cliente,
-                                              Sucursal: valoresPredeterminados[0].Sucursal, // Predeterminado : 0001
-                                              Producto: valoresPredeterminados[0].Producto, // Predeterminado : AU01
-                                              Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
-                                              FechaOcurrencia: fechaSplit,//fechaSplit,//this.elExpediente[0].FechaRegistro, OJO
-                                              Causa: valoresPredeterminados[0].Causa, // Pendiente
-                                              ValorReserva: this.valorReserva.toString(), // Formulario
-                                              UsuarioBPM: this.elUsuario.UsuarioBPM, // Login
-                                              Latitud: this.latitud,//"14.0985125",//localStorage.getItem('latitud'), // Formulario
-                                              Longitud: this.longitud,//"-87.1849219",//localStorage.getItem('longitud'), // Formulario
-                                              NombreConductor: this.nombreDelConductor, // Formulario
-                                              Genero: this.inicialGenero, // Formulario
-                                              Parentesco: this.elTipoParentesco, // Formulario
-                                              Observacion: this.idTablaAjustador // Guardar Siniestro
-                                            }
-  
-                                            let dataBPMlocal =  {
-                                              Chasis: this.elExpediente[0].Chasis,
-                                              puntoServicio: valoresPredeterminados[0].puntoServicio, // Predeterminado : 504
-                                              Poliza: this.elExpediente[0].PolizaExterna, // 
-                                              Certificado: this.elExpediente[0].Certificado.toString(),//parseInt(this.elExpediente[0].Certificado), // Pendiente
-                                              NombreAsegurado: this.elExpediente[0].Cliente,
-                                              Sucursal: valoresPredeterminados[0].Sucursal, // Predeterminado : 0001
-                                              Producto: valoresPredeterminados[0].Producto, // Predeterminado : AU01
-                                              Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
-                                              FechaOcurrencia: fechaSplit,//this.elExpediente[0].FechaRegistro,
-                                              Causa: this.elTipoSiniestro, // Pendiente
-                                              ValorReserva: this.valorReserva.toString(), // Formulario
-                                              UsuarioBPM: this.elUsuario.UsuarioBPM, // Login
-                                              Latitud: "14.0985125",
-                                              Longitud: "-87.1849219",
-                                              NombreConductor: this.nombreDelConductor, // Formulario
-                                              Genero: this.inicialGenero, // Formulario
-                                              Parentesco: this.elTipoParentesco, // Formulario
-                                              Observacion: this.idTablaAjustador // Guardar Siniestro
-                                            }
-  
-                                            if (this.platform.is('android')) {
-                                              this.bpmArray = this.dataBPM;
-                                            }else{
-                                              this.bpmArray = dataBPMlocal;
-                                            }
-  
-                                            setTimeout(() => {
-                                              console.log('He aqui la data BPM');
-                                                      console.dir(this.bpmArray);
-                                                      this.isLoading = true;
-                                                      this.estaCompleto = true;
-                                                      
-                                                      this.api.GuardarBPM(this.bpmArray).pipe(finalize(async ()=>{
-                                                        this.isBPMcomplete = true;
-                                                        })
-                                                      ).subscribe(
-                                                        async (resAtencion) =>{
-                                                          console.log("Estoy guardando la data ");
-                                                          if(resAtencion){
-                                                            console.dir(resAtencion);
-                                                            if (resAtencion[0].codigo == 0 || resAtencion[0].codigo == "0") {
-                                                              this.toaster.presentToastNoButtons(resAtencion[0].descripcion, 'top', 'bpm');
-                                                              this.codigoBPMFicohsa = resAtencion[0].solicitud_bpm;
-                                                              this.codigoReclamoFicohsa = resAtencion[0].numero_reclamo;
-                                                              this.elFiniquito.NumeroReclamo = resAtencion[0].numero_reclamo;
-                                                              
-                                                              localStorage.setItem('IdTablaAjustador', this.idTablaAjustador);
-                                                              localStorage.setItem('codigoBPMF', this.codigoBPMFicohsa);
-                                                              localStorage.setItem('codigoReclamo', resAtencion[0].numero_reclamo);
-                                                              
-                                    
-                                                              let dataBPMupdate = 
-                                                              {
-                                                                IdTablaAjustador: parseInt(this.idTablaAjustador),
-                                                                CodigoReclamoFicohsa: this.codigoReclamoFicohsa.toString(),
-                                                                CodigoBPMFicohsa: this.codigoBPMFicohsa.toString()
-                                                              }
-                                                              
-                                                              
-                                                              let updateFiniquito = {
-                                                                RefAtencionId: this.atencionId,
-                                                                NumeroReclamo: this.codigoReclamoFicohsa.toString(),
-                                                                TipoCoberturaFicohsa: this.tipoDeCobertura
-                                                              }
-                                                              this.api.ActualizarFiniquito(updateFiniquito).pipe( 
-                                                                finalize(async ()=>{
-                                                                  console.log('This is the end finiquito');
-                                                                })
-                                                              ).subscribe(
-                                                                async (res) =>{}
-                                                              )
-                                                              
-                                                              //Llama a actualizar los datos de enlace BPM de Fiochsa
-                                                              this.api.ActualizarBPM(dataBPMupdate).pipe( 
-                                                                finalize(async ()=>{
-                                                                  console.log('This is the end')
-                                                                  this.isLoading = false;
-                                                                  
-                                                                  
-
-                                                                  $('#open-modal-success').click();
-                                                                  this.clearSegmentsStorage();
-                                                                    setTimeout(() => {
-                                                                      $('#closeSuccessButton').click();
-                                                                      $('#submitClaim').fadeOut('slow');
-                                                                      this.router.navigate(['./end-process'], { queryParams: { Id: this.atencionId, CodigoReclamoFicohsa: this.codigoReclamoFicohsa.toString(),
-                                                                        CodigoBPMFicohsa: this.codigoBPMFicohsa.toString() } });
-                                                                    }, 6000);
-                                                                })
-                                                              ).subscribe(
-                                                                async (res) =>{
-                                                                  console.log('Eeeeeeexitooooo! ');
-                                                                  this.isEeexittoooo = true;
-                                                                  this.miLogRespuesta = res;
-                                                                  console.dir(res);
-                                                                  //this.guardarConvenioReparacion();
-                                                                  
-                                                                },
-                                                                async (res) => {
-                                                                  this.isLoading = false;
-                                                                  let errorKey = 'acsel';
-                                                                  let elError = res.error.Message;
-
-                                                                  console.log('El resdultado del intento con el bpm es '+elError.toString().toLowerCase().includes(errorKey));
-                                                                  console.log('El resdultado indexOf del intento con el bpm es '+elError.toString().toLowerCase().indexOf(errorKey));
-                                                                  console.dir(res);
-                                                                  if (elError.toString().toLowerCase().includes(errorKey)) {
-                                                                    this.toaster.presentToast('Este chasis no está registrado en un programa de Seguros Ficohsa. Esta atención deberá ser procesada de diferente forma. Consulta a tu administrador de operaciones para una mejor resolución.', 'top', 'solicitante');  
-                                                                  }else{
-                                                                    this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
-                                                                    this.miLogRespuesta = res;
-                                                                  }
-                                                                  
-                                                                }
-                                                              )
-                                            
-                                                            }else{
-                                                              this.isLoading = false;
-                                                              this.toaster.presentToastDataMissing("Código :  "+resAtencion[0].codigo+', error :'+resAtencion[0].descripcion, 'top', 'bpm');  
-                                                            }
-                                                            
-                                                          }else{
-                                                            this.isLoading = false;
-                                                            this.toaster.presentToast(resAtencion.error.Message, 'top', 'solicitante');
-                                                          }
-                                                      },
-                                                      async (res) => {
-                                                        this.isLoading = false;
-                                                        this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
-                                                      }
-                                                
-                                                    )
-                                            }, 6000);//this.randomize(3, 6));
-  
-                                          } /// res
-                                        ) 
-                                        /**/
-                                      // subscribe
-                                      //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-                                    }
-                                  } 
-                                }else{
-
-                                  // Guatemala
-                                  
-                                  this.api.GuardarSiniestroHN(this.dataSiniestro).pipe( 
-                                    finalize(async ()=>{
-                                      this.isLoading = false;
-                                    })
-                                  ).subscribe(
-                                    async (res) =>{
-                                    },
-                                    async (res) => {
-                                      this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
-                                    }
-                              
-                                  )
-                                }
-                                
-                              }
-                              
-                            }
-                          }
-                        }else{
-                        }
-                      }
-                    }
-                    
-                  }
-
-                }
-              }
-
-              
-              evaluacion = false;
-            }else{
-              
-            }
-            console.log(evaluacion)
-            return evaluacion;
-          }
-          
-        }
-      }
-
-    }
-    }, 4000);// Timeout
-  }
 
   randomize(min, max) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min);//.toFixed(2);
@@ -1667,7 +2121,6 @@ console.dir(valoresPredeterminados[0].puntoServicio)
   
 
   onIonInfinite(ev) {
-    //this.generateItems();
     setTimeout(() => {
       (ev as InfiniteScrollCustomEvent).target.complete();
     }, 500);
@@ -1683,7 +2136,17 @@ console.dir(valoresPredeterminados[0].puntoServicio)
   }
 
   goBack(){
-    this.toaster.presentToastHome('Salir del forumulario? Los datos aun quedan en caché', 'middle', 'cliente');
+    this.alertaSalir();
+    //this.toaster.presentToastHome('Salir del forumulario? Los datos aun quedan en caché', 'middle', 'cliente');
+  }
+
+  async alertaSalir() {
+    const alert = await this.alert.create({
+      header:'Salir del formulario?',
+      message:'Los datos se perderan sin haber enviado. Salir?',
+      buttons:this.alertButtons
+    });
+    await alert.present();
   }
 
   entraNombre(event){
@@ -1787,7 +2250,6 @@ console.dir(valoresPredeterminados[0].puntoServicio)
   entraTaller(event){
     this.datos.TallerMecanicoId = event.target.value;
     console.log(this.tallerOtro)
-    //alert(event.target.value)
     console.log(event.target.value);
     console.dir(this.talleresFiltrados)
     for (let index = 0; index < this.talleresFiltrados.length; index++) {
@@ -1802,6 +2264,7 @@ console.dir(valoresPredeterminados[0].puntoServicio)
   entraTallerOtro(event){
     this.tallerOtro = event.target.value;
     console.log(this.tallerOtro)
+    localStorage.setItem('datos-OtrosTalleres', this.tallerOtro);
   }
 
   entraTallerOtroDireccion(event){
@@ -1812,7 +2275,6 @@ console.dir(valoresPredeterminados[0].puntoServicio)
   entraPesado(event){
     this.talleresFiltrados = [];
     this.esPesado = event.target.value;
-    //alert(this.esPesado+1)
     console.log(this.esPesado);
 
     //this.filtrarTalleres();
@@ -1877,8 +2339,6 @@ console.dir(valoresPredeterminados[0].puntoServicio)
 
     let losSegmentos = $('.segment-item-aju');
     let howManyAju = losSegmentos.length;
-    //alert(losSegmentos.eq(3).text());
-
     setTimeout(() => {
       losSegmentos.eq(3).click();
     }, 600);
@@ -1988,7 +2448,6 @@ console.dir(valoresPredeterminados[0].puntoServicio)
           if (index == (res.length - 1)) {
             this.firmaPrecargada = imagePrefix + element.FotoFirma;
             localStorage.setItem("dSignatureAsegurado", this.firmaPrecargada);
-            //alert(this.firmaPrecargada)
             this.isSignature = true;
           }
 
@@ -1996,7 +2455,6 @@ console.dir(valoresPredeterminados[0].puntoServicio)
       },
       async (res) => {
         this.firmaPrecargada = emptySignatureWhite;
-        //alert(this.firmaPrecargada)
         localStorage.setItem("dSignatureAsegurado", this.firmaPrecargada);
         this.isSignature = false;
       }
@@ -2050,21 +2508,14 @@ console.dir(valoresPredeterminados[0].puntoServicio)
     }
 
     this.fechaInspeccionLocal = new Date(mydateAjustador).toLocaleString(); 
-    //alert(this.fechaInspeccionLocal)
 
     this.mydateAjustador = mydateAjustador.split(brakePoint)[0];
     this.laFechaInspeccion = 'Fecha : '+mydateAjustador.split(brakePoint)[0].toString()+', Hora : '+(mydateAjustador.split(brakePoint)[1].toString()).split('-')[0];
 
-    
-    /*
-    //    this.fechaValida =  this.formateador.compararFechas(this.elExpediente[0].FechaRegistro, mydateAjustador);
-    //alert(this.fechaValida)
-    if (this.fechaValida) {}else{}
-    */
+
   }
 
   formatearFecha(mydateAjustador){
-    //alert(mydateAjustador)
   }
 
   entraIdentidad(event){
@@ -2073,6 +2524,7 @@ console.dir(valoresPredeterminados[0].puntoServicio)
       this.datos['IdentidaConductor'] = event.target.value;
       this.datos['Identificacion'] = event.target.value;
       this.datos['DPI_Pasaporte'] = event.target.value;
+      localStorage.setItem('datos-DPI_Pasaporte', event.target.value);
     }
   }
 
@@ -2110,13 +2562,11 @@ validateEmail(status){
     console.dir(this.elFiniquito)
   }
 
-  //alert(segmentInput)
   this.segmentoTitulo = segments_aju[daIndex].titulo;
   localStorage.setItem('segmentoTitulo', this.segmentoTitulo);
 
 
   if (segmentInput == 'culpable') {
-    //alert(segmentInput+', '+window.location.pathname)
     this.router.navigate(['./'+segmentInput], { queryParams: { pageSource: './ajustadorhn' } });
   }else{
     this.router.navigate(['./'+segmentInput]);
@@ -2133,7 +2583,6 @@ validateEmail(status){
 
   for (let index = 0; index < this.tipoSolicitante.length; index++) {
     const element = this.tipoSolicitante[index];
-    //alert(element.Id+', '+element.TipoSolicitante+', '+this.elTipoSolicitante)
     if (element.Id == this.elTipoSolicitante) {
       $("#TipoSolicitanteDisplay").text(element.TipoSolicitante);
     }
@@ -2160,25 +2609,84 @@ validateEmail(status){
     }
   }
 
+  validarDaniosCulpa(){
+    this.isRefreshingCulpa = true;
+    this.isLoading = true;
+    $('#loaderContainer').fadeIn();
+    for (var i = 0; i < localStorage.length; i++){
+        
+        if (localStorage.key(i).indexOf('daniosSelectCulpa-') == 0) {
+
+          let indexSelect = parseInt(localStorage.getItem(localStorage.key(i)));//+1;
+          for (let indexDanio = 0; indexDanio < this.danios.length; indexDanio++) {
+
+            const elementD = this.danios[indexDanio];
+
+            if (indexSelect == elementD.Id) {
+                let tipo:any;
+                let tipoIndex = parseInt(localStorage.getItem('TipoReparacionCulpaIndex-'+indexSelect));
+                let tipoId = parseInt(localStorage.getItem('TipoReparacionCulpa-'+indexSelect));
+
+                if (tipoId == 1) {tipo = 'Reparación';}else{tipo = 'Cambio';}
+                this.daniosSelectCulpa.push(elementD);
+                this.seleccionDeDaniosCulpable.push({Codigo: elementD.Codigo, Descripcion: elementD.Descripcion, Id: elementD.Id, tipo:tipo, tipoId:tipoId});
+                //console.dir(elementD);
+              } 
+          }
+
+
+          
+        }
+
+        if (i == (localStorage.length-1)) {
+          this.isRefreshingCulpa = false;
+          this.isLoading = false;
+          $('#loaderContainer').fadeOut();
+        }
+      }
+  }
+
   listarDanios(){
     this.daniosSelectAju = [];
     this.isRefreshing = true;
     console.log('Tengo esto en storage');
     console.dir(localStorage);
-    //this.refreshIcon =  '../../assets/img/recargar-2.gif';
-    //alert('Hey vo')
     setTimeout(() => {
       
       for (var i = 0; i < localStorage.length; i++){
         
-        
+        if (localStorage.key(i).indexOf('daniosSelectCulpa-') == 0) {
+
+          let indexSelect = parseInt(localStorage.getItem(localStorage.key(i)));//+1;
+          for (let indexDanio = 0; indexDanio < this.danios.length; indexDanio++) {
+
+            const elementD = this.danios[indexDanio];
+            if (indexSelect == elementD.Id) {
+              const duplicados = this.daniosSelectCulpa.filter(item => item.Id === elementD.Id);
+              if (duplicados.length === 0) {
+                this.daniosSelectCulpa.push(elementD);
+                console.log('Elemento culpa');
+              }
+            }
+          }
+
+
+          
+        }
+
         if (localStorage.key(i).indexOf('daniosSelect-') == 0) {
           console.log(localStorage.getItem(localStorage.key(i)));
           let indexSelect = parseInt(localStorage.getItem(localStorage.key(i)));//+1;
           for (let indexDanio = 0; indexDanio < this.danios.length; indexDanio++) {
             const elementD = this.danios[indexDanio];
             if (indexSelect == elementD.Id) {
-              this.daniosSelectAju.push(elementD);
+
+              const duplicados = this.daniosSelectAju.filter(item => item.Id === elementD.Id);
+              if (duplicados.length === 0) {
+                this.daniosSelectAju.push(elementD);
+              }
+
+              //this.daniosSelectAju.push(elementD);
               console.log('Elemento daño')
               console.dir(elementD);
             }
@@ -2190,12 +2698,15 @@ validateEmail(status){
           let otroVal = localStorage.getItem(localStorage.key(i));
           console.log('En listar ')
           console.dir(JSON.parse(otroVal));
-  
+          
         }
 
         if (i == (localStorage.length-1)) {
           this.isRefreshing = false;
-          //this.insertarConvenioReparacion();
+
+
+          this.eliminarDuplicadosDanios(this.daniosSelectAju, 1);
+          localStorage.setItem('daniosSelectAju', JSON.stringify(this.daniosSelectAju));
         }
       }
     }, 3000);
@@ -2207,10 +2718,7 @@ validateEmail(status){
     
     for (var i = 0; i < localStorage.length; i++){
       if (localStorage.key(i).indexOf('daniosSelect-') == 0) {
-        //localStorage.removeItem(localStorage.key(i));
-        //alert(localStorage.getItem(localStorage.key(i)))
-        let indexSelect = parseInt(localStorage.getItem(localStorage.key(i)));//+1;
-        //alert(indexSelect)
+        let indexSelect = parseInt(localStorage.getItem(localStorage.key(i)));
         for (let indexDanio = 0; indexDanio < this.danios.length; indexDanio++) {
           const elementD = this.danios[indexDanio];
           if (indexSelect == elementD.Id) {
@@ -2221,12 +2729,12 @@ validateEmail(status){
       }
     }
 
-    
-    //this.isLoading = true;
-    for (let index = 0; index < this.daniosSelectAju.length; index++) {
+    setTimeout(() => {
+      for (let index = 0; index < this.daniosSelectAju.length; index++) {
       const element = this.daniosSelectAju[index];
 
       let elTipoReparacion = localStorage.getItem('TipoReparacion-'+element.Codigo);
+
         let reparaArray = {
           codigoDanio : element.Codigo,
           descripcionDanio : element.Descripcion,
@@ -2234,6 +2742,7 @@ validateEmail(status){
           idAtencion : this.idAtencion,
           refTipofotoId : element.Id,
           TipoEntidad : Entidades[0].tipoEntidad,
+          FechaRegistro: new Date().toISOString(),
           TipoReparacion: elTipoReparacion
         };
 
@@ -2255,20 +2764,21 @@ validateEmail(status){
             }
             
           },
-          async (res) => {
-            this.toaster.presentToast(res.error.Message, 'top', 'taller');
+          async (error) => {
+            //this.toaster.presentToast(error.error.Message, 'top', 'taller');
           }
     
         )
         /**/
-        
+        if (index == (this.daniosSelectAju.length-1)) {
+          this.eliminarDuplicadosDanios(this.daniosSelectAju, 4);
+        }
       }
+    }, 900);
+    
       
       /**/
-    }
-
-    goHome() {
-      window.location.reload();
+      
     }
 
     toastDanio(danioInputDescripcion, danioInputId){
@@ -2294,12 +2804,8 @@ validateEmail(status){
                 if (localStorage.key(i).indexOf('daniosSelect') == 0) {
                   let idEliminate = localStorage.getItem(localStorage.key(i));
                   let idE = parseInt(idEliminate);
-                  //alert(danioInputId)
                   if((idE) == danioInputId){
                     localStorage.removeItem(localStorage.key(i));
-                    //localStorage.removeItem('danioOtro-'+danioInputId);
-                    
-                    
                   }
                 }
 
@@ -2311,9 +2817,6 @@ validateEmail(status){
                   }
                   
                 }
-
-                
-
 
                 if (i == (localStorage.length-1)) {
                   $('#open-modal-recycle').click();
@@ -2388,6 +2891,60 @@ validateEmail(status){
         }
       }
     }
+
+    eliminarDuplicadosEnvio(arreglo: any[]) {
+    const claves = ['nombre'];
+    const vistos = new Set<string>();
+
+    return arreglo.filter(envio => {
+        const claveCompuesta = claves.map(campo =>
+            (envio[campo] || '').toString().trim().toUpperCase()
+        ).join('|');
+
+        if (vistos.has(claveCompuesta)) {
+            return false; // Ya lo vimos
+        }
+
+        vistos.add(claveCompuesta);
+        return true; // Primer vez que se ve este conjunto de campos
+    });
+  }
+
+    eliminarDuplicados(arreglo: any[]) {
+    const claves = ['nombre', 'etiqueta', 'index'];
+    const vistos = new Set<string>();
+
+    return arreglo.filter(vehiculo => {
+        const claveCompuesta = claves.map(campo =>
+            (vehiculo[campo] || '').toString().trim().toUpperCase()
+        ).join('|');
+
+        if (vistos.has(claveCompuesta)) {
+            return false; // Ya lo vimos
+        }
+
+        vistos.add(claveCompuesta);
+        return true; // Primer vez que se ve este conjunto de campos
+    });
+  }
+
+  eliminarDuplicadosDanios(arreglo: any[], origen:any) {
+    const claves = ['Id', 'Descripcion', 'Codigo'];
+    const vistos = new Set<string>();
+
+    return arreglo.filter(danio => {
+        const claveCompuesta = claves.map(campo =>
+            (danio[campo] || '').toString().trim().toUpperCase()
+        ).join('|');
+
+        if (vistos.has(claveCompuesta)) {
+            return false; // Ya lo vimos
+        }
+
+        vistos.add(claveCompuesta);
+        return true; // Primer vez que se ve este conjunto de campos
+    });
+  }
 
     clearSegmentsStorage() {
       console.log('limpiando las variables de segmentos');

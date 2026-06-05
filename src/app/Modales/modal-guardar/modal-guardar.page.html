@@ -1,0 +1,14 @@
+<ion-card style="border: none; box-shadow: none;">
+  <ion-card-header>
+    <ion-card-title>HELP Soporte</ion-card-title>
+    <ion-card-subtitle>Salir del formulario?</ion-card-subtitle>
+  </ion-card-header>
+
+  <ion-card-content>
+    Los datos se perderan sin haber guardado. Salir?
+  </ion-card-content>
+
+  <ion-chip color="primary" [outline]="true" (click)="confirm()">Continuar</ion-chip>
+  <ion-chip color="primary" (click)="dismiss()">Salir</ion-chip>
+
+</ion-card>

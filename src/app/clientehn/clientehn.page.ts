@@ -1,7 +1,7 @@
 import { culpable, personaHn, propiedaPrivadaHn, tipoLicencia } from './../interfaces/formulario';
 import { Component, OnInit, ViewChild, ElementRef, NgModule } from '@angular/core';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
-import { AlertController, LoadingController, ToastController, Platform, IonModal, ModalController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController, Platform, IonModal, ModalController, NavParams, IonContent, InfiniteScrollCustomEvent } from '@ionic/angular';
 import { ajustadorHn } from '../interfaces/formulario';
 import { ApiService } from '../services/api.service';
 import { finalize } from 'rxjs/operators';
@@ -13,14 +13,18 @@ import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 import { ToastService } from '../services/toast.service';
 import { marcasVehiculos } from '../environments/vehicles';
 import { segments } from '../environments/segments';
-import { imagePrefix } from '../environments/default-images';
+import { editarFirmaIcono, imagePrefix } from '../environments/default-images';
 import { emptySignature, emptySignatureWhite } from '../environments/signatures';
 import { beneficiariosTipos } from '../environments/beneficiarios';
 import { responsableTipos } from '../environments/responsable';
-import { Predeterminados, ItemsExpediente, requiredData, requiredDataLabels, requiredData_Less } from '../environments/predeterminados';
+import { Predeterminados, ItemsExpediente, requiredData, requiredDataLabels, requiredData_Less, requiredDataAjustador, requiredDataCliente } from '../environments/predeterminados';
 import { FormatosService } from '../services/formatos.service';
 import { CountrydataService } from '../services/countrydata.service';
+import { validateClaimStage } from '../validation/claim-validation';
+import { clienteScreenValidationRules } from '../validation/claim-validation.rules';
+import { Keyboard } from '@capacitor/keyboard';
 import * as $ from 'jquery';
+import { WebElement } from 'protractor';
 
 @Component({
   selector: 'app-clientehn',
@@ -29,16 +33,30 @@ import * as $ from 'jquery';
 })
 export class ClientehnPage implements OnInit {
   // DECLARACION
-  @ViewChild('imagen') imagen: ElementRef;
-  @ViewChild('requerido') requerido: ElementRef;
-  @ViewChild('modalNulos') modal: IonModal;
-  @ViewChild('daModal') daModal: IonModal;
-  @ViewChild('propModal') propModal: IonModal;
-  @ViewChild('modalLesion') modalLesion: IonModal;
+  @ViewChild('imagen') imagen: ElementRef | undefined;
+  @ViewChild('requerido') requerido: ElementRef | undefined;
+  @ViewChild('modalNulos') modal: IonModal | undefined;
+  @ViewChild('daModal') daModal: IonModal | undefined;
+  @ViewChild('propModal') propModal: IonModal | undefined;
+  @ViewChild('modalLesion') modalLesion: IonModal | undefined;
+  @ViewChild(IonContent) content!: IonContent;
+  @ViewChild('imagenFirma') imagenFirma:ElementRef | undefined;
   
-  
+  public alertButtons = [
+    {
+      text: 'Continuar',
+      cssClass: 'alert-button-cancel',
+    },
+    {
+      text: 'Sí, Salir',
+      cssClass: 'alert-button-confirm',
+      handler: () => {
+        window.location.reload();
+      }
+    },
+  ];
 
-  readonly predicateCliente: MaskitoElementPredicateAsync = async (el) => (el as HTMLIonInputElement).getInputElement();
+  readonly predicateCliente: MaskitoElementPredicateAsync = async (el) => (el as unknown as HTMLIonInputElement).getInputElement();
   readonly idMask: MaskitoOptions = {mask: [/\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/, /\d/,],}
   readonly idMaskFechaVencimiento: MaskitoOptions = {mask: [/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/,],}
   readonly phoneMask: MaskitoOptions = {mask: ['(', '5', '0', '4', ')', ' ', /\d/, /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/,],}
@@ -60,127 +78,127 @@ export class ClientehnPage implements OnInit {
   // Arrays de volcado de datos
   tipoParentescos: any = [];  esTercerosHeridos: any;  esTercerosMuertos: any;  elExpediente: any = [];  nulosExpediente:any = [];  culpableCorreo: any;
   culpableTrabajo: any;  culpableContacto: any;  culpableContactoNumero: any;  culpableIdentidad: any;  culpableEsPropiertario: boolean = true;
-  elTipoParentesco: any;  edadConductor: any;  daSegment: any = "location"; firstInterval: any; imageHeight: any; atencionId: number; licenciaTipos: any = [];
+  elTipoParentesco: any;  edadConductor: any;  daSegment: any = "location"; firstInterval: any; imageHeight: any; atencionId: number | undefined; licenciaTipos: any = [];
   elTipoLicenciaId: any; elTipoGenero: any;  inicialGenero: any;  fechaNacimiento:any;  mydate: any;  laLatitud: any;  laLongitud: any;  licenciaTipo: any;
-  formateada: any;  formateadaVigencia:any;  conexion: ConnectionStatus;  esMarca: boolean = false;  openModal: boolean = false;  conectividad: boolean;
-  isEditSig: boolean = false;  idAtencion: any;  isLoading: boolean;  isTablet: boolean;  isComplete: boolean = false;  isCompleteAcuerdo: boolean = false;
+  formateada: any;  formateadaVigencia:any;  conexion: ConnectionStatus | undefined;  esMarca: boolean = false;  openModal: boolean = false;  conectividad: boolean | undefined;
+  isEditSig: boolean = false;  idAtencion: any;  isLoading: boolean = false;  isTablet: boolean = false;  isComplete: boolean = false;  isCompleteAcuerdo: boolean = false;
   isSignature: boolean = false;  plataforma: any;  dispositivo: any;  firmaPrecargada: any;  nombreCliente: any;  elTipoSolicitante: any;  idTablaAjustador: any;
   laFechaSiniestro: any;  formateadaSiniestro: any;  formateadaNacimiento: any;  taller: any;  tallerId: any;  tallerOtro: any = '';  tallerOtroDireccion: any = '';
 
   // Variables de control de interfaz
-  showPersona = false; showPersonaLesion = false;  menu = [false, false, false, false, false, false, false, false, false, false];
-  guardar = true;  editar = false;  indexPersona: number;  showPropiedad = false;  indexPropiedad: number; ancho = window.innerWidth;  laLocalidad: any;  miLocalidad: any;
-  miPais: any;  miPaisNombre: any;  miPaisLocalidad: any;  miPaisLocalidadSub: any;  miPaisBandera: any;  paisId: number;  datoIndex: number = 0;  paisIdentidad: any;
-  nombreDelConductor: any;  generoConductor: any;  audienciaId: any;  tipoVehiculo: any;  tipoDeVehiculo: any;  vigencia: boolean; identidadAsegurado:any;clientCompleteArray:any=[]
-  moneda: any;  expediente: any;  miMoneda: string; isFormSaved:boolean=false; indexUpdate:number; isVence:boolean=false; uPoli:any; datosAtencion:any=[];
-  edad: number; esCacheCliente:boolean=false;  nombreAtribuye: string; esMenor:boolean=false; elTipoDeConductor:any; elTipoDeParentesco:any;
-  elTipoDeLicencia: any;  daType: any;  conductorEsAfiliado: boolean;
-  nombreConductor: any;  daTipoConductor: any;  daNombreConductor: any;  daIdentidadConductor: any;  identidad: string; daTelefonoFijoConductor:number;
-  tel: any;  daCelularConductor: any;  cel: any;  horaSiniestro: any;  TelefonoFijoConductor: string;  CelularConductor: string;
-  elResponsableTipo: number;
+  showPersona = false; showPersonaLesion = false;  menu:any = [false, false, false, false, false, false, false, false, false, false];
+  guardar = true;  editar = false;  indexPersona: any;  showPropiedad = false;  indexPropiedad: any; ancho = window.innerWidth;  laLocalidad: any;  miLocalidad: any;
+  miPais: any;  miPaisNombre: any;  miPaisLocalidad: any;  miPaisLocalidadSub: any;  miPaisBandera: any;  paisId: number | undefined;  datoIndex: number = 0;  paisIdentidad: any;
+  nombreDelConductor: any;  generoConductor: any;  audienciaId: any;  tipoVehiculo: any;  tipoDeVehiculo: any;  vigencia: boolean = false; identidadAsegurado:any;clientCompleteArray:any=[]
+  moneda: any;  expediente: any;  miMoneda: string | undefined; isFormSaved:boolean=false; indexUpdate:number | undefined; isVence:boolean=false; uPoli:any; datosAtencion:any=[];
+  edad: number | undefined; esCacheCliente:boolean=false;  nombreAtribuye: string | undefined; esMenor:boolean=false; elTipoDeConductor:any; elTipoDeParentesco:any;
+  elTipoDeLicencia: any;  daType: any;  conductorEsAfiliado: boolean = false;
+  nombreConductor: any;  daTipoConductor: any;  daNombreConductor: any;  daIdentidadConductor: any;  identidad: any; daTelefonoFijoConductor:any;
+  tel: any;  daCelularConductor: any;  cel: any;  horaSiniestro: any;  TelefonoFijoConductor: any;  CelularConductor: string | null;
+  elResponsableTipo: number;  laExpediente: any = [];  clienteLatitud: any;  clienteLongitud: any; DatosDeAtencion:any = [];
+
+  public progress = 0;  nullsIndex: any = []; textoInfo = 'Validando ... Cuando todos los datos estén completos, se habilitará el botón de guardar.';
+  identidadDelCliente: any;  progInterval: any;  indexFront: any; firmaIcono:any = editarFirmaIcono;
+  esAudiencia: boolean | undefined;
 
   // INICIALIZACION
   constructor(private router: Router,    private route: ActivatedRoute,    private loading: LoadingController,    private alert: AlertController,
     private api: ApiService,    private toast: ToastController,    private location: Location,    private platform: Platform,    private so: ScreenOrientation,
     private geo: NativeGeocoder,    private toaster: ToastService,    private formateador:FormatosService, private countryService:CountrydataService) {
-    this.elExpediente = JSON.parse(localStorage.getItem('elExpediente'));
-    this.identidadAsegurado = localStorage.getItem('identidadAsegurado');
-    this.cliente = JSON.parse(localStorage.getItem('elExpediente'));
-    this.firmaPrecargada = localStorage.getItem("dSignatureAsegurado");
-    if (this.firmaPrecargada) {
-      console.log('Traigo una firma '+this.firmaPrecargada); 
-    }
-    
-    console.log('El arreglo de segmentos');
-    console.dir(segments)
-    
-    let poliza = localStorage.getItem('dataProcess-Poliza');
-    let usoPoliza = localStorage.getItem('dataProcess-AseguradoUsoPoliza');
-    let dCorrespondencia = localStorage.getItem('dataProcess-DireccionEnvioCorrespondencia');
-    let porqueNo = localStorage.getItem('dataProcess-PorqueNoUsoServicioAsistencia');
-    
-    let email = localStorage.getItem('dataProcess-CorreoElectronico');
-    let fechaH = localStorage.getItem('dataProcess-FechaHora');
-    let blindado = localStorage.getItem('dataProcess-Blindado');
-    let unidad  = localStorage.getItem('dataProcess-NumeroUnidad');
-    
-    let tipoConductor  = localStorage.getItem('dataProcess-RefTipoConductorId');
-    
-    this.daTipoConductor = parseInt(localStorage.getItem('dataProcess-RefTipoConductorId')) 
-    this.nombreConductor = localStorage.getItem('dataProcess-NombreConductor');
-    this.identidad = localStorage.getItem('dataProcess-IdentidaConductor');
-    this.tel = localStorage.getItem('dataProcess-TelefonoAsegurado');
-    this.cel = localStorage.getItem('dataProcess-CelularAsegurado');
-    this.TelefonoFijoConductor = localStorage.getItem('dataProcess-TelefonoConductor');
-    this.CelularConductor = localStorage.getItem('dataProcess-CelularConductor');
 
-    let fechaN = localStorage.getItem('dataProcess-FechaNacimientoConductor');
-    let parentesco = localStorage.getItem('dataProcess-Parentesco');
-    let licenciaTipo = localStorage.getItem('dataProcess-TipoLicencia');
-    let licencia = localStorage.getItem('dataProcess-Licencia');
-    let alcoholemia = localStorage.getItem('dataProcess-PruebaAlcoholemia');
-    let direccionC = localStorage.getItem('dataProcess-DireccionConductor');
-    let esTerceroResponsable = localStorage.getItem('dataProcess-TerceroResponsable');
-    this.elResponsableTipo = parseInt(localStorage.getItem('dataProcess-TerceroResponsable'));
-    let nombreAtribuyeAccidente = localStorage.getItem('dataProcess-NombreAtribuyeAccidente');
-    let autoridad = localStorage.getItem('dataProcess-AutoridadInvolucrada');
-    let ubicacion = localStorage.getItem('dataProcess-DondeSeEncuentraVehiculo');
-    let audiencia = localStorage.getItem('dataProcess-AgendarAudiencia');
-    let vehiculodet = localStorage.getItem('dataProcess-VehiculoDetenido');
-    let conductorDet = localStorage.getItem('dataProcess-ConductorDetenido');
-    let vehiculoVolcado = localStorage.getItem('dataProcess-VehiculoVolcado');
-    let ubicacionVehiculoDet = localStorage.getItem('dataProcess-UbicacionVehiculoDetenido');
-    let tercerosHeridos = localStorage.getItem('dataProcess-TercerosHeridos');
-    let tercerosMuertos = localStorage.getItem('dataProcess-TercerosMuertos');
-    let descripcionTercerosHeridos = localStorage.getItem('dataProcess-DescripcionTercerosHeridos');
-    let descripcionTercerosMuertos = localStorage.getItem('dataProcess-DescripcionTercerosMuertos');
-    let descripcionDanio = localStorage.getItem('dataProcess-DescripcionDanio');
-    let descripcion = localStorage.getItem('dataProcess-Descripcion');
-    let descripcionAudiencia = localStorage.getItem('dataProcess-DescripcionAudiencia');
-    let fechaVigencia = localStorage.getItem('dataProcess-Vigencia');
+    let datAtencion:any = localStorage.getItem('datosDeAtencion');
+    this.DatosDeAtencion = JSON.parse(datAtencion);
+    console.log('datAtencion'); console.dir(this.DatosDeAtencion);
+    this.identidadDelCliente = this.DatosDeAtencion[6].value;
+    //self.alert(this.identidadDelCliente)
+  
+    let exped:any = localStorage.getItem('elExpediente'); let numPol:any;
+    console.log('Expediente en cliente : '+exped);
+    this.laExpediente = JSON.parse(exped);
+    console.log('El nombre del cliente : '+this.laExpediente[0].Cliente);
+    numPol = this.laExpediente[0].PolizaExterna.split('-')[1];
+    localStorage.setItem('nNumpol', numPol);
+    localStorage.setItem('nNumCer', this.laExpediente[0].Certificado);
 
     
-    
-    
 
-    for (let index = 0; index < localStorage.length; index++) {
-      const element = localStorage[index];
-      if (localStorage.key(index).indexOf('testigos-') == 0) {
-        this.testigos.push(JSON.parse(localStorage.getItem(localStorage.key(index))));
-      }
-      if (localStorage.key(index).indexOf('acompaniante-') == 0) {
-        this.acompaniante.push(JSON.parse(localStorage.getItem(localStorage.key(index))));
-      }
-      if (localStorage.key(index).indexOf('lesionados-') == 0) {
-        this.lesionados.push(JSON.parse(localStorage.getItem(localStorage.key(index))));
-      }
+    this.clienteLatitud = this.laExpediente[0].LatitudCliente;
+    this.clienteLongitud = this.laExpediente[0].LongitudCliente;
 
+    //self.alert(this.clienteLongitud);
 
-      if (localStorage.key(index).indexOf('propiedadesprivadas-') == 0) {
-        this.propiedadesprivadas.push(JSON.parse(localStorage.getItem(localStorage.key(index))));
-      }
+            let nombreC = localStorage.getItem('dataProcess-NombreConductor');
 
-      
+        //self.alert(nombreC == '')
+        if (nombreC == 'undefined' || nombreC == '') {
+          //self.alert('Puej ji')
 
-      
-    }
+          setTimeout(() => {
+            this.nombreConductor = ''; this.daNombreConductor = '';
+            this.daIdentidadConductor = '';
+            localStorage.setItem('dataProcess-NombreConductor', '');
+            this.setNombreConductor('');
+          }, 900);
+          
+        }else{
+          this.nombreConductor = localStorage.getItem('dataProcess-NombreConductor');
+          this.daNombreConductor = localStorage.getItem('dataProcess-NombreConductor');
+        }
+        
+        this.identidad = localStorage.getItem('dataProcess-IdentidaConductor');
+        if (this.identidad == 'undefined' || this.identidad == '') {
+          this.daIdentidadConductor = '';
+        }else{}
+        let responsableId:any;
+        responsableId = localStorage.getItem('dataProcess-TerceroResponsable');
+        this.tel = localStorage.getItem('dataProcess-TelefonoAsegurado');
+        this.cel = localStorage.getItem('dataProcess-CelularAsegurado');
+        this.TelefonoFijoConductor = localStorage.getItem('dataProcess-TelefonoConductor');
+        this.CelularConductor = localStorage.getItem('dataProcess-CelularConductor');
 
-    this.firstInterval = setInterval(() => {
-      this.setFirstSegment();
-    }, 2000);
+        let fechaN = localStorage.getItem('dataProcess-FechaNacimientoConductor');
+        let parentesco = localStorage.getItem('dataProcess-Parentesco');
+        let licenciaTipo = localStorage.getItem('dataProcess-TipoLicencia');
+        let licencia = localStorage.getItem('dataProcess-Licencia');
+        let alcoholemia = localStorage.getItem('dataProcess-PruebaAlcoholemia');
+        let direccionC = localStorage.getItem('dataProcess-DireccionConductor');
+        let esTerceroResponsable = localStorage.getItem('dataProcess-TerceroResponsable');
+        this.elResponsableTipo = parseInt(responsableId);
+        let nombreAtribuyeAccidente = localStorage.getItem('dataProcess-NombreAtribuyeAccidente');
+        let autoridad = localStorage.getItem('dataProcess-AutoridadInvolucrada');
+        let ubicacion = localStorage.getItem('dataProcess-DondeSeEncuentraVehiculo');
+        let audiencia = localStorage.getItem('dataProcess-AgendarAudiencia');
+        let vehiculodet = localStorage.getItem('dataProcess-VehiculoDetenido');
+        let conductorDet = localStorage.getItem('dataProcess-ConductorDetenido');
+        let vehiculoVolcado = localStorage.getItem('dataProcess-VehiculoVolcado');
+        let ubicacionVehiculoDet = localStorage.getItem('dataProcess-UbicacionVehiculoDetenido');
+        let tercerosHeridos = localStorage.getItem('dataProcess-TercerosHeridos');
+        let tercerosMuertos = localStorage.getItem('dataProcess-TercerosMuertos');
+        let descripcionTercerosHeridos = localStorage.getItem('dataProcess-DescripcionTercerosHeridos');
+        let descripcionTercerosMuertos = localStorage.getItem('dataProcess-DescripcionTercerosMuertos');
+        let descripcionDanio = localStorage.getItem('dataProcess-DescripcionDanio');
+        let descripcion = localStorage.getItem('dataProcess-Descripcion');
+        let descripcionAudiencia = localStorage.getItem('dataProcess-DescripcionAudiencia');
+        let fechaVigencia = localStorage.getItem('dataProcess-Vigencia');
 
-    this.route.queryParams.subscribe(params => {
-      if (this.router.getCurrentNavigation().extras.state) {
-        let navParams = this.router.getCurrentNavigation().extras.state;
-        this.laLatitud = navParams.data[1].latitud;
-        this.laLongitud = navParams.data[2].longitud;
-        this.cliente.Latitud = this.elExpediente.LatitudCliente;
-        this.cliente.Longitud = this.elExpediente.LongitudCliente;
+        this.route.queryParams.subscribe(params => {
+      if (this.router.getCurrentNavigation()?.extras.state) {
+        let navParams = this.router.getCurrentNavigation()?.extras.state;
+        this.laLatitud = navParams?.data[1].latitud;
+        this.laLongitud = navParams?.data[2].longitud;
 
-        if (this.elExpediente) {
+        //self.alert('Latitud : '+this.laLatitud+' Longitud : '+this.laLongitud)
+
+        this.cliente.Latitud = this.laExpediente[0].LatitudCliente;
+        this.cliente.Longitud = this.laExpediente[0].LongitudCliente;
+        this.clienteLatitud = this.laExpediente[0].LatitudCliente;
+        this.clienteLongitud = this.laExpediente[0].LongitudCliente;
+
+        if (this.laExpediente) {
+          //self.alert('Hay expediente '+this.cliente.Latitud)
           localStorage.setItem('dataProcess-Latitud', this.cliente.Latitud);
           localStorage.setItem('dataProcess-Longitud', this.cliente.Longitud);
-          localStorage.setItem('dataProcess-Nombre', this.elExpediente.Cliente);
+          localStorage.setItem('dataProcess-Nombre', this.laExpediente[0].Cliente);
 
           setTimeout(() => {
             console.log('Es el afiliado? '+ this.conductorEsAfiliado);
@@ -190,24 +208,37 @@ export class ClientehnPage implements OnInit {
               //this.elExpediente.TelefonoFijoConductor = this.tel;
             }
 
+
+            if (tipoConductor) {
+              this.seTipoConductor(tipoConductor, 2);
+            }else{
+              this.conductorEsAfiliado = true;
+              this.elExpediente.ConducidoPor = 1;
+
+
+            }
+
+            
+           // self.alert( 'tipoConductor '+tipoConductor+(this.TelefonoFijoConductor))
+
             if (this.TelefonoFijoConductor) {
               this.daTelefonoFijoConductor = parseInt(this.TelefonoFijoConductor);
+              //this.seTelefonoConductor(this.daTelefonoFijoConductor);
+              this.laExpediente[0].TelefonoConductor = this.TelefonoFijoConductor;
             }
   
             if (this.cel) {
               this.cliente.Celular = this.cel;
+              this.setCelularConductor(this.cel);
+              this.laExpediente[0].CelularConductor = this.TelefonoFijoConductor;
+              
             }
             
             if (this.CelularConductor) {
               this.daCelularConductor = parseInt(this.CelularConductor);
             }
 
-            if (tipoConductor) {
-              this.seTipoConductor(tipoConductor);
-            }else{
-              this.conductorEsAfiliado = true;
-              this.elExpediente.ConducidoPor = 1;
-            }
+            
   
             if (parentesco) {
               this.setElTipoParentesco(parentesco);
@@ -247,6 +278,8 @@ export class ClientehnPage implements OnInit {
             }
 
             console.log('Aca voy a setear el nombre del conductor');
+            //self.alert('Aca voy a setear el nombre del  '+this.nombreConductor);
+
             if (this.nombreConductor) {
               this.setNombreConductor(this.nombreConductor);
             }
@@ -298,48 +331,379 @@ export class ClientehnPage implements OnInit {
               $('#tMuertosRadioGroup').val('2').change();
               this.setTercerosMuertos(2);
             }
-            
+
             if (nombreAtribuyeAccidente) {
               this.elExpediente.NombreAtribuyeAccidente = nombreAtribuyeAccidente;
+              this.laExpediente[0].NombreAtribuyeAccidente = nombreAtribuyeAccidente;
               this.nombreAtribuye = nombreAtribuyeAccidente;
               console.log('Ajui juiiiiii....'+this.elExpediente.NombreAtribuyeAccidente)
               this.setNombreAtribuye(nombreAtribuyeAccidente);
             }
 
+            if (unidad) {
+              this.setUnidad(unidad);
+            }
+
           }, 3000);
 
-          console.log('Este es el conductor que enconré : '+this.nombreConductor)
-          if (this.nombreConductor) {
-            localStorage.setItem('dataProcess-NombreConductor', this.nombreConductor);
-            this.elExpediente.NombreConductor = this.nombreConductor;
+              console.log('Este es el conductor que enconré : '+this.nombreConductor);
 
-            setTimeout(() => {
-              console.log('Ahora seteo el nombre del conductor')
-              this.setNombreConductor(this.nombreConductor);  
-            }, 3000);
+              let use:any = localStorage.getItem('dataProcess-AseguradoUsoPoliza');
+              let uso = parseInt(use);
+              //self.alert(uso)
+
+              if (this.nombreConductor) {
+
+                if (uso == 1) {
+                  localStorage.setItem('dataProcess-NombreConductor', this.nombreConductor);
+                  this.elExpediente.NombreConductor = this.nombreConductor;
+                }
+                
+                
+
+                setTimeout(() => {
+                  console.log('Ahora seteo el nombre del conductor')
+                  this.setNombreConductor(this.nombreConductor);  
+                }, 3000);
+                
+              }else{
+                if (uso == 1) {
+                  localStorage.setItem('dataProcess-NombreConductor', this.elExpediente.Cliente);
+                  this.elExpediente.NombreConductor = this.elExpediente.Cliente;
+                }
+              }
+
+              if (this.identidad) {
+                localStorage.setItem('dataProcess-IdentidaConductor', this.identidad);
+              }else{
+                localStorage.setItem('dataProcess-IdentidaConductor', this.identidadAsegurado);
+              }
+
+              if (poliza) {
+                localStorage.setItem('dataProcess-Poliza', poliza);
+              }else{
+                localStorage.setItem('dataProcess-Poliza', this.elExpediente.PolizaExterna);
+              }
+
+              if (dCorrespondencia) {
+                this.cliente.DireccionEnvioCorrespondencia = dCorrespondencia;
+              }
+
+              if (email) {
+                this.cliente.CorreoElectronico = email;
+                this.setCorreoConductor(email);
+              }
+
+              if (blindado) {
+                this.setBlindado(blindado);
+              }else{
+                this.setBlindado(2);
+              }
+
+              if (unidad) {
+                this.elExpediente.NoUnidad = unidad;
+                this.laExpediente[0].NoUnidad = unidad;
+              }
+              
+              if (fechaN) {
+                this.formateadaNacimiento = fechaN;
+                this.setFechaNacimiento(fechaN)
+              }else{
+                if (this.laExpediente[0].FechaNacimientoConductor != null) {
+                  //this.dataProcess.Edad = this.calcularEdad(this.elExpediente.FechaNacimientoConductor);
+                  //this.edad = this.calcularEdad(this.elExpediente.FechaNacimientoConductor);
+                  this.formateadaNacimiento = (this.laExpediente[0].FechaNacimientoConductor).toString().split('T')[0]; 
+                }else{
+                  this.formateadaNacimiento = new Date().toISOString().split('T')[0];
+                }
+              }
+
+              if (licencia) {
+                this.elExpediente.LicenciaNo = licencia;
+                this.laExpediente[0].LicenciaNo = licencia;
+                this.setLicencia(licencia);
+              }
+
+              
+              
+              
+              if (autoridad) {
+                this.elExpediente.AutoridadInvolucrada = autoridad;
+                this.laExpediente[0].AutoridadInvolucrada = autoridad;
+                this.setEntidadInvolucrada(autoridad);
+              }
+
+              if (ubicacion) {
+                this.elExpediente.UbicacionVehiculoAsegurado = ubicacion;
+                this.laExpediente[0].UbicacionVehiculoAsegurado = ubicacion;
+                this.setUbicacionVehiculoDetenido(ubicacion);
+              }
+
+              if (ubicacionVehiculoDet) {
+                this.elExpediente.UbicacionVehiculoDetenido = ubicacionVehiculoDet;
+                this.laExpediente[0].UbicacionVehiculoDetenido = ubicacionVehiculoDet;
+                this.setUbicacionVehiculoDetenido(ubicacionVehiculoDet);
+              }
+
+              if (descripcionTercerosHeridos) {
+                this.elExpediente.DescripcionTercerosHeridos = descripcionTercerosHeridos;
+              } 
+              if (descripcionTercerosMuertos) {
+                this.elExpediente.DescripcionTercerosMuertos = descripcionTercerosMuertos;
+              } 
+              if (descripcionDanio) {
+                this.elExpediente.DescripcionDanioVehiculo = descripcionDanio;
+                this.laExpediente[0].DescripcionDanioVehiculo = descripcionDanio;
+                this.setDescripcionDanio(descripcionDanio);
+              } 
+              if (descripcion) {
+                this.elExpediente.DescripcionAccidente = descripcion;
+                this.laExpediente[0].DescripcionAccidente = descripcion;
+                this.setDescripcionAccidente(descripcion);
+              } 
+              if (descripcionAudiencia) {
+                this.elExpediente.DescripcionAudiencia = descripcionAudiencia;
+                this.laExpediente[0].DescripcionAudiencia = descripcionAudiencia;
+                this.setDescripcionAudiencia(descripcionAudiencia);
+              } 
+
+              if (direccionC) {
+                this.elExpediente.DireccionConductor = direccionC;
+                this.laExpediente[0].DireccionConductor = direccionC;
+                this.setDireccionConductor(direccionC);
+              }
+              
+            }
             
-          }else{
-            localStorage.setItem('dataProcess-NombreConductor', this.elExpediente.Cliente);
-            this.elExpediente.NombreConductor = this.elExpediente.Cliente;
-          }
 
-          if (this.identidad) {
-            localStorage.setItem('dataProcess-IdentidaConductor', this.identidad);
-          }else{
-            localStorage.setItem('dataProcess-IdentidaConductor', this.identidadAsegurado);
-          }
+            let fechaExpediente = this.laExpediente[0].FechaRegistro;
+            
+            console.log('fechaExpediente :'+fechaExpediente)
+            this.formateadaSiniestro = fechaExpediente.split('T')[0];//formateador.formatearFechaSiniestro(fechaExpediente);
+            let laHora = fechaExpediente.split('T')[1];
+            this.horaSiniestro = laHora.split('.')[0];
+            localStorage.setItem('FechaRegistro', this.elExpediente.FechaRegistro);
 
-          if (poliza) {
-            localStorage.setItem('dataProcess-Poliza', poliza);
-          }else{
-            localStorage.setItem('dataProcess-Poliza', this.elExpediente.PolizaExterna);
-          }
+            //Inicializacion del arreglo de datos de envio
+            console.log('Ya estamos aqui')
 
-          if (dCorrespondencia) {
-            this.cliente.DireccionEnvioCorrespondencia = dCorrespondencia;
-          }
+            //console.log('El expediente lenght '+ItemsExpediente.length)
+            for (let index = 0; index < ItemsExpediente.length; index++) {
+              const element = ItemsExpediente[index];
+              const itemNombre = element.nombre;
+              const valorExpediente = this.elExpediente[itemNombre];
+              if (valorExpediente == null || valorExpediente == undefined) {
+                this.nulosExpediente.push({nombre: itemNombre, valor: valorExpediente})
+              }
+              if (index == (ItemsExpediente.length-1)) {
+                //console.dir(this.nulosExpediente)
+              }
+            }
 
-          /*
+            //self.alert('llenado de datos '+this.laExpediente[0].PolizaExterna)
+            this.dataProcess['RefAtencionId'] = this.laExpediente[0].Id;
+            this.dataProcess['RefProveedorAgenteId'] = this.laExpediente[0].RefGestorId;
+            localStorage.setItem('dataProcess-RefProveedorAgenteId', this.laExpediente[0].RefGestorId);
+            this.dataProcess['RefProveedorAgenteAbogadoId'] = this.laExpediente[0].RefProveedorAgenteAbogadoId;
+            this.dataProcess['Poliza'] = this.laExpediente[0].PolizaExterna;
+            this.dataProcess['Cliente'] = this.laExpediente[0].Cliente;
+            this.dataProcess['IdentidaConductor'] = this.laExpediente[0].IdentidaConductor;
+            this.dataProcess['Nombre'] = this.laExpediente[0].Cliente;
+            this.dataProcess['MarcaVehiculo'] = this.laExpediente[0].Marca;
+            this.dataProcess['ModeloVehiculo'] = this.laExpediente[0].Modelo;
+            this.dataProcess['AnioVehiculo'] = this.laExpediente[0].Year;
+            this.dataProcess['PlacaVehiculo'] = this.laExpediente[0].NumeroPlaca;
+            this.dataProcess['ChasisVehiculo'] = this.laExpediente[0].Chasis;
+            this.dataProcess['ColorVehiculo'] = this.laExpediente[0].Color;
+            this.dataProcess['DescripcionVehiculo'] = "Vehículo marca " + this.laExpediente[0].Marca + ", modelo " + this.laExpediente[0].Modelo + ", año " + this.laExpediente[0].Year + ", color " + this.laExpediente[0].Color + ", placa " + this.laExpediente[0].NumeroPlaca;
+            localStorage.setItem('dataProcess-DescripcionVehiculo', "Vehículo marca " + this.laExpediente[0].Marca + ", modelo " + this.laExpediente[0].Modelo + ", año " + this.laExpediente[0].Year + ", color " + this.laExpediente[0].Color + ", placa " + this.laExpediente[0].NumeroPlaca)
+            this.dataProcess['FechaHora'] = this.laExpediente[0].FechaRegistro;
+            this.dataProcess['Lugar'] = this.laExpediente[0].Direccion;
+            localStorage.setItem('dataProcess-Lugar', this.laExpediente[0].Direccion);
+            this.dataProcess['RefUsuarioId'] = this.laExpediente[0].RefGestorId;
+            localStorage.setItem('dataProcess-RefUsuarioId', this.laExpediente[0].RefGestorId);
+            this.dataProcess['RefPaisId'] = this.laExpediente[0].IdPais;
+            localStorage.setItem('dataProcess-RefPaisId', this.laExpediente[0].IdPais);
+            this.dataProcess['RefCiudadId'] = this.laExpediente[0].IdCiudad;
+            localStorage.setItem('dataProcess-RefCiudadId', this.laExpediente[0].IdCiudad);
+            this.dataProcess['RefDeptoId'] = this.laExpediente[0].RefDepartamentoId;
+            this.dataProcess['Motor'] = this.laExpediente[0].Motor;
+            this.dataProcess['ReclamoAsegurado'] = this.laExpediente[0].DescripcionDanioVehiculo;
+            localStorage.setItem('dataProcess-ReclamoAsegurado', this.laExpediente[0].DescripcionDanioVehiculo);
+            localStorage.setItem('dataProcess-MarcaVehiculo', this.laExpediente[0].Marca);
+            localStorage.setItem('dataProcess-ModeloVehiculo', this.laExpediente[0].Modelo);
+            localStorage.setItem('dataProcess-AnioVehiculo', this.laExpediente[0].Year);
+            localStorage.setItem('dataProcess-PlacaVehiculo', this.laExpediente[0].NumeroPlaca);
+            localStorage.setItem('dataProcess-ChasisVehiculo', this.laExpediente[0].Chasis);
+            localStorage.setItem('dataProcess-ColorVehiculo', this.laExpediente[0].Color);
+            //localStorage.setItem('dataProcess-Motor', this.laExpediente[0].Motor);
+            //this.dataProcess['DireccionEnvioCorrespondencia'] = this.elExpediente.Direccion;
+
+            for (let index = 0; index < this.nulosExpediente.length; index++) {
+              const element = this.nulosExpediente[index];
+              console.log('viene nulo '+element.nombre);
+              for (let index = 0; index < Predeterminados.length; index++) {
+                const elementPredet = Predeterminados[index].nombre;
+                const elementPredetV = Predeterminados[index].valor;
+                if(element.nombre.indexOf(elementPredet) > -1){
+                  this.dataProcess[element.nombre] = elementPredetV;
+                }
+              }
+            }
+          }
+        });
+
+    console.dir(exped);
+    console.dir(JSON.parse(exped));
+
+    this.obtenerTipoConductor();
+    //this.loadParentescos();
+    //this.getTalleres();
+    
+    this.elExpediente = JSON.parse(exped);
+
+    //self.alert('Bienvenido a la página de cliente del expediente '+this.elExpediente.length);
+    console.log('Bienvenido a la página de cliente del expediente '+this.elExpediente.length);
+
+    let client:any = localStorage.getItem('elExpediente');
+    this.identidadAsegurado = localStorage.getItem('identidadAsegurado');
+    this.cliente = JSON.parse(client);
+    this.firmaPrecargada = localStorage.getItem("dSignatureAsegurado");
+    if (this.firmaPrecargada) {
+      console.log('Traigo una firma '+this.firmaPrecargada); 
+    }
+    
+    console.log('El arreglo de segmentos');
+    console.dir(segments)
+    
+    let poliza = localStorage.getItem('dataProcess-Poliza');
+    let usoPoliza = localStorage.getItem('dataProcess-AseguradoUsoPoliza');
+    let dCorrespondencia = localStorage.getItem('dataProcess-DireccionEnvioCorrespondencia');
+    
+
+    let porqueNo = localStorage.getItem('dataProcess-PorqueNoUsoServicioAsistencia');
+    
+    let email = localStorage.getItem('dataProcess-CorreoElectronico');
+    let fechaH = localStorage.getItem('dataProcess-FechaHora');
+    let blindado = localStorage.getItem('dataProcess-Blindado');
+    let unidad  = localStorage.getItem('dataProcess-NumeroUnidad');
+
+    let tipoConductor:any  = localStorage.getItem('dataProcess-RefTipoConductorId');
+    this.daTipoConductor = parseInt(tipoConductor);
+
+    
+   
+
+    
+    if (this.daTipoConductor) {
+      
+      let tipos:any = localStorage.getItem('tiposDeConductor');
+      this.tipoConductor = JSON.parse(tipos);
+      
+      //localStorage.setItem('tiposDeConductor', JSON.stringify(res));
+
+      this.seTipoConductor(this.daTipoConductor, 3);
+      if (this.daTipoConductor == 1) {
+        this.conductorEsAfiliado = true;
+        this.elExpediente.NombreConductor = this.elExpediente.Cliente;
+        this.laExpediente[0].NombreConductor = this.laExpediente[0].Cliente;
+        this.laExpediente[0].IdentidaConductor = this.identidadDelCliente;
+
+        /*
+        if (uso == 1) {
+          localStorage.setItem('dataProcess-NombreConductor', this.nombreConductor);
+          this.elExpediente.NombreConductor = this.nombreConductor;
+        }
+        */
+        localStorage.setItem('dataProcess-NombreConductor', this.laExpediente[0].NombreConductor);
+        localStorage.setItem('datos-NombreConductor', this.laExpediente[0].NombreConductor);
+        localStorage.setItem('NombreConductor', this.laExpediente[0].NombreConductor);
+        localStorage.setItem('nombreConductor', this.laExpediente[0].NombreConductor);
+
+        //const element = this.tipoParentescos[0];
+        //this.elTipoParentesco = element.CODIGO;
+        //this.elTipoDeParentesco = element.DESCRIPCION;
+
+        this.nombreCliente = this.laExpediente[0].Cliente;
+        this.cliente.IdentidadConductor = this.identidadAsegurado;
+        this.laExpediente[0].TelefonoFijoConductor = this.cliente.TelefonFijo;
+        this.laExpediente[0].CelularConductor = this.cliente.Celular;
+        this.nombreCliente = this.laExpediente[0].Cliente;
+        this.dataProcess.CelularConductor = this.cliente.TelefonoOrigen;
+        this.dataProcess['CelularConductor'] = this.cliente.TelefonoOrigen;
+        this.dataProcess.ConductorAfiliado = 1;
+        this.dataProcess['ConductorAfiliado'] = 1;
+      }else{
+        let nombreC = localStorage.getItem('dataProcess-NombreConductor');
+
+        //self.alert(nombreC == '')
+        if (nombreC == 'undefined' || nombreC == '') {
+          //self.alert('Puej ji')
+
+          setTimeout(() => {
+            this.nombreConductor = ''; this.daNombreConductor = '';
+            this.daIdentidadConductor = '';
+            localStorage.setItem('dataProcess-NombreConductor', '');
+            this.setNombreConductor('');
+          }, 900);
+          
+        }else{
+          this.nombreConductor = localStorage.getItem('dataProcess-NombreConductor');
+          this.daNombreConductor = localStorage.getItem('dataProcess-NombreConductor');
+        }
+        
+        this.identidad = localStorage.getItem('dataProcess-IdentidaConductor');
+        if (this.identidad == 'undefined' || this.identidad == '') {
+          this.daIdentidadConductor = '';
+        }else{}
+        
+        this.tel = localStorage.getItem('dataProcess-TelefonoAsegurado');
+        this.cel = localStorage.getItem('dataProcess-CelularAsegurado');
+        this.TelefonoFijoConductor = localStorage.getItem('dataProcess-TelefonoConductor');
+        this.CelularConductor = localStorage.getItem('dataProcess-CelularConductor');
+
+        let fechaN = localStorage.getItem('dataProcess-FechaNacimientoConductor');
+        let parentesco = localStorage.getItem('dataProcess-Parentesco');
+        let licenciaTipo = localStorage.getItem('dataProcess-TipoLicencia');
+        let licencia = localStorage.getItem('dataProcess-Licencia');
+        let alcoholemia = localStorage.getItem('dataProcess-PruebaAlcoholemia');
+        let direccionC = localStorage.getItem('dataProcess-DireccionConductor');
+        let esTerceroResponsable = localStorage.getItem('dataProcess-TerceroResponsable');
+
+        let tipoResp:any = localStorage.getItem('dataProcess-TerceroResponsable');
+        this.elResponsableTipo = parseInt(tipoResp);
+        let nombreAtribuyeAccidente = localStorage.getItem('dataProcess-NombreAtribuyeAccidente');
+        let autoridad = localStorage.getItem('dataProcess-AutoridadInvolucrada');
+        let ubicacion = localStorage.getItem('dataProcess-DondeSeEncuentraVehiculo');
+        let audiencia = localStorage.getItem('dataProcess-AgendarAudiencia');
+        let vehiculodet = localStorage.getItem('dataProcess-VehiculoDetenido');
+        let conductorDet = localStorage.getItem('dataProcess-ConductorDetenido');
+        let vehiculoVolcado = localStorage.getItem('dataProcess-VehiculoVolcado');
+        let ubicacionVehiculoDet = localStorage.getItem('dataProcess-UbicacionVehiculoDetenido');
+        let tercerosHeridos = localStorage.getItem('dataProcess-TercerosHeridos');
+        let tercerosMuertos = localStorage.getItem('dataProcess-TercerosMuertos');
+        let descripcionTercerosHeridos = localStorage.getItem('dataProcess-DescripcionTercerosHeridos');
+        let descripcionTercerosMuertos = localStorage.getItem('dataProcess-DescripcionTercerosMuertos');
+        let descripcionDanio = localStorage.getItem('dataProcess-DescripcionDanio');
+        let descripcion = localStorage.getItem('dataProcess-Descripcion');
+        let descripcionAudiencia = localStorage.getItem('dataProcess-DescripcionAudiencia');
+        let fechaVigencia = localStorage.getItem('dataProcess-Vigencia');
+
+        this.route.queryParams.subscribe(params => {
+      if (this.router.getCurrentNavigation()?.extras.state) {
+        let navParams = this.router.getCurrentNavigation()?.extras.state;
+        this.laLatitud = navParams?.data[1].latitud;
+        this.laLongitud = navParams?.data[2].longitud;
+        this.cliente.Latitud = this.elExpediente.LatitudCliente;
+        this.cliente.Longitud = this.elExpediente.LongitudCliente;
+        this.clienteLatitud = this.laExpediente[0].LatitudCliente;
+        this.clienteLongitud = this.laExpediente[0].LongitudCliente;
+
+        if (this.elExpediente) {
+          localStorage.setItem('dataProcess-Latitud', this.cliente.Latitud);
+          localStorage.setItem('dataProcess-Longitud', this.cliente.Longitud);
+          localStorage.setItem('dataProcess-Nombre', this.elExpediente.Cliente);
+
           setTimeout(() => {
             console.log('Es el afiliado? '+ this.conductorEsAfiliado);
             console.log('El teléfono : '+this.tel)
@@ -348,160 +712,405 @@ export class ClientehnPage implements OnInit {
               //this.elExpediente.TelefonoFijoConductor = this.tel;
             }
 
+            //self.alert((this.TelefonoFijoConductor))
             if (this.TelefonoFijoConductor) {
               this.daTelefonoFijoConductor = parseInt(this.TelefonoFijoConductor);
+              //this.seTelefonoConductor(this.daTelefonoFijoConductor);
+              this.laExpediente[0].TelefonoConductor = this.TelefonoFijoConductor;
             }
   
             if (this.cel) {
               this.cliente.Celular = this.cel;
+              this.setCelularConductor(this.cel);
+              this.laExpediente[0].CelularConductor = this.TelefonoFijoConductor;
+              
             }
             
             if (this.CelularConductor) {
               this.daCelularConductor = parseInt(this.CelularConductor);
             }
 
-          }, 5000);
-          */
-
-          if (email) {
-            this.cliente.CorreoElectronico = email;
-          }
-
-          if (blindado) {
-            this.setBlindado(blindado);
-          }else{
-            this.setBlindado(2);
-          }
-
-          if (unidad) {
-            this.elExpediente.NoUnidad = unidad;
-          }
-          
-          if (fechaN) {
-            this.formateadaNacimiento = fechaN;
-            this.setFechaNacimiento(fechaN)
-          }else{
-            if (this.elExpediente.FechaNacimientoConductor != null) {
-              //this.dataProcess.Edad = this.calcularEdad(this.elExpediente.FechaNacimientoConductor);
-              //this.edad = this.calcularEdad(this.elExpediente.FechaNacimientoConductor);
-              this.formateadaNacimiento = (this.elExpediente.FechaNacimientoConductor).toString().split('T')[0]; 
+            if (tipoConductor) {
+              this.seTipoConductor(tipoConductor, 4);
             }else{
-              this.formateadaNacimiento = new Date().toISOString().split('T')[0];
+              this.conductorEsAfiliado = true;
+              this.elExpediente.ConducidoPor = 1;
+            }
+  
+            if (parentesco) {
+              this.setElTipoParentesco(parentesco);
+            }
+  
+            if(licenciaTipo){
+              this.seTipoLicencia(licenciaTipo);
+            }
+
+            if (fechaVigencia) {
+              console.log('Hay una fecha: '+fechaVigencia)
+              this.setVencimiento(fechaVigencia);
+              this.isVence = true;
+            }else{
+              this.isVence = false;
+            }
+
+            if (usoPoliza) {
+              this.elExpediente.UtilizoSerivicioAsistencia = usoPoliza;
+              console.log('usoPoliza', usoPoliza)
+              this.uPoli = usoPoliza;
+              this.setUtilizacionAsistencia(usoPoliza);
+            }else{
+              this.elExpediente.UtilizoSerivicioAsistencia = 1;
+              this.setUtilizacionAsistencia(1);
+            }
+
+            if (porqueNo) {
+              this.setPorqueNoUso(porqueNo);
+            }
+
+            if (alcoholemia) {
+              this.setPruebaAlcohol(alcoholemia);
+            }else{
+              this.elExpediente.PruebaAlcoholemia = 1;
+              this.setPruebaAlcohol(1);
+            }
+
+            console.log('Aca voy a setear el nombre del conductor');
+            //self.alert('Aca voy a setear el nombre del  '+this.nombreConductor);
+
+            if (this.nombreConductor) {
+              this.setNombreConductor(this.nombreConductor);
+            }
+
+            
+            if (esTerceroResponsable) {
+              $('#responsableRadioGroup').val(esTerceroResponsable).change();
+            }else{
+              $('#responsableRadioGroup').val('3').change();
+              this.setResponsable(3);
+            }
+
+            if (audiencia) {
+              $('#audiRadioGroup').val(audiencia).change();
+              this.setAudiencia(audiencia);
+            }
+
+            if (vehiculodet) {
+              $('#detenidoVRadioGroup').val(vehiculodet).change();
+            }else{
+              $('#detenidoVRadioGroup').val('2').change();
+              this.setDetenido(2);
+            }
+
+            if (conductorDet) {
+              $('#detenidoCRadioGroup').val(conductorDet).change();
+            }else{
+              $('#detenidoCRadioGroup').val('2').change();
+              this.setDetenidoElConductor(2);
+            }
+
+            if (vehiculoVolcado) {
+              $('#volcoRadioGroup').val(vehiculoVolcado).change();
+            }else{
+              $('#volcoRadioGroup').val('2').change();
+              this.setVolcado(2);
+            }
+
+            if (tercerosHeridos) {
+              $('#tHeridosRadioGroup').val(tercerosHeridos).change();
+            }else{
+              $('#tHeridosRadioGroup').val('2').change();
+              this.setTercerosHeridos(2);
+            }
+
+            if (tercerosMuertos) {
+              $('#tMuertosRadioGroup').val(tercerosMuertos).change();
+            }else{
+              $('#tMuertosRadioGroup').val('2').change();
+              this.setTercerosMuertos(2);
+            }
+
+            if (nombreAtribuyeAccidente) {
+              this.elExpediente.NombreAtribuyeAccidente = nombreAtribuyeAccidente;
+              this.laExpediente.NombreAtribuyeAccidente = nombreAtribuyeAccidente;
+              this.nombreAtribuye = nombreAtribuyeAccidente;
+              console.log('Ajui juiiiiii....'+this.elExpediente.NombreAtribuyeAccidente)
+              this.setNombreAtribuye(nombreAtribuyeAccidente);
+            }
+
+            if (unidad) {
+              this.setUnidad(unidad);
+            }
+
+          }, 3000);
+
+          let use:any = localStorage.getItem('dataProcess-AseguradoUsoPoliza');
+              let uso = parseInt(use);
+
+              console.log('Este es el conductor que enconré : '+this.nombreConductor)
+              if (this.nombreConductor) {
+                
+                if (uso == 1) {
+                  localStorage.setItem('dataProcess-NombreConductor', this.nombreConductor);
+                  this.elExpediente.NombreConductor = this.nombreConductor;
+                }
+
+                
+
+                setTimeout(() => {
+                  console.log('Ahora seteo el nombre del conductor')
+                  this.setNombreConductor(this.nombreConductor);  
+                }, 3000);
+                
+              }else{
+                if (uso == 1) {
+                  localStorage.setItem('dataProcess-NombreConductor', this.elExpediente.Cliente);
+                this.elExpediente.NombreConductor = this.elExpediente.Cliente;
+                }
+
+                
+              }
+
+              if (this.identidad) {
+                localStorage.setItem('dataProcess-IdentidaConductor', this.identidad);
+              }else{
+                localStorage.setItem('dataProcess-IdentidaConductor', this.identidadAsegurado);
+              }
+
+              if (poliza) {
+                localStorage.setItem('dataProcess-Poliza', poliza);
+              }else{
+                localStorage.setItem('dataProcess-Poliza', this.elExpediente.PolizaExterna);
+              }
+
+              if (dCorrespondencia) {
+                this.cliente.DireccionEnvioCorrespondencia = dCorrespondencia;
+              }
+
+              /*
+              setTimeout(() => {
+                console.log('Es el afiliado? '+ this.conductorEsAfiliado);
+                console.log('El teléfono : '+this.tel)
+                if (this.tel) {
+                  this.cliente.TelefonFijo = this.tel;
+                  //this.elExpediente.TelefonoFijoConductor = this.tel;
+                }
+
+                if (this.TelefonoFijoConductor) {
+                  this.daTelefonoFijoConductor = parseInt(this.TelefonoFijoConductor);
+                }
+      
+                if (this.cel) {
+                  this.cliente.Celular = this.cel;
+                }
+                
+                if (this.CelularConductor) {
+                  this.daCelularConductor = parseInt(this.CelularConductor);
+                }
+
+              }, 5000);
+              */
+
+              if (email) {
+                this.cliente.CorreoElectronico = email;
+              }
+
+              if (blindado) {
+                this.setBlindado(blindado);
+              }else{
+                this.setBlindado(2);
+              }
+
+              if (unidad) {
+                this.elExpediente.NoUnidad = unidad;
+                this.laExpediente[0].NoUnidad = unidad;
+              }
+              
+              if (fechaN) {
+                this.formateadaNacimiento = fechaN;
+                this.setFechaNacimiento(fechaN)
+              }else{
+                if (this.laExpediente[0].FechaNacimientoConductor != null) {
+                  //this.dataProcess.Edad = this.calcularEdad(this.elExpediente.FechaNacimientoConductor);
+                  //this.edad = this.calcularEdad(this.elExpediente.FechaNacimientoConductor);
+                  this.formateadaNacimiento = (this.laExpediente[0].FechaNacimientoConductor).toString().split('T')[0]; 
+                }else{
+                  this.formateadaNacimiento = new Date().toISOString().split('T')[0];
+                }
+              }
+
+              if (licencia) {
+                this.elExpediente.LicenciaNo = licencia;
+                this.laExpediente[0].LicenciaNo = licencia;
+                this.setLicencia(licencia);
+              }
+
+              
+              
+              
+              if (autoridad) {
+                this.elExpediente.AutoridadInvolucrada = autoridad;
+                this.laExpediente[0].AutoridadInvolucrada = autoridad;
+                this.setEntidadInvolucrada(autoridad);
+              }
+
+              if (ubicacion) {
+                this.elExpediente.UbicacionVehiculoAsegurado = ubicacion;
+                this.laExpediente[0].UbicacionVehiculoAsegurado = ubicacion;
+                this.setUbicacionVehiculoDetenido(ubicacion);
+              }
+
+              if (ubicacionVehiculoDet) {
+                this.elExpediente.UbicacionVehiculoDetenido = ubicacionVehiculoDet;
+                this.laExpediente[0].UbicacionVehiculoDetenido = ubicacionVehiculoDet;
+                this.setUbicacionVehiculoDetenido(ubicacionVehiculoDet);
+              }
+
+              if (descripcionTercerosHeridos) {
+                this.elExpediente.DescripcionTercerosHeridos = descripcionTercerosHeridos;
+              } 
+              if (descripcionTercerosMuertos) {
+                this.elExpediente.DescripcionTercerosMuertos = descripcionTercerosMuertos;
+              } 
+              if (descripcionDanio) {
+                this.elExpediente.DescripcionDanioVehiculo = descripcionDanio;
+                this.laExpediente[0].DescripcionDanioVehiculo = descripcionDanio;
+                this.setDescripcionDanio(descripcionDanio);
+              } 
+              if (descripcion) {
+                this.elExpediente.DescripcionAccidente = descripcion;
+                this.laExpediente[0].DescripcionAccidente = descripcion;
+                this.setDescripcionAccidente(descripcion);
+              } 
+              if (descripcionAudiencia) {
+                this.elExpediente.DescripcionAudiencia = descripcionAudiencia;
+                this.laExpediente[0].DescripcionAudiencia = descripcionAudiencia;
+                this.setDescripcionAudiencia(descripcionAudiencia);
+              } 
+
+              if (direccionC) {
+                this.elExpediente.DireccionConductor = direccionC;
+                this.laExpediente[0].DireccionConductor = direccionC;
+                this.setDireccionConductor(direccionC);
+              }
+              
+            }
+            
+
+            let fechaExpediente = this.laExpediente[0].FechaRegistro;
+            
+            console.log('fechaExpediente :'+fechaExpediente)
+            this.formateadaSiniestro = fechaExpediente.split('T')[0];//formateador.formatearFechaSiniestro(fechaExpediente);
+            let laHora = fechaExpediente.split('T')[1];
+            this.horaSiniestro = laHora.split('.')[0];
+            localStorage.setItem('FechaRegistro', this.elExpediente.FechaRegistro);
+
+            //Inicializacion del arreglo de datos de envio
+            console.log('Ya estamos aqui')
+
+            //console.log('El expediente lenght '+ItemsExpediente.length)
+            for (let index = 0; index < ItemsExpediente.length; index++) {
+              const element = ItemsExpediente[index];
+              const itemNombre = element.nombre;
+              const valorExpediente = this.elExpediente[itemNombre];
+              if (valorExpediente == null || valorExpediente == undefined) {
+                this.nulosExpediente.push({nombre: itemNombre, valor: valorExpediente})
+              }
+              if (index == (ItemsExpediente.length-1)) {
+                //console.dir(this.nulosExpediente)
+              }
+            }
+
+            //self.alert('llenado de datos '+this.laExpediente[0].PolizaExterna)
+            this.dataProcess['RefAtencionId'] = this.laExpediente[0].Id;
+            this.dataProcess['RefProveedorAgenteId'] = this.laExpediente[0].RefGestorId;
+            localStorage.setItem('dataProcess-RefProveedorAgenteId', this.laExpediente[0].RefGestorId);
+            this.dataProcess['RefProveedorAgenteAbogadoId'] = this.laExpediente[0].RefProveedorAgenteAbogadoId;
+            this.dataProcess['Poliza'] = this.laExpediente[0].PolizaExterna;
+            this.dataProcess['Cliente'] = this.laExpediente[0].Cliente;
+            this.dataProcess['IdentidaConductor'] = this.laExpediente[0].IdentidaConductor;
+            this.dataProcess['Nombre'] = this.laExpediente[0].Cliente;
+            this.dataProcess['MarcaVehiculo'] = this.laExpediente[0].Marca;
+            this.dataProcess['ModeloVehiculo'] = this.laExpediente[0].Modelo;
+            this.dataProcess['AnioVehiculo'] = this.laExpediente[0].Year;
+            this.dataProcess['PlacaVehiculo'] = this.laExpediente[0].NumeroPlaca;
+            this.dataProcess['ChasisVehiculo'] = this.laExpediente[0].Chasis;
+            this.dataProcess['ColorVehiculo'] = this.laExpediente[0].Color;
+            this.dataProcess['DescripcionVehiculo'] = "Vehículo marca " + this.laExpediente[0].Marca + ", modelo " + this.laExpediente[0].Modelo + ", año " + this.laExpediente[0].Year + ", color " + this.laExpediente[0].Color + ", placa " + this.laExpediente[0].NumeroPlaca;
+            localStorage.setItem('dataProcess-DescripcionVehiculo', "Vehículo marca " + this.laExpediente[0].Marca + ", modelo " + this.laExpediente[0].Modelo + ", año " + this.laExpediente[0].Year + ", color " + this.laExpediente[0].Color + ", placa " + this.laExpediente[0].NumeroPlaca)
+            this.dataProcess['FechaHora'] = this.laExpediente[0].FechaRegistro;
+            this.dataProcess['Lugar'] = this.laExpediente[0].Direccion;
+            this.dataProcess['RefUsuarioId'] = this.laExpediente[0].RefGestorId;
+            localStorage.setItem('dataProcess-RefUsuarioId', this.laExpediente[0].RefGestorId);
+            this.dataProcess['RefPaisId'] = this.laExpediente[0].IdPais;
+            localStorage.setItem('dataProcess-RefPaisId', this.laExpediente[0].IdPais);
+            this.dataProcess['RefCiudadId'] = this.laExpediente[0].IdCiudad;
+            localStorage.setItem('dataProcess-RefCiudadId', this.laExpediente[0].IdCiudad);
+            this.dataProcess['RefDeptoId'] = this.laExpediente[0].RefDepartamentoId;
+            localStorage.setItem('dataProcess-RefDeptoId', this.laExpediente[0].RefDepartamentoId);
+            this.dataProcess['Motor'] = this.laExpediente[0].Motor;
+
+            localStorage.setItem('dataProcess-MarcaVehiculo', this.laExpediente[0].Marca);
+            localStorage.setItem('dataProcess-ModeloVehiculo', this.laExpediente[0].Modelo);
+            localStorage.setItem('dataProcess-AnioVehiculo', this.laExpediente[0].Year);
+            localStorage.setItem('dataProcess-PlacaVehiculo', this.laExpediente[0].NumeroPlaca);
+            localStorage.setItem('dataProcess-ChasisVehiculo', this.laExpediente[0].Chasis);
+            localStorage.setItem('dataProcess-ColorVehiculo', this.laExpediente[0].Color);
+            //localStorage.setItem('dataProcess-Motor', this.laExpediente[0].Motor);
+            //this.dataProcess['DireccionEnvioCorrespondencia'] = this.elExpediente.Direccion;
+
+            for (let index = 0; index < this.nulosExpediente.length; index++) {
+              const element = this.nulosExpediente[index];
+              console.log('viene nulo '+element.nombre);
+              for (let index = 0; index < Predeterminados.length; index++) {
+                const elementPredet = Predeterminados[index].nombre;
+                const elementPredetV = Predeterminados[index].valor;
+                if(element.nombre.indexOf(elementPredet) > -1){
+                  this.dataProcess[element.nombre] = elementPredetV;
+                }
+              }
             }
           }
-
-          if (licencia) {
-            this.elExpediente.LicenciaNo = licencia;
-          }
-
-          
-          
-          
-          if (autoridad) {
-            this.elExpediente.AutoridadInvolucrada = autoridad;
-          }
-
-          if (ubicacion) {
-            this.elExpediente.UbicacionVehiculoAsegurado = ubicacion;
-          }
-
-          if (ubicacionVehiculoDet) {
-            this.elExpediente.UbicacionVehiculoDetenido = ubicacionVehiculoDet;
-          }
-
-          if (descripcionTercerosHeridos) {
-            this.elExpediente.DescripcionTercerosHeridos = descripcionTercerosHeridos;
-          } 
-          if (descripcionTercerosMuertos) {
-            this.elExpediente.DescripcionTercerosMuertos = descripcionTercerosMuertos;
-          } 
-          if (descripcionDanio) {
-            this.elExpediente.DescripcionDanioVehiculo = descripcionDanio;
-          } 
-          if (descripcion) {
-            this.elExpediente.DescripcionAccidente = descripcion;
-          } 
-          if (descripcionAudiencia) {
-            this.elExpediente.DescripcionAudiencia = descripcionAudiencia;
-          } 
-
-          if (direccionC) {
-            this.elExpediente.DireccionConductor = direccionC;
-          }
-          
-        }
-        
-
-        let fechaExpediente = this.elExpediente.FechaRegistro;
-        
-        console.log('fechaExpediente :'+fechaExpediente)
-        this.formateadaSiniestro = fechaExpediente.split('T')[0];//formateador.formatearFechaSiniestro(fechaExpediente);
-        let laHora = fechaExpediente.split('T')[1];
-        this.horaSiniestro = laHora.split('.')[0];
-        localStorage.setItem('FechaRegistro', this.elExpediente.FechaRegistro);
-
-        //Inicializacion del arreglo de datos de envio
-        console.log('Ya estamos aqui')
-
-        //console.log('El expediente lenght '+ItemsExpediente.length)
-        for (let index = 0; index < ItemsExpediente.length; index++) {
-          const element = ItemsExpediente[index];
-          const itemNombre = element.nombre;
-          const valorExpediente = this.elExpediente[itemNombre];
-          if (valorExpediente == null || valorExpediente == undefined) {
-            this.nulosExpediente.push({nombre: itemNombre, valor: valorExpediente})
-          }
-          if (index == (ItemsExpediente.length-1)) {
-            //console.dir(this.nulosExpediente)
-          }
-        }
-
-        this.dataProcess['RefAtencionId'] = this.elExpediente.Id;
-        this.dataProcess['RefProveedorAgenteId'] = this.elExpediente.RefGestorId;
-        this.dataProcess['RefProveedorAgenteAbogadoId'] = this.elExpediente.RefProveedorAgenteAbogadoId;
-        this.dataProcess['Poliza'] = this.elExpediente.PolizaExterna;
-        this.dataProcess['IdentidaConductor'] = this.elExpediente.IdentidaConductor;
-        this.dataProcess['Nombre'] = this.elExpediente.Cliente;
-        this.dataProcess['MarcaVehiculo'] = this.elExpediente.Marca;
-        this.dataProcess['ModeloVehiculo'] = this.elExpediente.Modelo;
-        this.dataProcess['AnioVehiculo'] = this.elExpediente.Year;
-        this.dataProcess['PlacaVehiculo'] = this.elExpediente.NumeroPlaca;
-        this.dataProcess['ChasisVehiculo'] = this.elExpediente.Chasis;
-        this.dataProcess['ColorVehiculo'] = this.elExpediente.Color;
-        this.dataProcess['DescripcionVehiculo'] = "Vehículo marca " + this.elExpediente.Marca + ", modelo " + this.elExpediente.Modelo + ", año " + this.elExpediente.Year + ", color " + this.elExpediente.Color + ", placa " + this.elExpediente.NumeroPlaca;
-        this.dataProcess['FechaHora'] = this.elExpediente.FechaRegistro;
-        this.dataProcess['Lugar'] = this.elExpediente.Direccion;
-        this.dataProcess['RefUsuarioId'] = this.elExpediente.RefGestorId;
-        this.dataProcess['RefPaisId'] = this.elExpediente.IdPais;
-        this.dataProcess['RefCiudadId'] = this.elExpediente.IdCiudad;
-        this.dataProcess['RefDeptoId'] = this.elExpediente.RefDepartamentoId;
-        this.dataProcess['Motor'] = this.elExpediente.Motor;
-
-        localStorage.setItem('dataProcess-MarcaVehiculo', this.elExpediente.Marca);
-        localStorage.setItem('dataProcess-ModeloVehiculo', this.elExpediente.Modelo);
-        localStorage.setItem('dataProcess-AnioVehiculo', this.elExpediente.Year);
-        localStorage.setItem('dataProcess-PlacaVehiculo', this.elExpediente.NumeroPlaca);
-        localStorage.setItem('dataProcess-ChasisVehiculo', this.elExpediente.Chasis);
-        localStorage.setItem('dataProcess-ColorVehiculo', this.elExpediente.Color);
-        localStorage.setItem('dataProcess-Motor', this.elExpediente.Motor);
-        //this.dataProcess['DireccionEnvioCorrespondencia'] = this.elExpediente.Direccion;
-
-        for (let index = 0; index < this.nulosExpediente.length; index++) {
-          const element = this.nulosExpediente[index];
-          console.log('viene nulo '+element.nombre);
-          for (let index = 0; index < Predeterminados.length; index++) {
-            const elementPredet = Predeterminados[index].nombre;
-            const elementPredetV = Predeterminados[index].valor;
-            if(element.nombre.indexOf(elementPredet) > -1){
-              this.dataProcess[element.nombre] = elementPredetV;
-            }
-          }
-        }
-
-        
-
+        });
       }
-    });
+    }else{
+      this.daTipoConductor = 1;
+      this.seTipoConductor(this.daTipoConductor, 5);
+      
+    }
+
+    
+
+    
+    
+    
+
+    for (let index = 0; index < localStorage.length; index++) {
+      const element = localStorage[index];
+      let cadena:any = localStorage.key(index);
+        let objeto:any = localStorage.getItem(cadena);
+      if (localStorage.key(index)?.indexOf('testigos-') == 0) {
+        
+        this.testigos.push(JSON.parse(objeto));
+      }
+      if (localStorage.key(index)?.indexOf('acompaniante-') == 0) {
+        this.acompaniante.push(JSON.parse(objeto));
+      }
+      if (localStorage.key(index)?.indexOf('lesionados-') == 0) {
+        this.lesionados.push(JSON.parse(objeto));
+      }
+
+
+      if (localStorage.key(index)?.indexOf('propiedadesprivadas-') == 0) {
+        this.propiedadesprivadas.push(JSON.parse(objeto));
+      }
+      
+    }
+
+    this.firstInterval = setInterval(() => {
+      this.setFirstSegment();
+    }, 2000);
+
+    
     this.api.ListTipoConductor();
     this.loadParentescos();
     this.getTalleres();
@@ -515,16 +1124,97 @@ export class ClientehnPage implements OnInit {
 
   hiddenMenu(i: number) {
     if (!this.menu[i]) {
-      this.menu = this.menu.reduce((x) => { return [...x, false] }, []);
+      this.menu = this.menu.reduce((x: any[]) => { return [...x, false] }, []);
     }
     this.menu[i] = !this.menu[i];
   }
 
-  hasNonDigit(str) {
+  
+
+  analizaNulo(indexFront:any, valor:any, inputIndex:any){
+    let segmentKey = requiredDataCliente[indexFront].segmentKey;
+    let segmentId = requiredDataCliente[indexFront].segmentoId; 
+    let segmentIndex = requiredDataCliente[indexFront].segmentIndex;
+    this.indexFront = $('.index-input').eq(indexFront).val(); //segmentIndex;
+    //alert('valor '+valor+' en el index '+ inputIndex +', el segmento '+requiredDataCliente[indexFront].segmentKey)
+    //$('.required-index').eq(inputIndex).addClass('required-missing');
+
+
+    if (valor == 'undefined' || valor == undefined) {
+
+      setTimeout(() => {
+        //this.setSegment(segmentKey, indexSeg);
+        $("#"+segmentId).fadeIn('xslow');
+        $("#"+segmentId).click();
+
+        let daSegmentsContainer = document.getElementsByClassName('segment-icon');
+        let daTitleContainer = document.getElementsByClassName('segment-title');
+        let daSegmentsButton = document.getElementsByClassName('segment-item');
+        let daIndex = segmentIndex;
+
+        for (let index = 0; index < daSegmentsContainer.length; index++) {
+          const element = daSegmentsContainer[index];
+          const title = daTitleContainer[index];
+          const segmentId = segments[index].idSegmento;
+          
+          if (daIndex == index) {
+            $("#"+segmentId).fadeIn('xslow');
+            daSegmentsButton[index].setAttribute('style', 'border:1px solid #0058CB');
+            element.setAttribute('style', 'color:#0058CB');
+            title.setAttribute('style', 'color:#0058CB;margin-left: 9px');
+          } else {
+            $("#"+segmentId).fadeOut();
+            daSegmentsButton[index].setAttribute('style', 'border:none');
+            element.setAttribute('style', 'color:#7da1c4');
+            title.setAttribute('style', 'color:#7da1c4;margin-left: 9px');
+          }
+        }
+
+        //this.scrollToElement();
+      }, 900);
+      
+    }
+  }
+
+  hasNonDigit(str:any) {
     return /\D/g.test(str.toString());
   }
 
+  ionViewDidEnter(){
+    let origin = localStorage.getItem('origin');
+
+    this.esAudiencia = (origin === '/prepare-send');
+
+    this.platform.ready().then(() => {
+
+      
+      Keyboard.addListener('keyboardDidShow', () => {
+        $('#firmaChip').fadeOut();
+      });
+
+
+      Keyboard.addListener('keyboardDidHide', () => {
+              $('#firmaChip').fadeIn();
+            });
+      
+
+      setTimeout(() => {
+        const imgElement = document.getElementById("imagenFirma") as HTMLImageElement;
+
+        if (imgElement) {
+          console.log('Esta imagen '+ imgElement.src); // Obtiene el valor completo (resuelto a URL absoluta)
+          console.log(imgElement.getAttribute("src")); // Obtiene exactamente lo que está en el atributo
+        }
+
+        this.firmar();
+      }, 900);
+     
+     });
+  }
+
   ngOnInit() {
+    //alert('Bienvenido a la página de cliente del expediente ');
+
     
     
     for (let indexA = 0; indexA < this.datosAtencion.length; indexA++) {
@@ -564,13 +1254,44 @@ export class ClientehnPage implements OnInit {
 
           //alert(this.moneda)
           if (this.moneda == null) {
-            this.miMoneda = "Lempiras";
-          }else{
-            this.miMoneda = this.moneda.Moneda;
+            this.miMoneda = "LEMPIRAS";
+          }else{ 
+            this.miMoneda = this.moneda;
           }
           
          }
       )
+
+      let polNum:any;
+      let cerNum:any;
+
+      setTimeout(() => {
+      polNum = this.elExpediente[0].PolizaExterna.split('-')[1];
+      cerNum = this.elExpediente[0].Certificado;
+
+      const cobertura = {
+      pNumPoliza: parseInt(polNum),
+      pNumSiniestro: '',
+      pNumCertificado: parseInt(cerNum),
+      pNumEndoso: '',
+      pNumAsegurado: ''
+    }
+    
+        this.api.Valida_Lista_Coberturas(cobertura).pipe( 
+          finalize(async ()=>{
+            this.isLoading = false;
+          })
+        ).subscribe(
+          (res) =>{
+            console.log('Cobertura de póliza ')
+            console.dir(res)
+
+            //localStorage.setItem('coberturas', JSON.stringify(res));
+       
+          }
+        )
+          
+        }, 3000);
 
       console.log('asi estan los acompas')
       console.dir(this.acompaniante)
@@ -579,11 +1300,9 @@ export class ClientehnPage implements OnInit {
 
 
     this.platform.ready().then(() => {
-      let elementWidth = document.getElementById('segmentsContent').clientWidth;
+      let elementWidth:any = document.getElementById('segmentsContent')?.clientWidth;
       if (this.platform.is('android')) {
         this.deviceWidth = this.platform.width() - 400;
-        //this.screenlock.lockToLandscape();
-        this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
       } else {
         this.deviceWidth = this.platform.width() - 370;
       }
@@ -608,32 +1327,35 @@ export class ClientehnPage implements OnInit {
 
   // PROCESO
   goBack(){
-    this.toaster.presentToastHome('Salir del forumulario? Los datos aun quedan en caché', 'middle', 'cliente');
+    this.alertaSalir();
+    //this.toaster.presentToastHome('Salir del forumulario? Los datos aun quedan en caché', 'middle', 'cliente');
+  }
+
+  async alertaSalir() {
+    const alert = await this.alert.create({
+      header:'Salir del formulario?',
+      message:'Los datos se perderan sin haber enviado. Salir?',
+      buttons:this.alertButtons
+    });
+    await alert.present();
   }
 
   goMap(){
-    //alert('Jir Ai Gooooo!')
-    
     this.router.navigate(['./mapa']);
   }
 
+  scrollToElement() {
+    this.content.scrollToPoint(0, 0, 1000);
+  }
+
   limpiarCache() {
-    //localStorage.removeItem('dSignatureAsegurado');
-    //localStorage.removeItem('firmasAsegurados');
-    //localStorage.removeItem('miLocalidad');
-    //localStorage.removeItem('coordinates');
-    //localStorage.removeItem('codigoPais');
-    //localStorage.removeItem('nombrePais');
-    //localStorage.removeItem('esCompleto');
     window.location.reload();
   }
 
   saveFirma() {
     //console.log(this.sig.toDataURL("image/jpeg"));
   }
-  print(item) {
-    //console.log(item);
-  }
+
   addPersona() {
     switch (this.persona.TipoPersona) {
       case 1:
@@ -688,13 +1410,13 @@ export class ClientehnPage implements OnInit {
 
     if (tipo == 3) {
       this.showPersonaLesion = true;
-      this.modalLesion.onDidDismiss().then((data) => {
+      this.modalLesion?.onDidDismiss().then((data) => {
         this.showPersonaLesion = false;
         console.log(data+', Hey');
       });
     }else{
       this.showPersona = true;
-      this.daModal.onDidDismiss().then((data) => {
+      this.daModal?.onDidDismiss().then((data) => {
         this.showPersona = false;
       });
     }
@@ -732,7 +1454,7 @@ export class ClientehnPage implements OnInit {
     if (miTipo == 3) {
       this.showPersonaLesion = false;
       //this.showPersonaLesion = true;
-      this.modalLesion.onDidDismiss().then((data) => {
+      this.modalLesion?.onDidDismiss().then((data) => {
         this.showPersonaLesion = false;
         console.log(data+', Hey');
       });
@@ -740,7 +1462,7 @@ export class ClientehnPage implements OnInit {
       this.showPersona = false;
       //alert('Ya estoy acá')
       //this.showPersona = true;
-      this.daModal.onDidDismiss().then((data) => {
+      this.daModal?.onDidDismiss().then((data) => {
         this.showPersona = false;
       });
     }
@@ -765,12 +1487,12 @@ export class ClientehnPage implements OnInit {
     }
   }
 
-  insertarLesion(event){
+  insertarLesion(event:any){
     console.log(event.detail.value)
     localStorage.setItem('lesion-'+this.idAtencion, event.detail.value);
   }
 
-  getElTipoParentesco(event) {
+  getElTipoParentesco(event: any) {
     console.log(event)
     let tipoP = event.detail.value;
     this.elTipoParentesco = event.target.value;
@@ -790,25 +1512,25 @@ export class ClientehnPage implements OnInit {
     //this.elTipoDeParentesco = this.tipoParentescos
   }
 
-  setElTipoParentesco(parent) {
+  setElTipoParentesco(parent:any) {
     this.elTipoParentesco = parent;
     localStorage.setItem('dataProcess-Parentesco', parent);
     localStorage.setItem('datos-Parentesco', parent);
   }
 
-  tercerosHeridos(event) {
+  tercerosHeridos(event:any) {
     this.esTercerosHeridos = event.target.value;
-    this.dataProcess['TercerosHeridos'] = event.target.value;
+    this.dataProcess['TercerosHeridos'] = parseInt(event.target.value);
     localStorage.setItem('dataProcess-TercerosHeridos', event.target.value);
   }
 
-  seTercerosHeridos(terceros) {
+  seTercerosHeridos(terceros:any) {
     this.esTercerosHeridos = terceros;
-    this.dataProcess['TercerosHeridos'] = terceros;
+    this.dataProcess['TercerosHeridos'] = parseInt(terceros);
     localStorage.setItem('dataProcess-TercerosHeridos', terceros);
   }
 
-  tercerosMuertos(event) {
+  tercerosMuertos(event:any) {
     this.esTercerosMuertos = parseInt(event.target.value);
     this.dataProcess['TercerosMuertos'] = parseInt(event.target.value);
     localStorage.setItem('dataProcess-TercerosMuertos', event.target.value);
@@ -816,7 +1538,7 @@ export class ClientehnPage implements OnInit {
 
   
 
-  seTercerosMuertos(terceros) {
+  seTercerosMuertos(terceros:any) {
     this.esTercerosMuertos = terceros;
     this.dataProcess['TercerosMuertos'] = terceros;
     localStorage.setItem('dataProcess-TercerosMuertos', terceros);
@@ -844,7 +1566,7 @@ export class ClientehnPage implements OnInit {
     if (tipo == 3) {
       this.showPersonaLesion = !this.showPersonaLesion;
 
-        this.modalLesion.onDidDismiss().then((data) => {
+        this.modalLesion?.onDidDismiss().then((data) => {
           this.showPersonaLesion = false;
           console.log(data+', Hey');
           this.persona.Nombre = '';
@@ -857,7 +1579,7 @@ export class ClientehnPage implements OnInit {
     }else{
       this.showPersona = !this.showPersona;
 
-        this.daModal.onDidDismiss().then((data) => {
+        this.daModal?.onDidDismiss().then((data) => {
           this.showPersona = false;
           console.log(data+', Hey')
           this.persona.Nombre = '';
@@ -876,7 +1598,7 @@ export class ClientehnPage implements OnInit {
   openModalPropiedad() {
     this.propiedadPrivada = {};
     this.showPropiedad = !this.showPropiedad;
-    this.propModal.onDidDismiss().then((data) => {
+    this.propModal?.onDidDismiss().then((data) => {
       this.showPropiedad = false;
       console.log(data+', Hey')
     });
@@ -935,7 +1657,7 @@ export class ClientehnPage implements OnInit {
     this.router.navigate(['./fotoshn']);
   }
 
-  async presentToast(message, position, clase) {
+  async presentToast(message:any, position:any, clase:any) {
     const currentToast = document.getElementsByTagName('ion-toast');
     //console.log('Tengo estos toasters : ' + currentToast.length);
 
@@ -993,7 +1715,7 @@ export class ClientehnPage implements OnInit {
     })
   }
 
-  async presentToastErrorConexion(message, position, clase) {
+  async presentToastErrorConexion(message:any, position:any, clase:any) {
     const currentToast = document.getElementsByTagName('ion-toast');
     //console.log('Tengo estos toasters : ' + currentToast.length);
     if (currentToast.length > 0) {
@@ -1016,7 +1738,7 @@ export class ClientehnPage implements OnInit {
     await toast.present();
   }
 
-  seleccionarMarca(idMarca) {
+  seleccionarMarca(idMarca:any) {
     this.modelosMarca = [];
     let elIndex = idMarca.target.value;
     this.elExpediente.Marca = marcasVehiculos[elIndex].nombre;
@@ -1031,12 +1753,12 @@ export class ClientehnPage implements OnInit {
     }
   }
 
-  seleccionarModelo(idModelo) {
+  seleccionarModelo(idModelo:any) {
     this.elExpediente.Modelo = idModelo.target.value;
     //console.log(this.elExpediente.Modelo)
   }
 
-  seleccionarMarcaCulpable(idMarca) {
+  seleccionarMarcaCulpable(idMarca:any) {
     this.modelosMarca = [];
     let elIndex = idMarca.target.value;
     //alert(elIndex)
@@ -1052,7 +1774,7 @@ export class ClientehnPage implements OnInit {
     }
   }
 
-  seleccionarModeloCulpable(idModelo) {
+  seleccionarModeloCulpable(idModelo:any) {
     this.culpable.ModeloCulpable = idModelo.target.value;
     //console.log(this.culpable.ModeloCulpable)
   }
@@ -1062,20 +1784,44 @@ export class ClientehnPage implements OnInit {
     //alert('testing')
   }
 
-  seleccionarTipoConductor(tipoCId) {
+  seleccionarTipoConductor(tipoCId:any) {
     this.daType = tipoCId.target.value;
 
+    for (let indexT = 0; indexT < this.tipoConductor.length; indexT++) {
+      const element = this.tipoConductor[indexT];
+      let idTipo = element.Id;
+      if (idTipo == this.daType) {
+        //alert(this.daType+', '+element.TipoConductor)
+        this.elTipoDeConductor = element.TipoConductor;  
+        console.log('Tipo de conductor seleccionado : '+this.elTipoDeConductor);
+      }
+      
+    }
+    
     //this.entraResponsable()
     //alert(this.daType+1)
     this.elExpediente.ConducidoPor = parseInt(tipoCId.target.value);
+    this.laExpediente[0].ConducidoPor = parseInt(tipoCId.target.value);
     this.dataProcess.RefTipoConductorId = parseInt(tipoCId.target.value);
     this.dataProcess['RefTipoConductorId'] = parseInt(tipoCId.target.value);
     localStorage.setItem('dataProcess-RefTipoConductorId', tipoCId.target.value);
 
+    this.formateadaNacimiento = null;
+    this.elTipoDeParentesco = null;
+    this.elTipoDeLicencia = null;
+    this.laExpediente[0].TelefonoFijoConductor = null;
+    this.laExpediente[0].DireccionConductor = null;
+    this.laExpediente[0].CelularConductor = null;
+    this.laExpediente[0].LicenciaNo = null;
+    this.formateadaVigencia = null;
+    this.daTelefonoFijoConductor = undefined;
+    this.daCelularConductor = null;
+    this.edad = undefined;
+    
     for (let index = 0; index < this.tipoConductor.length; index++) {
       const element = this.tipoConductor[index];
-      console.log('Tipo de conductor '+tipoCId.target.value+', tipo '+element.TipoConductor);
-      console.dir(element)
+      //console.log('Tipo de conductor '+tipoCId.target.value+', tipo '+element.TipoConductor);
+      //console.dir(element)
 
       if (this.daType == element.Id) {
         this.elTipoDeConductor = element.TipoConductor;
@@ -1083,31 +1829,73 @@ export class ClientehnPage implements OnInit {
 
     }
 
+
+    // limpiar variables de licencia
+    this.dataProcess.RefTipoLicenciaId = null;
+    this.dataProcess.TipoLicencia = null;
+    this.elExpediente.TipoLicencia = null;
+    this.laExpediente[0].TipoLicencia = null;
+    this.elTipoParentesco = null;
+    this.dataProcess['Parentesco'] = null;
+    localStorage.removeItem('dataProcess-Parentesco');
+    localStorage.removeItem('datos-Parentesco');
+    localStorage.removeItem('dataProcess-TipoLicencia');
+    localStorage.removeItem('dataProcess-RefTipoLicenciaId');
+    localStorage.removeItem('elTipoLicencia');
+    localStorage.removeItem('elTipoLicenciaId');
+    localStorage.removeItem('elParentesco');
+
+
     if (tipoCId.target.value == 1) {
       this.conductorEsAfiliado = true;
-      //alert(this.elExpediente.Cliente)
       this.elExpediente.NombreConductor = this.elExpediente.Cliente;
-      localStorage.setItem('dataProcess-NombreConductor', this.elExpediente.NombreConductor);
-      localStorage.setItem('datos-NombreConductor', this.elExpediente.NombreConductor);
-      localStorage.setItem('NombreConductor', this.elExpediente.NombreConductor);
-      localStorage.setItem('nombreConductor', this.elExpediente.NombreConductor);
+      this.laExpediente[0].NombreConductor = this.laExpediente[0].Cliente;
+      this.laExpediente[0].IdentidaConductor = this.identidadDelCliente;
+      localStorage.setItem('dataProcess-NombreConductor', this.laExpediente[0].NombreConductor);
+      localStorage.setItem('datos-NombreConductor', this.laExpediente[0].NombreConductor);
+      localStorage.setItem('NombreConductor', this.laExpediente[0].NombreConductor);
+      localStorage.setItem('nombreConductor', this.laExpediente[0].NombreConductor);
+      
+     
 
-      this.nombreCliente = this.elExpediente.Cliente;
+      //const element = this.tipoParentescos[0];
+      //this.elTipoParentesco = element.CODIGO;
+      //this.elTipoDeParentesco = element.DESCRIPCION;
+
+      this.nombreCliente = this.laExpediente[0].Cliente;
       this.cliente.IdentidadConductor = this.identidadAsegurado;
-      //this.elExpediente.DireccionConductor = this.elExpediente.Direccion;
-      this.elExpediente.TelefonoFijoConductor = this.cliente.TelefonFijo;
-      this.elExpediente.CelularConductor = this.cliente.Celular;
-      this.nombreCliente = this.elExpediente.Cliente;
+      this.laExpediente[0].TelefonoFijoConductor = this.cliente.TelefonFijo;
+      this.laExpediente[0].CelularConductor = this.cliente.Celular;
+      this.nombreCliente = this.laExpediente[0].Cliente;
       this.dataProcess.CelularConductor = this.cliente.TelefonoOrigen;
       this.dataProcess['CelularConductor'] = this.cliente.TelefonoOrigen;
       this.dataProcess.ConductorAfiliado = 1;
       this.dataProcess['ConductorAfiliado'] = 1;
-      //alert('EL conductor es el asegurado '+this.elExpediente.Cliente)
+      localStorage.setItem('dataProcess-ConductorAfiliado', '1');
+      
+      //this.identidadAsegurado = localStorage.getItem('identidadAsegurado');
+      this.daIdentidadConductor = localStorage.getItem('identidadAsegurado');
+      this.daTelefonoFijoConductor = this.laExpediente[0].TelefonoOrigen;
+      this.daCelularConductor = this.laExpediente[0].TelefonoOrigen;
+
     } else {
-      this.nombreConductor = localStorage.getItem('dataProcess-NombreConductor');
+      this.conductorEsAfiliado = false;
+      this.daNombreConductor = '';
+      this.daIdentidadConductor = '';
+      this.daTelefonoFijoConductor = null;
+      this.daCelularConductor = null;
+
+      this.dataProcess['NombreConductor'] = '';
+      localStorage.setItem('dataProcess-NombreConductor', '');
+
+      this.dataProcess.ConductorAfiliado = tipoCId.target.value;
+      this.dataProcess['ConductorAfiliado'] = tipoCId.target.value;
+      localStorage.setItem('dataProcess-ConductorAfiliado', tipoCId.target.value);
+
+      //this.nombreConductor = localStorage.getItem('dataProcess-NombreConductor');
       if (this.nombreConductor) {
         if (this.nombreConductor == this.elExpediente.Cliente) {
-          this.conductorEsAfiliado = false;
+          /*
           this.daNombreConductor = '';
           this.daIdentidadConductor = '';
           this.daTelefonoFijoConductor = null;
@@ -1116,108 +1904,110 @@ export class ClientehnPage implements OnInit {
           localStorage.setItem('datos-NombreConductor', '');
           localStorage.setItem('NombreConductor', '');
           localStorage.setItem('nombreConductor', '');
+          */
         }
         //alert('Tengo este conductor en caché '+this.nombreConductor+', y '+this.elExpediente.Cliente);
       }else{
         //alert('Aun no se ha ingresado un conductor');
       }
-      /*
-      
-      //this.elExpediente.Cliente = this.cliente.Cliente;
-      //this.elExpediente.NombreConductor = '';
-      this.daNombreConductor = '';
-      this.daIdentidadConductor = '';
-      this.nombreConductor = '';
-      this.cliente.IdentidadConductor = '';
-      //this.elExpediente.DireccionConductor = '';
-      this.elExpediente.TelefonoFijoConductor = '';
-      this.elExpediente.CelularConductor = '';
-      this.nombreCliente = '';
-      this.dataProcess.ConductorAfiliado = 1;
-      this.dataProcess['ConductorAfiliado'] = 1;
-      */
     }
   }
 
-  seTipoConductor(tipoC) {
-    //alert('Proceso de Caché')
-    //alert(parseInt(tipoC)+1);
-    //alert(parseInt(tipoC)+1+', '+parseInt(tipoC));
-
+  seTipoConductor(tipoC:any, origen:any) {
+    //alert('Yes '+tipoC)
     this.elExpediente.ConducidoPor = parseInt(tipoC);
+    this.laExpediente[0].ConducidoPor = parseInt(tipoC);
     this.dataProcess.RefTipoConductorId = parseInt(tipoC);
     this.dataProcess['RefTipoConductorId'] = parseInt(tipoC);
     localStorage.setItem('dataProcess-RefTipoConductorId', tipoC);
-    //$("input[type='select'][value="+this.elExpediente.ConducidoPor+"]").attr("selected",'true').trigger("change");
 
-    if (parseInt(tipoC) == 1) {
-      //alert('Si soy')
-      //alert(this.elExpediente.Cliente)
-      this.conductorEsAfiliado = true;
-      this.elExpediente.NombreConductor = this.elExpediente.Cliente;
-      this.nombreCliente = this.elExpediente.Cliente;
-      this.nombreConductor = this.elExpediente.Cliente;
-      this.cliente.IdentidadConductor = this.identidadAsegurado;
-      //this.elExpediente.DireccionConductor = this.elExpediente.Direccion;
-      //alert(this.cliente.TelefonFijo)
-      this.elExpediente.TelefonoFijoConductor = this.cliente.TelefonFijo;
-      this.elExpediente.CelularConductor = this.cliente.Celular;
-      this.nombreCliente = this.elExpediente.Cliente;
-      this.dataProcess.CelularConductor = this.cliente.TelefonoOrigen;
-      this.dataProcess['CelularConductor'] = this.cliente.TelefonoOrigen;
-      this.dataProcess.ConductorAfiliado = 1;
-      this.dataProcess['ConductorAfiliado'] = 1;
-      //alert('EL conductor es el asegurado '+this.elExpediente.Cliente)
-    } else {
-      this.conductorEsAfiliado = false;
-      //alert('Si no soy')
-      //this.elExpediente.Cliente = this.cliente.Cliente;
-      this.elExpediente.NombreConductor = localStorage.getItem('dataProcess-NombreConductor');
-      this.daNombreConductor = localStorage.getItem('dataProcess-NombreConductor');
-      this.cliente.IdentidadConductor = localStorage.getItem('dataProcess-IdentidaConductor');
-      this.daIdentidadConductor = localStorage.getItem('dataProcess-IdentidaConductor');
-      //this.elExpediente.DireccionConductor = localStorage.getItem('dataProcess-DireccionConductor');
-      this.elExpediente.TelefonoFijoConductor = localStorage.getItem('dataProcess-TelefonoConductor');
-      this.elExpediente.CelularConductor = localStorage.getItem('dataProcess-CelularConductor');
-      this.nombreCliente = localStorage.getItem('dataProcess-NombreConductor');
-      this.dataProcess.ConductorAfiliado = 1;
-      this.dataProcess['ConductorAfiliado'] = 1;
+    //alert(this.tipoConductor.length)
+    for (let indexT = 0; indexT < this.tipoConductor.length; indexT++) {
+      const element = this.tipoConductor[indexT];
+      let idTipo = element.Id;
 
-      /*
-      this.nombreConductor = localStorage.getItem('dataProcess-NombreConductor');
-      console.log('Este es el conductor que enconré : '+this.nombreConductor)
-          if (this.nombreConductor) {
-            localStorage.setItem('dataProcess-NombreConductor', this.nombreConductor);
-            localStorage.setItem('nombreConductor', this.nombreConductor);
-            this.elExpediente.NombreConductor = this.nombreConductor;
+      //alert(idTipo+' == '+this.daTipoConductor+', '+(idTipo == this.daTipoConductor));
 
-            setTimeout(() => {
-              console.log('Ahora seteo el nombre del conductor')
-              this.setNombreConductor(this.nombreConductor);  
-            }, 3000);
-            
-          }else{
-            localStorage.setItem('dataProcess-NombreConductor', this.elExpediente.Cliente);
-            localStorage.setItem('nombreConductor', this.elExpediente.Cliente);
-            this.elExpediente.NombreConductor = this.elExpediente.Cliente;
-          }
-          */
+      if (idTipo == this.daTipoConductor) {
+        this.elTipoDeConductor = element.TipoConductor;  
+      }
+      
     }
+
+    setTimeout(() => {
+      let use:any = localStorage.getItem('dataProcess-AseguradoUsoPoliza');
+              let uso = parseInt(use);
+
+      if (parseInt(tipoC) == 1) {
+        this.cliente.Celular = $('#celularAsegurado').val();
+        this.conductorEsAfiliado = true;
+        this.elExpediente.NombreConductor = this.elExpediente.Cliente;
+        this.laExpediente[0].NombreConductor = this.laExpediente[0].Cliente;
+        this.nombreCliente = this.laExpediente[0].Cliente;
+        this.nombreConductor = this.elExpediente.Cliente;
+        this.cliente.IdentidadConductor = this.identidadAsegurado;
+        this.laExpediente[0].TelefonoFijoConductor = this.cliente.TelefonFijo;
+        this.elExpediente.TelefonoFijoConductor = this.cliente.TelefonFijo;
+        this.elExpediente.CelularConductor = this.cliente.Celular;
+        this.laExpediente[0].CelularConductor = this.cliente.Celular;
+        this.dataProcess.CelularConductor = this.cliente.TelefonoOrigen;
+        this.dataProcess['CelularConductor'] = this.cliente.TelefonoOrigen;
+        this.dataProcess.ConductorAfiliado = 1;
+        this.dataProcess['ConductorAfiliado'] = 1;
+        localStorage.setItem('nombreConductor', this.laExpediente[0].Cliente);
+
+        if (uso == 1) {
+                  localStorage.setItem('dataProcess-NombreConductor', this.laExpediente[0].Cliente);
+                }
+        
+        this.dataProcess.ConductorAfiliado = 1;
+        this.dataProcess['ConductorAfiliado'] = 1;
+        localStorage.setItem('dataProcess-ConductorAfiliado', '1');
+
+        this.laExpediente[0].IdentidaConductor = this.identidadDelCliente;
+        localStorage.setItem('datos-NombreConductor', this.laExpediente[0].NombreConductor);
+        localStorage.setItem('NombreConductor', this.laExpediente[0].NombreConductor);
+
+        this.daIdentidadConductor = localStorage.getItem('identidadAsegurado');
+        this.daTelefonoFijoConductor = this.laExpediente[0].TelefonoOrigen;
+        this.daCelularConductor = this.cliente.Celular;//this.laExpediente[0].TelefonoOrigen;
+        this.setCelularConductor(this.daCelularConductor);
+        //alert('Celular Conductor '+this.daCelularConductor+', '+this.cliente.Celular)
+      } else {
+        this.conductorEsAfiliado = false;
+        this.elExpediente.NombreConductor = localStorage.getItem('dataProcess-NombreConductor');
+        this.laExpediente[0].NombreConductor = localStorage.getItem('dataProcess-NombreConductor');
+        this.daNombreConductor = localStorage.getItem('dataProcess-NombreConductor');
+        this.cliente.IdentidadConductor = localStorage.getItem('dataProcess-IdentidaConductor');
+        this.daIdentidadConductor = localStorage.getItem('dataProcess-IdentidaConductor');
+        this.laExpediente[0].TelefonoFijoConductor = localStorage.getItem('dataProcess-TelefonoConductor');
+        this.laExpediente[0].CelularConductor = localStorage.getItem('dataProcess-CelularConductor');
+        this.nombreCliente = localStorage.getItem('dataProcess-NombreConductor');
+        this.dataProcess.ConductorAfiliado = localStorage.getItem('dataProcess-ConductorAfiliado');
+        this.dataProcess['ConductorAfiliado'] = localStorage.getItem('dataProcess-ConductorAfiliado');
+
+        this.dataProcess.ConductorAfiliado = localStorage.getItem('dataProcess-ConductorAfiliado');
+        this.dataProcess['ConductorAfiliado'] = localStorage.getItem('dataProcess-ConductorAfiliado');
+        let cambiazo:any = localStorage.getItem('dataProcess-ConductorAfiliado');
+        localStorage.setItem('dataProcess-ConductorAfiliado', cambiazo);
+
+      }
+    }, 1000);
+    
+    
   }
 
-  setNombreConductor(nombre) {
-    //alert('setNombreConductor')
+  setNombreConductor(nombre:any) {
     this.elExpediente.NombreConductor = nombre;
+    this.laExpediente[0].NombreConductor = nombre;
     this.dataProcess.NombreConductor = nombre;
     this.dataProcess['NombreConductor'] = nombre;
     this.nombreCliente = nombre;
-    localStorage.setItem('nombreConductor', this.elExpediente.NombreConductor);
+    localStorage.setItem('nombreConductor', this.laExpediente[0].NombreConductor);
     localStorage.setItem('dataProcess-NombreConductor', nombre);
   }
   
-  entraNombreConductor(event) {
-    //alert('entraNombreConductor')
-    //alert(this.daType)
+  entraNombreConductor(event:any) {
     console.log(this.daType)
     if (this.daType == 1) {
       console.log('soy el asegurado');
@@ -1230,27 +2020,18 @@ export class ClientehnPage implements OnInit {
       this.dataProcess.NombreConductor = this.daNombreConductor;
       this.dataProcess['NombreConductor'] = this.daNombreConductor;
     }
-    //this.elExpediente.NombreConductor = event.target.value;
-    //this.dataProcess.NombreConductor = event.target.value;
-    
-    /*
-    this.dataProcess['NombreConductor'] = event.target.value;
-    this.nombreCliente = event.target.value;
-    localStorage.setItem('nombreConductor', this.elExpediente.NombreConductor);
-    localStorage.setItem('dataProcess-NombreConductor', event.target.value);
-    */
   }
 
   
 
-  descripcionDanio(event) {
+  descripcionDanio(event:any) {
     //console.log(event.target.value)
     this.dataProcess.DescripcionDanio = event.target.value;
     this.dataProcess['DescripcionDanio'] = event.target.value;
     localStorage.setItem('dataProcess-DescripcionDanio', event.target.value);
   }
 
-  setDescripcionDanio(descripcion) {
+  setDescripcionDanio(descripcion:any) {
     //console.log(event.target.value)
     this.dataProcess.DescripcionDanio = descripcion;
     this.dataProcess['DescripcionDanio'] = descripcion;
@@ -1259,77 +2040,85 @@ export class ClientehnPage implements OnInit {
 
   
 
-  descripcionAccidente(event) {
+  descripcionAccidente(event:any) {
     //console.log(event.target.value)
+    this.dataProcess['Descripcion'] = event.target.value;
     localStorage.setItem('dataProcess-Descripcion', event.target.value);
   }
 
-  setDescripcionAccidente(descripcion) {
+  setDescripcionAccidente(descripcion:any) {
     //console.log(event.target.value)
+    this.dataProcess['Descripcion'] = descripcion;
     localStorage.setItem('dataProcess-Descripcion', descripcion);
   }
 
-  dTercerosHeridos(event) {
+  dTercerosHeridos(event:any) {
     this.dataProcess.DescripcionTercerosHeridos = event.target.value;
     this.dataProcess['DescripcionTercerosHeridos'] = event.target.value;
     localStorage.setItem('dataProcess-DescripcionTercerosHeridos', event.target.value);
   }
 
-  dTercerosMuertos(event) {
+  dTercerosMuertos(event:any) {
     this.dataProcess.DescripcionTercerosMuertos = event.target.value;
     this.dataProcess['DescripcionTercerosMuertos'] = event.target.value;
     localStorage.setItem('dataProcess-DescripcionTercerosMuertos', event.target.value);
   }
 
 
-  setTercerosHeridos(option) {
+  setTercerosHeridos(option:any) {
     this.dataProcess.TercerosHeridos = option;
-    this.dataProcess['TercerosHeridos'] = option;
+    this.dataProcess['TercerosHeridos'] = parseInt(option);
     localStorage.setItem('dataProcess-TercerosHeridos', option);
   }
 
-  setTercerosMuertos(option) {
+  setTercerosMuertos(option:any) {
     this.dataProcess.TercerosMuertos = option;
     this.dataProcess['TercerosMuertos'] = option;
     localStorage.setItem('dataProcess-TercerosMuertos', option);
   }
 
 
-  entrarAnio(event) {
+  entrarAnio(event:any) {
     this.elExpediente.Year = event.target.value;
+    this.laExpediente[0].Year = event.target.value;
   }
 
-  entrarMotor(event) {
+  entrarMotor(event:any) {
     this.elExpediente.Motor = event.target.value;
+    this.laExpediente[0].Motor = event.target.value;
   }
 
-  entrarChasis(event) {
+  entrarChasis(event:any) {
     this.elExpediente.Chasis = event.target.value;
+    this.laExpediente[0].Chasis = event.target.value;
   }
 
-  entrarPlaca(event) {
+  entrarPlaca(event:any) {
     this.elExpediente.NumeroPlaca = event.target.value;
+    this.laExpediente[0].NumeroPlaca = event.target.value;
   }
 
-  entrarUnidad(event) {
+  entrarUnidad(event:any) {
     this.elExpediente.NoUnidad = event.target.value;
+    this.laExpediente[0].NoUnidad = event.target.value;
     this.dataProcess.NumeroUnidad = event.target.value;
-    this.dataProcess['NumeroUnidad'] = parseInt(event.target.value);
+    this.dataProcess['NumeroUnidad'] = event.target.value;
     localStorage.setItem('dataProcess-NumeroUnidad', event.target.value);
   }
 
-  setUnidad(unidad) {
+  setUnidad(unidad:any) {
     this.elExpediente.NoUnidad = unidad;
+    this.laExpediente[0].NoUnidad = unidad;
     this.dataProcess.NumeroUnidad = unidad;
-    this.dataProcess['NumeroUnidad'] = parseInt(unidad);
+    this.dataProcess['NumeroUnidad'] = unidad;
     localStorage.setItem('dataProcess-NumeroUnidad', unidad);
   }
 
-  entraTipoLicencia(event) {
+  entraTipoLicencia(event:any) {
     let tipoLicencia = event.detail.value[0];
     console.log(tipoLicencia)
     this.elTipoDeLicencia = tipoLicencia;
-    let tipo; let tipoId;
+    let tipo; let tipoId:any;
     for (let index = 0; index < this.tipoLicencia.length; index++) {
       const element = this.tipoLicencia[index];
       if (element.TipoLicencia==tipoLicencia) {
@@ -1339,6 +2128,7 @@ export class ClientehnPage implements OnInit {
         this.dataProcess.RefTipoLicenciaId = tipoId;
         this.dataProcess.TipoLicencia = tipo;
         this.elExpediente.TipoLicencia = tipo;
+        this.laExpediente[0].TipoLicencia = tipo;
         localStorage.setItem('dataProcess-TipoLicencia', tipo);
         localStorage.setItem('dataProcess-RefTipoLicenciaId', tipoId);
 
@@ -1354,8 +2144,8 @@ export class ClientehnPage implements OnInit {
     }
   }
 
-  seTipoLicencia(tipoL) {
-    let tipo; let tipoId;
+  seTipoLicencia(tipoL:any) {
+    let tipo; let tipoId:any;
     for (let index = 0; index < this.tipoLicencia.length; index++) {
       const element = this.tipoLicencia[index];
       if (element.TipoLicencia==tipoL) {
@@ -1365,6 +2155,8 @@ export class ClientehnPage implements OnInit {
         this.dataProcess.RefTipoLicenciaId = tipoId;
         this.dataProcess.TipoLicencia = tipo;
         this.elExpediente.TipoLicencia = tipo;
+        this.laExpediente[0].TipoLicencia = tipo;
+        this.laExpediente[0].TipoLicencia = tipo;
         localStorage.setItem('dataProcess-TipoLicencia', tipo);
         localStorage.setItem('dataProcess-RefTipoLicenciaId', tipoId);
       }
@@ -1372,7 +2164,7 @@ export class ClientehnPage implements OnInit {
   }
 }
 
-  entraVencimiento(event) {
+  entraVencimiento(event:any) {
     let vigenciaLength = event.target.value.length;
     if (vigenciaLength < 10) {}else{
       var dateFormat = event.target.value.split('T')[0]; 
@@ -1412,7 +2204,8 @@ export class ClientehnPage implements OnInit {
     }
   }
 
-  setVencimiento(fecha) {
+  setVencimiento(fecha:any) {
+    //alert(fecha)
     let vigenciaLength = fecha.length;
     if (vigenciaLength < 10) {}else{
       var dateFormat = fecha.split('T')[0]; 
@@ -1440,56 +2233,59 @@ export class ClientehnPage implements OnInit {
       }else{
         this.entraLicenciaEstadoCalculado(1);
       }
+
+      this.laExpediente[0].Vigencia = fecha;
+      this.dataProcess['Vigencia'] = fecha;
       localStorage.setItem('dataProcess-Vigencia', fecha);
     }
     
     
   }
 
-  entraLicenciaEstado(event){
+  entraLicenciaEstado(event:any){
     console.log(event.target.value)
     this.dataProcess.LicenciaEstado = event.target.value;
     this.dataProcess['LicenciaEstado'] = event.target.value;
     localStorage.setItem('dataProcess-LicenciaEstado', event.target.value);
   }
 
-  entraLicenciaEstadoCalculado(estado){
+  entraLicenciaEstadoCalculado(estado:any){
     $('#licenciaEstado').val(estado).change();
     this.dataProcess.LicenciaEstado = estado;
     this.dataProcess['LicenciaEstado'] = estado;
     localStorage.setItem('dataProcess-LicenciaEstado', estado);
   }
 
-  entraDescripcionAudiencia(event){
+  entraDescripcionAudiencia(event:any){
     this.dataProcess.DescripcionAudiencia = event.target.value;
     this.dataProcess['DescripcionAudiencia'] = event.target.value;
     localStorage.setItem('dataProcess-DescripcionAudiencia', event.target.value);
   }
 
-  setDescripcionAudiencia(descripcion){
+  setDescripcionAudiencia(descripcion:any){
     this.dataProcess.DescripcionAudiencia = descripcion;
     this.dataProcess['DescripcionAudiencia'] = descripcion;
     localStorage.setItem('dataProcess-DescripcionAudiencia', descripcion);
   }
 
-  entraObservacionTaller(event) {
+  entraObservacionTaller(event:any) {
     this.dataProcess.ObservacionTaller = event.target.value;
     this.dataProcess['ObservacionTaller'] = parseInt(event.target.value);
   }
 
-  entraUbicacionVehiculoDetenido(event) {
+  entraUbicacionVehiculoDetenido(event:any) {
     this.dataProcess.UbicacionVehiculoDetenido = event.target.value;
     this.dataProcess['UbicacionVehiculoDetenido'] = event.target.value;
     localStorage.setItem('dataProcess-UbicacionVehiculoDetenido', event.target.value);
   }
 
-  setUbicacionVehiculoDetenido(ubicacion) {
+  setUbicacionVehiculoDetenido(ubicacion:any) {
     this.dataProcess.UbicacionVehiculoDetenido = ubicacion;
     this.dataProcess['UbicacionVehiculoDetenido'] = ubicacion;
     localStorage.setItem('dataProcess-UbicacionVehiculoDetenido', ubicacion);
   }
 
-  entraResponsable(event){
+  entraResponsable(event:any){
     let seleccion = event.detail.value;
     //alert('Tipo responsable : '+seleccion+', Tipo conductor : '+this.daType+', Nombre conductor no afiliado : '+this.daNombreConductor)
 
@@ -1500,6 +2296,7 @@ export class ClientehnPage implements OnInit {
       this.dataProcess['TerceroResponsable'] = parseInt(event.target.value);
       localStorage.setItem('dataProcess-TerceroResponsable', '3');
       this.elExpediente.NombreAtribuyeAccidente = '';
+      this.laExpediente[0].NombreAtribuyeAccidente = '';
       //this.elExpediente.NombreAtribuyeAccidente = localStorage.getItem('dataProcess-NombreAtribuyeAccidente');
     }else{
       //alert(this.daNombreConductor)
@@ -1509,14 +2306,16 @@ export class ClientehnPage implements OnInit {
       if (seleccion == '2') {
         //alert(this.daType)
         if (this.daType == 1) {
-          this.dataProcess.NombreAtribuyeAccidente = this.elExpediente.Cliente;
-          this.elExpediente.NombreAtribuyeAccidente = this.elExpediente.Cliente;
-          this.dataProcess['NombreAtribuyeAccidente'] = this.elExpediente.Cliente;
+          this.dataProcess.NombreAtribuyeAccidente = this.laExpediente[0].Cliente;
+          this.elExpediente.NombreAtribuyeAccidente = this.laExpediente[0].Cliente;
+          this.laExpediente[0].NombreAtribuyeAccidente = this.laExpediente[0].Cliente;
+          this.dataProcess['NombreAtribuyeAccidente'] = this.laExpediente[0].Cliente;
           localStorage.setItem('dataProcess-TerceroResponsable', '1');
-          localStorage.setItem('dataProcess-NombreAtribuyeAccidente', this.elExpediente.Cliente);
+          localStorage.setItem('dataProcess-NombreAtribuyeAccidente', this.laExpediente[0].Cliente);
 
         }else{
           this.elExpediente.NombreAtribuyeAccidente = this.daNombreConductor;
+          this.laExpediente[0].NombreAtribuyeAccidente = this.daNombreConductor;
           this.dataProcess.NombreAtribuyeAccidente = this.daNombreConductor;
           this.dataProcess['NombreAtribuyeAccidente'] = this.daNombreConductor;
           localStorage.setItem('dataProcess-NombreAtribuyeAccidente', this.daNombreConductor);            
@@ -1524,33 +2323,36 @@ export class ClientehnPage implements OnInit {
         
         
       }else{
-        this.dataProcess.NombreAtribuyeAccidente = this.elExpediente.Cliente;
-        this.elExpediente.NombreAtribuyeAccidente = this.elExpediente.Cliente;
-        this.dataProcess['NombreAtribuyeAccidente'] = this.elExpediente.Cliente;
+        this.dataProcess.NombreAtribuyeAccidente = this.laExpediente[0].Cliente;
+        this.elExpediente.NombreAtribuyeAccidente = this.laExpediente[0].Cliente;
+        this.laExpediente[0].NombreAtribuyeAccidente = this.laExpediente[0].Cliente;
+        this.dataProcess['NombreAtribuyeAccidente'] = this.laExpediente[0].Cliente;
         localStorage.setItem('dataProcess-TerceroResponsable', '1');
-        localStorage.setItem('dataProcess-NombreAtribuyeAccidente', this.elExpediente.Cliente);
+        localStorage.setItem('dataProcess-NombreAtribuyeAccidente', this.laExpediente[0].Cliente);
       }
     }
   }
 
-  setResponsable(selecId){
+  setResponsable(selecId:any){
     let seleccion = selecId;
 
     if (seleccion == '3') {
       this.dataProcess.TerceroResponsable = 3;
       localStorage.setItem('dataProcess-TerceroResponsable', '3');
       this.elExpediente.NombreAtribuyeAccidente = localStorage.getItem('dataProcess-NombreAtribuyeAccidente');
+      this.laExpediente[0].NombreAtribuyeAccidente = localStorage.getItem('dataProcess-NombreAtribuyeAccidente');
     }else{
       this.dataProcess.TerceroResponsable = 2;
       localStorage.setItem('dataProcess-TerceroResponsable', '2');
       if (seleccion == '2') {
         
         if (this.daType == 1) {
-          this.dataProcess.NombreAtribuyeAccidente = this.elExpediente.Cliente;
-          this.elExpediente.NombreAtribuyeAccidente = this.elExpediente.Cliente;
-          this.dataProcess['NombreAtribuyeAccidente'] = this.elExpediente.Cliente;
+          this.dataProcess.NombreAtribuyeAccidente = this.laExpediente[0].Cliente;
+          this.elExpediente.NombreAtribuyeAccidente = this.laExpediente[0].Cliente;
+          this.laExpediente[0].NombreAtribuyeAccidente = this.laExpediente[0].Cliente;
+          this.dataProcess['NombreAtribuyeAccidente'] = this.laExpediente[0].Cliente;
           localStorage.setItem('dataProcess-TerceroResponsable', '1');
-          localStorage.setItem('dataProcess-NombreAtribuyeAccidente', this.elExpediente.Cliente);
+          localStorage.setItem('dataProcess-NombreAtribuyeAccidente', this.laExpediente[0].Cliente);
 
         }else{
           this.elExpediente.NombreAtribuyeAccidente = this.daNombreConductor;
@@ -1563,46 +2365,47 @@ export class ClientehnPage implements OnInit {
         //localStorage.setItem('dataProcess-NombreAtribuyeAccidente', this.elExpediente.NombreAtribuyeAccidente);
         
       }else{
-        this.dataProcess.NombreAtribuyeAccidente = this.elExpediente.Cliente;
-        this.dataProcess['NombreAtribuyeAccidente'] = this.elExpediente.Cliente;
+        this.dataProcess.NombreAtribuyeAccidente = this.laExpediente[0].Cliente;
+        this.dataProcess['NombreAtribuyeAccidente'] = this.laExpediente[0].Cliente;
         localStorage.setItem('dataProcess-TerceroResponsable', '1');
-        localStorage.setItem('dataProcess-NombreAtribuyeAccidente', this.elExpediente.Cliente);
-        this.elExpediente.NombreAtribuyeAccidente = this.elExpediente.Cliente;
+        localStorage.setItem('dataProcess-NombreAtribuyeAccidente', this.laExpediente[0].Cliente);
+        this.elExpediente.NombreAtribuyeAccidente = this.laExpediente[0].Cliente;
+        this.laExpediente[0].NombreAtribuyeAccidente = this.laExpediente[0].Cliente;
       }
     }
   }
 
-  entraNombreCulpable(event) {
+  entraNombreCulpable(event:any) {
     this.culpable.NombreCulpable = event.target.value;
     this.dataProcess.NombreAtribuyeAccidente = event.target.value;
     this.dataProcess['NombreAtribuyeAccidente'] = event.target.value;
   }
 
-  entraNombrePropietarioCulpable(event) {
+  entraNombrePropietarioCulpable(event:any) {
     this.culpable.NombreDireccionPropietarioCulpable = event.target.value;
   }
 
-  entraCorreoCulpable(event) {
+  entraCorreoCulpable(event:any) {
     this.culpableCorreo = event.target.value;
   }
 
-  entraTrabajoCulpable(event) {
+  entraTrabajoCulpable(event:any) {
     this.culpableTrabajo = event.target.value;
   }
 
-  entraContactoCulpable(event) {
+  entraContactoCulpable(event:any) {
     this.culpableContacto = event.target.value;
   }
 
-  entraContactoMNumeroCulpable(event) {
+  entraContactoMNumeroCulpable(event:any) {
     this.culpableContactoNumero = event.target.value;
   }
 
-  entraIdentidadCulpable(event) {
+  entraIdentidadCulpable(event:any) {
     this.culpableIdentidad = event.target.value;
   }
 
-  entraNombreTaller(event) {
+  entraNombreTaller(event:any) {
     console.log(event)
     this.taller = event.detail.value[0];
     this.tallerId = event.detail.value[1];
@@ -1612,7 +2415,7 @@ export class ClientehnPage implements OnInit {
 
   entrarFechaInicio() {}
 
-  entraTallerOtro(event) {
+  entraTallerOtro(event:any) {
     this.tallerOtroArray = [];
     this.dataProcess.DondeSeEncuentraVehiculo = event.target.value;
     this.dataProcess['DondeSeEncuentraVehiculo'] = event.target.value;
@@ -1621,7 +2424,7 @@ export class ClientehnPage implements OnInit {
     //console.log(this.tallerOtro)
   }
 
-  entraTallerOtroDireccion(event) {
+  entraTallerOtroDireccion(event:any) {
     console.dir(this.tallerOtroArray)
     this.dataProcess.DondeSeEncuentraVehiculo = this.tallerOtroArray[0].nombre + ', ' + event.target.value;
     this.dataProcess['DondeSeEncuentraVehiculo'] = event.target.value;
@@ -1630,7 +2433,7 @@ export class ClientehnPage implements OnInit {
     //console.log(this.tallerOtroDireccion)
   }
 
-  seTallerOtroDireccion(taller) {
+  seTallerOtroDireccion(taller:any) {
     console.dir(this.tallerOtroArray)
     this.dataProcess.DondeSeEncuentraVehiculo = this.tallerOtroArray[0].nombre + ', ' + taller;
     this.dataProcess['DondeSeEncuentraVehiculo'] = taller;
@@ -1639,20 +2442,20 @@ export class ClientehnPage implements OnInit {
     //console.log(this.tallerOtroDireccion)
   }
 
-  entraUbicacionVehiculoAsegurado(event) {
+  entraUbicacionVehiculoAsegurado(event:any) {
     this.dataProcess.DondeSeEncuentraVehiculo = event.target.value;
     this.dataProcess['DondeSeEncuentraVehiculo'] = event.target.value;
     localStorage.setItem('dataProcess-DondeSeEncuentraVehiculo', event.target.value);
   }
 
-  setUbicacionVehiculoAsegurado(ubicacion) {
+  setUbicacionVehiculoAsegurado(ubicacion:any) {
     this.dataProcess.DondeSeEncuentraVehiculo = ubicacion;
     this.dataProcess['DondeSeEncuentraVehiculo'] = ubicacion;
     localStorage.setItem('dataProcess-DondeSeEncuentraVehiculo', ubicacion);
   }
 
 
-  evaluateKm(event) {
+  evaluateKm(event:any) {
     this.ajustador.Kilometraje = event.target.value;
     this.dataProcess.Kilometraje = event.target.value;
     this.dataProcess['Kilometraje'] = parseInt(event.target.value);
@@ -1698,7 +2501,7 @@ export class ClientehnPage implements OnInit {
   }
 
 
-  marcarFecha(mydate) {
+  marcarFecha(mydate:any) {
     var dateFormat = mydate.split('T')[0];
     var timeFormat = mydate.split('T')[1];
     this.mydate = mydate;
@@ -1707,7 +2510,8 @@ export class ClientehnPage implements OnInit {
   }
 
   async getCountry() {
-    this.laLocalidad = JSON.parse(localStorage.getItem('miLocalidad'));
+    let local:any = localStorage.getItem('miLocalidad');
+    this.laLocalidad = JSON.parse(local);
     this.miLocalidad = JSON.stringify(this.laLocalidad);
     this.miPais = this.laLocalidad[0].countryCode;
     localStorage.setItem('codigoPais', this.miPais);
@@ -1719,7 +2523,7 @@ export class ClientehnPage implements OnInit {
     //alert(this.miPaisLocalidad+', '+this.miPaisNombre+', '+this.miPaisLocalidadSub)
 
     localStorage.setItem('latitud', this.laLocalidad[0].latitude);
-    localStorage.setItem('longitud', this.laLocalidad[0].longitud);
+    localStorage.setItem('longitud', this.laLocalidad[0].longitude);
     this.isLoading = false;
     if (this.miPais == "HN") {
       this.miPaisBandera = '../../assets/img/flag-hn.png';
@@ -1729,12 +2533,12 @@ export class ClientehnPage implements OnInit {
     this.isLoading = false;
   }
 
-  getElTipoLicencia(event) {
+  getElTipoLicencia(event:any) {
     this.elTipoLicenciaId = event.target.value;
     console.log(this.elTipoLicenciaId)
     for (let index = 0; index < this.tipoLicencia.length; index++) {
       const element = this.tipoLicencia[index];
-      if (this.elTipoLicenciaId.toString() == element.Id.toString()) {
+      if (this.elTipoLicenciaId.toString() == element.Id?.toString()) {
         this.licenciaTipo = element.TipoLicencia;
         this.elExpediente.TipoLicencia = element.TipoLicencia;
       }
@@ -1742,19 +2546,19 @@ export class ClientehnPage implements OnInit {
     }
   }
 
-  getElTipoLicenciaCulpable(event) {
+  getElTipoLicenciaCulpable(event:any) {
     this.elTipoLicenciaId = event.target.value;
 
     for (let index = 0; index < this.tipoLicencia.length; index++) {
       const element = this.tipoLicencia[index];
-      if (this.elTipoLicenciaId.toString() == element.Id.toString()) {
+      if (this.elTipoLicenciaId.toString() == element.Id?.toString()) {
         this.licenciaTipo = element.TipoLicencia;
       }
 
     }
   }
 
-  getElTipoGenero(event) {
+  getElTipoGenero(event:any) {
     this.elTipoGenero = event.target.value;
     if (this.elTipoGenero == 1) {
       this.inicialGenero = "M";
@@ -1763,7 +2567,7 @@ export class ClientehnPage implements OnInit {
     }
   }
 
-  definirGenero(event) {
+  definirGenero(event:any) {
     this.generoConductor = event.target.value;
     this.dataProcess.Sexo = event.target.value;
     this.dataProcess['Sexo'] = parseInt(event.target.value);
@@ -1782,7 +2586,7 @@ export class ClientehnPage implements OnInit {
     */
   }
 
-  async getTipoLicencia(paisIdentidad) {
+  async getTipoLicencia(paisIdentidad:any) {
     //const load = await this.loading.create();
     //await  load.present();
     this.isLoading = true;
@@ -1806,7 +2610,7 @@ export class ClientehnPage implements OnInit {
     )
   }
 
-  async getTipoVehiculo(paisIdentidad) {
+  async getTipoVehiculo(paisIdentidad:any) {
     //const load = await this.loading.create();
     //await  load.present();
     this.isLoading = true;
@@ -1851,6 +2655,7 @@ export class ClientehnPage implements OnInit {
   }
 
   obtenerTipoConductor() {
+    //alert('Okay')
     this.api.ListTipoConductor().pipe(
 
       finalize(async () => {
@@ -1858,7 +2663,12 @@ export class ClientehnPage implements OnInit {
       })
     ).subscribe(
       async (res) => {
+        
         this.tipoConductor = res;
+        this.seTipoConductor(this.daTipoConductor, 1);
+
+        console.log('Aqui obtengo los tipos de conductor');
+        console.dir(res);
       },
       async (res) => {
         const alert = await this.alert.create({
@@ -1884,13 +2694,21 @@ export class ClientehnPage implements OnInit {
     let howManySegments = daFirstSegmentsButton.length;
     if (howManySegments > 0) {
       clearInterval(this.firstInterval);
-      daFirstSegmentsButton[0].setAttribute('style', 'border:1px solid #10069f');
-      daFirstSegmentsContainer[0].setAttribute('style', 'color:#10069f');
-      daFirstTitleContainer[0].setAttribute('style', 'color:#10069f;margin-left: 9px');
+      daFirstSegmentsButton[0].setAttribute('style', 'border:1px solid #0058CB');
+      daFirstSegmentsContainer[0].setAttribute('style', 'color:#0058CB');
+      daFirstTitleContainer[0].setAttribute('style', 'color:#0058CB;margin-left: 9px');
     }
   }
 
-  setSegment(segmentInput, indexInput) {
+  setSegment(segmentInput:any, indexInput:any) {
+
+    setTimeout(() => {
+      let losIconos = document.getElementsByTagName('ion-select');
+      //let elIcono = $('ion-select').eq(0).attr('style', 'color:red');
+      //console.dir(elIcono)
+      //alert(losIconos.length)
+    }, 1300);
+    
     //alert(segmentInput)
 
     //alert(this.elResponsableTipo);
@@ -1900,16 +2718,17 @@ export class ClientehnPage implements OnInit {
     if (segmentInput == 'help-circle') {
       //alert('Tipo de conductor '+this.daType+', tpo de responsable '+this.elResponsableTipo);
 
-
+//alert('Ji vooo')
+/*
       if (this.daType == 1) {
         if (this.elResponsableTipo == 1 || this.elResponsableTipo == 2) {
-          this.setNombreAtribuye(this.elExpediente.Cliente);
+          this.setNombreAtribuye(this.laExpediente[0].Cliente);
         }else{
-          this.setNombreAtribuye(this.elExpediente.NombreAtribuyeAccidente);
+          this.setNombreAtribuye(this.laExpediente[0].NombreAtribuyeAccidente);
         }
       }else{
         if (this.elResponsableTipo == 1) {
-          this.setNombreAtribuye(this.elExpediente.Cliente);
+          this.setNombreAtribuye(this.laExpediente[0].Cliente);
         }
     
         if (this.elResponsableTipo == 2) {
@@ -1917,52 +2736,20 @@ export class ClientehnPage implements OnInit {
         }
     
         if (this.elResponsableTipo == 3) {
-          this.setNombreAtribuye(this.elExpediente.NombreAtribuyeAccidente);
+          this.setNombreAtribuye(this.laExpediente[0].NombreAtribuyeAccidente);
         }  
       }
+      */
       
     }
     
     
     this.nombreConductor = localStorage.getItem('dataProcess-NombreConductor');
-    console.log('Este es el conductor que encontré : '+this.nombreConductor);
+
     this.identidad = localStorage.getItem('dataProcess-IdentidaConductor');
     this.TelefonoFijoConductor = localStorage.getItem('dataProcess-TelefonoConductor');
     this.CelularConductor = localStorage.getItem('dataProcess-CelularConductor');
-    //localStorage.setItem('dataProcess-IdentidaConductor', this.identidad);
-
-    /*
-    if (segmentInput == 'speedometer') {
-      if (this.daTipoConductor != 1) {
-        this.daNombreConductor = this.nombreConductor;
-        console.log('Soy el otro conductor no el asegurado')
-        this.daIdentidadConductor = this.identidad;
-        this.daTelefonoFijoConductor = parseInt(this.tel);
-        this.daCelularConductor = parseInt(this.cel);
-      }else{
-          if (this.nombreConductor) {
-            localStorage.setItem('dataProcess-NombreConductor', this.nombreConductor);
-            this.elExpediente.NombreConductor = this.nombreConductor;
-
-            setTimeout(() => {
-              console.log('Ahora seteo el nombre del conductor setSegment')
-              this.setNombreConductor(this.nombreConductor);  
-            }, 3000);
-            
-          }else{
-            localStorage.setItem('dataProcess-NombreConductor', this.elExpediente.Cliente);
-            this.elExpediente.NombreConductor = this.elExpediente.Cliente;
-
-            setTimeout(() => {
-              console.log('Ahora seteo el nombre del conductor setSegment')
-              this.setNombreConductor(this.elExpediente.Cliente);  
-            }, 3000);
-            
-          }
-      }
-      
-    }
-    */
+    
     
 
     
@@ -1974,7 +2761,11 @@ export class ClientehnPage implements OnInit {
     let daIndex = indexInput;
 
     
-    
+    if (this.daSegment == 'ribbon') {
+      $('#validateButton').fadeIn();
+    }else{
+      $('#validateButton').fadeOut();
+    }
 
     for (let index = 0; index < daSegmentsContainer.length; index++) {
       const element = daSegmentsContainer[index];
@@ -1983,9 +2774,9 @@ export class ClientehnPage implements OnInit {
       
       if (daIndex == index) {
         $("#"+segmentId).fadeIn('xslow');
-        daSegmentsButton[index].setAttribute('style', 'border:1px solid #10069f');
-        element.setAttribute('style', 'color:#10069f');
-        title.setAttribute('style', 'color:#10069f;margin-left: 9px');
+        daSegmentsButton[index].setAttribute('style', 'border:1px solid #0058CB');
+        element.setAttribute('style', 'color:#0058CB');
+        title.setAttribute('style', 'color:#0058CB;margin-left: 9px');
         
         if (this.cantidadNulos == undefined) {
           //alert('Hey vooo!??')
@@ -1995,7 +2786,7 @@ export class ClientehnPage implements OnInit {
             $('#dataNull').fadeOut();
           }else{
             $('#dataNull').fadeIn('xslow');
-            $('#segmentSignature').fadeOut();
+            //$('#segmentSignature').fadeOut();
           }
         }
 
@@ -2008,23 +2799,23 @@ export class ClientehnPage implements OnInit {
     }
   }
 
-  entraDireccionConductor(event){
+  entraDireccionConductor(event:any){
     this.dataProcess['DireccionConductor'] = event.target.value;
     localStorage.setItem('dataProcess-DireccionConductor', event.target.value);
   }
 
 
-  setDireccionConductor(direccion){
+  setDireccionConductor(direccion:any){
     this.dataProcess['DireccionConductor'] = direccion;
     localStorage.setItem('dataProcess-DireccionConductor', direccion);
   }
 
-  entraDireccionConductorCorrespondencia(event){
+  entraDireccionConductorCorrespondencia(event:any){
     this.dataProcess['DireccionEnvioCorrespondencia'] = event.target.value;
     localStorage.setItem('dataProcess-DireccionEnvioCorrespondencia', event.target.value);
   }
 
-  setDireccionConductorCorrespondencia(direccion){
+  setDireccionConductorCorrespondencia(direccion:any){
     this.dataProcess['DireccionEnvioCorrespondencia'] = direccion;
     localStorage.setItem('dataProcess-DireccionEnvioCorrespondencia', direccion);
   }
@@ -2034,150 +2825,179 @@ export class ClientehnPage implements OnInit {
   }
 
 
-  randomize(min, max) { // min and max included 
+  randomize(min:any, max:any) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min);//.toFixed(2);
   }
 
+  signatureDisplay() {
+    $('#segmentSignature').fadeIn();
+  }
+
   // ENVIO
-  GuardarDatos() {
-    let comparar = this.elExpediente.NombreConductor == null;
-    console.log(this.elExpediente.NombreConductor+', '+comparar);
-    
-    console.log('comparativo de la firma antes del envío');
-              console.log((this.firmaPrecargada == emptySignature)+', '+(this.firmaPrecargada==emptySignatureWhite))
-              console.log('y la firma es ')
-              console.log(this.firmaPrecargada)
+  validarDatos(){
+    $('#dataNull').fadeIn('xslow');
+    //$('#segmentSignature').fadeOut();
 
+    if (this.daCelularConductor == null || this.daCelularConductor == undefined || this.daCelularConductor == 0 || isNaN(this.daCelularConductor) || this.daCelularConductor == ''  ){
+      this.daCelularConductor = this.laExpediente[0].TelefonoOrigen;
+    }
 
-    this.isLoading = true;
+    if(this.conductorEsAfiliado == true){
+      this.daTelefonoFijoConductor = this.laExpediente[0].TelefonoOrigen;
+    }else{
+      let telefonoFijo:any = localStorage.getItem('dataProcess-TelefonoConductor');
+      this.daTelefonoFijoConductor = parseInt(telefonoFijo);
+    }
+    //this.daTelefonoFijoConductor = localStorage
+    //alert(this.daTelefonoFijoConductor)
 
-    
     this.validaNulos = [];
     this.clienteFiltro = [];
+    this.nullsIndex = [];
     //console.log(this.requiredD.length)
-    for (let index = 0; index < this.requiredD.length; index++) {
-      const element = this.requiredD[index];
-      let elnombre = element.nombre;
-      let laEtiqueta = element.etiqueta;
-      let laCategoria = element.categoria;
-      let elValorDP;
-      let elValorC;
-      let evaluacion;
+    let elnombre:any; let laEtiqueta:any; let elValorDP:any; let indexSeg:any; let inputIndex:any;
 
-      //alert(this.dataProcess['IdentidaConductor'])
+      if (this.daSegment == 'ribbon') {
+      $('#validateButton').fadeIn();
+    }else{
+      $('#validateButton').fadeOut();
+    }
+          
+    console.log('Filtro de cliente:'); console.dir(requiredDataCliente);
+    console.log('DataProcess : '); console.dir(this.dataProcess);
 
-      //console.log(laCategoria=='cliente', laEtiqueta);
-      if (laCategoria == 'cliente') {
-        console.log(laEtiqueta)
-        this.clienteFiltro.push(element);
+    const clienteValidationData = {
+      ...this.dataProcess,
+      CelularConductor: this.dataProcess['CelularConductor'] || this.daCelularConductor,
+      TelefonoConductor: this.daTelefonoFijoConductor
+    };
+    const validationResult = validateClaimStage(clienteValidationData, clienteScreenValidationRules);
+    const missingFields = new Set(validationResult.missing.map((item) => item.field));
 
-        
+    
+
+    for (let indexDP = 0; indexDP < requiredDataCliente.length; indexDP++) {
+      const elementCLiente = requiredDataCliente[indexDP];
+      elnombre = elementCLiente.nombre;
+      laEtiqueta = elementCLiente.etiqueta;
+      indexSeg = elementCLiente.segmentIndex;
+      elValorDP = missingFields.has(elnombre) ? undefined : validationResult.data[elnombre];
+      inputIndex = elementCLiente.inputIndex;
+
+      
+      if (indexDP == 12) {
+        let conductorIdentidad:any = this.validaIdentidadConductor(this.daType, this.identidadDelCliente, this.daIdentidadConductor);
+
+      }
+      
+
+      if (elnombre == 'CelularConductor') {
+        console.log('Validando datos... celular conductor : '+this.daCelularConductor+', telefono fijo conductor : '+this.daTelefonoFijoConductor+', celular en variable : '+this.dataProcess['CelularConductor']);
+        console.log('Validando : '+elnombre+', valor : '+elValorDP+', etiqueta : '+laEtiqueta+', segmento : '+indexSeg+', inputIndex : '+inputIndex);
+
+        if (elValorDP == '' || elValorDP == null || elValorDP == undefined) {
+          //this.dataProcess['CelularConductor'] = this.daCelularConductor;
+          this.validaNulos.push({etiqueta: laEtiqueta, valor:this.daCelularConductor, indexSegmento: indexSeg, inputIndex:inputIndex});
+        }
+      }else{
+        this.validaNulos.push({etiqueta: laEtiqueta, valor:elValorDP, indexSegmento: indexSeg, inputIndex:inputIndex});
       }
 
-      if (index == (this.requiredD.length-1)) {
-        console.dir(this.clienteFiltro)
-        for (let indexDP = 0; indexDP < this.clienteFiltro.length; indexDP++) {
-          const elementCLiente = this.clienteFiltro[indexDP];
-          elnombre = elementCLiente.nombre;
-          laEtiqueta = elementCLiente.etiqueta;
-          elValorDP = this.dataProcess[elnombre];
-          if (!elValorDP || elValorDP == '') {
-            //this.validaNulos.push(laEtiqueta);
-            elValorC = this.cliente[elnombre];
-            if (!elValorC || elValorC === ''){
-              //alert(elValorC)
-              this.validaNulos.push(laEtiqueta);
-            }
-            //console.log(elnombre+', '+laEtiqueta+', '+elValorC)
-          }
+      
+    }
 
-          if (indexDP==(this.clienteFiltro.length-1)) {
-            console.dir(this.validaNulos)
-            this.cantidadNulos = this.validaNulos.length;
+    setTimeout(() => {
+      const contenedor = document.getElementsByClassName('nulo-item');
+      for (let index = 0; index < contenedor.length; index++) {
+        const elemento = contenedor[index].textContent;
+        let evalor = missingFields.has(requiredDataCliente[index]?.nombre);
+        if (evalor == true) {
+          this.nullsIndex.push(index);
+          $('.nulo-item').eq(index).attr('style', 'color:red; font-weight: bold;');
+        }else{
+          $('.nulo-item').eq(index).attr('style', 'color:gray; font-weight: bold;');
+        }
+        /**/
 
-          if (this.cantidadNulos > 0) {
-            evaluacion = false;
-            this.isLoading = false;
-            $('#dataNull').fadeIn('xslow');
-            $('#segmentSignature').fadeOut();
-          }else{
-            evaluacion = true;
-            // iniciar el proceso de envío de datos
-
-            localStorage.setItem('poliza', this.cliente.Poliza);
-            localStorage.setItem('telFijo', this.culpable.TelefonoFijoCulpable);
-            localStorage.setItem('fechaFirma', this.mydate);
-
-            if (!this.elExpediente.FechaRegistro) {
-              this.elExpediente.FechaRegistro = new Date().toISOString();
-              localStorage.setItem('FechaRegistro', this.elExpediente.FechaRegistro);
-            }
-        
-        
-              if (this.dataProcess['RefProveedorAgenteAbogadoId'] == null || this.dataProcess['RefProveedorAgenteAbogadoId'] == undefined) {
-                this.dataProcess['RefProveedorAgenteAbogadoId'] = Predeterminados[3].valor;
-              }
-              this.dataProcess['Latitud'] = this.laLatitud;
-              this.dataProcess['Longitud'] = this.laLongitud;
-              this.dataProcess['ReclamoAsegurado'] = this.elExpediente.DescripcionDanioVehiculo;
-              this.dataProcess['RefMunicipioId'] = 0;
-              this.dataProcess['NumeroUnidad'] = this.elExpediente.NoUnidad
-              this.dataProcess['FechaNacimientoConductor'] = localStorage.getItem('dataProcess-FechaNacimientoConductor');
-              this.dataProcess['NombreConductor'] = localStorage.getItem('dataProcess-NombreConductor');
+        if (index == (contenedor.length-1)) {
+          //alert(this.nullsIndex.length)
+          if (this.nullsIndex.length == 0) {
+            $('#validateButton').fadeOut();
+            $('#saveDataButton').fadeIn();
+            $('#validateAgainButton').fadeIn();
+            $('#cancelaButton').fadeIn();
+            this.progress = 1;
+            clearInterval(this.progInterval);
+            this.textoInfo = 'Datos completados con éxito! Ahora puedes proceder a enviarlos haciendo click en GUARDAR DATOS';
+            $('#spanProgress').removeClass('progress');
+            $('#spanProgress').addClass('progress-end');
+            let iconoContenedor:any = document.getElementById('infoText');
+            let iconoAprobado = document.createElement('img');
+            iconoAprobado.src = '../../assets/img/aprobar.svg';
+            iconoAprobado.style.width = '45px';
+            iconoAprobado.style.height = '45px';
+            iconoAprobado.style.position = 'absolute';
+            iconoAprobado.style.top = '-5px';
+            iconoAprobado.style.right = '-5px';
+            iconoContenedor.appendChild(iconoAprobado);
             
-        
-            //    const data = JSON.parse(localStorage.getItem('dataSiniestro'));
-        
-            const dataAppend = {
-              // Para Guatemala
-              RefEntidadComunicativaId: 0,
-              RefTipoAudienciaId: 0,
-            }
-        
-            if (this.elExpediente.NombreConductor == null) {
-              this.elExpediente.NombreConductor = this.elExpediente.Cliente;
-            }
-            localStorage.setItem('NombreFirmante', this.elExpediente.NombreConductor);
-        
-            // maximo 2 bienes
-        
-            // Pais País Código
-            this.miPais = "HN";
+          }
+        }
+      }
+    }, 900);
 
-            if (this.miPais == "HN") {
-        
-              if (this.elExpediente.UtilizoSerivicioAsistencia == 1) {
-                this.dataProcess.PorqueNoUsoServicioAsistencia = 'N/A';
-                this.dataProcess['PorqueNoUsoServicioAsistencia'] = 'N/A';
-              }
-        
-              if (this.tallerId || this.tallerOtro) {
-                if (this.tallerId) {
-                  this.dataProcess.TallerMecanicoId = this.tallerId;
-                  this.dataProcess['TallerMecanicoId'] = this.tallerId;
-                } else if (this.tallerOtro) {
-                  this.dataProcess.TallerMecanicoId = this.talleres.length + 1;
-                  this.dataProcess['TallerMecanicoId'] = this.talleres.length + 1;
-                } else {
-                  this.dataProcess.TallerMecanicoId = 0;
-                  this.dataProcess['TallerMecanicoId'] = 0;
-                }
-        
-              }
-        
-              if (this.elExpediente.VehiculoDetenido == 2) {
-                this.dataProcess.UbicacionVehiculoDetenido = 'N/A';
-                this.dataProcess['UbicacionVehiculoDetenido'] = 'N/A';
-              }
-        
-        
-              console.log('Esta es toda la data que voy a mandar');
-              console.dir(this.dataProcess)
-              console.log('comparativo de la firma antes del envío');
-              console.log((this.firmaPrecargada == emptySignature)+', '+(this.firmaPrecargada==emptySignatureWhite))
-              
+    this.progInterval = setInterval(() => {
+      if (this.nullsIndex.length == 0) {
+        this.progress = 1;
+        clearInterval(this.progInterval);
+      }else{
+        this.progress += 0.01;
+        if (this.progress > 1) {
+          setTimeout(() => {}, 1000);
+        }
+      }
+      
+    }, 50);
+  }
 
-              if((this.firmaPrecargada != emptySignature) && (this.firmaPrecargada!=emptySignatureWhite)){
+  GuardarDatos() {
+    //alert('Tipo de conductor al guardar datos : '+this.daType+', Tipo de responsable : '+this.elResponsableTipo+', Nombre conductor : '+this.daNombreConductor+', celular conductor : '+this.daCelularConductor+', telefono fijo conductor : '+this.daTelefonoFijoConductor+', celular en variable : '+this.dataProcess['CelularConductor']+', validacion : '+this.conductorEsAfiliado)+', identidad conductor : '+this.daIdentidadConductor;
+    //alert('Guardando datos... celular conductor : '+this.daCelularConductor+', telefono fijo conductor : '+this.daTelefonoFijoConductor+', celular en variable : '+this.dataProcess['CelularConductor']);
+
+    if (this.dataProcess['CelularConductor'] == '' || this.dataProcess['CelularConductor'] == null || this.dataProcess['CelularConductor'] == undefined) {
+      this.dataProcess['CelularConductor'] = this.daCelularConductor;
+    }
+
+    const cachedLatitud = localStorage.getItem('dataProcess-Latitud');
+    const cachedLongitud = localStorage.getItem('dataProcess-Longitud');
+    const latitudCliente = this.laLatitud || this.clienteLatitud || this.laExpediente?.[0]?.LatitudCliente || cachedLatitud || this.dataProcess['Latitud'];
+    const longitudCliente = this.laLongitud || this.clienteLongitud || this.laExpediente?.[0]?.LongitudCliente || cachedLongitud || this.dataProcess['Longitud'];
+    if (latitudCliente != null && latitudCliente != undefined && latitudCliente != 'undefined') {
+      this.dataProcess['Latitud'] = latitudCliente;
+      localStorage.setItem('dataProcess-Latitud', latitudCliente);
+    }
+    if (longitudCliente != null && longitudCliente != undefined && longitudCliente != 'undefined') {
+      this.dataProcess['Longitud'] = longitudCliente;
+      localStorage.setItem('dataProcess-Longitud', longitudCliente);
+    }
+
+    //alert('Latitud : '+this.laLatitud+', Longitud : '+this.laLongitud)
+
+    if (this.elExpediente.UtilizoSerivicioAsistencia == 1) {
+      this.dataProcess.PorqueNoUsoServicioAsistencia = 'N/A';
+      this.dataProcess['PorqueNoUsoServicioAsistencia'] = 'N/A';
+    }
+
+    if (this.esTercerosHeridos == 2 || this.esTercerosHeridos == '2') {
+      this.dataProcess['DescripcionTercerosHeridos'] = 'No hubieron heridos';
+    }
+
+        if (this.esTercerosMuertos == 2 || this.esTercerosMuertos == '2') {
+      this.dataProcess['DescripcionTercerosMuertos'] = 'No hubieron fallecidos';
+    }
+    
+    setTimeout(() => {
+      if((this.firmaPrecargada != emptySignature) && (this.firmaPrecargada!=emptySignatureWhite)){
                 this.isLoading = false;
 
                 this.toaster.presentToastNoButtons('Registro Creado Con Exito!', 'middle', 'siniestro');
@@ -2191,14 +3011,22 @@ export class ClientehnPage implements OnInit {
                 $("#buttonGoAjuste").fadeIn('slow');
 
                 if (this.daType != 1) {
-                  this.dataProcess.IdentidaConductor = this.daIdentidadConductor;
-                  this.dataProcess['IdentidaConductor'] = this.daIdentidadConductor;
+                  //alert('No soy el asegurado');
+                  //this.dataProcess.IdentidaConductor = this.daIdentidadConductor;
+                  //this.dataProcess['IdentidaConductor'] = this.daIdentidadConductor;
+                }
+
+                
+                if (this.daType == 1) {
+                  //alert('Soy el asegurado y mi identidad es : '+this.identidadDelCliente+', o es '+this.daIdentidadConductor+', valor que se asignara : '+conductorIdentidad);
+                  //this.dataProcess.IdentidaConductor = this.daIdentidadConductor;
+                  //this.dataProcess['IdentidaConductor'] = this.daIdentidadConductor;
                 }
 
                  console.log('dataProcess is');
                  console.dir(this.dataProcess);
-                //this.api.GuardarCacheCliente
                 
+              
               this.api.GuardarCacheCliente(this.dataProcess).pipe( 
                 finalize(async ()=>{
                   //alert('Finalice')
@@ -2208,37 +3036,27 @@ export class ClientehnPage implements OnInit {
               ).subscribe(
                 async (res) =>{
                 console.log(res);
-                //this.audienciaId = res;
-                //this.idTablaAjustador = res.toString();
-
-
-   
-
                 $('#signButton').fadeOut('slow');
                 $('#goSignButton').fadeOut('slow');
                 $('#saveButton').fadeOut('slow');
                 $('#camButton').fadeOut('slow');
-                
-                //$('#signButton').fadeOut('slow');
-
+                $('#saveDataButton').fadeOut();
+                $('#validateAgainButton').fadeOut();
+                $('#cancelaButton').fadeOut();
                 $("#successLabel").fadeIn('slow');
                 $("#buttonGoAjuste").fadeIn('slow');
 
-
-              
-                
                 this.copmleteByCase.push({
                   idAtencion: this.idAtencion, esCompleto: true
                 })
                 localStorage.setItem('esCompleto', JSON.stringify(this.copmleteByCase));
 
 
-               
-                this.clientCompleteArray = JSON.parse(localStorage.getItem('clientCompleteArray'));
+               let completeArray:any = localStorage.getItem('esCompleto');
+                this.clientCompleteArray = JSON.parse(completeArray);
                 if (this.clientCompleteArray) {
                   
                   if (this.clientCompleteArray.includes(this.atencionId)) {
-                    //alert(this.clientCompleteArray.includes(this.atencionId))  
                   }
                 }else{
                   this.clientCompleteArray = [];
@@ -2246,57 +3064,64 @@ export class ClientehnPage implements OnInit {
                 localStorage.setItem('clientCompleteArray', this.clientCompleteArray);
                 }
 
-
-
-                
-
-                }),
-                async (res) => {
-                  this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
+                },
+                async (error) => {
+                  this.toaster.presentToast(error.error.Message, 'top', 'solicitante');
                 }
+              )
+              
                 /**/
               }else{
                 this.toaster.presentToastNoButtonsRed('Se debe firmar para guardar los datos.', 'top', 'firma-siniestro');
               }
-            }
-          }
-          console.log(evaluacion)
-          return evaluacion;
-          }
-          
-        }
-      }
-
-    }
-
-  
+            }, 300);
+    
   }
 
-  setTipoSolicitante(event) {
+  validaIdentidadConductor(daType: any, identidadDelCliente: any, daIdentidadConductor: any): any {
+    if (daType == 1) {
+      if(identidadDelCliente == null ){          if (daIdentidadConductor == null || daIdentidadConductor == 'null') {
+            this.toaster.presentToastNoButtonsRed('La identidad del conductor no puede ser nula o vacía. Por favor, ingresa una identidad válida.', 'top', 'identidad-conductor');
+            this.validaNulos.push({etiqueta: 'Identidad del conductor', valor: identidadDelCliente, indexSegmento: 3, inputIndex: 12});
+          }else{
+            identidadDelCliente = daIdentidadConductor;
+          }
+        }else{
+          daIdentidadConductor = identidadDelCliente;
+        }
+    }
+
+    this.dataProcess['IdentidaConductor'] = identidadDelCliente;
+    return identidadDelCliente;
+  }
+
+  setTipoSolicitante(event:any) {
     this.elTipoSolicitante = event.target.value;
+    //('Tipo solicitante '+this.elTipoSolicitante);
+
     localStorage.setItem('tipoSolicitante', this.elTipoSolicitante);
   }
 
-  entraNombreAsegurado(event) {
+  entraNombreAsegurado(event:any) {
     this.elExpediente.Cliente = event.target.value;
     this.nombreCliente = event.target.value;
     localStorage.setItem('dataProcess-Nombre', event.target.value);
   }
 
-  setNombreAsegurado(nombre) {
+  setNombreAsegurado(nombre:any) {
     this.elExpediente.Cliente = nombre;
     this.nombreCliente = nombre;
     localStorage.setItem('dataProcess-Nombre', nombre);
   }
 
-  entraEntidadInvolucrada(event) {
+  entraEntidadInvolucrada(event:any) {
     this.dataProcess.AutoridadInvolucrada = event.target.value;
     this.dataProcess['AutoridadInvolucrada'] = event.target.value;
     localStorage.setItem('dataProcess-AutoridadInvolucrada', event.target.value);
     
   }
 
-  setEntidadInvolucrada(autoridad) {
+  setEntidadInvolucrada(autoridad:any) {
     this.dataProcess.AutoridadInvolucrada = autoridad;
     this.dataProcess['AutoridadInvolucrada'] = autoridad;
     localStorage.setItem('dataProcess-AutoridadInvolucrada', autoridad);
@@ -2305,15 +3130,15 @@ export class ClientehnPage implements OnInit {
 
   
 
-  entraTipoVehiculo(event){
+  entraTipoVehiculo(event:any){
     this.tipoDeVehiculo = event.target.value;
   }
 
-  entraNombre(event) {
+  entraNombre(event:any) {
     this.elExpediente.Cliente = event.target.value;
   }
 
-  entraIdentidadConductor(event) {
+  entraIdentidadConductor(event:any) {
     if (this.daType == 1) {
       console.log('soy el asegurado');
     }else{
@@ -2333,7 +3158,7 @@ export class ClientehnPage implements OnInit {
     
   }
 
-  setIdentidadConductor(identidad) {
+  setIdentidadConductor(identidad:any) {
     console.log('la identidad '+ identidad)
     this.elExpediente.IdentidadConductor = identidad;
     this.dataProcess.IdentidaConductor = identidad;
@@ -2341,41 +3166,42 @@ export class ClientehnPage implements OnInit {
     localStorage.setItem('dataProcess-IdentidaConductor', identidad);
   }
 
-  entraPolizaConductor(event) {
+  entraPolizaConductor(event:any) {
     this.cliente.Poliza = event.target.value;
     localStorage.setItem('dataProcess-Poliza', event.target.value);
   }
 
-  setPolizaConductor(poliza) {
+  setPolizaConductor(poliza:any) {
     this.cliente.Poliza = poliza;
     localStorage.setItem('dataProcess-Poliza', poliza);
   }
 
-  entraCorreoCorrespondencia(event) {
+  entraCorreoCorrespondencia(event:any) {
     this.cliente.CorreoCorrespondencia = event.target.value;
   }
 
-  entraDireccionCliente(event) {
+  entraDireccionCliente(event:any) {
     this.cliente.Direccion = event.target.value;
     this.dataProcess.Lugar = event.target.value;
     this.dataProcess['Lugar'] = event.target.value;
   }
 
-  entraNombreAtribuye(event) {
+  entraNombreAtribuye(event:any) {
     this.dataProcess.NombreAtribuyeAccidente = event.target.value;
     this.dataProcess['NombreAtribuyeAccidente'] = event.target.value;
     this.elExpediente.NombreAtribuyeAccidente = event.target.value;
     localStorage.setItem('dataProcess-NombreAtribuyeAccidente', event.target.value);
   }
 
-  setNombreAtribuye(nombre) {
+  setNombreAtribuye(nombre:any) {
     this.dataProcess.NombreAtribuyeAccidente = nombre;
     this.dataProcess['NombreAtribuyeAccidente'] = nombre;
     this.elExpediente.NombreAtribuyeAccidente = nombre;
+    this.laExpediente[0].NombreAtribuyeAccidente = nombre;
     localStorage.setItem('dataProcess-NombreAtribuyeAccidente', nombre);
   }
 
-  entraTelefonoAsegurado(event) {
+  entraTelefonoAsegurado(event:any) {
     console.log('Teléfono del asegurado '+event.target.value);
     this.cliente.TelefonFijo = event.target.value;
     localStorage.setItem('dataProcess-TelefonoAsegurado', event.target.value);
@@ -2398,11 +3224,15 @@ export class ClientehnPage implements OnInit {
     */
   }
 
-  entraTelefonoConductor(event) {
-    console.log('Teléfono del conductor '+event.target.value);
+  entraTelefonoConductor(event:any) {
+    //alert('Mjm')
+    console.log('Celular del conductor '+event.target.value);
+    console.log('Teléfono del conductor '+this.cliente.TelefonFijo);
+
     localStorage.setItem('dataProcess-TelefonoConductor', event.target.value);
     this.dataProcess.TelefonoConductor  = event.target.value;
     this.dataProcess['TelefonoConductor'] = event.target.value;
+    this.laExpediente[0].TelefonoConductor = event.target.value;
     /*
     if (this.daType == 1) {
       console.log('soy el asegurado');
@@ -2424,14 +3254,17 @@ export class ClientehnPage implements OnInit {
     
   }
 
-  seTelefonoConductor(tel) {
+  seTelefonoConductor(tel:any) {
+    //alert('telefono afiliado es conductor '+tel)
+
     this.cliente.TelefonFijo = tel;
     this.dataProcess.TelefonoConductor  = tel;
     this.dataProcess['TelefonoConductor'] = tel;
     localStorage.setItem('dataProcess-TelefonoConductor', tel);
+    this.laExpediente[0].TelefonoConductor = tel;
   }
 
-  entraCelularAsegurado(event) {
+  entraCelularAsegurado(event:any) {
     this.cliente.Celular = event.target.value;
     localStorage.setItem('dataProcess-CelularAsegurado', event.target.value);
     /*
@@ -2456,8 +3289,11 @@ export class ClientehnPage implements OnInit {
     
   }
 
-  entraCelularConductor(event) {
+  entraCelularConductor(event:any) {
     localStorage.setItem('dataProcess-CelularConductor', event.target.value);
+    this.dataProcess['CelularConductor'] = event.target.value;
+    this.dataProcess.CelularConductor = event.target.value;
+//    this.laExpediente[0].CelularConductor = event.target.value;
     /*
     if (this.daType == 1) {
       console.log('soy el asegurado');
@@ -2478,14 +3314,15 @@ export class ClientehnPage implements OnInit {
     */
   }
 
-  setCelularConductor(cel) {
+  setCelularConductor(cel:any) {
     this.cliente.Celular = cel;
+    this.cliente[0].Celular = cel;
     this.dataProcess.CelularConductor = cel;
     this.dataProcess['CelularConductor'] = cel;
     localStorage.setItem('dataProcess-CelularConductor', cel);
   }
 
-  entraCorreoConductor(event) {
+  entraCorreoConductor(event:any) {
     console.log(event.target.value)
     this.cliente.CorreoElectronico = event.target.value;
     this.dataProcess.CorreoElectronico = event.target.value;
@@ -2493,7 +3330,7 @@ export class ClientehnPage implements OnInit {
     localStorage.setItem('dataProcess-CorreoElectronico', event.target.value);
   }
 
-  setCorreoConductor(correo) {
+  setCorreoConductor(correo:any) {
     console.log(correo)
     this.cliente.CorreoElectronico = correo;
     this.dataProcess.CorreoElectronico = correo;
@@ -2501,31 +3338,31 @@ export class ClientehnPage implements OnInit {
     localStorage.setItem('dataProcess-CorreoElectronico', correo);
   }
 
-  entraDireccion(event) {
+  entraDireccion(event:any) {
     this.cliente.DireccionSiniestro = event.target.value;
     //localStorage.setItem('dataProcess-DireccionSiniestro', event.target.value);
   }
 
-  setDireccion(direccion) {
+  setDireccion(direccion:any) {
     this.cliente.DireccionSiniestro = direccion;
     //localStorage.setItem('dataProcess-DireccionSiniestro', direccion);
   }
 
-  entraLicencia(event) {
+  entraLicencia(event:any) {
     this.elExpediente.LicenciaNo = event.target.value;
     this.dataProcess.Licencia = event.target.value;
     this.dataProcess['Licencia'] = event.target.value;
     localStorage.setItem('dataProcess-Licencia', event.target.value);
   }
 
-  setLicencia(licenciaNum) {
+  setLicencia(licenciaNum:any) {
     this.elExpediente.LicenciaNo = licenciaNum;
     this.dataProcess.Licencia = licenciaNum;
     this.dataProcess['Licencia'] = licenciaNum;
     localStorage.setItem('dataProcess-Licencia', licenciaNum);
   }
 
-  esBlindado(event) {
+  esBlindado(event:any) {
     console.dir(event)
     this.dataProcess.Blindado = parseInt(event);
     this.dataProcess['Blindado'] = parseInt(event);
@@ -2533,21 +3370,21 @@ export class ClientehnPage implements OnInit {
     localStorage.setItem('dataProcess-Blindado', event);
   }
 
-  setBlindado(blinda) {
+  setBlindado(blinda:any) {
     this.dataProcess.Blindado = parseInt(blinda);
     this.dataProcess['Blindado'] = parseInt(blinda);
     $("input[type='radio'][value="+this.dataProcess.Blindado+"]").attr("checked",'true').trigger("change");
     localStorage.setItem('dataProcess-Blindado', blinda);
   }
 
-  marcarFechaSiniestro(laFechaSiniestrox) {
+  marcarFechaSiniestro(laFechaSiniestrox:any) {
     this.elExpediente.FechaHoraAccidente = laFechaSiniestrox;//.target.value;
     this.formateadaSiniestro = this.formateador.formatearFechaSiniestro(laFechaSiniestrox);//.target.value);
     this.formateada = this.formateador.formatearFechaSiniestro(laFechaSiniestrox);//.target.value);
     this.mydate = laFechaSiniestrox;//.target.value;
   }
 
-  marcarFechaNacimiento(laFechaNacimiento) {
+  marcarFechaNacimiento(laFechaNacimiento:any) {
     console.log('La fecha de nacimiento '+laFechaNacimiento.detail.value);
     this.dataProcess['FechaNacimientoConductor'] = laFechaNacimiento.detail.value;
     this.elExpediente.FechaNacimientoConductor = laFechaNacimiento.detail.value.toString();
@@ -2567,7 +3404,13 @@ export class ClientehnPage implements OnInit {
     }
   }
 
-  setFechaNacimiento(laFecha) {
+  onIonInfinite(ev:any) {
+      setTimeout(() => {
+        (ev as InfiniteScrollCustomEvent).target.complete();
+      }, 500);
+    }
+
+  setFechaNacimiento(laFecha:any) {
     console.log('La fecha de nacimiento '+laFecha);
     this.dataProcess['FechaNacimientoConductor'] = laFecha;
     this.elExpediente.FechaNacimientoConductor = laFecha.toString();
@@ -2578,7 +3421,7 @@ export class ClientehnPage implements OnInit {
     this.edad = this.calcularEdad(laFecha);
   }
 
-  calcularEdad(fecha){
+  calcularEdad(fecha:any){
     console.log(fecha)
     let dAnio = fecha.toString().substring(0, 4);
     console.log(dAnio)
@@ -2586,6 +3429,7 @@ export class ClientehnPage implements OnInit {
     let dYear = parseInt(dAnio);
     let laEdad = thisYear - dYear;
     localStorage.setItem('dataProcess-Edad', laEdad.toString());
+    this.dataProcess['Edad'] = laEdad;
     console.log(laEdad)
     return laEdad;
   }
@@ -2596,7 +3440,7 @@ export class ClientehnPage implements OnInit {
     this.router.navigate(['./esignature']);
   }
 
-  goPrepare(idAtencion){
+  goPrepare(idAtencion:any){
     const navigateExtras: NavigationExtras = 
     {
       state:{
@@ -2609,7 +3453,7 @@ export class ClientehnPage implements OnInit {
     this.router.navigate(['./prepare-send'], navigateExtras);
   }
 
-  goPrepareAudience(idAtencion){
+  goPrepareAudience(idAtencion:any){
     const navigateExtras: NavigationExtras = 
     {
       state:{
@@ -2622,12 +3466,17 @@ export class ClientehnPage implements OnInit {
     this.router.navigate(['./prepare-audience'], navigateExtras);
   }
 
-  utilizacionAsistencia(event) {
+  utilizacionAsistencia(event:any) {
     console.log(event.detail.value+', '+event.target.value)
     let choiceValue = event.detail.value;
 
     if (choiceValue == 2) {
+      //localStorage.setItem('dataProcess-NombreConductor', '');
       this.alertPrepare();
+    }
+
+    if (choiceValue == 1) {
+      this.esAudiencia = false;
     }
 
     this.elExpediente.UtilizoSerivicioAsistencia = event.detail.value;
@@ -2638,9 +3487,10 @@ export class ClientehnPage implements OnInit {
     localStorage.setItem('dataProcess-AseguradoUsoPoliza', event.target.value);
   }
 
-  setUtilizacionAsistencia(uso) {
+  setUtilizacionAsistencia(uso:any) {
     
     if (uso == 2) {
+      //localStorage.setItem('dataProcess-NombreConductor', '');
       this.goPrepare(this.idAtencion);
     }else{
       this.cliente.UtilizoSerivicioAsistencia = uso;
@@ -2653,13 +3503,13 @@ export class ClientehnPage implements OnInit {
     
   }
 
-  entraPorqueNoUso(event) {
+  entraPorqueNoUso(event:any) {
     this.dataProcess.PorqueNoUsoServicioAsistencia = event.target.value;
     this.dataProcess['PorqueNoUsoServicioAsistencia'] = parseInt(event.target.value);
     localStorage.setItem('dataProcess-PorqueNoUsoServicioAsistencia', event.target.value);
   }
 
-  setPorqueNoUso(porque) {
+  setPorqueNoUso(porque:any) {
     this.dataProcess.PorqueNoUsoServicioAsistencia = porque;
     this.cliente.PorqueNoUsoServicioAsistencia = porque;
     localStorage.setItem('dataProcess-PorqueNoUsoServicioAsistencia', porque);
@@ -2667,7 +3517,7 @@ export class ClientehnPage implements OnInit {
 
   
 
-  pruebaAlcohol(event) {
+  pruebaAlcohol(event:any) {
     console.log('Alcohol '+parseInt(event.detail.value))
 
     this.elExpediente.PruebaAlcoholemia = parseInt(event.detail.value);
@@ -2676,7 +3526,7 @@ export class ClientehnPage implements OnInit {
     
   }
 
-  setPruebaAlcohol(prueba) {
+  setPruebaAlcohol(prueba:any) {
     console.log('Alcohol '+parseInt(prueba))
 
     this.elExpediente.PruebaAlcoholemia = parseInt(prueba);
@@ -2687,13 +3537,13 @@ export class ClientehnPage implements OnInit {
 
   
 
-  agendoAudiencia(event){
+  agendoAudiencia(event:any){
     this.dataProcess.AgendarAudiencia = parseInt(event.detail.value);
     this.dataProcess['AgendarAudiencia'] = parseInt(event.target.value);
     localStorage.setItem('dataProcess-AgendarAudiencia', event.target.value);
   }
 
-  audiciona(event) {
+  audiciona(event:any) {
     console.log(event.detail.value)
     let auId = parseInt(event.detail.value);
 
@@ -2706,7 +3556,7 @@ export class ClientehnPage implements OnInit {
     localStorage.setItem('dataProcess-AgendarAudiencia', event.detail.value);
   }
 
-  setAudiencia(audiencia){
+  setAudiencia(audiencia:any){
     let auId = parseInt(audiencia);
     //alert(audiencia+1)
     this.dataProcess.AgendarAudiencia = auId;
@@ -2714,7 +3564,7 @@ export class ClientehnPage implements OnInit {
     localStorage.setItem('dataProcess-AgendarAudiencia', audiencia);
   }
 
-  fueDetenido(event) {
+  fueDetenido(event:any) {
     this.elExpediente.VehiculoDetenido = parseInt(event.detail.value);
     this.dataProcess.VehiculoDetenido = parseInt(event.detail.value);
     this.dataProcess['VehiculoDetenido'] = parseInt(event.target.value);
@@ -2725,36 +3575,36 @@ export class ClientehnPage implements OnInit {
 
   
 
-  fueDetenidoElConductor(event) {
+  fueDetenidoElConductor(event:any) {
     this.dataProcess.ConductorDetenido = parseInt(event.detail.value);
     this.dataProcess['ConductorDetenido'] = parseInt(event.target.value);
     localStorage.setItem('dataProcess-ConductorDetenido', event.target.value);
   }
 
-  setDetenido(detenido) {
+  setDetenido(detenido:any) {
     this.elExpediente.VehiculoDetenido = detenido;
     this.dataProcess.VehiculoDetenido = detenido;
     localStorage.setItem('dataProcess-VehiculoDetenido', detenido);
   }
 
-  setDetenidoElConductor(detenido) {
+  setDetenidoElConductor(detenido:any) {
     this.dataProcess.ConductorDetenido = detenido;
     localStorage.setItem('dataProcess-ConductorDetenido', detenido);
   }
 
-  fueVolcado(event){
+  fueVolcado(event:any){
     this.dataProcess.VehiculoVolcado = event.detail.value;
     this.dataProcess['VehiculoVolcado'] = parseInt(event.target.value);
     localStorage.setItem('dataProcess-VehiculoVolcado', event.target.value);
   }
 
-  setVolcado(volcado){
+  setVolcado(volcado:any){
     this.dataProcess.VehiculoVolcado = volcado;
     this.dataProcess['VehiculoVolcado'] = volcado;
     localStorage.setItem('dataProcess-VehiculoVolcado', volcado);
   }
 
-  cambiarPropietario(event) {
+  cambiarPropietario(event:any) {
     if (event.target.value == 'on') {
       event.target.value = 'off';
       this.culpable.NombreDireccionPropietarioCulpable = '';

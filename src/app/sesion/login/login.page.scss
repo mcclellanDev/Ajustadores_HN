@@ -1,4 +1,3 @@
-
 :host {
     --img-logo: 30vh;
   }
@@ -6,11 +5,43 @@
   form{
     width: 86%;
   }
-  ion-grid,
-  ion-row {
+  ion-grid:not(.login-grid),
+  ion-row:not(.login-row)  {
     height: 100%;
     background: var(--cs-background-primary, #fff);
   }
+
+  ion-input.sesion-dato {
+  --background: transparent;
+  --color: black;
+  --placeholder-color: #7a85c4;
+  --placeholder-opacity: 0.8;
+
+  --padding-bottom: 10px;
+  --padding-end: 10px;
+  --padding-start: 10px;
+  --padding-top: 10px;
+  border: 1px solid lightgray;
+  border-radius: 30px;
+  --highlight-color-focused : white;
+  height: 50px;
+}
+
+ion-input.login-dato{
+  --background: var(--quaterniaryColor);
+  --color: var(--primaryColor);
+  --placeholder-color: #7a85c4;
+  --placeholder-opacity: 0.8;
+
+  --padding-bottom: 10px;
+  --padding-end: 10px;
+  --padding-start: 10px;
+  --padding-top: 10px;
+  border: 1px solid var(--quaterniaryColor);
+  border-radius: 30px;
+  --highlight-color-focused : white;
+  font-weight: bold;
+}
   
   
   ion-img {
@@ -64,6 +95,62 @@
     ion-menu{
       border-radius:30%;
     }
+  }
+
+  #formularioInicio{
+    background: transparent;
+    z-index: 1050;
+  }
+
+  #someGrid{
+    background: transparent;
+  }
+
+  .mi-logo{
+        width: 190px;
+    position: fixed;
+    top: 4%;
+    left: 28%;
+  }
+
+  .mi-imagen{
+    border: none;
+    box-shadow: none;
+    position: fixed;
+    bottom: -182px;
+    left: 0;
+    width: 100%;
+    height: 1000px;
+    transform: rotate(0deg);
+    object-fit: contain;   /* Equivalente a background-size: contain */
+    object-position: left; /* Equivalente a background-position: left */
+    z-index: 999;
+  }
+
+  .chip-connect {
+    margin-left: 20%;
+    width: 60%;
+    height: 100px;
+    --background: #7da1c4;
+    --color: white;
+    border-radius: 90px;
+  }
+
+  .mi-imagensita{
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    width: auto;
+    height: auto;
+    transform: rotate(0deg);
+    background-size: contain;
+    background-position: left;
+    background-color: transparent;
+    image-rendering: crisp-edges;
+    z-index: 999;
   }
 
   ion-split-pane:before {
@@ -128,4 +215,4 @@ ion-spinner{
     --padding-bottom: 10px;
     
   }
-*/  
+*/

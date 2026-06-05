@@ -6,6 +6,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertController, AnimationController, IonAccordionGroup, ToastController } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
 import * as $ from 'jquery';
+import { emptySignature } from '../environments/signatures';
 
 @Component({
   selector: 'app-segmento-danio',
@@ -26,6 +27,7 @@ export class SegmentoDanioPage implements OnInit {
   leaveAnimation = (baseEl: HTMLElement) => {
     return this.enterAnimation(baseEl).direction('reverse');
   };
+  expediente: any = [];  noReservadoAlerta: string = 'El valor de reserva está vacío. Se asignará un valor de 0 (cero) por defecto.';
   
   
   
@@ -39,15 +41,11 @@ export class SegmentoDanioPage implements OnInit {
     this.segmentoTitulo = localStorage.getItem('segmentoTitulo');
     let elCompromiso = localStorage.getItem('elCompromisoPago');
     let oPago = localStorage.getItem('elCompromisoPagoObservacion');
-    let reserva = localStorage.getItem('laReserva');
+    //let reserva = localStorage.getItem('laReserva');
     let siniestro = localStorage.getItem('elTipoSiniestro');
     let descripcionDanios = localStorage.getItem('laDescripcion');
     let observaciones = localStorage.getItem('lasObservaciones');
 
-    
-
-
-    
     if(observaciones){
       let obs = observaciones.split('-')[1];
       this.setObservaciones(obs);
@@ -56,11 +54,6 @@ export class SegmentoDanioPage implements OnInit {
     if (descripcionDanios) {
       let daniosD = descripcionDanios.split('-')[1];
       this.setDanioDescripcion(daniosD);
-    }
-
-    if (reserva) {
-      this.valorReserva = parseInt(reserva.split('-')[1]);
-      this.setReserva(this.valorReserva);
     }
 
     if (siniestro) {
@@ -91,30 +84,63 @@ export class SegmentoDanioPage implements OnInit {
     
   }
 
+  ionViewDidEnter(){
+
+    setTimeout(() => {
+      let reserva:any = localStorage.getItem('bpmArray-ValorReserva');
+
+      if (reserva === undefined || reserva === null || reserva === '') {
+        this.setReserva('0');
+        $('#noReservaTexto').fadeIn();
+      }else{
+        this.valorReserva = parseInt(reserva);
+        $('#noReservaTexto').fadeOut();
+      }
+      
+    }, 1300);
+    
+    
+    this.api.Expediente(parseInt(this.idAtencion)).pipe( 
+        finalize(async ()=>{
+          this.isLoading = false;
+        })
+      ).subscribe(
+         (res) =>{
+          console.log(res, 'respuesta');
+          this.expediente= res;
+          this.moneda = this.expediente[0].Moneda;
+         }
+        )
+
+        setTimeout(() => {
+          if (this.moneda == null) {
+            this.miMoneda = "LEMPIRAS";
+          }else{ 
+            this.miMoneda = this.moneda;
+          }
+        }, 900);
+  }
+
   ngOnInit() {
     console.log('Los seleccionados en caché');
-    
     setTimeout(() => {
       this.listarDanios();
       this.listarDaniosExtras();
       this.recargaDaniosPosicion();
-      
     }, 1000);
-    
-
   }
 
   setReparacion(dannioId, tipo, i, origen){
     localStorage.setItem('TipoReparacion-'+dannioId, tipo);
     localStorage.setItem('TipoReparacionIndex-'+dannioId, i);
-
+    
     if (origen === 1) {
       if (tipo === 1) {
         $('.action-repair').eq(i).attr("style","background:#7da1c4;border-radius:10px;width:100%"); 
         $('.action-change').eq(i).attr("style","background:transparent;color:#7da1c4;width:100%");  
       }else{
-        $('.action-repair').eq(i).attr("style","background:transparent; color:#10069f;width:100%"); 
-        $('.action-change').eq(i).attr("style","background:#10069f;border-radius:10px;width:100%"); 
+        $('.action-repair').eq(i).attr("style","background:transparent; color:#0058CB;width:100%"); 
+        $('.action-change').eq(i).attr("style","background:#0058CB;border-radius:10px;width:100%"); 
       }
     }
   }
@@ -155,8 +181,8 @@ export class SegmentoDanioPage implements OnInit {
         $('.action-repair-x').eq(i).attr("style","background:#7da1c4;border-radius:10px;width:100%"); 
         $('.action-change-x').eq(i).attr("style","background:transparent;color:#7da1c4;width:100%");  
       }else{
-        $('.action-repair-x').eq(i).attr("style","background:transparent; color:#10069f;width:100%"); 
-        $('.action-change-x').eq(i).attr("style","background:#10069f;border-radius:10px;width:100%"); 
+        $('.action-repair-x').eq(i).attr("style","background:transparent; color:#0058CB;width:100%"); 
+        $('.action-change-x').eq(i).attr("style","background:#0058CB;border-radius:10px;width:100%"); 
       }
     }
     */
@@ -342,6 +368,35 @@ export class SegmentoDanioPage implements OnInit {
         this.listarDaniosExtras();
        }
     )
+  }
+
+  insertarConvernioReparacion(Codigo, Descripcion, Id, elTipoReparacion){
+    let reparaArray = {
+      codigoDanio : Codigo,
+      descripcionDanio : Descripcion,
+      fotografia : emptySignature.split(',')[1],
+      idAtencion : this.idAtencion,
+      refTipofotoId : Id,
+      TipoEntidad : Entidades[0].tipoEntidad,
+      TipoReparacion: elTipoReparacion
+    };
+
+    this.api.insertarConvenioReparacion(reparaArray).pipe( 
+          
+          finalize(async ()=>{
+            this.isLoading = false;
+          })
+        ).subscribe(
+           async (res) =>{
+            console.log(res);
+            console.log("Danio guardado");
+            
+          },
+          async (res) => {
+            this.toaster.presentToast(res.error.Message, 'top', 'taller');
+          }
+    
+        )
   }
 
   entraDanioDescripcion(event){
@@ -555,10 +610,18 @@ export class SegmentoDanioPage implements OnInit {
   }
 
   setReserva(valor){
-    console.log(this.valorReserva)
+
+      if (valor === undefined || valor === null || valor === '' || valor === '0' || valor === 0) {
+        $('#noReservaTexto').fadeIn();
+      }else{
+        $('#noReservaTexto').fadeOut();
+      }
+
+    console.log('Soy el valor de reserva '+this.valorReserva)
     this.valorReserva = valor;
     localStorage.setItem('laReserva', this.idAtencion.toString()+'-'+this.valorReserva);
     localStorage.setItem('bpmArray-ValorReserva', valor);
+
   }
 
   loadSiniestros(){
@@ -705,8 +768,8 @@ export class SegmentoDanioPage implements OnInit {
             $('.action-repair').eq(daIndex).attr("style","background:#7da1c4;border-radius:10px; width: 100%"); 
             $('.action-change').eq(daIndex).attr("style","background:transparent;color:#7da1c4; width: 100%");  
           }else{
-            $('.action-repair').eq(daIndex).attr("style","background:transparent; color:#10069f; width: 100%"); 
-            $('.action-change').eq(daIndex).attr("style","background:#10069f;border-radius:10px; width: 100%"); 
+            $('.action-repair').eq(daIndex).attr("style","background:transparent; color:#0058CB; width: 100%"); 
+            $('.action-change').eq(daIndex).attr("style","background:#0058CB;border-radius:10px; width: 100%"); 
           }  
         }, 2000);
 
@@ -748,8 +811,8 @@ export class SegmentoDanioPage implements OnInit {
           $('.action-repair-x').eq(elIndex).attr("style","background:#7da1c4;border-radius:10px; width: 100%"); 
           $('.action-change-x').eq(elIndex).attr("style","background:transparent;color:#7da1c4; width: 100%");  
         }else{
-          $('.action-repair-x').eq(elIndex).attr("style","background:transparent; color:#10069f; width: 100%"); 
-          $('.action-change-x').eq(elIndex).attr("style","background:#10069f;border-radius:10px; width: 100%"); 
+          $('.action-repair-x').eq(elIndex).attr("style","background:transparent; color:#0058CB; width: 100%"); 
+          $('.action-change-x').eq(elIndex).attr("style","background:#0058CB;border-radius:10px; width: 100%"); 
         }  
       }else{}
 
@@ -797,8 +860,8 @@ export class SegmentoDanioPage implements OnInit {
               $('.action-repair-x').eq(elIndex).attr("style","background:#7da1c4;border-radius:10px; width: 100%"); 
               $('.action-change-x').eq(elIndex).attr("style","background:transparent;color:#7da1c4; width: 100%");  
             }else{
-              $('.action-repair-x').eq(elIndex).attr("style","background:transparent; color:#10069f; width: 100%"); 
-              $('.action-change-x').eq(elIndex).attr("style","background:#10069f;border-radius:10px; width: 100%"); 
+              $('.action-repair-x').eq(elIndex).attr("style","background:transparent; color:#0058CB; width: 100%"); 
+              $('.action-change-x').eq(elIndex).attr("style","background:#0058CB;border-radius:10px; width: 100%"); 
             }  
           }, 2000);
         }else{
@@ -808,8 +871,8 @@ export class SegmentoDanioPage implements OnInit {
               $('.action-repair-x').eq(elIndex).attr("style","background:#7da1c4;border-radius:10px; width: 100%"); 
               $('.action-change-x').eq(elIndex).attr("style","background:transparent;color:#7da1c4; width: 100%");  
             }else{
-              $('.action-repair-x').eq(elIndex).attr("style","background:transparent; color:#10069f; width: 100%"); 
-              $('.action-change-x').eq(elIndex).attr("style","background:#10069f;border-radius:10px; width: 100%"); 
+              $('.action-repair-x').eq(elIndex).attr("style","background:transparent; color:#0058CB; width: 100%"); 
+              $('.action-change-x').eq(elIndex).attr("style","background:#0058CB;border-radius:10px; width: 100%"); 
             }  
           }, 2000);
         }

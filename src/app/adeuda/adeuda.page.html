@@ -58,8 +58,7 @@
               cuyos daños fueron ocasionados por el vehículo: marca {{acuerdoDeuda.MarcaImplicado}}, modelo {{acuerdoDeuda.ModeloImplicado}}, año {{acuerdoDeuda.AnioImplicado}}, placa {{acuerdoDeuda.PlacaImplicado}}, propiedad de {{acuerdoDeuda.NombrePersonaPropiedadImplicada}}.
 
               <strong style="font-weight: bold;">SEGUNDO</strong>: De dicho accidente resultaron los siguientes daños: 
-              <!--p *ngFor="danio of daniosSelectCulpable[0]">{{danio.Descripcion}}</!--p --> 
-              {{acuerdoDeuda.DanioCausadoObservacion}}.
+              {{acuerdoDeuda.DanioCausadoObservacion}}, <span *ngFor="let danio of daniosSelectAju; let i = index">{{danio.Descripcion}}<ion-text *ngIf="i<(daniosSelectAju.length-1)">, </ion-text><ion-text *ngIf="i==(daniosSelectAju.length-1)">. </ion-text> </span>
 
               Acepto que quedan comprendidos en este acto, los daños mecánicos que aun no han sido constatados siempre y cuando estos sean
               producto de la colisión causada por mi persona.

@@ -1,4 +1,5 @@
 export const banderaPais = '../../assets/img/flag-round-hn.png';
+export const editarFirmaIcono = '../../assets/iconos/firma-digital-1.svg';
 export const imagePrefix = 'data:image/jpeg;base64,';
 export const fondos = ["../../assets/img/tab1/choque.jpeg", "../../assets/img/tab1/asistenciaLegal.jpeg", "../../assets/img/tab1/girl.jpg"];
 export const logoFicohsa = '../../assets/logos/ficohsa-seguros.png';

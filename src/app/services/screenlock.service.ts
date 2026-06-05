@@ -11,7 +11,6 @@ export class ScreenlockService {
   }
 
   lockToLandscape(){
-    this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
   }
   
 }

@@ -1,11 +1,6 @@
 <ion-header>
   <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
   <ion-footer *ngIf="isLoading == true"></ion-footer>
-  <!--ion-fab id="button-back" style="position: fixed;" vertical="top" horizontal="start" (click)="goBack()">
-    <ion-fab-button (click)="'confirmar()'">
-      <ion-icon name="arrow-back"></ion-icon>
-    </ion-fab-button>
-  </!--ion-fab -->
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
@@ -15,6 +10,7 @@
         <ion-row>
           <ion-col size="4"></ion-col>
           <ion-col size="4">Atención # {{idAtencion}} - {{miMoneda}}</ion-col>
+          <input class="required-index" value="40">
           <ion-col size="4"></ion-col>
         </ion-row>
       </ion-grid>
@@ -25,20 +21,20 @@
   <div class="ion-page" id="main-nulls"></div>
 </ion-split-pane>
 <ion-split-pane id="big-pane-cliente" when="xs" contentId="main">
-  <ion-menu>
+  <ion-menu id="ele" style="width: 99%;padding: 3%;text-align: justify;font-size: 1rem;white-space: normal;overflow-y: scroll;height: 92%;">
     <ion-header>
-      <ion-toolbar color="tertiary">
+      <ion-toolbar style="color: var(--blueGrayColor);">
         <ion-title>Menú</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content class="ion-padding" id="segmentsContent">
+    <ion-content class="ion-padding" id="segmentsContent" style="width: 99%;padding: 3%;text-align: justify;font-size: 1rem;white-space: normal;overflow-y: scroll;height: 39%;">
       <ion-grid>
         <ion-row>
           
 
-          <ion-col id="segmentCoordinates" size="12">
+          <ion-col class="segmento" id="segmentCoordinates" size="12">
             <ion-label class="text-size-lg" style="padding-left: 5px;">
-              <ion-badge color="tertiary">
+              <ion-badge style="color: white;">
                 Coordenadas
               </ion-badge>
             </ion-label>
@@ -52,19 +48,20 @@
                   <ion-list class="ion-no-padding">
                     <ion-item  class="ion-no-padding  input">
                       <ion-grid>
-                        <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+                        <ion-row size="12" style="color: var(--blueGrayColor);font-size:1rem;">
                           El asegurado utilizó póliza?
                             </ion-row>
                         <ion-row>
                           <ion-col offset="6" size="6" style="text-align: right;">
                             <ion-radio-group id="usoRadioGroup" (ionChange)="utilizacionAsistencia($event)" class="required-data">
+                              
                               <ion-item lines="none" style="display: inline-block;">
-                                <ion-label color="tertiary">No</ion-label>
-                                <ion-radio value="2"></ion-radio>
+                                <ion-label style="color: var(--blueGrayColor);">No</ion-label>
+                                <ion-radio class="uso-opcion" value="2"></ion-radio>
                               </ion-item>
                               <ion-item lines="none"  style="display: inline-block;">
-                                <ion-label color="tertiary">Si</ion-label>
-                                <ion-radio value="1"></ion-radio>
+                                <ion-label style="color: var(--blueGrayColor);">Si</ion-label>
+                                <ion-radio class="uso-opcion" value="1"></ion-radio>
                               </ion-item>
                             </ion-radio-group>
                           </ion-col>
@@ -75,9 +72,6 @@
                   </ion-list>
                 </div>
 
-                
-
-
               </ion-accordion>
               <ion-accordion class="acordion" value="second">
                 <ion-item slot="header">
@@ -87,10 +81,10 @@
                   <ion-grid>
                     <ion-row>
                       <ion-col size="6">
-                        <strong>Latitud : </strong> &nbsp; <ion-text color="tertiary">{{cliente.Latitud}}</ion-text>
+                        <strong>Latitud : </strong> &nbsp; <ion-text style="color: var(--blueGrayColor);">{{clienteLatitud}}</ion-text>
                       </ion-col>
                       <ion-col size="6">
-                        <strong>Longitud : </strong> &nbsp; <ion-text color="tertiary">{{cliente.Longitud}}</ion-text>
+                        <strong>Longitud : </strong> &nbsp; <ion-text style="color: var(--blueGrayColor);">{{clienteLongitud}}</ion-text>
                       </ion-col>
                     </ion-row>
                   </ion-grid>
@@ -117,7 +111,7 @@
             </ion-accordion-group>
           </ion-col>
     
-          <ion-col id="segmentAfiliated" size="12">
+          <ion-col class="segmento" id="segmentAfiliated" size="12">
             <ion-label class="text-size-lg" style="padding-left: 5px;">
               <ion-badge>
                 Datos Asegurado
@@ -128,15 +122,16 @@
               <ion-list [inset]="true">
                 
                 <ion-item class="ion-no-padding  input required-data">
+                  <input class="required-index" value="1">
                   <ion-grid>
                     <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                       Asegurado Ó Empresa
                     </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input class="custom" *ngIf="elExpediente.Cliente != null" [(ngModel)]="elExpediente.Cliente" readonly></ion-input>
-                        <ion-input class="custom" *ngIf="elExpediente.Cliente == null || elExpediente.Cliente == ''" type="text" 
-                        (ionChange)="entraNombreAsegurado($event)" [(ngModel)]="elExpediente.Cliente"></ion-input>
+                        <ion-input class="custom" *ngIf="laExpediente[0].Cliente != null" [(ngModel)]="laExpediente[0].Cliente" readonly></ion-input>
+                        <ion-input class="custom" *ngIf="laExpediente[0].Cliente == null || laExpediente[0].Cliente == ''" type="text" 
+                        (ionChange)="entraNombreAsegurado($event)" [(ngModel)]="laExpediente[0].Cliente"></ion-input>
                         
                       </ion-col>
                     </ion-row>
@@ -155,18 +150,20 @@
                   </ion-grid>
                 </ion-item>
                 <ion-item class="ion-no-padding  input required-data">
+                  <input class="required-index" value="3">
                   <ion-grid>
                     <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                       Póliza
                     </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input type="text" [(ngModel)]="elExpediente.PolizaExterna" (ionChange)="entraPolizaConductor($event)" readonly></ion-input>
+                        <ion-input type="text" [(ngModel)]="laExpediente[0].PolizaExterna.split('-')[1]" (ionChange)="entraPolizaConductor($event)" readonly></ion-input>
                       </ion-col>
                     </ion-row>
                   </ion-grid>
                 </ion-item>
                 <ion-item  class="ion-no-padding  input required-data">
+                  <input class="required-index" value="4">
                   <ion-grid>
                     <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                       Dirección correspondencia
@@ -180,6 +177,7 @@
                 </ion-item>
 
                 <ion-item class="ion-no-padding  input required-data">
+                  
                   <ion-grid>
                     <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                       Teléfono
@@ -198,7 +196,8 @@
                     </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input type="number" [(ngModel)]="cliente.Celular" (ionChange)="entraCelularAsegurado($event)" class="required-data"></ion-input>
+                        <ion-input id="celularAsegurado" type="number" [(ngModel)]="cliente.Celular" (ionChange)="entraCelularAsegurado($event)" class="required-data"></ion-input>
+                        
                       </ion-col>
                     </ion-row>
                   </ion-grid>
@@ -211,6 +210,7 @@
                     <ion-row>
                       <ion-col size="7">
                         <ion-input type="email" [(ngModel)]="cliente.CorreoElectronico" (ionChange)="entraCorreoConductor($event)" class="required-data custom"></ion-input>
+                        <input class="required-index" value="7">
                       </ion-col>
                     </ion-row>
                   </ion-grid>
@@ -222,7 +222,8 @@
                     </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input class="custom" type="text" [(ngModel)]="elExpediente.Direccion" (ionChange)="entraDireccion($event)" class="required-data"></ion-input>
+                        <ion-input class="custom" type="text" [(ngModel)]="laExpediente[0].Direccion" (ionChange)="entraDireccion($event)" class="required-data"></ion-input>
+                        
                       </ion-col>
                     </ion-row>
                   </ion-grid>
@@ -235,6 +236,7 @@
                     <ion-row style="padding-top: 6px;">
                       <ion-col offset="9" size="3">
                         <ion-badge style="margin-top: 2.5px;" class="required-data">{{formateadaSiniestro}} <small>{{horaSiniestro}}</small> </ion-badge>
+                        <input class="required-index" value="9">
                         <!--span color="danger" style="padding: 6px;height: 23px;width: 23px;">*</!--span -->
                       </ion-col>
                       <ion-col size="3">
@@ -264,7 +266,7 @@
             
           </ion-col>
     
-          <ion-col id="segmentVehicle" size="12">
+          <ion-col class="segmento" id="segmentVehicle" size="12">
             <ion-label class="text-size-lg" style="padding-left: 5px;">
               <ion-badge>
                 Datos Asegurado Vehículo
@@ -280,11 +282,12 @@
                     </ion-row>
                   <ion-row>
                     <ion-col size="12">
-                      <ion-input *ngIf="elExpediente.Marca != null" readonly [value]="elExpediente.Marca"></ion-input>
-                      <ion-select *ngIf="elExpediente.Marca == null" class="text-size-xs required-data" (ionChange)="seleccionarMarca($event)" [(ngModel)]="elExpediente.Marca" multiple="false" >
+                      <ion-input *ngIf="laExpediente[0].Marca != null" readonly [value]="laExpediente[0].Marca"></ion-input>
+                      <ion-select *ngIf="laExpediente[0].Marca == null" class="text-size-xs required-data" (ionChange)="seleccionarMarca($event)" [(ngModel)]="laExpediente[0].Marca" multiple="false" >
                         <ion-select-option *ngFor="let marca of marcasVehiculos"  [value]="marca.id">{{marca.nombre}}
                         </ion-select-option>
                       </ion-select>
+                      <input class="required-index" value="10">
                     </ion-col>
                   </ion-row>
                 </ion-grid>
@@ -296,12 +299,13 @@
                     </ion-row>
                   <ion-row>
                     <ion-col size="12">
-                      <ion-input *ngIf="elExpediente.Modelo != null" readonly [value]="elExpediente.Modelo"></ion-input>
-                      <ion-select *ngIf="elExpediente.Modelo == null" class="text-size-xs required-data" [(ngModel)]="elExpediente.Modelo" multiple="false" (ionChange)="seleccionarModelo($event)">
+                      <ion-input *ngIf="laExpediente[0].Modelo != null" readonly [value]="laExpediente[0].Modelo"></ion-input>
+                      <ion-select *ngIf="laExpediente[0].Modelo == null" class="text-size-xs required-data" [(ngModel)]="laExpediente[0].Modelo" multiple="false" (ionChange)="seleccionarModelo($event)">
                         <!--span color="danger" style="padding: 6px;height: 23px;width: 23px;">*</!--span -->
                         <ion-select-option *ngFor="let modelo of modelosMarca"  [value]="modelo">{{modelo}}
                         </ion-select-option>
                       </ion-select>
+                      <input class="required-index" value="11">
                     </ion-col>
                   </ion-row>
                 </ion-grid>
@@ -313,9 +317,10 @@
                     </ion-row>
                   <ion-row>
                     <ion-col size="12">
-                      <ion-input *ngIf="elExpediente.Year != null" readonly [value]="elExpediente.Year"></ion-input>
-                      <ion-input *ngIf="elExpediente.Year == null" [maskito]="yearMask" [maskitoElement]="predicateCliente" [(ngModel)]="elExpediente.Year" (ionChange)="entrarAnio($event)"
+                      <ion-input *ngIf="laExpediente[0].Year != null" readonly [value]="laExpediente[0].Year"></ion-input>
+                      <ion-input *ngIf="laExpediente[0].Year == null" [maskito]="yearMask" [maskitoElement]="predicateCliente" [(ngModel)]="laExpediente[0].Year" (ionChange)="entrarAnio($event)"
                       class="required-data"></ion-input>
+                      <input class="required-index" value="12">
                     </ion-col>
                   </ion-row>
                 </ion-grid>
@@ -327,8 +332,8 @@
                     </ion-row>
                   <ion-row>
                     <ion-col size="12">
-                      <ion-input *ngIf="elExpediente.Motor != null" readonly [value]="elExpediente.Motor"></ion-input>
-                      <ion-input *ngIf="elExpediente.Motor == null" type="text" [(ngModel)]="elExpediente.Motor" (ionChange)="entrarMotor($event)"
+                      <ion-input *ngIf="laExpediente[0].Motor != null" readonly [value]="laExpediente[0].Motor"></ion-input>
+                      <ion-input *ngIf="laExpediente[0].Motor == null" type="text" [(ngModel)]="laExpediente[0].Motor" (ionChange)="entrarMotor($event)"
                       class="required-data"></ion-input>
                     </ion-col>
                   </ion-row>
@@ -341,9 +346,10 @@
                     </ion-row>
                   <ion-row>
                     <ion-col size="12">
-                      <ion-input *ngIf="elExpediente.Chasis != null" readonly [value]="elExpediente.Chasis"></ion-input>
-                      <ion-input *ngIf="elExpediente.Chasis == null || elExpediente.Chasis == '' || elExpediente.Chasis == 'N/D'" type="text" [(ngModel)]="elExpediente.Chasis"
+                      <ion-input *ngIf="laExpediente[0].Chasis != null" readonly [value]="laExpediente[0].Chasis"></ion-input>
+                      <ion-input *ngIf="laExpediente[0].Chasis == null || laExpediente[0].Chasis == '' || laExpediente[0].Chasis == 'N/D'" type="text" [(ngModel)]="laExpediente[0].Chasis"
                       (ionChange)="entrarChasis($event)" class="required-data"></ion-input>
+                      <input class="required-index" value="14">
                     </ion-col>
                   </ion-row>
                 </ion-grid>
@@ -355,9 +361,10 @@
                     </ion-row>
                   <ion-row>
                     <ion-col size="12">
-                      <ion-input *ngIf="elExpediente.NumeroPlaca != null" readonly [value]="elExpediente.NumeroPlaca"></ion-input>
-                      <ion-input *ngIf="elExpediente.NumeroPlaca == null" type="text" [(ngModel)]="elExpediente.NumeroPlaca"
+                      <ion-input *ngIf="laExpediente[0].NumeroPlaca != null" readonly [value]="laExpediente[0].NumeroPlaca"></ion-input>
+                      <ion-input *ngIf="laExpediente[0].NumeroPlaca == null" type="text" [(ngModel)]="laExpediente[0].NumeroPlaca"
                       (ionChange)="entrarPlaca($event)" class="required-data"></ion-input>
+                      <input class="required-index" value="15">
                     </ion-col>
                   </ion-row>
                 </ion-grid>
@@ -371,12 +378,12 @@
                     <ion-col offset="6" size="6" style="text-align: right;">
                       <ion-radio-group [(ngModel)]="dataProcess.Blindado" (ngModelChange)="esBlindado($event)" >
                         <ion-item lines="none" style="display: inline-block;">
-                          <ion-label color="tertiary">No</ion-label>
-                          <ion-radio [value]="2"></ion-radio>
+                          <ion-label style="color: var(--blueGrayColor);">No</ion-label>
+                          <ion-radio class="uso-opcion" [value]="2"></ion-radio>
                         </ion-item>
                         <ion-item lines="none"  style="display: inline-block;">
-                          <ion-label color="tertiary">Si</ion-label>
-                          <ion-radio [value]="1"></ion-radio>
+                          <ion-label style="color: var(--blueGrayColor);">Si</ion-label>
+                          <ion-radio class="uso-opcion" [value]="1"></ion-radio>
                         </ion-item>
                       </ion-radio-group>
                     </ion-col>
@@ -392,7 +399,8 @@
                     </ion-row>
                   <ion-row>
                     <ion-col size="12">
-                      <ion-input type="text" [(ngModel)]="elExpediente.NoUnidad" (ionChange)="entrarUnidad($event)" class="required-data custom"></ion-input>
+                      <ion-input type="text" [(ngModel)]="laExpediente[0].NoUnidad" (ionChange)="entrarUnidad($event)" class="required-data custom"></ion-input>
+                      <input class="required-index" value="16">
                     </ion-col>
                   </ion-row>
                 </ion-grid>
@@ -407,7 +415,8 @@
             
           </ion-content>
           </ion-col>
-          <ion-col id="segmentDriver" size="12">
+
+          <ion-col class="segmento" id="segmentDriver" size="12">
             <ion-label class="text-size-lg" style="padding-left: 5px;">
               <ion-badge color="primary">
                 Datos Asegurado Conductor
@@ -419,25 +428,23 @@
             <ion-item class="ion-no-padding  input">
               <ion-grid>
                 <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
-                  Conducido por
-                    </ion-row>
+                  Conducido por 
+                  <ion-chip id="driverTypeSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 2.75%; font-size: 1rem;
+                    color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
+                    Seleccionar
+                  </ion-chip>
+                </ion-row>
                 <ion-row>
                   <ion-col id="tipoSiniestrosDisplay" size="9" class="select-label">{{elTipoDeConductor}}</ion-col>
                     <ion-col size="3">
-                      <ion-select [(ngModel)]="elExpediente.ConducidoPor" multiple="false" (ionChange)="seleccionarTipoConductor($event)"
-                    style="float: right;color: white;">
-                      <ion-select-option *ngFor="let tipoC of tipoConductor" [value]="tipoC.Id" >{{tipoC.TipoConductor}} 
-                      </ion-select-option>
+                      <ion-select [(ngModel)]="laExpediente[0].ConducidoPor" multiple="false" (ionChange)="seleccionarTipoConductor($event)"
+                        style="float: right;color: white;"
+                        toggleIcon="caret-down-sharp"
+                        placeholder="Seleccionar">
+                      <ion-select-option *ngFor="let tipoC of tipoConductor" [value]="tipoC.Id" >{{tipoC.TipoConductor}}</ion-select-option>
                     </ion-select>
                     </ion-col>
 
-                  <!--ion-col offset="5" size="7" style="text-align: right;">
-                    <ion-select class="text-size-xs" [(ngModel)]="elExpediente.ConducidoPor" multiple="false" (ionChange)="seleccionarTipoConductor($event)"
-                    style="float: right;">
-                      <ion-select-option *ngFor="let tipoC of tipoConductor" [value]="tipoC.Id" >{{tipoC.TipoConductor}} 
-                      </ion-select-option>
-                    </ion-select>
-                  </!--ion-col -->
                 </ion-row>
               </ion-grid>
             </ion-item>
@@ -448,8 +455,10 @@
                     </ion-row>
                 <ion-row>
                   <ion-col size="12">
-                    <ion-input [hidden]="conductorEsAfiliado === false" type="text" [(ngModel)]="elExpediente.NombreConductor" class="required-data select-label"></ion-input>
+                    <ion-input [hidden]="conductorEsAfiliado === false" type="text" [(ngModel)]="laExpediente[0].NombreConductor" class="required-data select-label"></ion-input>
+                    <input class="required-index" value="17">
                     <ion-input [hidden]="conductorEsAfiliado === true" type="text" (ionChange)="entraNombreConductor($event)" [(ngModel)]="daNombreConductor" class="required-data select-label"></ion-input>
+                    <input class="required-index" value="18">
                   </ion-col>
                 </ion-row>
               </ion-grid>
@@ -457,13 +466,15 @@
             <ion-item class="ion-no-padding  input">
               <ion-grid>
                 <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
-                  Numero de identidad
+                  Número de identidad
                     </ion-row>
                 <ion-row>
                   <ion-col size="12">
-                    <ion-input [hidden]="conductorEsAfiliado == false" [(ngModel)]="cliente.IdentidadConductor" type="text" class="required-data"></ion-input>
-                    <ion-input [hidden]="conductorEsAfiliado == true" [(ngModel)]="daIdentidadConductor" type="text" (ionChange)="entraIdentidadConductor($event)"
+                    <ion-input [hidden]="conductorEsAfiliado == true" [(ngModel)]="identidadDelCliente" type="text" class="required-data"></ion-input>
+                    <input class="required-index" value="19">
+                    <ion-input [hidden]="conductorEsAfiliado == false" [(ngModel)]="daIdentidadConductor" type="text" (ionChange)="entraIdentidadConductor($event)"
                     class="required-data"></ion-input>
+                    <input class="required-index" value="20">
                   </ion-col>
                 </ion-row>
               </ion-grid>
@@ -475,14 +486,14 @@
                   <ion-col size="12">
                     <ion-chip>
                       <ion-avatar>
-                        <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+                        <img src="https://ionicframework.com/docs/img/demos/avatar.svg" />
                       </ion-avatar>
                       <ion-label class="date-label">{{formateadaNacimiento}}</ion-label>
                       <ion-icon name="calendar" class="chip-icon"></ion-icon>
                     </ion-chip>
-                    
+                    <input class="required-index" value="21">
                     <ion-chip [color]="esMenor == true ? 'danger' : ''">
-                      <ion-icon name="hourglass" color="tertiary"></ion-icon>
+                      <ion-icon name="hourglass" style="color: var(--blueGrayColor);"></ion-icon>
                       <ion-label>{{edad}} años</ion-label>
                       <ion-icon name="time" class="chip-icon"></ion-icon>
                     </ion-chip>
@@ -490,15 +501,6 @@
                   <ion-col offset="9" size="3">
                     <ion-button id="open-modal-fecha-nacimiento" expand="block" (click)="modalFechaNacimiento.present()">Seleccionar Fecha</ion-button>
                   </ion-col>
-                  <!--ion-col size="3">
-                    <ion-badge class="required-data">{{formateadaNacimiento}} </ion-badge> : 
-                    <ion-badge [hidden]="esMenor == true" class="required-data">{{edad}} años</ion-badge>
-                    <ion-badge id="esMenorLabel" #esMenorLabel [hidden]="esMenor == false" color="danger">{{edad}} años</ion-badge>
-                  </ion-col>
-
-                  <ion-col offset="6" size="3">
-                    <ion-button id="open-modal-fecha-nacimiento" expand="block" (click)="modalFechaNacimiento.present()">Seleccionar Fecha</ion-button>
-                  </ion-col -->
                 </ion-row>
               </ion-grid>
             </ion-item>
@@ -506,7 +508,11 @@
               <ion-grid>
                 <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                   Tipo de parentesco
-                    </ion-row>
+                  <ion-chip id="parentTypeSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 2.75%; font-size: 1rem;
+                    color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
+                    Seleccionar
+                  </ion-chip>
+                </ion-row>
                 <ion-row>
                   <ion-col id="tipoSiniestrosDisplay" size="9" class="select-label">{{elTipoDeParentesco}}</ion-col>
                     <ion-col size="3">
@@ -517,11 +523,10 @@
                         <ion-input #parentescoId [hidden]="true" [value]="parentesco.Id"></ion-input>
                         <ion-input #parentescoDescripcion [hidden]="true" [value]="parentesco.DESCRIPCION"></ion-input>
                       </ion-select-option>
+                      
                     </ion-select>
+                    <input class="required-index" value="22">
                     </ion-col>
-                  <!--ion-col offset="5" size="7">
-                    
-                  </!--ion-col -->
                 </ion-row>
               </ion-grid>
             </ion-item>
@@ -529,20 +534,22 @@
               <ion-grid>
                 <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                   Tipo de licencia
-                    </ion-row>
+                  <ion-chip id="licenceTypeSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 2.75%; font-size: 1rem;
+                    color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
+                    Seleccionar
+                  </ion-chip>
+                </ion-row>
                 <ion-row>
                   <ion-col id="tipoSiniestrosDisplay" size="9" class="select-label">{{elTipoDeLicencia}}</ion-col>
                     <ion-col size="3">
-                      <ion-select class="text-size-xs" [(ngModel)]="elExpediente.TipoLicencia" multiple="false" (ionChange)="entraTipoLicencia($event)"
+                      <ion-select class="text-size-xs" [(ngModel)]="laExpediente[0].TipoLicencia" multiple="false" (ionChange)="entraTipoLicencia($event)"
                     style="float: right;color: white;">
                       <ion-select-option *ngFor="let licencia of tipoLicencia" [value]="[licencia.TipoLicencia]" class="required-data">
                         {{licencia.TipoLicencia}}
                       </ion-select-option>
                     </ion-select>
+                    <input class="required-index" value="23">
                     </ion-col>
-                  <!--ion-col offset="5" size="7">
-                    
-                  </!--ion-col -->
                 </ion-row>
               </ion-grid>
             </ion-item>
@@ -554,7 +561,8 @@
                     </ion-row>
                 <ion-row>
                   <ion-col size="12">
-                    <ion-input type="text" [(ngModel)]="elExpediente.LicenciaNo" (ionChange)="entraLicencia($event)" class="required-data select-label"></ion-input>
+                    <ion-input type="text" [(ngModel)]="laExpediente[0].LicenciaNo" (ionChange)="entraLicencia($event)" class="required-data select-label"></ion-input>
+                    <input class="required-index" value="24">
                   </ion-col>
                 </ion-row>
               </ion-grid>
@@ -562,19 +570,16 @@
 
             <ion-item class="ion-no-padding  input">
               <ion-grid>
-                <!--ion-row style="color: #7da1c4;font-size:1rem;">
-                  Fecha de Vencimiento : <span style="color: black;">{{formateadaVigencia}}</span>
-                    </!--ion-row -->
                 <ion-row>
                   <ion-col size="7">
-                    <ion-text color="tertiary">Fecha de Vencimiento : </ion-text><br>
+                    <ion-text style="color: var(--blueGrayColor);">Fecha de Vencimiento : </ion-text><br>
                     {{formateadaVigencia}}
-                    <!--ion-label *ngIf="isVence" style="margin-left:5px; width: 100%; max-width: 100%;">{{formateadaVigencia}}</!--ion-label -->
                   </ion-col>
                   <ion-col offset="2" size="3">
                     <ion-input [maskito]="idMaskFechaVencimiento" [maskitoElement]="predicateCliente"
                     placeholder="DD/MM/AAAA" [(ionModel)]="formateadaVigencia" (ionChange)="entraVencimiento($event)" class="required-data"
                     style="text-align: right;"></ion-input>
+                    <input class="required-index" value="25">
                   </ion-col>
                 </ion-row>
               </ion-grid> 
@@ -589,12 +594,12 @@
                   <ion-col offset="6" size="6" style="text-align: right;">
                     <ion-radio-group id="licenciaEstado" (ionChange)="entraLicenciaEstado($event)" class="required-data">
                       <ion-item lines="none" style="display: inline-block;">
-                        <ion-label color="tertiary" style="margin-left:5px">Vencida</ion-label>
-                        <ion-radio value="2"></ion-radio>
+                        <ion-label style="margin-left:5px; color: var(--blueGrayColor);">Vencida</ion-label>
+                        <ion-radio class="uso-opcion" value="2"></ion-radio>
                       </ion-item>
                       <ion-item lines="none"  style="display: inline-block;">
-                        <ion-label color="tertiary" style="margin-left:5px">Vigente</ion-label>
-                        <ion-radio value="1"></ion-radio>
+                        <ion-label style="margin-left:5px; color: var(--blueGrayColor);">Vigente</ion-label>
+                        <ion-radio class="uso-opcion" value="1"></ion-radio>
                       </ion-item>
                     </ion-radio-group>
                   </ion-col>
@@ -602,40 +607,6 @@
               </ion-grid>
                 
             </ion-item>
-            
-            <!--ion-item  class="ion-no-padding  input">
-              <ion-grid>
-                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
-                  Utilizó póliza?
-                    </ion-row>
-                <ion-row>
-                  <ion-col offset="6" size="6" style="text-align: right;">
-                    <ion-radio-group id="usoRadioGroup" (ionChange)="utilizacionAsistencia($event)" class="required-data">
-                      <ion-item lines="none" style="display: inline-block;">
-                        <ion-label color="tertiary">No</ion-label>
-                        <ion-radio value="2"></ion-radio>
-                      </ion-item>
-                      <ion-item lines="none"  style="display: inline-block;">
-                        <ion-label color="tertiary">Si</ion-label>
-                        <ion-radio value="1"></ion-radio>
-                      </ion-item>
-                    </ion-radio-group>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-            </!--ion-item>
-            <ion-item *ngIf="cliente.UtilizoSerivicioAsistencia==='2'"  class="ion-no-padding  input">
-              <ion-grid>
-                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
-                  Si su respuesta es no ¿Por qué?
-                    </ion-row>
-                <ion-row>
-                  <ion-col size="12">
-                    <ion-input type="text" [(ngModel)]="cliente.PorqueNoUsoServicioAsistencia" (ionChange)="entraPorqueNoUso($event)"></ion-input>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-item -->
 
             <ion-item  class="ion-no-padding  input">
               <ion-grid>
@@ -646,12 +617,12 @@
                   <ion-col offset="6" size="6" style="text-align: right;">
                     <ion-radio-group id="pruebaRadioGroup" (ionChange)="pruebaAlcohol($event)" >
                       <ion-item lines="none" style="display: inline-block;">
-                        <ion-label color="tertiary">No</ion-label>
-                        <ion-radio value="2"></ion-radio>
+                        <ion-label style="color: var(--blueGrayColor);">No</ion-label>
+                        <ion-radio class="uso-opcion" value="2"></ion-radio>
                       </ion-item>
                       <ion-item lines="none"  style="display: inline-block;">
-                        <ion-label color="tertiary">Si</ion-label>
-                        <ion-radio value="1"></ion-radio>
+                        <ion-label style="color: var(--blueGrayColor);">Si</ion-label>
+                        <ion-radio class="uso-opcion" value="1"></ion-radio>
                       </ion-item>
                     </ion-radio-group>
                   </ion-col>
@@ -665,8 +636,9 @@
                     </ion-row>
                 <ion-row>
                   <ion-col size="12">
-                    <ion-input type="text" [(ngModel)]="elExpediente.DireccionConductor" (ionChange)="entraDireccionConductor($event)"
+                    <ion-input type="text" [(ngModel)]="laExpediente[0].DireccionConductor" (ionChange)="entraDireccionConductor($event)"
                     class="required-data select-label"></ion-input>
+                    <input class="required-index" value="27">
                   </ion-col>
                 </ion-row>
               </ion-grid>
@@ -678,11 +650,13 @@
                     </ion-row>
                 <ion-row>
                   <ion-col size="12">
-                    <ion-input [hidden]="conductorEsAfiliado == false" type="number" [(ngModel)]="elExpediente.TelefonoFijoConductor"
-              class="required-data"></ion-input>
-              <ion-input [hidden]="conductorEsAfiliado == true" type="number" [(ngModel)]="daTelefonoFijoConductor" 
-              (ionChange)="entraTelefonoConductor($event)"
-              class="required-data"></ion-input>
+                    <ion-input [hidden]="conductorEsAfiliado == false" type="number" [(ngModel)]="laExpediente[0].TelefonoFijoConductor"
+                    class="required-data"></ion-input>
+                    <input class="required-index" value="28">
+                    <ion-input [hidden]="conductorEsAfiliado == true" type="number" [(ngModel)]="daTelefonoFijoConductor" 
+                    (ionChange)="entraTelefonoConductor($event)"
+                    class="required-data"></ion-input>
+                    <input class="required-index" value="29">
                   </ion-col>
                 </ion-row>
               </ion-grid>
@@ -694,11 +668,13 @@
                     </ion-row>
                 <ion-row>
                   <ion-col size="12">
-                    <ion-input [hidden]="conductorEsAfiliado == false" type="number" [(ngModel)]="elExpediente.CelularConductor"
-              class="required-data"></ion-input>
-              <ion-input [hidden]="conductorEsAfiliado == true" type="number" [(ngModel)]="daCelularConductor"
-              (ionChange)="entraCelularConductor($event)"
-              class="required-data"></ion-input>
+                    <ion-input [hidden]="conductorEsAfiliado == false" type="number" [(ngModel)]="laExpediente[0].TelefonoOrigen"
+                    class="required-data"></ion-input>
+                    <input class="required-index" value="30">
+                    <ion-input [hidden]="conductorEsAfiliado == true" type="number" [(ngModel)]="daCelularConductor"
+                    (ionChange)="entraCelularConductor($event)"
+                    class="required-data"></ion-input>
+                    <input class="required-index" value="31">
                   </ion-col>
                 </ion-row>
               </ion-grid>
@@ -712,7 +688,8 @@
           <br><br><br><br><br><br>
         </ion-content>
           </ion-col>
-          <ion-col id="segmentInfo" size="12">
+
+          <ion-col class="segmento" id="segmentInfo" size="12">
             <ion-label class="text-size-lg" style="padding-left: 5px;">
               <ion-badge>
                 Datos Información Relacionada
@@ -735,16 +712,16 @@
                   
                     <ion-radio-group id="responsableRadioGroup" (ionChange)="entraResponsable($event)" >
                       <ion-item lines="none" style="display: inline-block;">
-                        <ion-label color="tertiary">Tercero</ion-label>
-                        <ion-radio value="3"></ion-radio>
+                        <ion-label style="color: var(--blueGrayColor);">Tercero</ion-label>
+                        <ion-radio class="uso-opcion" value="3"></ion-radio>
                       </ion-item>
                       <ion-item lines="none" style="display: inline-block;">
-                        <ion-label color="tertiary">Conductor</ion-label>
-                        <ion-radio value="2"></ion-radio>
+                        <ion-label style="color: var(--blueGrayColor);">Conductor</ion-label>
+                        <ion-radio class="uso-opcion" value="2"></ion-radio>
                       </ion-item>
                       <ion-item lines="none"  style="display: inline-block;">
-                        <ion-label color="tertiary">Asegurado</ion-label>
-                        <ion-radio value="1"></ion-radio>
+                        <ion-label style="color: var(--blueGrayColor);">Asegurado</ion-label>
+                        <ion-radio class="uso-opcion" value="1"></ion-radio>
                       </ion-item>
                     </ion-radio-group>
                 </ion-item>
@@ -757,8 +734,9 @@
                     </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input type="text" [(ngModel)]="elExpediente.NombreAtribuyeAccidente" (ionChange)="entraNombreAtribuye($event)"
+                        <ion-input type="text" [(ngModel)]="laExpediente[0].NombreAtribuyeAccidente" (ionChange)="entraNombreAtribuye($event)"
                   class="required-data select-label"></ion-input>
+                  <input class="required-index" value="32">
                       </ion-col>
                     </ion-row>
                   </ion-grid>
@@ -771,8 +749,9 @@
                     </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input type="text" [(ngModel)]="elExpediente.AutoridadInvolucrada" (ionChange)="entraEntidadInvolucrada($event)"
+                        <ion-input type="text" [(ngModel)]="laExpediente[0].AutoridadInvolucrada" (ionChange)="entraEntidadInvolucrada($event)"
                   class="required-data select-label"></ion-input>
+                  <input class="required-index" value="33">
                       </ion-col>
                     </ion-row>
                   </ion-grid>
@@ -784,34 +763,13 @@
                     </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input type="text" [(ngModel)]="elExpediente.UbicacionVehiculoAsegurado" (ionChange)="entraUbicacionVehiculoAsegurado($event)"
+                        <ion-input type="text" [(ngModel)]="laExpediente[0].UbicacionVehiculoAsegurado" (ionChange)="entraUbicacionVehiculoAsegurado($event)"
                   class="required-data select-label"></ion-input>
+                  <input class="required-index" value="34">
                       </ion-col>
                     </ion-row>
                   </ion-grid>
                 </ion-item>
-                
-                <!--ion-item  class="ion-no-padding  input">
-                  <ion-grid>
-                    <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
-                      Se agendó audiencia?
-                    </ion-row>
-                    <ion-row>
-                      <ion-col offset="6" size="6" style="text-align: right;">
-                        <ion-radio-group id="audienciaRadioGroup" (ionChange)="agendoAudiencia($event)" >
-                          <ion-item lines="none" style="display: inline-block;">
-                            <ion-label>No</ion-label>
-                            <ion-radio [value]="2"></ion-radio>
-                          </ion-item>
-                          <ion-item lines="none"  style="display: inline-block;">
-                            <ion-label>Si</ion-label>
-                            <ion-radio [value]="1"></ion-radio>
-                          </ion-item>
-                        </ion-radio-group>
-                      </ion-col>
-                    </ion-row>
-                  </ion-grid>
-                </!--ion-item -->
 
                 <ion-item  class="ion-no-padding  input">
                   <ion-grid>
@@ -822,12 +780,12 @@
                       <ion-col offset="6" size="6" style="text-align: right;">
                         <ion-radio-group id="audiRadioGroup" (ionChange)="audiciona($event)" >
                           <ion-item lines="none" style="display: inline-block;">
-                            <ion-label color="tertiary">No</ion-label>
-                            <ion-radio value="2"></ion-radio>
+                            <ion-label style="color: var(--blueGrayColor);">No</ion-label>
+                            <ion-radio class="uso-opcion" value="2"></ion-radio>
                           </ion-item>
                           <ion-item lines="none"  style="display: inline-block;">
-                            <ion-label color="tertiary">Si</ion-label>
-                            <ion-radio value="1"></ion-radio>
+                            <ion-label style="color: var(--blueGrayColor);">Si</ion-label>
+                            <ion-radio class="uso-opcion" value="1"></ion-radio>
                           </ion-item>
                         </ion-radio-group>
                       </ion-col>
@@ -845,12 +803,12 @@
                       <ion-col offset="6" size="6" style="text-align: right;">
                         <ion-radio-group id="detenidoVRadioGroup" (ionChange)="fueDetenido($event)" >
                           <ion-item lines="none" style="display: inline-block;">
-                            <ion-label color="tertiary">No</ion-label>
-                            <ion-radio value="2"></ion-radio>
+                            <ion-label style="color: var(--blueGrayColor);">No</ion-label>
+                            <ion-radio class="uso-opcion" value="2"></ion-radio>
                           </ion-item>
                           <ion-item lines="none"  style="display: inline-block;">
-                            <ion-label color="tertiary">Si</ion-label>
-                            <ion-radio value="1"></ion-radio>
+                            <ion-label style="color: var(--blueGrayColor);">Si</ion-label>
+                            <ion-radio class="uso-opcion" value="1"></ion-radio>
                           </ion-item>
                         </ion-radio-group>
                       </ion-col>
@@ -868,12 +826,12 @@
                       <ion-col offset="6" size="6" style="text-align: right;">
                         <ion-radio-group id="detenidoCRadioGroup" (ionChange)="fueDetenidoElConductor($event)" >
                           <ion-item lines="none" style="display: inline-block;">
-                            <ion-label color="tertiary">No</ion-label>
-                            <ion-radio value="2"></ion-radio>
+                            <ion-label style="color: var(--blueGrayColor);">No</ion-label>
+                            <ion-radio class="uso-opcion" value="2"></ion-radio>
                           </ion-item>
                           <ion-item lines="none"  style="display: inline-block;">
-                            <ion-label color="tertiary">Si</ion-label>
-                            <ion-radio value="1"></ion-radio>
+                            <ion-label style="color: var(--blueGrayColor);">Si</ion-label>
+                            <ion-radio class="uso-opcion" value="1"></ion-radio>
                           </ion-item>
                         </ion-radio-group>
                       </ion-col>
@@ -891,12 +849,12 @@
                       <ion-col offset="6" size="6" style="text-align: right;">
                         <ion-radio-group id="volcoRadioGroup" (ionChange)="fueVolcado($event)" >
                           <ion-item lines="none" style="display: inline-block;">
-                            <ion-label color="tertiary">No</ion-label>
-                            <ion-radio value="2"></ion-radio>
+                            <ion-label style="color: var(--blueGrayColor);">No</ion-label>
+                            <ion-radio class="uso-opcion" value="2"></ion-radio>
                           </ion-item>
                           <ion-item lines="none"  style="display: inline-block;">
-                            <ion-label color="tertiary">Si</ion-label>
-                            <ion-radio value="1"></ion-radio>
+                            <ion-label style="color: var(--blueGrayColor);">Si</ion-label>
+                            <ion-radio class="uso-opcion" value="1"></ion-radio>
                           </ion-item>
                         </ion-radio-group>
                       </ion-col>
@@ -911,8 +869,9 @@
                     </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input type="text" [(ngModel)]="elExpediente.UbicacionVehiculoDetenido" (ionChange)="entraUbicacionVehiculoDetenido($event)"
+                        <ion-input type="text" [(ngModel)]="laExpediente[0].UbicacionVehiculoDetenido" (ionChange)="entraUbicacionVehiculoDetenido($event)"
                   class="required-data select-label"></ion-input>
+                  <input class="required-index" value="35">
                       </ion-col>
                     </ion-row>
                   </ion-grid>
@@ -929,12 +888,12 @@
                       <ion-col offset="6" size="6" style="text-align: right;">
                         <ion-radio-group id="tHeridosRadioGroup" (ionChange)="tercerosHeridos($event)" >
                           <ion-item lines="none" style="display: inline-block;">
-                            <ion-label color="tertiary">No</ion-label>
-                            <ion-radio value="2"></ion-radio>
+                            <ion-label style="color: var(--blueGrayColor);">No</ion-label>
+                            <ion-radio class="uso-opcion" value="2"></ion-radio>
                           </ion-item>
                           <ion-item lines="none"  style="display: inline-block;">
-                            <ion-label color="tertiary">Si</ion-label>
-                            <ion-radio value="1"></ion-radio>
+                            <ion-label style="color: var(--blueGrayColor);">Si</ion-label>
+                            <ion-radio class="uso-opcion" value="1"></ion-radio>
                           </ion-item>
                         </ion-radio-group>
                       </ion-col>
@@ -948,7 +907,7 @@
                     </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input type="text" [(ngModel)]="elExpediente.DescripcionTercerosHeridos" (ionChange)="dTercerosHeridos($event)"
+                        <ion-input type="text" [(ngModel)]="laExpediente[0].DescripcionTercerosHeridos" (ionChange)="dTercerosHeridos($event)"
                         class="custom"></ion-input>
                       </ion-col>
                     </ion-row>
@@ -963,12 +922,12 @@
                       <ion-col offset="6" size="6" style="text-align: right;">
                         <ion-radio-group id="tMuertosRadioGroup" (ionChange)="tercerosMuertos($event)" >
                           <ion-item lines="none" style="display: inline-block;">
-                            <ion-label color="tertiary">No</ion-label>
-                            <ion-radio value="2"></ion-radio>
+                            <ion-label style="color: var(--blueGrayColor);">No</ion-label>
+                            <ion-radio class="uso-opcion" value="2"></ion-radio>
                           </ion-item>
                           <ion-item lines="none"  style="display: inline-block;">
-                            <ion-label color="tertiary">Si</ion-label>
-                            <ion-radio value="1"></ion-radio>
+                            <ion-label style="color: var(--blueGrayColor);">Si</ion-label>
+                            <ion-radio class="uso-opcion" value="1"></ion-radio>
                           </ion-item>
                         </ion-radio-group>
                       </ion-col>
@@ -982,7 +941,7 @@
                     </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input type="text" [(ngModel)]="elExpediente.DescripcionTercerosMuertos" (ionChange)="dTercerosMuertos($event)"
+                        <ion-input type="text" [(ngModel)]="laExpediente[0].DescripcionTercerosMuertos" (ionChange)="dTercerosMuertos($event)"
                         class="custom"></ion-input>
                       </ion-col>
                     </ion-row>
@@ -995,7 +954,7 @@
                     </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input [(ngModel)]="elExpediente.DescripcionAccidente" (ionChange)="descripcionAccidente($event)"
+                        <ion-input [(ngModel)]="laExpediente[0].DescripcionAccidente" (ionChange)="descripcionAccidente($event)"
                     class="required-data custom"></ion-input>
                       </ion-col>
                     </ion-row>
@@ -1008,7 +967,7 @@
                     </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input [(ngModel)]="elExpediente.DescripcionAudiencia" (ionChange)="entraDescripcionAudiencia($event)"
+                        <ion-input [(ngModel)]="laExpediente[0].DescripcionAudiencia" (ionChange)="entraDescripcionAudiencia($event)"
                         class="custom"></ion-input>
                       </ion-col>
                     </ion-row>
@@ -1022,8 +981,9 @@
                     </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input [(ngModel)]="elExpediente.DescripcionDanioVehiculo" (ionChange)="descripcionDanio($event)"
+                        <ion-input [(ngModel)]="laExpediente[0].DescripcionDanioVehiculo" (ionChange)="descripcionDanio($event)"
                     class="required-data custom"></ion-input>
+                    <input class="required-index" value="37">
                       </ion-col>
                     </ion-row>
                   </ion-grid>
@@ -1039,7 +999,8 @@
 
           
           </ion-col>
-          <ion-col id="segmentCompany" size="12">
+
+          <ion-col class="segmento" id="segmentCompany" size="12">
             <ion-label class="text-size-lg" style="padding-left: 5px;">
               <ion-badge>
                 Datos Asegurado Acompañantes
@@ -1059,7 +1020,8 @@
                 </ion-item>
             </ion-list>
           </ion-col>
-          <ion-col id="segmentWitness" size="12">
+
+          <ion-col class="segmento" id="segmentWitness" size="12">
             <ion-label class="text-size-lg" style="padding-left: 5px;">
               <ion-badge>
                 Datos Testigos
@@ -1081,7 +1043,7 @@
             </ion-list>
           </ion-col>
     
-          <ion-col id="segmentProperty" size="12">
+          <ion-col class="segmento" id="segmentProperty" size="12">
             <ion-label class="text-size-lg" style="padding-left: 5px;">
               <ion-badge>
                 Daños a la Propiedad Privada
@@ -1104,7 +1066,7 @@
             
     
           </ion-col>
-          <ion-col id="segmentDamage" size="12">
+          <ion-col class="segmento" id="segmentDamage" size="12">
             <ion-label class="text-size-lg" style="padding-left: 5px;">
               <ion-badge>
                 Lesiones a Personas
@@ -1124,28 +1086,11 @@
                   <ion-label (click)="editPersona(i, item.TipoPersona)" class="select-label">{{item.Nombre}}</ion-label>
                   <ion-icon (click)="editPersona(i, item.TipoPersona)" slot="end" style="color: #7da1c4; "name="create"></ion-icon>
                 </ion-item>
-                <!--ion-item>
-                  <ion-grid style="width: 100%;">
-                    <ion-row>
-                      <ion-col  size="12">
-                        <ion-label class="text-size-sm" position="absolute">
-                          Qué tipo de lesiones?</ion-label>
-                         <ion-input type="text" [(ngModel)]="elExpediente.LesionesDescripcion"
-                         (ionChange)="insertarLesion($event)"></ion-input>
-                      </ion-col>
-                      <ion-col  size="12">
-                        <ion-label class="text-size-sm" position="absolute">
-                          En qué hospital?</ion-label>
-                         <ion-input type="text" [(ngModel)]="elExpediente.Hospital"></ion-input>
-                      </ion-col>
-                    </ion-row>
-                  </ion-grid>
-                </!--ion-item -->
               </ion-list>
             </ion-content>
           </ion-col>
 
-          <ion-col id="segmentSignature" size="12">
+          <ion-col class="segmento" id="segmentSignature" size="12">
             <ion-grid>
               <ion-row>
                 <ion-col size="6">
@@ -1156,25 +1101,14 @@
                              Firma Asegurado o conductor
                           </ion-label>
                             <ion-card style="height:202px">
-                              <img #imagen alt="Firmar" src="{{firmaPrecargada}}" onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'"
+                              <img #imagen id="imagenFirma" alt="Firmar" src="{{firmaPrecargada}}" onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'"
                               style="    border: 6px dashed rgb(237, 233, 233);margin-top: 1%; width: 98%; height: 150px; margin-left: 1%;"/>
                             
-                              <ion-card-content style="padding: 0; margin-bottom: 6px;padding-left: 1%;">
-                                {{elExpediente.Cliente}}
+                              <ion-card-content style="padding: 0; margin-bottom: 6px;padding-left: 1%;" (click)="signatureDisplay();goESignature()">
+                                {{laExpediente[0].Cliente}} <ion-text style="position: absolute; right: 60px; bottom: 0; top: 16px;">Editar firma</ion-text> <img src="{{firmaIcono}}" style="width: 50px; height: auto; position: absolute; right: 5px; bottom: 0; top: -13px;"/>
                               </ion-card-content>
                             </ion-card>
                         </ion-col>
-
-                        <!--ion-col size="12">
-                          <ion-card style="height: 432px;margin-top: 0;">
-                            <img #imagen alt="Firmar" src="{{firmaPrecargada}}"  onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'"
-                            style="width: 100%;margin-top: 25%; height: '{{imageHeight}}'" onload="'firmar()'"/>
-                          
-                            <ion-card-content>
-                              Si la firma es incorrecta, puedes editarla antes de guardar tus cambios.
-                            </ion-card-content>
-                          </ion-card>
-                        </!--ion-col -->
 
                       </ion-row>
                     </ion-grid>
@@ -1192,24 +1126,13 @@
                         <ion-card style="height:210px">
                           <ion-card-content style="margin-top: 10%;">
                             <ion-chip class="date-siniestro">
-                              <ion-icon name="calendar" color="tertiary"></ion-icon>
+                              <ion-icon name="calendar" style="color: var(--blueGrayColor);"></ion-icon>
                               <ion-label class="chip-label">{{formateadaSiniestro}}</ion-label>
                               <ion-icon name="time" class="chip-icon"></ion-icon>
                             </ion-chip>
                           </ion-card-content>
                         </ion-card>
                       </ion-col>
-
-                      <!--ion-col size="12" style="padding-top: 0;">
-                        <ion-card style="height: 435px;margin-top: 10px;">
-                          <ion-card-header>
-                          </ion-card-header>
-                          <ion-card-content>
-                            <ion-datetime [(ngModel)]="mydate" (ionChange)="marcarFecha(mydate)"></ion-datetime>
-                          </ion-card-content>
-                        </ion-card>
-                        <ion-badge style="margin-left: 27px;">{{formateada}}</ion-badge>
-                      </!--ion-col -->
                       
                     </ion-row>
                   </ion-grid>
@@ -1229,14 +1152,31 @@
           <ion-col size="12">
             <ion-card>
               <ion-card-header>
-                <ion-card-subtitle><strong>Elementos Incompletos</strong></ion-card-subtitle>
-                <ion-card-subtitle><small>Los siguientes campos aun no se han completado :</small></ion-card-subtitle>
+                <ion-card-subtitle>
+                  <div class="meter">
+                      <span id="spanProgress" style="width:100%;"><span class="progress"></span></span>
+                  </div>
+                </ion-card-subtitle>
+                <ion-card-subtitle id="infoText">{{textoInfo}}</ion-card-subtitle>
               </ion-card-header>
               <ion-card-content>
+                
+                <br>
+                  <ion-icon name="flag" color="danger"></ion-icon> Elementos Incompletos<br>
+                  <ion-icon name="flag" color="medium"></ion-icon> Elementos Completos
                 <ion-list>
-                  <ion-item *ngFor="let nulo of validaNulos; let i = index" style="color: orangered;">
-                    <ion-label>{{i+1}}. {{nulo}}</ion-label>
+                  <ion-item class="nulo-item" *ngFor="let nulo of validaNulos; let i = index" style="color: gray;" (click)="analizaNulo(i, nulo.valor, nulo.inputIndex);scrollToElement();">
+                    <ion-label>{{i+1}}. {{nulo.etiqueta}} : <strong *ngIf="nulo.valor != 'undefined' && nulo.valor != undefined">{{nulo.valor}}</strong></ion-label>
+                    <div class="meter">
+                        <span style="width:100%;"><span class="progress"></span></span>
+                    </div>
+                    <input class="index-input" style="display: none;" [value]=nulo.inputIndex />
+                    <input class="value-input" style="display: none;" [value]=nulo.valor />
+                    <ion-chip *ngIf="nulo.valor == 'undefined' || nulo.valor == undefined" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 7%; font-size: 1rem;
+                    color: red; border-color: red;">Ir</ion-chip>
                   </ion-item>
+                  <br>
+                  <ion-item style="color: white;">Ajustadores HELP Porsalud Ficohsa</ion-item>
                 </ion-list>
               </ion-card-content>
             </ion-card>
@@ -1251,134 +1191,125 @@
         <ion-title>Main View</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content class="ion-no-padding">
+    <ion-content class="ion-no-padding" style="width: 99%;padding: 3%;text-align: justify;font-size: 1rem;white-space: normal;overflow-y: scroll;height: 39%;">
       <ion-list style="width: 100%;">
         <ion-item *ngFor="let segment of segments; let i = index" class="segment-item" (click)="setSegment(segmentInput.value, indexInput.value)">
           <ion-input #segmentInput [hidden]="true" [value]="segment.name"></ion-input>
           <ion-input #indexInput [hidden]="true" [value]="i"></ion-input>
           <ion-icon style="color: gray;" class="segment-icon" name={{segment.name}}></ion-icon><span class="segment-title" style="margin-left: 9px;">{{segment.titulo}}</span>
         </ion-item>
-
-        <!--ion-item *ngIf="isComplete == false" disabled>
-          <ion-icon style="color: gray;" class="segment-icon-no" name="footsteps" disabled></ion-icon>
-          <span class="segment-title" style="margin-left: 9px;">Culpable</span>
-        </!--ion-item>
-        <ion-item *ngIf="isComplete == true" (click)="goCulpable()">
-          <ion-input #segmentInput [hidden]="true" [value]="'footsteps'"></ion-input>
-          <ion-input #indexInput [hidden]="true" [value]="10"></ion-input>
-          <ion-icon style="color: gray;" class="segment-icon" name="footsteps" disabled></ion-icon>
-          <span class="segment-title" style="margin-left: 9px;">Culpable</span>
-        </ion-item -->
-
-        <!--ion-item *ngIf="isComplete == false" disabled>
-          <ion-icon style="color: gray;" class="segment-icon-no" name="document-text" disabled></ion-icon>
-          <span class="segment-title" style="margin-left: 9px;">Acuerdo Deuda</span>
-        </!--ion-item>
-        <ion-item id="open-modal-agreement" *ngIf="isComplete == true" (click)="goAdeuda()">
-          <ion-icon style="color: gray;" class="segment-icon-no" name="document-text" disabled></ion-icon>
-          <span class="segment-title" style="margin-left: 9px;">Acuerdo Deuda</span>
-        </ion-item>
-
-        <ion-item *ngIf="isComplete == false" disabled>
-          <ion-icon style="color: gray;" class="segment-icon-no" name="camera" disabled></ion-icon>
-          <span class="segment-title" style="margin-left: 9px;">Envío Imágenes</span>
-        </ion-item -->
-
-        <!--ion-item (click)="goFotos()">
-          <ion-icon style="color: gray;" class="segment-icon" name="camera" disabled></ion-icon>
-          <span class="segment-title" style="margin-left: 9px;">Envío Imágenes</span>
-        </!--ion-item -->
       </ion-list>
+
+      <ion-chip id="firmaChip" class="chip-firma" style="    position: absolute;
+    height: 70px;
+    right: 8%;
+    bottom: 12%;
+    width: 80%;
+    --background: none;
+    color: gray;
+    padding-top: 52px;
+    text-align: right;
+    float: right;
+    padding-left: 65px;" (click)="goESignature()">
+        
+        Editar Firma
+
+        <img src="{{firmaIcono}}" style="width: 50px; height: auto; position: absolute; right: 5px; bottom: 0; "/>
+      </ion-chip>
     </ion-content>
-    <!--ion-button *ngIf="daSegment == 'ribbon'" 
-    style="color: white;position: fixed; width: 100%; margin-left: 0;bottom: 0;right: 0px;" (click)="validarFormulario()" shape="round">
-      Continuar
-    </!--ion-button -->
   </div>
   
 
 </ion-split-pane>
-<!-- personas modal  -->
 
-<!--ion-button *ngIf="daSegment == 'ribbon' && isEditSig == true" style="position: fixed;width: 60px;height: 60px;bottom: 34%;right: 1%; z-index: 999;--background: #f14f23;
---background-activated: #a8462a;
---background-hover: #f66e48;
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white;" vertical="bottom" horizontal="end" (click)="firmar()">
-  <ion-icon name="refresh"></ion-icon>
-</!--ion-button>
-
-<ion-button *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 23%;right: 1%; z-index: 999;--background: #f14f23;
---background-activated: #a8462a;
---background-hover: #f66e48;
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white;" vertical="bottom" horizontal="end" (click)="goESignature()">
-  <ion-icon name="pencil"></ion-icon>
-</ion-button>
-
-<ion-button *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 12%;right: 1%; z-index: 999;--background: #f14f23;
---background-activated: #a8462a;
---background-hover: #f66e48;
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white;" vertical="bottom" horizontal="end" (click)="GuardarDatos()">
-  <ion-icon name="chevron-forward"></ion-icon -->
-
-    <ion-button id="signButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 15%; z-index: 999;--background: #f14f23;
---background-activated: #a8462a;
---background-hover: #f66e48;
+    <!--ion-button id="signButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 15%; z-index: 999;--background: var(--blueGrayColor);
+  --background-activated: var(--blueGrayColor);
+  --background-hover: var(--blueGrayColor);
 --border-radius: 15px;
 --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
 --color: white;" vertical="bottom" horizontal="end" (click)="firmar()">
   <ion-icon name="refresh"></ion-icon>
 </ion-button>
 
-    <ion-button id="goSignButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 8%; z-index: 999;--background: #f14f23;
---background-activated: #a8462a;
---background-hover: #f66e48;
+    <ion-button id="goSignButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 8%; z-index: 999;--background: var(--blueGrayColor);
+  --background-activated: var(--blueGrayColor);
+  --background-hover: var(--blueGrayColor);
 --border-radius: 15px;
 --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
 --color: white;" vertical="bottom" horizontal="end" (click)="goESignature()">
   <ion-icon name="pencil"></ion-icon>
 </ion-button>
 
-  <ion-button id="saveButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: #f14f23;
---background-activated: #a8462a;
---background-hover: #f66e48;
+  <ion-button id="saveButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: var(--blueGrayColor);
+  --background-activated: var(--blueGrayColor);
+  --background-hover: var(--blueGrayColor);
 --border-radius: 15px;
 --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
 --color: white;" vertical="bottom" horizontal="end" (click)="GuardarDatos()">
   <ion-icon name="chevron-forward"></ion-icon>
+</ion-button -->
+<ion-button id="audienciaButton" *ngIf="esAudiencia == true" style="position: fixed;width: 200px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: var(--blueGrayColor);
+  --background-activated: var(--blueGrayColor);
+  --background-hover: var(--blueGrayColor);
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;" vertical="bottom" horizontal="end" (click)="goPrepare(idAtencion)">
+  Seguir Sin Poliza
 </ion-button>
 
-<ion-button id="camButton" style="position: fixed;width: 60px;height: 60px;bottom: 1%;left: 1%; z-index: 999;--background: #f14f23;
---background-activated: #a8462a;
---background-hover: #f66e48;
+<ion-button id="validateButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 200px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: var(--blueGrayColor);
+  --background-activated: var(--blueGrayColor);
+  --background-hover: var(--blueGrayColor);
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;" vertical="bottom" horizontal="end" (click)="validarDatos()">
+  Validar Datos
+</ion-button>
+
+<ion-button id="cancelaButton" *ngIf="daSegment == 'ribbon'" fill="outline" color="--blueGrayColor" style="position: fixed;width: 200px;height: 60px;bottom: 1%;right: 35%; z-index: 999;
+--border-radius: 15px; 
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: var(--blueGrayColor); display: none;" vertical="bottom" horizontal="end" (click)="goBack()">
+  Cancelar Envío
+</ion-button>
+
+<ion-button id="validateAgainButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 200px;height: 60px;bottom: 1%;right: 18%; z-index: 999;--background: var(--blueGrayColor);
+  --background-activated: var(--blueGrayColor);
+  --background-hover: var(--blueGrayColor);
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white; display: none;" vertical="bottom" horizontal="end" (click)="validarDatos()">
+  Validar Datos <ion-icon name="reload" style="    position: absolute;
+    right: 0px;
+    color: white;"></ion-icon>
+</ion-button>
+
+<ion-button id="saveDataButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 200px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: var(--primaryColor);
+  --background-activated: var(--primaryColor);
+  --background-hover: var(--primaryColor);
+--border-radius: 15px;
+--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+--color: white;display: none;" vertical="bottom" horizontal="end" (click)="GuardarDatos()">
+  Guardar Datos
+</ion-button>
+
+<ion-button id="camButton" style="position: fixed;width: 60px;height: 60px;bottom: 1%;left: 1%; z-index: 999;--background: var(--blueGrayColor);
+  --background-activated: var(--blueGrayColor);
+  --background-hover: var(--blueGrayColor);
 --border-radius: 15px;
 --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
 --color: white;" vertical="bottom" horizontal="end" (click)="goFotos()">
   <ion-icon name="camera"></ion-icon>
 </ion-button>
 
-<ion-badge id="successLabel" color="warning" style="position: fixed; left: 10px; bottom: 10px; width: auto; padding: 15px; height: 46px; text-align: left;z-index: 999; display: none;color: white;--background: #f14f23;
---background-activated: #a8462a;
---background-hover: #f66e48;" vertical="bottom" horizontal="end">
+<ion-badge id="successLabel" color="warning" style="position: fixed; left: 10px; bottom: 10px; width: auto; padding: 15px; height: 46px; text-align: left;z-index: 999; display: none;color: white;--background: var(--blueGrayColor);
+  --background-activated: var(--blueGrayColor);
+  --background-hover: var(--blueGrayColor);" vertical="bottom" horizontal="end">
   Registro guardado con éxito! 
 </ion-badge>
 
 <ion-button id="buttonGoAjuste" style="position: fixed; left: 290px; bottom: 7px;height: 46px; z-index: 999; display: none;color: white;" vertical="bottom" horizontal="start"
 (click)="goAjuste()">Ir a Ajustador</ion-button>
-
-  <!--ion-button style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: #f14f23;
---background-activated: #a8462a;
---background-hover: #f66e48;
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white;" vertical="bottom" horizontal="end" (click)="goMap()">
-  <ion-icon name="location"></ion-icon>
-</!--ion-button -->
 
 <ion-footer slot="fixed" style="bottom: 0;left:0;height:80px; background: white;"></ion-footer>
 
@@ -1625,7 +1556,7 @@
   <ng-template>
     <ion-content>
       <ion-datetime style="margin-left:120px" [showDefaultButtons]="true" doneText="Guardar" cancelText="Cancelar"
-      [(ngModel)]="elExpediente.FechaHoraAccidente" (ionChange)="marcarFechaSiniestro(elExpediente.FechaHoraAccidente)"></ion-datetime>
+      [(ngModel)]="laExpediente[0].FechaHoraAccidente" (ionChange)="marcarFechaSiniestro(laExpediente[0].FechaHoraAccidente)"></ion-datetime>
     </ion-content>
     <!--ion-button>Guardar Fecha</!--ion-button -->
   </ng-template>
@@ -1637,6 +1568,7 @@
       <ion-datetime style="margin-left:120px" [showDefaultButtons]="true" doneText="Guardar" cancelText="Cancelar"
       [(ngModel)]="formateadaNacimiento" (ionChange)="marcarFechaNacimiento($event)"
       class="required-data"></ion-datetime>
+      <input class="required-index" value="38">
       <!--span color="danger" style="padding: 6px;height: 23px;width: 23px;">*</!--span -->
     </ion-content>
     <!--ion-button>Guardar Fecha</!--ion-button -->
@@ -1649,6 +1581,7 @@
       <ion-datetime style="margin-left:120px" [showDefaultButtons]="true" doneText="Guardar" cancelText="Cancelar"
       [(ngModel)]="dataProcess.Vigencia" [maskito]="idMaskFechaVencimiento" [predicate]="predicateCliente" (ionChange)="entraVencimiento($event)"
       class="required-data"></ion-datetime>
+      <input class="required-index" value="39">
       <!--span color="danger" style="padding: 6px;height: 23px;width: 23px;">*</!--span -->
     </ion-content>
     <!--ion-button>Guardar Fecha</!--ion-button -->

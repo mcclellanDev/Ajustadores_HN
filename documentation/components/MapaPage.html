@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -60,20 +60,13 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -82,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -3709,7 +3702,7 @@ export class MapaPage implements OnInit {
     </div>
 
     <div class="tab-pane fade " id="templateData">
-        <pre class="line-numbers"><code class="language-html">&lt;ion-header&gt;
+        <pre class="line-numbers"><code class="language-html">&lt;!--ion-header&gt;
   &lt;ion-spinner color&#x3D;&quot;primary&quot; name&#x3D;&quot;lines&quot; *ngIf&#x3D;&quot;isLoading &#x3D;&#x3D; true&quot;&gt;&lt;/ion-spinner&gt;
   &lt;ion-footer id&#x3D;&quot;spinFooter&quot; *ngIf&#x3D;&quot;isLoading &#x3D;&#x3D; true&quot;&gt;&lt;/ion-footer&gt;
   &lt;ion-toolbar&gt;
@@ -3718,7 +3711,7 @@ export class MapaPage implements OnInit {
       &lt;/ion-buttons&gt;
     &lt;ion-title&gt;Lugar Del Siniestro&lt;/ion-title&gt;
   &lt;/ion-toolbar&gt;
-&lt;/ion-header&gt;
+&lt;/!--ion-header&gt;
 
 &lt;ion-content style&#x3D;&quot;--background: transparent;&quot;&gt;
 &lt;capacitor-google-map id&#x3D;&quot;map&quot; #map  (mapClick)&#x3D;&quot;addMapMarker($event)&quot;&gt;&lt;/capacitor-google-map&gt;
@@ -3731,7 +3724,7 @@ export class MapaPage implements OnInit {
       &lt;ion-col size&#x3D;&quot;6&quot; *ngIf&#x3D;&quot;isLoadingData &#x3D;&#x3D; true&quot; style&#x3D;&quot;position: fixed; bottom:1%;left:35%;&quot;&gt;&lt;ion-spinner color&#x3D;&quot;primary&quot; name&#x3D;&quot;dots&quot;&gt;&lt;/ion-spinner&gt;&lt;/ion-col&gt;
       &lt;ion-col size&#x3D;&quot;6&quot; *ngIf&#x3D;&quot;isLoadingData &#x3D;&#x3D; false&quot;&gt;
           &lt;br&gt;&lt;ion-badge&gt;{{mapInfoText}}&lt;/ion-badge&gt;
-        &lt;!--div *ngIf&#x3D;&quot;distanciaMetros &gt;&#x3D; 5&quot;&gt;Coordenadas: {{moverCoordenadas}} &lt;br&gt; Distancia: {{distanciaFinal}} &lt;br&gt; Distancia Metros: {{distanciaMetros}}&lt;/!--div --&gt;
+        
       &lt;/ion-col&gt;
       &lt;ion-col size&#x3D;&quot;3&quot;&gt;&lt;/ion-col&gt;
     &lt;/ion-row&gt;
@@ -3756,7 +3749,7 @@ export class MapaPage implements OnInit {
       
     &lt;/ion-content&gt;
   &lt;/ng-template&gt;
-&lt;/ion-modal&gt;
+&lt;/ion-modal --&gt;
 </code></pre>
     </div>
 
@@ -3844,8 +3837,8 @@ ion-fab-button {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><ion-header>  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>  <ion-footer id="spinFooter" *ngIf="isLoading == true"></ion-footer>  <ion-toolbar>      <ion-buttons slot="start">        <ion-back-button (click)="Torval()"></ion-back-button>      </ion-buttons>    <ion-title>Lugar Del Siniestro</ion-title>  </ion-toolbar></ion-header><ion-content style="--background: transparent;"><capacitor-google-map id="map" #map  (mapClick)="addMapMarker($event)"></capacitor-google-map></ion-content><ion-footer slot="fixed" style="bottom: 0;left:0;height:80px; background: white;">  <ion-grid *ngIf="isTrack == true">    <ion-row>      <ion-col size="3"></ion-col>      <ion-col size="6" *ngIf="isLoadingData == true" style="position: fixed; bottom:1%;left:35%;"><ion-spinner color="primary" name="dots"></ion-spinner></ion-col>      <ion-col size="6" *ngIf="isLoadingData == false">          <br><ion-badge>{{mapInfoText}}</ion-badge>        <!--div *ngIf="distanciaMetros >= 5">Coordenadas: {{moverCoordenadas}} <br> Distancia: {{distanciaFinal}} <br> Distancia Metros: {{distanciaMetros}}</!--div -->      </ion-col>      <ion-col size="3"></ion-col>    </ion-row>  </ion-grid>    <ion-fab style="position: fixed;margin-right: 6%;" vertical="bottom" horizontal="end">    <ion-fab-button (click)="limpiarCache()">      <ion-icon style="font-size: 3rem;" src="../../assets/img/clear-cache.svg"></ion-icon>    </ion-fab-button>  </ion-fab>  <ion-fab style="position: fixed;" vertical="bottom" horizontal="end">    <ion-fab-button (click)="cerrarMapa()">      <ion-icon name="return-up-back"></ion-icon>    </ion-fab-button>  </ion-fab></ion-footer><ion-modal #modalInfo trigger="open-modal-info" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.25, 0.5, 0.75]">  <ng-template>    <ion-content>      <ion-toolbar>Opciones Disponibles</ion-toolbar>          </ion-content>  </ng-template></ion-modal></div>'
-    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AjustadorPage', 'selector': 'app-ajustador'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'}];
+        var COMPONENT_TEMPLATE = '<div><!--ion-header>  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>  <ion-footer id="spinFooter" *ngIf="isLoading == true"></ion-footer>  <ion-toolbar>      <ion-buttons slot="start">        <ion-back-button (click)="Torval()"></ion-back-button>      </ion-buttons>    <ion-title>Lugar Del Siniestro</ion-title>  </ion-toolbar></!--ion-header><ion-content style="--background: transparent;"><capacitor-google-map id="map" #map  (mapClick)="addMapMarker($event)"></capacitor-google-map></ion-content><ion-footer slot="fixed" style="bottom: 0;left:0;height:80px; background: white;">  <ion-grid *ngIf="isTrack == true">    <ion-row>      <ion-col size="3"></ion-col>      <ion-col size="6" *ngIf="isLoadingData == true" style="position: fixed; bottom:1%;left:35%;"><ion-spinner color="primary" name="dots"></ion-spinner></ion-col>      <ion-col size="6" *ngIf="isLoadingData == false">          <br><ion-badge>{{mapInfoText}}</ion-badge>              </ion-col>      <ion-col size="3"></ion-col>    </ion-row>  </ion-grid>    <ion-fab style="position: fixed;margin-right: 6%;" vertical="bottom" horizontal="end">    <ion-fab-button (click)="limpiarCache()">      <ion-icon style="font-size: 3rem;" src="../../assets/img/clear-cache.svg"></ion-icon>    </ion-fab-button>  </ion-fab>  <ion-fab style="position: fixed;" vertical="bottom" horizontal="end">    <ion-fab-button (click)="cerrarMapa()">      <ion-icon name="return-up-back"></ion-icon>    </ion-fab-button>  </ion-fab></ion-footer><ion-modal #modalInfo trigger="open-modal-info" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.25, 0.5, 0.75]">  <ng-template>    <ion-content>      <ion-toolbar>Opciones Disponibles</ion-toolbar>          </ion-content>  </ng-template></ion-modal --></div>'
+    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'EndProcessPage', 'selector': 'app-end-process'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FormulariosPage', 'selector': 'app-formularios'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'MaterialesPage', 'selector': 'app-materiales'},{'name': 'ModalEmpresaConductorPage', 'selector': 'app-modal-empresa-conductor'},{'name': 'ModalGuardarPage', 'selector': 'app-modal-guardar'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrepareAudiencePage', 'selector': 'app-prepare-audience'},{'name': 'PrepareSendPage', 'selector': 'app-prepare-send'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoCaseguradoPage', 'selector': 'app-segmento-casegurado'},{'name': 'SegmentoCconductorPage', 'selector': 'app-segmento-cconductor'},{'name': 'SegmentoCinformacionPage', 'selector': 'app-segmento-cinformacion'},{'name': 'SegmentoCvehiculoPage', 'selector': 'app-segmento-cvehiculo'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'},{'name': 'VitalCorePage', 'selector': 'app-vital-core'}];
     var DIRECTIVES = [{'name': 'ParallaxHeader', 'selector': '[parallax-header]'},{'name': 'PressDirective', 'selector': '[appPress]'}];
     var ACTUAL_COMPONENT = {'name': 'MapaPage'};
 </script>
@@ -3897,6 +3890,19 @@ ion-fab-button {
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
 
@@ -3908,7 +3914,6 @@ ion-fab-button {
        <script src="../js/libs/es6-shim.min.js"></script>
        <script src="../js/libs/EventDispatcher.js"></script>
        <script src="../js/libs/promise.min.js"></script>
-       <script src="../js/libs/zepto.min.js"></script>
 
        <script src="../js/compodoc.js"></script>
 

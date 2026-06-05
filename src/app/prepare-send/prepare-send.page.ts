@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { ApiService } from '../services/api.service';
 import * as $ from 'jquery';
-import { emptySignatureWhite, imagePrefix, errorImage } from '../environments/default-images';
+import { emptySignatureWhite, imagePrefix, errorImage, editarFirmaIcono } from '../environments/default-images';
 import { AnimationController, IonAccordionGroup, Platform, ToastController } from '@ionic/angular';
 import { valoresPredeterminados } from '../environments/predeterminados';
 import { abogadosAudiencias } from '../interfaces/arrays';
@@ -29,12 +29,14 @@ export class PrepareSendPage implements OnInit {
   audienciaId: any;  idTablaAjustador: any;  dataBPM: any= [];  bpmArray: any = [];  estaCompleto: boolean = false;
   isBPMcomplete: boolean = false;  codigoBPMFicohsa: any;  codigoReclamoFicohsa: any; atencionId: number;
   dataSiniestro: any;  identidadCliente: any;  elTipoLicencia: any;  nulosAtencion: any = [];  isEeexittoooo: boolean;
-  miLogRespuesta: any; sucessIcon:any;
+  miLogRespuesta: any; sucessIcon:any; disData: any = []; AutoridadInvolucrada:any; firmaIcono:any = editarFirmaIcono;
+  emptySignatureWhite = emptySignatureWhite; emptySignature = emptySignatureWhite; errorImage = errorImage;
 
   abogadosAudiencias = abogadosAudiencias
+  laExpediente: any = [];
   
 
-  constructor(private platform:Platform, private api: ApiService, 
+  constructor(private platform:Platform, private api: ApiService,
     private routeActive: ActivatedRoute, private router: Router, private toaster: ToastService, private animationCtrl: AnimationController) { 
     this.firmaPrecargada = localStorage.getItem("dSignatureAsegurado");
     this.sucessIcon = '../../assets/img/guardado.gif';
@@ -42,17 +44,37 @@ export class PrepareSendPage implements OnInit {
       console.log('Traigo una firma '+this.firmaPrecargada); 
     }
 
+
     let porqueNo = localStorage.getItem('dataProcess-PorqueNoUsoServicioAsistencia');
-    let elNombreConductor = localStorage.getItem('nombreConductor');
+    let autoridad = localStorage.getItem('dataProcess-AutoridadInvolucrada');
+    
     let tipoGeneroId =  localStorage.getItem('elGeneroId');
     let laCobertura = localStorage.getItem('laCobertura');
     let elGeneroTipo = localStorage.getItem('elGenero');
-    
-    
+
+    let exped:any = localStorage.getItem('elExpediente');
+    console.log('Expediente en cliente : '+exped);
+    this.laExpediente = JSON.parse(exped);
+    console.log('El nombre del cliente : '+this.laExpediente[0].Cliente);
+    console.dir(exped);
+    console.dir(JSON.parse(exped));
+
+    let elNombreConductor = localStorage.getItem('dataProcess-NombreConductor');//this.laExpediente[0].Cliente;//localStorage.getItem('nombreConductor');
+
+    /*
+    self.alert('Acá estoy')
+    this.disData = this.navParams.get('forma');
+    console.log('Dis data');
+    console.dir(this.disData);
+    */
 
     setTimeout(() => {
       if (porqueNo) {
         this.setPorqueNoUso(porqueNo);
+      }
+
+      if (autoridad) {
+        this.setAutoridadInvolucrada(autoridad);
       }
 
       if (laCobertura) {
@@ -130,15 +152,16 @@ export class PrepareSendPage implements OnInit {
 
       //alert(this.moneda)
       if (this.moneda == null) {
-        this.miMoneda = "Lempiras";
-      }else{
-        this.miMoneda = "Dolares";
-      }
+            this.miMoneda = "LEMPIRAS";
+          }else{ 
+            this.miMoneda = this.moneda;
+          }
 
       this.identidadAsegurado = localStorage.getItem('identidadAsegurado');
   }
 
   ngOnInit() {
+    localStorage.setItem('origin', window.location.pathname);
     this.getTiposDeCobertura();
     this.loadGeneros();
   }
@@ -201,7 +224,7 @@ export class PrepareSendPage implements OnInit {
   }
 
   entraNombreConductor(event) {
-    this.cliente.NombreConductor = event.target.value;
+    //this.cliente.NombreConductor = event.target.value;
     this.dataProcess.NombreConductor = event.target.value;
     this.dataProcess['NombreConductor'] = event.target.value;
     this.nombreConductor = event.target.value;
@@ -210,7 +233,7 @@ export class PrepareSendPage implements OnInit {
   }
 
   setNombreConductor(nombre) {
-    this.cliente.NombreConductor = nombre;
+    //this.cliente.NombreConductor = nombre;
     this.dataProcess.NombreConductor = nombre;
     this.dataProcess['NombreConductor'] = nombre;
     this.nombreConductor = nombre;
@@ -270,6 +293,142 @@ export class PrepareSendPage implements OnInit {
     this.guardarFormulario();
   }
 
+  guardarCacheCliente(){
+    
+    /*
+    
+    this.dataBPM =  {
+              Chasis: this.cliente[0].Chasis,
+              puntoServicio: valoresPredeterminados[0].puntoServicio, // Predeterminado : 504
+              Poliza: this.cliente[0].PolizaExterna, // 
+              Certificado: this.cliente[0].Certificado.toString(),//parseInt(this.cliente[0].Certificado), // Pendiente
+              NombreAsegurado: this.cliente[0].Cliente,
+              Sucursal: valoresPredeterminados[0].Sucursal, // Predeterminado : 0001
+              Producto: valoresPredeterminados[0].Producto, // Predeterminado : AU01
+              Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
+              FechaOcurrencia: fechaSplit,//fechaSplit,//this.cliente[0].FechaRegistro, OJO
+              Causa: valoresPredeterminados[0].Causa, // Pendiente
+              ValorReserva: '00.00', // Formulario
+              UsuarioBPM: this.elUsuario.UsuarioBPM, // Login
+              Latitud: this.cliente[0].LatitudCliente,//this.latitud,//"14.0985125",//localStorage.getItem('latitud'), // Formulario
+              Longitud: this.cliente[0].LongitudCliente,//this.longitud,//"-87.1849219",//localStorage.getItem('longitud'), // Formulario
+              NombreConductor: this.nombreConductor, // Formulario
+              Genero: this.inicialGenero, // Formulario
+              Parentesco: this.elParentesco, // Formulario
+              Observacion: this.idTablaAjustador // Guardar Siniestro
+            }
+    
+    */
+/*
+    alert('Atencion : '+atencionId+', para el cliente '+this.cliente[0].Cliente+', con la autoridad '+this.AutoridadInvolucrada
+      +', y el conductor : '+this.nombreConductor+', porque '+this.dataProcess.PorqueNoUsoServicioAsistencia
+    );
+    */
+
+    
+
+    
+
+              setTimeout(() => {
+                this.testSave();
+              }, 600);
+/*
+    const dataSiniestro = {
+      RefAtencionId: atencionId,
+      RefProveedorAgenteId: 0,
+      RefProveedorAgenteAbogadoId: 0,
+      AgendarAudiencia: 0,
+      AseguradoUsoPoliza: 0,
+      TerceroResponsable: 0,
+      LesionadosSinAudiencia: 0,
+      DescripcionAudiencia: "string",
+      Poliza: "string",
+      Identificacion: "string",
+      Nombre: "string",
+      ConductorAfiliado: 0,
+      ConductorDetenido: 0,
+      Descripcion: "string",
+      MarcaVehiculo: "string",
+      ModeloVehiculo: "string",
+      AnioVehiculo: 0,
+      PlacaVehiculo: "string",
+      ChasisVehiculo: "string",
+      ColorVehiculo: "string",
+      VehiculoDetenido: 0,
+      DescripcionVehiculo: "string",
+      TercerosHeridos: 0,
+      TercerosMuertos: 0,
+      DescripcionTercerosHeridos: "string",
+      DescripcionTercerosMuertos: "string",
+      DanioFrontal: 0,
+      DanioTrasero: 0,
+      DanioLateralDerecho: 0,
+      DanioLataralIzquierdo: 0,
+      VehiculoVolcado: 0,
+      DescripcionDanio: "string",
+      RefPaisId: 0,
+      RefCiudadId: 0,
+      RefDeptoId: 0,
+      RefMunicipioId: 0,
+      FechaHora: "2026-04-23T17:41:51.655Z",
+      Lugar: "string",
+      RefUsuarioId: 0,
+      TallerMecanicoId: 0,
+      Blindado: "string",
+      ObservacionTaller: "string",
+      ReclamoAsegurado: "string",
+      Observaciones: "string",
+      Latitud: "string",
+      Longitud: "string",
+      NombreConductor: "string",
+      IdentidaConductor: "string",
+      DPI_Pasaporte: "string",
+      TelefonoConductor: "string",
+      CelularConductor: "string",
+      Edad: 0,
+      Licencia: "string",
+      TipoLicencia: "string",
+      Vigencia: "string",
+      DireccionConductor: "string",
+      Sexo: 0,
+      RefTipoConductorId: 0,
+      DireccionEnvioCorrespondencia: "string",
+      CorreoElectronico: "string",
+      RefTipoLicenciaId: 0,
+      NombreAtribuyeAccidente: "string",
+      AutoridadInvolucrada: "string",
+      UbicacionVehiculoDetenido: "string",
+      PruebaAlcoholemia: 0,
+      RefTipoCombustibleId: 0,
+      AC: 0,
+      Rines: "string",
+      BolsaAire: 0,
+      CierreCentralizado: 0,
+      Mecanico: 0,
+      RetrovisorElectronico: 0,
+      Overfenders: 0,
+      ColaPato: 0,
+      CintaDecorativa: 0,
+      LicenciaEstado: 0,
+      ObservacionesFinales: "string",
+      RefTipoSolicitanteInformeAjusteId: 0,
+      TipoAcuerdoFicohsa: "string",
+      DondeSeEncuentraVehiculo: "string",
+      NumeroUnidad: "string",
+      Parentesco: "string",
+      FechaNacimientoConductor: "2026-04-23T17:41:51.655Z",
+      CulpableCompromisoPago: 0,
+      ObservacionCompromisoPago: "string",
+      PorqueNoUsoServicioAsistencia: "string",
+      Kilometraje: 0,
+      OtrosTalleres: "string"
+    }
+    */
+
+  }
+
+
+
 
   testSave(){
     this.isLoading = true;
@@ -283,14 +442,96 @@ export class PrepareSendPage implements OnInit {
       this.isLoading = false;
     }else{
       //alert('Hey yey yeyyy es el rey!')
+
+      let atencionId = parseInt(this.idAtencion);
+      let porqueNo = localStorage.getItem('dataProcess-PorqueNoUsoServicioAsistencia');
+
+      const cacheData = {
+      "IdAtencion": atencionId,
+      "Nombre": this.cliente[0].Cliente,
+      "AutoridadInvolucrada": this.AutoridadInvolucrada,
+      "NombreConductor": this.nombreConductor,
+      "IdentidaConductor": null,
+      "Poliza": this.cliente[0].PolizaExterna,
+      "NombreAtribuyeAccidente": null,
+      "TelefonoConductor": null,
+      "CelularConductor": null,
+      "CorreoElectronico": null,
+      "Licencia": null,
+      "Blindado": 0,
+      "FechaNacimientoConductor": null,
+      "Edad": 0,
+      "AseguradoUsoPoliza": 2,
+      "PorqueNoUsoServicioAsistencia": porqueNo,
+      "PruebaAlcoholemia": 0,
+      "AgendarAudiencia": 0,
+      "VehiculoDetenido": 0,
+      "ConductorDetenido": 0,
+      "VehiculoVolcado": 0,
+      "DireccionEnvioCorrespondencia": null,
+      "DireccionConductor": null,
+      "DondeSeEncuentraVehiculo": null,
+      "TerceroResponsable": 0,
+      "UbicacionVehiculoDetenido": null,
+      "DescripcionAudiencia": null,
+      "LicenciaEstado": 0,
+      "Vigencia": null,
+      "RefTipoLicenciaId": 0,
+      "TipoLicencia": null,
+      "NumeroUnidad": null,
+      "DescripcionTercerosMuertos": null,
+      "DescripcionTercerosHeridos": null,
+      "Descripcion": null,
+      "DescripcionDanio": null,
+      "RefTipoConductorId": 0,
+      "TercerosMuertos": 0,
+      "TercerosHeridos": 0,
+      "Parentesco": null,
+      "Latitud": this.cliente[0].LatitudCliente,
+      "Longitud": this.cliente[0].LongitudCliente,
+      "AnioVehiculo": this.cliente[0].Year,
+      "ModeloVehiculo": this.cliente[0].Modelo,
+      "PlacaVehiculo": this.cliente[0].Placa,
+      "ColorVehiculo": this.cliente[0].Color,
+      "MarcaVehiculo": this.cliente[0].Marca,
+      "ChasisVehiculo": this.cliente[0].Chasis,
+      "Motor": null
+    }
+      
       setTimeout(() => {
-        if (this.platform.is('android')) {
-          this.getCountry();      
-        }else{
-          this.guardarFormulario();
-        }
+
+        this.api.GuardarCacheCliente(cacheData).pipe( 
+          finalize(async ()=>{
+            //alert('Finalice')
+            //this.isLoading = false;
+            //this.isComplete = true;
+          })
+        ).subscribe(
+          async (res) =>{
+          }
+        )
+        }, 1500);
+
+      setTimeout(() => {
+        this.guardarFormulario();
       }, 1800);
     }
+  }
+
+  entraAutoridadInvolucrada(event) {
+    this.AutoridadInvolucrada = event.target.value;
+    this.dataProcess.AutoridadInvolucrada = event.target.value;
+    this.dataProcess['AutoridadInvolucrada'] = event.target.value;
+    localStorage.setItem('dataProcess-AutoridadInvolucrada', event.target.value);
+    
+  }
+
+  setAutoridadInvolucrada(autoridad) {
+    this.dataProcess.AutoridadInvolucrada = autoridad;
+    this.dataProcess['AutoridadInvolucrada'] = autoridad;
+    localStorage.setItem('dataProcess-AutoridadInvolucrada', autoridad);
+    this.AutoridadInvolucrada = autoridad;
+    
   }
 
   guardarFormulario(){
@@ -321,7 +562,7 @@ export class PrepareSendPage implements OnInit {
         $('.data-label').eq(0).attr('style', 'color:#7da1c4;');
       }
 
-      if (this.cliente.NombreConductor == undefined || this.cliente.NombreConductor == '') {
+      if (this.nombreConductor == undefined || this.nombreConductor == '') {
         this.validaNulos.push(1);
         $('.data-label').eq(1).attr('style', 'color:orangered;');
       }else{
@@ -440,14 +681,16 @@ export class PrepareSendPage implements OnInit {
           CulpableCompromisoPago: 0,
           ObservacionCompromisoPago: "NULL",
           PorqueNoUsoServicioAsistencia: this.cliente.PorqueNoUsoServicioAsistencia,
-          Kilometraje: 0
+          Kilometraje: 0,
+          OtrosTalleres: "NULL"
         }
 
-        console.log('Los datos de envío')
+        console.log('Los datos de envío sin póliza')
         console.dir(this.datos)
 
         // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+        
         this.api.GuardarSiniestroHN_Sin_Poliza(this.datos).pipe(
           finalize(async ()=>{
             console.log('El fin');
@@ -511,11 +754,12 @@ export class PrepareSendPage implements OnInit {
             }
   
             setTimeout(() => {
-              console.log('He aqui la data BPM');
+              console.log('He aqui la data BPM sin poliza');
                       console.dir(this.bpmArray);
                       //alert(JSON.stringify(this.dataBPM))
                       this.isLoading = true;
                       this.estaCompleto = true;
+                      
                       
                       this.api.GuardarBPM(this.bpmArray).pipe(finalize(async ()=>{
                         //this.isLoading = false;
@@ -574,7 +818,7 @@ export class PrepareSendPage implements OnInit {
                                   let errorKey = 'acsel';
                                   let elError = res.error.Message;
   
-                                  alert('El resdultado del intento con el bpm es '+elError.toString().toLowerCase().includes(errorKey));
+                                  //alert('El resdultado del intento con el bpm es '+elError.toString().toLowerCase().includes(errorKey));
                                   console.log('El resdultado del intento con el bpm es '+elError.toString().toLowerCase().includes(errorKey));
                                   console.log('El resdultado indexOf del intento con el bpm es '+elError.toString().toLowerCase().indexOf(errorKey));
                                   console.dir(res);
@@ -602,13 +846,15 @@ export class PrepareSendPage implements OnInit {
                       }
                 
                     )
+                   /* */
             }, 6000);
           }
         )
+ 
         this.isLoading = false;
       }
 
-      /* */
+      
       // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     }, 3000);

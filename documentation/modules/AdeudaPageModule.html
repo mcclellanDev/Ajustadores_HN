@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -60,20 +60,13 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -82,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -124,43 +117,43 @@
 <title>cluster_AdeudaPageModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="89,-70 89,-195 407,-195 407,-70 89,-70"/>
 </g>
-<g id="clust2" class="cluster">
-<title>cluster_AdeudaPageModule_declarations</title>
-<polygon fill="none" stroke="black" points="297,-78 297,-130 399,-130 399,-78 297,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_AdeudaPageModule_imports</title>
-<polygon fill="none" stroke="black" points="97,-78 97,-130 289,-130 289,-78 97,-78"/>
+<polygon fill="none" stroke="black" points="207,-78 207,-130 399,-130 399,-78 207,-78"/>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_AdeudaPageModule_declarations</title>
+<polygon fill="none" stroke="black" points="97,-78 97,-130 199,-130 199,-78 97,-78"/>
 </g>
 <!-- AdeudaPage -->
 <g id="node1" class="node">
 <title>AdeudaPage</title>
-<polygon fill="#ffffb3" stroke="black" points="391.25,-122 304.75,-122 304.75,-86 391.25,-86 391.25,-122"/>
-<text text-anchor="middle" x="348" y="-99.8" font-family="Times,serif" font-size="14.00">AdeudaPage</text>
+<polygon fill="#ffffb3" stroke="black" points="191.25,-122 104.75,-122 104.75,-86 191.25,-86 191.25,-122"/>
+<text text-anchor="middle" x="148" y="-99.8" font-family="Times,serif" font-size="14.00">AdeudaPage</text>
 </g>
 <!-- AdeudaPageModule -->
 <g id="node2" class="node">
 <title>AdeudaPageModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="328.3,-187 325.3,-191 304.3,-191 301.3,-187 197.7,-187 197.7,-151 328.3,-151 328.3,-187"/>
-<text text-anchor="middle" x="263" y="-164.8" font-family="Times,serif" font-size="14.00">AdeudaPageModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="297.3,-187 294.3,-191 273.3,-191 270.3,-187 166.7,-187 166.7,-151 297.3,-151 297.3,-187"/>
+<text text-anchor="middle" x="232" y="-164.8" font-family="Times,serif" font-size="14.00">AdeudaPageModule</text>
 </g>
 <!-- AdeudaPage&#45;&gt;AdeudaPageModule -->
 <g id="edge1" class="edge">
 <title>AdeudaPage&#45;&gt;AdeudaPageModule</title>
-<path fill="none" stroke="black" d="M316.39,-122.11C316.39,-122.11 316.39,-140.99 316.39,-140.99"/>
-<polygon fill="black" stroke="black" points="312.89,-140.99 316.39,-150.99 319.89,-140.99 312.89,-140.99"/>
+<path fill="none" stroke="black" d="M179.11,-122.11C179.11,-122.11 179.11,-140.99 179.11,-140.99"/>
+<polygon fill="black" stroke="black" points="175.61,-140.99 179.11,-150.99 182.61,-140.99 175.61,-140.99"/>
 </g>
 <!-- AdeudaPageRoutingModule -->
 <g id="node3" class="node">
 <title>AdeudaPageRoutingModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="280.92,-122 277.92,-126 256.92,-126 253.92,-122 105.08,-122 105.08,-86 280.92,-86 280.92,-122"/>
-<text text-anchor="middle" x="193" y="-99.8" font-family="Times,serif" font-size="14.00">AdeudaPageRoutingModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="390.92,-122 387.92,-126 366.92,-126 363.92,-122 215.08,-122 215.08,-86 390.92,-86 390.92,-122"/>
+<text text-anchor="middle" x="303" y="-99.8" font-family="Times,serif" font-size="14.00">AdeudaPageRoutingModule</text>
 </g>
 <!-- AdeudaPageRoutingModule&#45;&gt;AdeudaPageModule -->
 <g id="edge2" class="edge">
 <title>AdeudaPageRoutingModule&#45;&gt;AdeudaPageModule</title>
-<path fill="none" stroke="black" d="M239.28,-122.11C239.28,-122.11 239.28,-140.99 239.28,-140.99"/>
-<polygon fill="black" stroke="black" points="235.78,-140.99 239.28,-150.99 242.78,-140.99 235.78,-140.99"/>
+<path fill="none" stroke="black" d="M256.22,-122.11C256.22,-122.11 256.22,-140.99 256.22,-140.99"/>
+<polygon fill="black" stroke="black" points="252.72,-140.99 256.22,-150.99 259.72,-140.99 252.72,-140.99"/>
 </g>
 </g>
 </svg>
@@ -304,6 +297,19 @@ export class AdeudaPageModule {}
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
 
@@ -315,7 +321,6 @@ export class AdeudaPageModule {}
        <script src="../js/libs/es6-shim.min.js"></script>
        <script src="../js/libs/EventDispatcher.js"></script>
        <script src="../js/libs/promise.min.js"></script>
-       <script src="../js/libs/zepto.min.js"></script>
 
        <script src="../js/compodoc.js"></script>
 

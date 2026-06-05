@@ -44,7 +44,11 @@ ion-radio {
     }
   }
 
-  
+  ion-chip:not(.date-siniestro){
+  width: 25%;
+  height: 40px;
+  text-align: left;
+}
 
   #save-ajustador-button, #nuevaFirma :not(#button-back) {
     --background: #f14f23;

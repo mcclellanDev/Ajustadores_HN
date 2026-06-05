@@ -18,24 +18,28 @@ import { iconWorlds } from '../environments/mapas';
 export class SegmentoSolicitantePage implements OnInit {
   idAtencion:any; miMoneda: string; moneda: any;
   tipoSolicitante: tipoSolicitante[]=[]; esTipoSolicitante:boolean=false; elTipoSolicitante:any;  isLoading: boolean;  dataSiniestro: any;  identidadCliente: any;
-  elTipoLicencia: any;  nulosAtencion: any; ajustador: ajustadorHn={}; datos:any=[]; elExpediente:any;  tipoDeCobertura: any;  tiposdeCobertura: any; 
+  elTipoLicencia: any;  nulosAtencion: any; ajustador: ajustadorHn={}; datos:any=[]; elExpediente:any = [];  tipoDeCobertura: any;  tiposdeCobertura: any; 
   solicitanteDisplayName:any; coberturaDisplayName:any; nombreCliente: any;  tipoLicencia: any;  elTipoLicenciaId: any;  licenciaTipo: any;  elTipoDeLicencia: any;
   tipoGeneros: any;  elTipoGenero: any;  inicialGenero: string;  elGenero: any; tipoParentescos:any=[]; elTelefonoOrigen: any;  elTipoParentesco: any;  elParentesco: any;
   elCorreoElectronico:any; isNombreCliente:boolean=false; isStorageClienteNombre:boolean=false; isIdCliente:boolean=false; isTelCliente:boolean=false; isMailCliente:boolean=false;
-  segmentoTitulo:any;  isFirst: boolean; fechaValida: boolean;
-  miPais: string;
-  banderaPais: string;
-  codigoPais: string;
-  iconIndex: any;
+  segmentoTitulo:any;  isFirst: boolean; fechaValida: boolean;  miPais: string;  banderaPais: string;
+  codigoPais: string;  iconIndex: any; disExpediente:any= [];  cacheDeCliente: any = []; solicitanteId:any;
+  coberturas: any = [];
+
   constructor(private api: ApiService, public toaster:ToastService, private toast:ToastController, private alert: AlertController, private formateador:FormatosService) { 
     this.ajustador.TipoSolicitante = parseInt(localStorage.getItem('TipoSolicitante'));
+    this.solicitanteId = parseInt(localStorage.getItem('tipoSolicitante'));
+    let coberId:any = localStorage.getItem('coberturaId');
+    //this.coberturaId = parseInt(coberId);
+    
+
     this.segmentoTitulo = localStorage.getItem('segmentoTitulo');
     if (this.segmentoTitulo) {
-      
     }
+
+
     this.idAtencion = localStorage.getItem('idAtencion');
     let dIdAtencion = parseInt(this.idAtencion);
-    this.miMoneda = localStorage.getItem('miMoneda');
 
     let idAtencionActual = localStorage.getItem('atencionEnProceso');
     if (idAtencionActual) {
@@ -48,7 +52,20 @@ export class SegmentoSolicitantePage implements OnInit {
     // Datos del LocalStorage para Guardado automático de datos
     this.isLoading = true;
 
+    /*
     setTimeout(() => {
+      let exped:any; let cache:any; 
+      exped = localStorage.getItem('disExpediente');
+      cache = localStorage.getItem('cacheCliente');
+      this.disExpediente = JSON.parse(exped);
+      this.cacheDeCliente = JSON.parse(cache);
+
+      console.log('Dis Expediente '); console.dir(this.disExpediente);
+      console.dir(this.cacheDeCliente);
+
+      this.elCorreoElectronico = this.cacheDeCliente[0].CorreoElectronico;
+      this.setCorreo(this.elCorreoElectronico)
+
       let elSolicitante = localStorage.getItem('elSolicitante');
       let tipoSolicitante = localStorage.getItem('tipoSolicitante');
       let laCobertura = localStorage.getItem('laCobertura');
@@ -65,6 +82,8 @@ export class SegmentoSolicitantePage implements OnInit {
 
       if (tipoSolicitante) {
         let solicitanteT = tipoSolicitante;
+        //self.alert(tipoSolicitante)
+        this.setSolicitante(tipoSolicitante)
         console.log('Este es el tipo de solicitante evaluado desde el inicio '+solicitanteT)
       }
 
@@ -72,12 +91,231 @@ export class SegmentoSolicitantePage implements OnInit {
         this.solicitanteDisplayName = elSolicitante.split('-')[1];
         console.log('Soclicit '+(parseInt(tipoSolicitante)+1))
         this.elTipoSolicitante = parseInt(tipoSolicitante);
-        this.setSolicitante(this.elTipoSolicitante);
+        //this.setSolicitante(this.elTipoSolicitante);
         
         //$("#TipoSolicitanteDisplay").text(elSolicitante);
       }
       
+      self.alert(laCobertura)
       if (laCobertura) {
+        
+        this.coberturaDisplayName = laCobertura.split('-')[1];
+        localStorage.setItem('datos-TipoAcuerdoFicohsa', this.coberturaDisplayName);
+        this.seTipoCobertura(this.coberturaDisplayName);
+      }
+
+      if (nombreCliente) {
+        this.nombreCliente = nombreCliente.split('-')[1];
+        this.setNombre();
+      }
+
+      if (identidadCliente) {
+        this.identidadCliente = identidadCliente.split('-')[1];
+        this.setIdentidad();
+      }
+
+      if (tipoLicencia) {
+        this.elTipoDeLicencia = tipoLicencia.split('-')[1];
+        this.elTipoLicenciaId = parseInt(tipoLicenciaId.split('-')[1]);
+        this.setElTipoLicencia(this.elTipoLicenciaId);
+      }
+
+      if (elGeneroTipo) {
+        this.elGenero = elGeneroTipo.split('-')[1];
+        this.elTipoGenero = parseInt(tipoGeneroId.split('-')[1]);
+        console.log('El genero '+this.elGenero+', el Id de género : '+this.elTipoGenero);
+
+        setTimeout(() => {
+          this.isLoading = true;
+          this.setElTipoGenero(this.elTipoGenero);  
+        }, 2000);
+        
+      }
+
+      if (elParentesco) {
+        this.elParentesco = elParentesco.split('-')[1];
+        this.setElTipoParentesco(this.elParentesco);
+      }
+
+      console.log(elTelefonoCliente)
+      if (elTelefonoCliente) {
+        this.elTelefonoOrigen = elTelefonoCliente.split('-')[1];
+        this.setTelefono();
+      }
+
+
+
+      this.isLoading = false;
+    }, 1500);
+    */
+    
+
+    this.api.DatosDeAtencion(dIdAtencion).pipe( 
+      finalize(async ()=>{
+        this.isLoading = false;
+      })
+    ).subscribe(
+       async (res) =>{
+        this.dataSiniestro = res;
+        console.log("Mis datos de atencion");
+        console.dir(this.dataSiniestro);
+        for (let index = 0; index < ItemsData.length; index++) {
+          const element = ItemsData[index].nombre;
+          let elElemento = this.dataSiniestro[0][element];
+          this.identidadCliente = this.dataSiniestro[0].IdentidadCliente;
+          localStorage.setItem('datos-Identificacion', this.identidadCliente);
+          localStorage.setItem('datos-IdentidaConductor', this.identidadCliente);
+          if (this.identidadCliente) {
+            this.isIdCliente = true;
+          }else{
+            this.isIdCliente = false;
+          }
+          this.elTipoLicencia = this.dataSiniestro[0].RefTipoLicenciaId;
+          if(elElemento == null || elElemento == undefined){
+          }
+          if (index == (ItemsData.length-1)) {
+            console.log('los elementos vacios');
+            console.dir(this.nulosAtencion)
+          }
+        }
+      },
+      async (res) => {
+        this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
+      }
+
+    )
+
+    this.api.Expediente(dIdAtencion).pipe( 
+      finalize(async ()=>{
+        console.log('So far so good as you should know my friend what we can do....')
+      })
+    ).subscribe(
+        async (res) => {
+          this.elExpediente = res;
+          localStorage.setItem('disExpediente', JSON.stringify(res));
+
+          this.nombreCliente = this.elExpediente[0].Cliente;
+          this.moneda = this.elExpediente[0].Moneda;
+          if (this.moneda == null) {
+            this.miMoneda = "LEMPIRAS";
+          }else{ 
+            this.miMoneda = this.moneda;
+          }
+
+          localStorage.setItem('datos-Nombre', this.nombreCliente);
+          localStorage.setItem('datos-NombreConductor', this.nombreCliente);
+          if (this.nombreCliente) {
+            this.isNombreCliente = true;
+          }else{
+            this.isNombreCliente = false;
+          }
+          this.elTelefonoOrigen = this.elExpediente[0].TelefonoOrigen;
+          if (this.elTelefonoOrigen) {
+            this.isTelCliente = true;
+          }else{
+            this.isTelCliente = false;
+          }
+
+          this.elCorreoElectronico = this.elExpediente[0].CorreoElectronico;
+          
+          
+          if (this.elCorreoElectronico) {
+            this.isMailCliente = true;
+          }else{
+            this.isMailCliente = false;
+          }
+
+          this.testMail(this.elCorreoElectronico);
+
+          /*
+          console.log('Asi viene el correo 2 : '+this.elCorreoElectronico)
+          if (this.elCorreoElectronico == null) {
+            this.elCorreoElectronico = localStorage.getItem('dataProcess-CorreoElectronico');
+            console.log('Asi viene el correo 3 : '+this.elCorreoElectronico)
+          }
+
+          */
+          
+        }
+    )
+    
+  }
+
+  testMail(elCorreoElectronico) {
+    //alert(elCorreoElectronico)
+    if (elCorreoElectronico==null) {
+      setTimeout(() => {
+        this.elCorreoElectronico = localStorage.getItem('dataProcess-CorreoElectronico');
+        //alert(this.elCorreoElectronico)  
+        if (this.elCorreoElectronico == null) {
+          this.elCorreoElectronico = localStorage.getItem('datos-CorreoElectronico');
+          //alert(this.elCorreoElectronico)
+          if (this.elCorreoElectronico == null) {
+            //this.elCorreoElectronico = localStorage.getItem('elCorreoElectronico').split('-')[1];
+            //alert(this.elCorreoElectronico)
+          }
+        }
+      }, 3000);
+      
+    }
+  }
+
+  ionViewDidEnter(){
+    setTimeout(() => {
+
+      this.api.Expediente(parseInt(this.idAtencion)).pipe( 
+      finalize(async ()=>{
+        console.log('So far so good as you should know my friend what we can do....')
+      })
+    ).subscribe(
+        async (res) => {
+          this.elExpediente = res;
+          localStorage.setItem('disExpediente', JSON.stringify(res));
+
+          this.nombreCliente = this.elExpediente[0].Cliente;
+          this.moneda = this.elExpediente[0].Moneda;
+          if (this.moneda == null) {
+            this.miMoneda = "LEMPIRAS";
+          }else{ 
+            this.miMoneda = this.moneda;
+          }
+        }
+      )
+
+      let elSolicitante = localStorage.getItem('elSolicitante');
+      let tipoSolicitante = localStorage.getItem('tipoSolicitante');
+      let laCobertura = localStorage.getItem('laCobertura');
+      
+      let nombreCliente = localStorage.getItem('elNombreCliente');
+      let identidadCliente = localStorage.getItem('laIdentidadCliente');
+      let tipoLicencia = localStorage.getItem('elTipoLicencia');
+      let tipoLicenciaId = localStorage.getItem('elTipoLicenciaId');
+      let elGeneroTipo = localStorage.getItem('elGenero');
+      let tipoGeneroId =  localStorage.getItem('elGeneroId');
+      let elParentesco = localStorage.getItem('elParentesco');
+      let elTelefonoCliente = localStorage.getItem('elTelefonoOrigen');
+      let elCorreo = localStorage.getItem('dataProcess-CorreoElectronico');
+
+
+      if (tipoSolicitante) {
+        let solicitanteT = tipoSolicitante;
+        //self.alert(tipoSolicitante)
+        this.setSolicitante(tipoSolicitante)
+        console.log('Este es el tipo de solicitante evaluado desde el inicio '+solicitanteT)
+      }
+
+      if (elSolicitante) {
+        this.solicitanteDisplayName = elSolicitante.split('-')[1];
+        console.log('Soclicit '+(parseInt(tipoSolicitante)+1))
+        this.elTipoSolicitante = parseInt(tipoSolicitante);
+        //this.setSolicitante(this.elTipoSolicitante);
+        
+        //$("#TipoSolicitanteDisplay").text(elSolicitante);
+      }
+      
+      
+      if (laCobertura) {
+        
         this.coberturaDisplayName = laCobertura.split('-')[1];
         localStorage.setItem('datos-TipoAcuerdoFicohsa', this.coberturaDisplayName);
         this.seTipoCobertura(this.coberturaDisplayName);
@@ -134,114 +372,72 @@ export class SegmentoSolicitantePage implements OnInit {
 
       this.isLoading = false;
     }, 1500);
-    
-    
-
-    this.api.DatosDeAtencion(dIdAtencion).pipe( 
-      finalize(async ()=>{
-        this.isLoading = false;
-      })
-    ).subscribe(
-       async (res) =>{
-        this.dataSiniestro = res;
-        console.log("Mis datos de atencion");
-        console.dir(this.dataSiniestro);
-        for (let index = 0; index < ItemsData.length; index++) {
-          const element = ItemsData[index].nombre;
-          let elElemento = this.dataSiniestro[0][element];
-          this.identidadCliente = this.dataSiniestro[0].IdentidadCliente;
-          localStorage.setItem('datos-Identificacion', this.identidadCliente);
-          localStorage.setItem('datos-IdentidaConductor', this.identidadCliente);
-          if (this.identidadCliente) {
-            this.isIdCliente = true;
-          }else{
-            this.isIdCliente = false;
-          }
-          this.elTipoLicencia = this.dataSiniestro[0].RefTipoLicenciaId;
-          if(elElemento == null || elElemento == undefined){
-          }
-          if (index == (ItemsData.length-1)) {
-            console.log('los elementos vacios');
-            console.dir(this.nulosAtencion)
-          }
-        }
-      },
-      async (res) => {
-        this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
-      }
-
-    )
-
-    this.api.Expediente(dIdAtencion).pipe( 
-      finalize(async ()=>{
-        console.log('So far so good as you should know my friend what we can do....')
-      })
-    ).subscribe(
-        async (res) => {
-          this.elExpediente = res;
-          this.nombreCliente = this.elExpediente[0].Cliente;
-          localStorage.setItem('datos-Nombre', this.nombreCliente);
-          localStorage.setItem('datos-NombreConductor', this.nombreCliente);
-          if (this.nombreCliente) {
-            this.isNombreCliente = true;
-          }else{
-            this.isNombreCliente = false;
-          }
-          this.elTelefonoOrigen = this.elExpediente[0].TelefonoOrigen;
-          if (this.elTelefonoOrigen) {
-            this.isTelCliente = true;
-          }else{
-            this.isTelCliente = false;
-          }
-
-          this.elCorreoElectronico = this.elExpediente[0].CorreoElectronico;
-          
-          if (this.elCorreoElectronico) {
-            this.isMailCliente = true;
-          }else{
-            this.isMailCliente = false;
-          }
-
-          this.testMail(this.elCorreoElectronico);
-
-          /*
-          console.log('Asi viene el correo 2 : '+this.elCorreoElectronico)
-          if (this.elCorreoElectronico == null) {
-            this.elCorreoElectronico = localStorage.getItem('dataProcess-CorreoElectronico');
-            console.log('Asi viene el correo 3 : '+this.elCorreoElectronico)
-          }
-
-          */
-          
-        }
-    )
-    
-  }
-  testMail(elCorreoElectronico) {
-    //alert(elCorreoElectronico)
-    if (elCorreoElectronico==null) {
-      setTimeout(() => {
-        this.elCorreoElectronico = localStorage.getItem('dataProcess-CorreoElectronico');
-        //alert(this.elCorreoElectronico)  
-        if (this.elCorreoElectronico == null) {
-          this.elCorreoElectronico = localStorage.getItem('datos-CorreoElectronico');
-          //alert(this.elCorreoElectronico)
-          if (this.elCorreoElectronico == null) {
-            //this.elCorreoElectronico = localStorage.getItem('elCorreoElectronico').split('-')[1];
-            //alert(this.elCorreoElectronico)
-          }
-        }
-      }, 3000);
-      
-    }
   }
 
   ngOnInit() {
+    
     this.getTiposDeCobertura();
     this.getTipoSolicitante();
     this.getTipoLicencia(3);
     this.loadParentescos();
     this.loadGeneros();
+
+    let polNum:any;
+      let cerNum:any;
+
+      setTimeout(() => {
+
+      polNum = this.elExpediente[0].PolizaExterna.split('-')[1];
+      cerNum = this.elExpediente[0].Certificado;
+
+      const cobertura = {
+      pNumPoliza: parseInt(polNum),
+      pNumSiniestro: '',
+      pNumCertificado: parseInt(cerNum),
+      pNumEndoso: '',
+      pNumAsegurado: ''
+    }
+    
+        this.api.Valida_Lista_Coberturas(cobertura).pipe( 
+          finalize(async ()=>{
+            this.isLoading = false;
+          })
+        ).subscribe(
+          (res) =>{
+            console.log('Cobertura de póliza ')
+            console.dir(res)
+
+            //localStorage.setItem('coberturas', JSON.stringify(res));
+       
+          }
+        )
+          
+        }, 3000);
+
+    setTimeout(() => {
+      let cobert:any = localStorage.getItem('coberturas');
+      this.coberturas = JSON.parse(cobert);
+
+      console.log('Las coberturas en segmento solicitante'); console.dir(this.coberturas);
+
+      if (this.coberturas.length == 0) {
+        this.toaster.presentToastAlert('Esta póliza no cuenta con cobertura para servicios legales. Consulte con su proveedor de servicios.', 'top', 'danger', 10000);
+      }else{
+        if (this.solicitanteId) {
+          for (let index = 0; index < this.tipoSolicitante.length; index++) {
+            const element = this.tipoSolicitante[index];
+            if (element.Id == this.solicitanteId) {
+              this.solicitanteDisplayName = element.TipoSolicitante
+            }
+          }
+        }else{
+          this.solicitanteId = 1;
+          this.solicitanteDisplayName = this.tipoSolicitante[0].TipoSolicitante;
+        }
+      }
+
+      
+    }, 3500);
   }
 
   identificarPais() {
@@ -275,7 +471,7 @@ export class SegmentoSolicitantePage implements OnInit {
     })
   ).subscribe(
       async (res) =>{
-        this.tipoSolicitante= res;
+        this.tipoSolicitante = res;
         console.log('TipoSolicitante');
         console.dir(this.tipoSolicitante)
     },
@@ -298,6 +494,7 @@ getTiposDeCobertura(){
     console.log('Esto viene de la cobertura');
     console.dir(res);
     this.tiposdeCobertura = res;
+    localStorage.setItem('tiposDeCobertura', JSON.stringify(this.tiposdeCobertura));
   })
 }
 
@@ -540,10 +737,13 @@ setTipoSolicitante(event){
 }
 
 setSolicitante(solicitante){
+  //alert(solicitante)
   this.elTipoSolicitante = solicitante;
+  this.ajustador.TipoSolicitante = parseInt(solicitante);
   localStorage.setItem('datos-RefTipoSolicitanteInformeAjusteId', this.elTipoSolicitante);
   this.datos['RefTipoSolicitanteInformeAjusteId'] = solicitante;
   localStorage.setItem('tipoSolicitante', this.elTipoSolicitante);
+  let elExp:any; let expediente:any;
   
   for (let index = 0; index < this.tipoSolicitante.length; index++) {
     const element = this.tipoSolicitante[index];
@@ -553,7 +753,12 @@ setSolicitante(solicitante){
       this.setAtencionActual();
 
       if (this.elTipoSolicitante == 1) {
-        //console.dir(this.elExpediente[0])
+        //alert('Esto');
+
+        elExp = localStorage.getItem('elExpediente');
+        this.elExpediente = JSON.parse(elExp);
+        console.log('este Expediente');
+        console.dir(this.elExpediente);
         
         this.elExpediente.NombreConductor = this.elExpediente[0].Cliente;
         
@@ -655,8 +860,25 @@ editarIdentidad(){
 seleccionarTipoCobertura(event){
   this.tipoDeCobertura = event.target.value;
   localStorage.setItem('tipoCobertura', event.target.value);
-  $("#TipoAcuerdoDisplay").text(this.tipoDeCobertura);
-  this.coberturaDisplayName = this.tipoDeCobertura;
+
+  //localStorage.setItem('coberturaId', )
+  for (let index = 0; index < this.coberturas.length; index++) {
+    const element = this.coberturas[index];
+
+    console.log(element.cOBERTURAField+' == '+this.tipoDeCobertura+', '+(element.cOBERTURAField == this.tipoDeCobertura));
+
+    let validacion:any = (element.cOBERTURAField == this.tipoDeCobertura);
+    //alert('coberturaFIeld '+element.cOBERTURAField+' == tipoDeCobertura del front '+this.tipoDeCobertura+', validacion '+validacion)
+    if (validacion == true) {
+      this.coberturaDisplayName = element.dESCRIPCIONField;
+      //alert('coberturaFIeld '+element.cOBERTURAField+' == tipoDeCobertura del front '+this.tipoDeCobertura+', validacion '+validacion+'coberturaDisplayName '+element.dESCRIPCIONField);
+      localStorage.setItem('coberturaId', element.cOBERTURAField);
+      this.seTipoCobertura(element.dESCRIPCIONField);
+    }
+  }
+
+  //$("#TipoAcuerdoDisplay").text(this.tipoDeCobertura);
+  //this.coberturaDisplayName = this.tipoDeCobertura;
   localStorage.setItem('laCobertura', this.idAtencion.toString()+'-'+this.coberturaDisplayName);
   localStorage.setItem('datos-TipoAcuerdoFicohsa', this.coberturaDisplayName);
   this.setAtencionActual();
@@ -712,7 +934,9 @@ seTipoCobertura(tipo){
     this.setAtencionActual();
   }
 
-  setCorreo(){
+  setCorreo(correo:any){
+    //alert('El correo '+correo);
+    
     localStorage.setItem('elCorreoElectronico', this.idAtencion.toString()+'-'+this.elCorreoElectronico);
     localStorage.setItem('datos-CorreoElectronico', this.elCorreoElectronico);
     this.setAtencionActual();
@@ -731,7 +955,7 @@ seTipoCobertura(tipo){
       this.toaster.presentToastEmailInvalid('El correo no es válido', 'top', 'correo');
     }
     if(status == "VALID"){
-      this.setCorreo();
+      this.setCorreo(this.elCorreoElectronico);
       this.toaster.dismissToast();
     }
   

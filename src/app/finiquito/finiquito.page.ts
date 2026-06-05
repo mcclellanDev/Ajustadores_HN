@@ -128,9 +128,9 @@ export class FiniquitoPage implements OnInit {
 
           //alert(this.moneda)
           if (this.moneda == null) {
-            this.miMoneda = "Lempiras";
-          }else{
-            this.miMoneda = this.moneda.Moneda;
+            this.miMoneda = "LEMPIRAS";
+          }else{ 
+            this.miMoneda = this.moneda;
           }
           
          }
@@ -149,9 +149,9 @@ export class FiniquitoPage implements OnInit {
 
           //alert(this.moneda)
           if (this.moneda == null) {
-            this.miMoneda = "Lempiras";
-          }else{
-            this.miMoneda = this.moneda.Moneda;
+            this.miMoneda = "LEMPIRAS";
+          }else{ 
+            this.miMoneda = this.moneda;
           }
           
          }

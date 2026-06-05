@@ -32,11 +32,25 @@
         <ion-item  class="ion-no-padding  input">
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
-              ¿Porqué no se utilizará la póliza para esta atención? (Opcional)
+              ¿Porqué no se utilizará la póliza para esta atención?
                 </ion-row>
             <ion-row>
               <ion-col size="12">
                 <ion-input type="text" [(ngModel)]="cliente.PorqueNoUsoServicioAsistencia" (ionChange)="entraPorqueNoUso($event)"
+                class="custom"></ion-input>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item  class="ion-no-padding  input">
+          <ion-grid>
+            <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
+              Autoridad involucrada
+                </ion-row>
+            <ion-row>
+              <ion-col size="12">
+                <ion-input type="text" [(ngModel)]="AutoridadInvolucrada" (ionChange)="entraAutoridadInvolucrada($event)"
                 class="custom"></ion-input>
               </ion-col>
             </ion-row>
@@ -54,6 +68,10 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;" class="data-label">
               Tipo de Cobertura
+              <ion-chip id="driverTypeSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 3.75%; font-size: 1rem;
+                color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
+                Seleccionar
+              </ion-chip>
             </ion-row>
             <ion-row>
               <ion-col #TipoAcuerdoDisplay id="TipoAcuerdoDisplay" size="8" class="required-data select-label">{{coberturaDisplayName}}</ion-col>
@@ -75,7 +93,8 @@
                         </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input type="text" [(ngModel)]="cliente.NombreConductor" (ionChange)="entraNombreConductor($event)" class="required-data custom"></ion-input>
+                        <ion-input type="text" [(ngModel)]="nombreConductor" (ionChange)="entraNombreConductor($event)" class="required-data custom"
+                        ></ion-input>
                       </ion-col>
                     </ion-row>
                   </ion-grid>
@@ -88,6 +107,10 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;" class="data-label">
               Tipo de género
+              <ion-chip id="driverTypeSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 3.75%; font-size: 1rem;
+                color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
+                Seleccionar
+              </ion-chip>
             </ion-row>
             <ion-row>
               <ion-col id="tipoDeGeneroDisplay" size="9" class="select-label">{{elGenero}}</ion-col>
@@ -117,7 +140,7 @@
                 Poliza: {{item.PolizaExterna| titlecase}}<br>
                 Moneda: {{miMoneda}}<br>
                 Identidad : {{identidadAsegurado}}<br>
-                Conductor : {{nombreConductor}}<br>
+                Conductor : <span style="text-transform: capitalize;">{{nombreConductor}}</span> <br>
                 Fecha del Siniestro : {{formateadaSiniestro}}<br>
             </ion-col>
             <ion-col size="4">
@@ -146,6 +169,7 @@
                  Firma Asegurado o conductor
               </ion-label>
                 <ion-card style="height:202px">
+                  <ion-badge style="text-align: left;width: 95%;text-align: left;margin-left: 2.5%;height: 190px;border-radius: 30px; padding: 20px;" *ngIf="!firmaPrecargada || firmaPrecargada == '' || firmaPrecargada == null || firmaPrecargada == undefined || firmaPrecargada == emptySignatureWhite || firmaPrecargada == emptySignature">Aun no se ha precargado una firma para el cliente. <br>Puedes guardar una desde el panel de firma.</ion-badge>
                   <img #firmaAsegurado id="firmaAsegurado" alt="Firmar" src="{{firmaPrecargada}}" onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'"
                   style="    border: 6px dashed rgb(237, 233, 233);margin-top: 1%; width: 98%; height: 150px; margin-left: 1%;"/>
                 
@@ -160,33 +184,45 @@
     </ion-accordion>
   </ion-accordion-group>
 
-  <ion-button id="signButton" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 13%; z-index: 999;--background: #f14f23;
---background-activated: #a8462a;
---background-hover: #f66e48;
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white;" vertical="bottom" horizontal="end" (click)="firmar()">
-  <ion-icon name="refresh"></ion-icon>
-</ion-button>
+  <ion-footer style="bottom: 0;left:0;height:80px; background: red;display: inherit;
+    color: black;z-index: 50000; position: fixed;">
+    <ion-chip style="position: fixed; left: 15px; bottom: 15px; --background: #7da1c4; height: 65px; width: 160px;"
+    (click)="goESignature()">
+      <ion-text style="color: white; margin-top: 3px;">Editar firma</ion-text>
+    </ion-chip>
+     <img src="{{firmaIcono}}" style="width: 50px; height: auto; position: fixed; left: 115px; bottom: 27px;"/>
 
-    <ion-button id="goSignButton" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 7%; z-index: 999;--background: #f14f23;
---background-activated: #a8462a;
---background-hover: #f66e48;
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white;" vertical="bottom" horizontal="end" (click)="goESignature()">
-  <ion-icon name="pencil"></ion-icon>
-</ion-button>
+        <!--ion-button id="signButton" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 13%; z-index: 999;--background:var(--blueGrayColor);
+    --background-activated: var(--blueGrayColor);
+    --background-hover: var(--blueGrayColor);
+    --border-radius: 15px;
+    --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    --color: white;" vertical="bottom" horizontal="end" (click)="firmar()">
+      <ion-icon name="refresh"></ion-icon>
+    </ion-button>
 
-<ion-button id="submitClaim" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: #f14f23;
---background-activated: #a8462a;
---background-hover: #f66e48;
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white;" vertical="bottom" horizontal="end" (click)="testSave();">
-  <ion-icon name="chevron-forward"></ion-icon>
-</ion-button>
+        <ion-button id="goSignButton" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 7%; z-index: 999;--background:var(--blueGrayColor);;
+    --background-activated: var(--blueGrayColor);
+    --background-hover: var(--blueGrayColor);
+    --border-radius: 15px;
+    --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    --color: white;" vertical="bottom" horizontal="end" (click)="goESignature()">
+      <ion-icon name="pencil"></ion-icon>
+    </ion-button -->
 
+    <ion-button id="submitClaim" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background:var(--blueGrayColor);
+    --background-activated: var(--blueGrayColor);
+    --background-hover: var(--blueGrayColor);
+    --border-radius: 15px;
+    --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    --color: white;" vertical="bottom" horizontal="end" (click)="guardarCacheCliente();">
+      <ion-icon name="chevron-forward"></ion-icon>
+    </ion-button>  
+  </ion-footer>
+
+  
+
+  
 </ion-content>
 
 <ion-button id="open-modal-success" expand="block" hidden></ion-button>

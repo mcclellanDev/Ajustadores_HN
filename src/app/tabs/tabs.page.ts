@@ -16,12 +16,12 @@ export class TabsPage {
   @ViewChild(RouterOutlet) outlet: RouterOutlet;
   currentUrl:any;
   elCliente: any;
+  gpsOn: boolean = false;
   constructor(private router:Router, private toaster:ToastService, private call: CallNumber) {
     //console.log(this.outlet.isActivated.valueOf()) 
     console.log('Este outlet');
-    console.dir(this.outlet)
-
-    
+    console.dir(this.outlet); 
+    //this.handleNavigation(0);
   }
 
   ngOnInit(){
@@ -37,8 +37,18 @@ export class TabsPage {
       });
   }
 
-  handleNavigation(origin){
+  ionViewDidEnter(){
+    let gpsOn = localStorage.getItem('conectividad');
+    this.gpsOn = gpsOn === 'true' ? true : false;
+  }
+
+  handleNavigation(origin:any){
     localStorage.setItem('origin', origin);
+
+    let contenedor = document.getElementsByTagName('ion-tab-button');
+    $('ion-tab-button').removeAttr('style');
+    $('ion-tab-button').eq(origin).attr('style', '    color: var(--primaryColor); background: white; border-radius: 30px;');
+    //localStorage.setItem('atencionIndex', origin.toString());
   }
 
   navigateTab1(){

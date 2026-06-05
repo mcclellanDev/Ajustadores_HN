@@ -170,6 +170,14 @@ const routes: Routes = [
     path: 'prepare-audience',
     loadChildren: () => import('./prepare-audience/prepare-audience.module').then( m => m.PrepareAudiencePageModule)
   },
+  {
+    path: 'modal-empresa-conductor',
+    loadChildren: () => import('./Modales/modal-empresa-conductor/modal-empresa-conductor.module').then( m => m.ModalEmpresaConductorPageModule)
+  },
+  {
+    path: 'modal-guardar',
+    loadChildren: () => import('./Modales/modal-guardar/modal-guardar.module').then( m => m.ModalGuardarPageModule)
+  },
 
 
 

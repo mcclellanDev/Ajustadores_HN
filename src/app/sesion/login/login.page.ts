@@ -4,6 +4,7 @@ import { HttpService } from './../../services/http.service';
 import { ResponseUser, User } from './../../interfaces/user';
 import { ApiService } from './../../services/api.service';
 import { Component, OnInit } from '@angular/core';
+import { Keyboard } from '@capacitor/keyboard';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController, Platform } from '@ionic/angular';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
@@ -13,6 +14,9 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { ToastService } from 'src/app/services/toast.service';
 import { environment } from 'src/environments/environment';
 import { emailDomains } from 'src/app/environments/domains';
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
+import { ClearWatchOptions, Geolocation, GeolocationPluginPermissions } from '@capacitor/geolocation';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-login',
@@ -26,9 +30,9 @@ export class LoginPage implements OnInit {
   }
 
   dominios:any=[]; isVisible:boolean=false;
-  screenlock:ScreenlockService;
-  credenciales: FormGroup;
-  marcasArray:Marca;
+  screenlock?:ScreenlockService;
+  credenciales?: FormGroup;
+  marcasArray?:Marca;
   env:any;
   isUsernameValid=true;
   isPasswordValid = true;
@@ -40,6 +44,12 @@ export class LoginPage implements OnInit {
   currentUrl:any;
   valorMarca:any=[];
   onLogin=false;
+  dataDeEnvio: any = [];
+  usuarioCache: string | undefined;
+  passwordCache: string | undefined;
+
+   conectividadStat?: boolean;  estadoConexionGPS: string | undefined; 
+
   constructor( 
         private router: Router,
         private alert: AlertController,
@@ -60,16 +70,86 @@ export class LoginPage implements OnInit {
 
   }
 
+  obtenerCacheUsuario() {
+    SecureStoragePlugin.get({ key: 'User' }).then((result) => {
+      this.item.user = result.value;
+      this.usuarioCache = this.item.user;
+      console.log('User retrieved from secure storage:', this.item.user);
+    });
+    SecureStoragePlugin.get({ key: 'Password' }).then((result) => {
+      this.item.password = result.value;
+      this.passwordCache = this.item.password;
+      console.log('Password retrieved from secure storage:', this.item.password);
+    });
+  }
+
+  ionViewDidEnter(){
+    const permissionResult = Geolocation.checkPermissions();
+
+    console.log('ionViewDidEnter checando los permisos de gelocacion ');
+    console.dir(permissionResult);
+    permissionResult.then((result) => { 
+      console.log('ionViewDidEnter checando los permisos de gelocacion con then result '); console.dir(result);
+      console.log(result.location);
+      
+      if (result.location == 'granted') {
+        this.conectividadStat = true;
+        this.estadoConexionGPS = 'Permisos de ubicación precisa';
+        //$('#connectIndicatorLogin').fadeIn('xslow');
+      }
+
+      if(result.location == 'denied'){
+        this.conectividadStat = false;
+        this.estadoConexionGPS = 'Permisos de ubicación precisa';
+        //$('#connectIndicatorLogin').fadeOut();
+      }
+
+      
+    });
+
+  }
+
+  ionViewWillLeave(){
+    
+  }
+
   ngOnInit() {
     this.platform.ready().then(() => {
-      //this.screenlock.lockToLandscape();
-      this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
+      this.obtenerCacheUsuario();
+
+      setTimeout(() => {
+        //alert('Estas credenciales ... usuario'+this.usuarioCache+' ... contraseña'+this.passwordCache)
+        
+      }, 900);
+      Keyboard.addListener('keyboardDidHide', () => {
+        this.showRegister();
+      });
+
     });
 
     this.credenciales = new FormGroup({
       user: new FormControl([''],[ Validators.required, Validators.email]),
       password: new FormControl([], Validators.required)
     });
+  }
+
+  permitirGPS(conectividadStat:any){
+    Geolocation.requestPermissions();
+
+    /*
+    if (conectividadStat == true) {
+      Geolocation.requestPermissions().then((result) => {
+        console.log('Permisos de ubicación solicitados:', result); 
+        if (result.location == 'granted') {
+          this.conectividadStat = true;
+          this.estadoConexionGPS = 'Permisos de ubicación precisa';
+          $('#connectIndicatorLogin').fadeIn('xslow');
+        }
+      });
+    }else{
+
+    }
+    */
   }
    
   setLogo(){
@@ -90,11 +170,21 @@ export class LoginPage implements OnInit {
     this.isLoading =true;
     console.log(this.credenciales.value)
     let data = this.credenciales.value;
+    this.dataDeEnvio.push({ key: 'User', value: data.user });
+    this.dataDeEnvio.push({ key: 'Password', value: data.password });
     let sendData = {
       User: data.user,
       Password: data.password
     }
     console.log(sendData);
+
+    console.log('Success');
+    for (let indexD = 0; indexD < this.dataDeEnvio.length; indexD++) {
+      const element = this.dataDeEnvio[indexD];
+      SecureStoragePlugin.set({ key: element.key, value: element.value }).then((success) => 
+        console.dir(success)
+      );
+    }
   
     this.api.login(sendData).subscribe(
       async (res) =>{
@@ -144,7 +234,7 @@ export class LoginPage implements OnInit {
     // 
     if (!emailRegex.test(this.item.user)) {
       this.isUsernameValid = false;
-      this.toaster.presentToastNoButtonsRed('El correo no es válido', 'bottom', 'login');
+      this.toaster.presentToastNoButtonsRed('El correo no es válido', 'top', 'login');
     }else{
       this.toaster.dismissToast();
     }
@@ -165,6 +255,16 @@ export class LoginPage implements OnInit {
 
   readInput(){
     console.log("El correo es "+this.item.user)
+  }
+
+  hideRegister(){
+    $('#logoHelp').fadeOut();
+    $('#olaAbajo').fadeOut();
+  }
+
+  showRegister(){
+    $('#logoHelp').fadeIn();
+    $('#olaAbajo').fadeIn();
   }
 
   validatePassword(): boolean {

@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -60,20 +60,13 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -82,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -354,6 +347,9 @@
                                 <a href="#heyOmar" >heyOmar</a>
                             </li>
                             <li>
+                                <a href="#ionViewDidEnter" >ionViewDidEnter</a>
+                            </li>
+                            <li>
                                 <a href="#ngOnInit" >ngOnInit</a>
                             </li>
                             <li>
@@ -577,8 +573,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="673"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:673</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="694"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:694</a></div>
                         </td>
                     </tr>
 
@@ -614,8 +610,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="684"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:684</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="706"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:706</a></div>
                         </td>
                     </tr>
 
@@ -651,8 +647,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="678"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:678</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="699"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:699</a></div>
                         </td>
                     </tr>
 
@@ -718,8 +714,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="448"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:448</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="465"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:465</a></div>
                         </td>
                     </tr>
 
@@ -781,8 +777,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="666"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:666</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="687"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:687</a></div>
                         </td>
                     </tr>
 
@@ -853,8 +849,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="649"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:649</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="670"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:670</a></div>
                         </td>
                     </tr>
 
@@ -927,8 +923,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="714"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:714</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="736"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:736</a></div>
                         </td>
                     </tr>
 
@@ -964,8 +960,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="508"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:508</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="528"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:528</a></div>
                         </td>
                     </tr>
 
@@ -1001,8 +997,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="567"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:567</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="588"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:588</a></div>
                         </td>
                     </tr>
 
@@ -1038,8 +1034,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="385"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:385</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="402"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:402</a></div>
                         </td>
                     </tr>
 
@@ -1077,6 +1073,43 @@
                             <div class="io-description">
                                 
                             </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ionViewDidEnter"></a>
+                    <span class="name">
+                        <span ><b>ionViewDidEnter</b></span>
+                        <a href="#ionViewDidEnter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ionViewDidEnter()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
                 </td>
             </tr>
         </tbody>
@@ -1138,8 +1171,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="119"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:119</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -1201,8 +1234,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="222"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:222</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="239"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:239</a></div>
                         </td>
                     </tr>
 
@@ -1240,8 +1273,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -1279,8 +1312,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="364"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:364</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="381"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:381</a></div>
                         </td>
                     </tr>
 
@@ -1316,8 +1349,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="397"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:397</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="414"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:414</a></div>
                         </td>
                     </tr>
 
@@ -1353,8 +1386,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -1420,8 +1453,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="504"
-                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:504</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="524"
+                                    class="link-to-prism">src/app/fotoshn/fotoshn.page.ts:524</a></div>
                         </td>
                     </tr>
 
@@ -2597,6 +2630,23 @@ export class FotoshnPage implements OnInit {
 
     this.getTipoFotos();
   }
+
+  ionViewDidEnter(){
+    let fotosLocal &#x3D; JSON.parse(localStorage.getItem(&#x27;fotos-&#x27;+this.atencionId));
+    if (fotosLocal) {
+      this.fotos &#x3D; fotosLocal;
+
+      if (this.fotos.length &gt; 0) {
+        this.imagenesSeleccionadas &#x3D; this.fotos.length;
+        this.isVideo &#x3D; false;
+        $(&#x27;#imagenesConteo&#x27;).fadeIn();
+        $(&#x27;#buttonSubmit&#x27;).fadeIn();
+      }else{
+        this.isVideo &#x3D; true; 
+      }
+    }
+  }
+
   openImg(foto:string){
     this.foto &#x3D; foto;
     this.openFoto &#x3D; !this.openFoto;
@@ -3022,8 +3072,6 @@ SubirVideo(atencionId:any, Archivo:FormData|null) : Observable&lt;any&gt; {
           var reader &#x3D; new FileReader();
           reader.readAsDataURL(file);
 
-          
-  
           reader.onload &#x3D; e &#x3D;&gt; {
             const b64 &#x3D; e.target.result   
             this.daImagen &#x3D; b64; 
@@ -3040,6 +3088,11 @@ SubirVideo(atencionId:any, Archivo:FormData|null) : Observable&lt;any&gt; {
   
           if (index &#x3D;&#x3D; (fileInput.length-1)) {
             this.isLoading &#x3D; false
+
+            setTimeout(() &#x3D;&gt; {
+              localStorage.setItem(&#x27;fotos-&#x27;+this.atencionId, JSON.stringify(this.fotos));
+            }, 900);
+            
           }
           
         }
@@ -3066,7 +3119,6 @@ SubirVideo(atencionId:any, Archivo:FormData|null) : Observable&lt;any&gt; {
           }
 
           this.isLoading &#x3D; true;
-              
           this.fotoData &#x3D; [];
           
           if (this.fotos.length &gt; 0) {
@@ -3098,12 +3150,13 @@ SubirVideo(atencionId:any, Archivo:FormData|null) : Observable&lt;any&gt; {
                       $(&quot;#buttonSubmit&quot;).fadeOut(&quot;slow&quot;);
                       $(&quot;#imagenesSubidas&quot;).fadeIn(&quot;xslow&quot;);
                       $(&quot;#buttonMore&quot;).fadeIn(&quot;xslow&quot;);
-
+                      localStorage.setItem(&#x27;fotosEnviadas-&#x27;+this.atencionId, &#x27;true&#x27;);
                     }
                 },
                 async (res) &#x3D;&gt; {
                   let codigo &#x3D; res.status;
                   this.toaster.presentToastNoButtons(codigo, &#x27;top&#x27;, &#x27;fotos&#x27;);
+                  localStorage.setItem(&#x27;fotosEnviadas-&#x27;+this.atencionId, &#x27;false&#x27;);
                 }
               )
             
@@ -3114,6 +3167,7 @@ SubirVideo(atencionId:any, Archivo:FormData|null) : Observable&lt;any&gt; {
             }
           }else{
             this.toaster.presentToastNoButtons(&quot;Necesitas cargar una imagen o más para guardarlas.&quot;, &quot;top&quot;, &quot;fotos&quot;);
+            localStorage.setItem(&#x27;fotosEnviadas-&#x27;+this.atencionId, &#x27;false&#x27;);
           }
   }
   guardarFotosX(){
@@ -3231,6 +3285,7 @@ SubirVideo(atencionId:any, Archivo:FormData|null) : Observable&lt;any&gt; {
     this.fotos.splice(i,1);
     localStorage.removeItem(&#x27;Foto &#x27;+i);
     this.imagenesSeleccionadas &#x3D; this.imagenesSeleccionadas - 1;
+    localStorage.setItem(&#x27;fotos-&#x27;+this.atencionId, JSON.stringify(this.fotos));
   }
 
   clearPhotos(){
@@ -3691,9 +3746,9 @@ ion-card {
   }
 
   .boton-estado-2{
-	--background: #f14f23;
-	--background-activated: #a8462a;
-	--background-hover: #f66e48;
+	--background: var(--blueGrayColor);
+  --background-activated: var(--blueGrayColor);
+  --background-hover: var(--blueGrayColor);
 	--border-radius: 15px;
 	--box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
 	--color: white;
@@ -3769,7 +3824,7 @@ ion-card {
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
         var COMPONENT_TEMPLATE = '<div><ion-header>  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>  <ion-footer id="loaderFooter" *ngIf="isLoading == true"></ion-footer>  <ion-toolbar>    <ion-buttons slot="start">      <ion-back-button></ion-back-button>    </ion-buttons>    <ion-title>      <ion-grid class="ion-no-border">        <ion-row>          <ion-col size="4" style="box-shadow: none;"></ion-col>          <ion-col size="4" style="box-shadow: none;">Informe Fotografico Atención # {{atencionId}}</ion-col>          <ion-col size="4" style="box-shadow: none;"></ion-col>        </ion-row>      </ion-grid>    </ion-title>  </ion-toolbar></ion-header><ion-content>  <input #fotoInput type="file" id="fileInput" name="files[]" hidden multiple accept="image/*"/>  <input #videoInput type="file" id="fileInputV" name="filesv[]" hidden multiple accept="video/*"/>  <!--form>    <input #videoInputEntry type="file" (change)="heyOmar($event)" id="filesvid" name="filesvid" multiple accept="video/*"/>    <button #subirVideoBoton type="submit" class="btn btn-success pull-right" id="SubirVideos" (click)="\'subirVideo($event)\'" hidden><i class="fa fa-save"></i> Guardar</button>  </!--form -->  <form enctype="multipart/form-data" style="height: 0;visibility: collapse;">       <ion-list>      <ion-item>        <input #uploadVideoInput id="uploadVideoInput" type="file" (change)="onFileSelected($event)" name="entradaVideo" accept="video/*" hidden>        <button #subirVideoBoton ion-button (click)="onUpload()" type="submit" hidden>Subir Video</button>      </ion-item>      <!--ion-item>         <input name="Archivo" type="file" (change)="fileEvent($event)" accept="video/*">         <button ion-button (click)="onUpload()" type="submit">Subir Video Método Chele</button>      </ion-item -->    </ion-list>        <input type="number" placeholder="ID de Atención" style="color: aliceblue;" [(ngModel)]="atencionId" name="entradaId" hidden>         </form>  <ion-grid *ngIf="isVideo == true">    <ion-row>      <ion-col size="12" size-md="12" *ngFor="let item of videos;let i = index">        <ion-card (click)="\'openImg(item.Foto)\'" class="ion-no-margin background-size ion-no-padding"            [ngStyle]="{\'background-image\': \'url(\'+\'data:image/jpeg;base64, + item.Foto + )\'}"            style="width: 100%;height: 460px;"            >                        <video id="videoDisplay" controls="controls" preload="metadata" autoplay="autoplay" webkit-playsinline="webkit-playsinline" class="videoPlayer"            style="width: 100%;height: 460px;">              <source src="{{item}}" type="video/mp4" />             </video>            <!--img alt="Foto Siniestro" src="\'data:image/jpeg;base64,\' + {{item.Foto}} + \'" [hidden]="true" / -->                        <!-- Card Content -->            <ion-card-content class="transparent ion-no-padding">              <ion-item class="transparent" lines="none" (click)="\'deleteFoto(i)\'">                <ion-label class="ion-float-left">                  <h2 class="text-size-lg"></h2>                </ion-label>                <ion-icon class="icon icon-small" slot="end" name="trash-outline"></ion-icon>              </ion-item>            </ion-card-content>            <ion-card-content>              <div class="audio-container" hidden>                <audio controls="true" preload="none">                  <source type="audio/mpeg" [src]="\'{{item}}\'" />                  [unable to load audio]                </audio>              </div>            </ion-card-content>                      </ion-card>          <ion-item>            <ion-label class="text-size-sm" position="floating">              Tipo de Fotografía</ion-label>              <ion-select class="text-size-xs" [(ngModel)]="item.IdTipo" multiple="false" style="box-shadow: -3px 3px 7px lightgray;">                <ion-select-option *ngFor="let tipo of tipoFotos;" [value]="tipo.Id">{{tipo.TipoFotografia}}                                  </ion-select-option>                <br>                <br>                <ion-select-option style="color: white;">Ajustadores App</ion-select-option>                <br>              </ion-select>              <ion-input [hidden]="true" #descripcionFoto [value]="item.Descripcion"></ion-input>              <ion-input [hidden]="true" #indexFoto [value]="i"></ion-input>              <ion-input placeholder="Entra Una Descripción"  [(ngModel)]="item.Descripcion" class="form-control descripcion-entrada" (ionBlur)="\'entraDescripcionFoto(descripcionFoto.value, indexFoto.value)\'"></ion-input>            </ion-item>      </ion-col>    </ion-row>  </ion-grid>  <ion-grid *ngIf="isVideo == false" fixed>    <ion-row>        <ion-col size="4" size-md="4" *ngFor="let item of fotos;let i = index">                    <ion-card (click)="openImg(item.Foto)" class="ion-no-margin background-size ion-no-padding"            [ngStyle]="{\'background-image\': \'url(\'+\'data:image/jpeg;base64,\' + item.Foto + \')\'}"            style="width: 100%;"            >            <img alt="Foto Siniestro" src="\'data:image/jpeg;base64,\' + {{item.Foto}} + \'" [hidden]="true" />                        <!-- Card Content -->            <ion-card-content class="transparent ion-no-padding">              <ion-item class="transparent" lines="none" (click)="deleteFoto(i)">                <ion-label class="ion-float-left">                  <h2 class="text-size-lg"></h2>                </ion-label>                <ion-icon class="icon icon-small" slot="end" name="trash-outline"></ion-icon>              </ion-item>            </ion-card-content>                      </ion-card>          <ion-item>            <ion-label class="text-size-sm" position="floating">              Tipo de Fotografía</ion-label>              <ion-select class="text-size-xs" [(ngModel)]="item.IdTipo" multiple="false" style="box-shadow: -3px 3px 7px lightgray;">                <ion-select-option *ngFor="let tipo of tipoFotos;" [value]="tipo.Id">{{tipo.TipoFotografia}}                                  </ion-select-option>                <br>                <br>                <ion-select-option style="color: white;">Ajustadores App</ion-select-option>                <br>              </ion-select>              <ion-input [hidden]="true" #descripcionFoto [value]="item.Descripcion"></ion-input>              <ion-input [hidden]="true" #indexFoto [value]="i"></ion-input>              <ion-input placeholder="Entra Una Descripción"  [(ngModel)]="item.Descripcion" class="form-control descripcion-entrada" (ionBlur)="entraDescripcionFoto(descripcionFoto.value, indexFoto.value)"></ion-input>            </ion-item>        </ion-col>    </ion-row>  </ion-grid>  <br><br><br><br><br>  <ion-footer style="position: fixed; bottom: 0; left: 0; height: 78px; background: white;">        <ion-badge *ngIf="isVideo == false" id="imagenesSubidas" color="success" style="position: fixed; left: 10px; bottom: 10px; width: 230px; padding: 15px; height: 46px; text-align: left;display: none;" vertical="bottom" horizontal="end">      Imágenes subidas con éxito!    </ion-badge>    <ion-badge *ngIf="isVideo == false" id="imagenesConteo" color="warning" style="position: fixed; left: 10px; bottom: 10px; width: 215px; padding: 15px; height: 46px; text-align: left;display: none;" vertical="bottom" horizontal="end">      <strong>{{imagenesSeleccionadas}}</strong> Imágenes seleccionadas    </ion-badge>    <ion-button *ngIf="isVideo == false" color="warning" id="buttonSubmit" style="position: fixed; left: 230px; bottom: 7px;height: 46px; display: none;" vertical="bottom" horizontal="start"    (click)="guardarFotos()">Enviar</ion-button>    <ion-badge *ngIf="isVideo == true" id="videosSubidos" color="success" style="position: fixed; left: 10px; bottom: 10px; width: 230px; padding: 15px; height: 46px; text-align: left;display: none;" vertical="bottom" horizontal="end">      Videos subidas con éxito!    </ion-badge>    <ion-badge *ngIf="isVideo == true" id="videosConteo" color="warning" style="position: fixed; left: 10px; bottom: 10px; width: 215px; padding: 15px; height: 46px; text-align: left;display: none;" vertical="bottom" horizontal="end">      <strong>{{videosSeleccionados}}</strong> Videos seleccionados    </ion-badge>    <ion-button *ngIf="isVideo == true" color="warning" id="buttonSubmitVideo" style="position: fixed; left: 230px; bottom: 7px;height: 46px; display: none;" vertical="bottom" horizontal="start"    (click)="subirVideoBoton.click()">Enviar</ion-button>    <ion-fab *ngIf="true" style="position: fixed; right: 218px;" vertical="bottom" horizontal="end">      <ion-fab-button class="boton-estado-2" (click)="clearPhotos()">        <ion-icon style="font-size: 3rem;" src="../../assets/img/clear-broom.svg"></ion-icon>      </ion-fab-button>    </ion-fab>    <ion-fab *ngIf="true" style="position: fixed; right: 150px;" vertical="bottom" horizontal="end">      <ion-fab-button id="displayPhotos" class="boton-estado-2" (click)="displayPhotos($event)">        <ion-icon name="sync"></ion-icon>      </ion-fab-button>    </ion-fab>        <ion-fab *ngIf="true" style="position: fixed; right: 80px;" vertical="bottom" horizontal="end">      <ion-fab-button class="boton-estado-1" (click)="uploadVideoInput.click()">        <ion-icon name="film"></ion-icon>      </ion-fab-button>    </ion-fab>    <ion-fab *ngIf="true" style="position: fixed;" vertical="bottom" horizontal="end">      <ion-fab-button class="boton-estado-1" (click)="openFilesInput()">        <ion-icon name="camera"></ion-icon>      </ion-fab-button>    </ion-fab>      </ion-footer></ion-content><ion-modal class="Img" #appointmentAlert [isOpen]="openFoto">	<ng-template>		<ion-content (click)="openFoto=false">			<ion-img [src]="\'data:image/jpeg;base64,\'+foto"></ion-img>		</ion-content>	</ng-template></ion-modal><ion-modal #modalPrompt trigger="open-modal-prompt" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.25, 0.5, 0.95]">  <ng-template>    <ion-content>      <ion-toolbar>Opciones Disponibles</ion-toolbar>      <ion-list>        <ion-item-divider>          <ion-label> Galería </ion-label>        </ion-item-divider>        <ion-item (click)="openFilesInput()">          <ion-avatar slot="start">            <ion-icon style="font-size: 3rem;" name="images-outline"></ion-icon>          </ion-avatar>          <ion-label>            <h2>Abrir Galería</h2>            <p>Imágenes Precargadas</p>          </ion-label>        </ion-item>        <ion-item (click)="\'videoInputEntry.click()\'">          <ion-avatar slot="start">            <ion-icon style="font-size: 3rem;" name="film-outline"></ion-icon>          </ion-avatar>          <ion-label>            <h2>Abrir Galería (Video)</h2>            <p>Videos Precargados</p>          </ion-label>        </ion-item>        <br>        <ion-item-divider>          <ion-label> Cámara </ion-label>        </ion-item-divider>        <ion-item (click)="openCamera()">          <ion-avatar slot="start">            <ion-icon style="font-size: 3rem;" name="camera-outline"></ion-icon>          </ion-avatar>          <ion-grid>            <ion-row>              <ion-col size="6" class="not">                <ion-label>                  <h2>Abrir Cámara</h2>                  <p>Captura el Momento</p>                </ion-label>              </ion-col>            </ion-row>          </ion-grid>        </ion-item>        <ion-item>        </ion-item>      </ion-list>    </ion-content>  </ng-template></ion-modal></div>'
-    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AjustadorPage', 'selector': 'app-ajustador'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'}];
+    var COMPONENTS = [{'name': 'AdeudaPage', 'selector': 'app-adeuda'},{'name': 'AjustadorhnPage', 'selector': 'app-ajustadorhn'},{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'BeneficiarioPage', 'selector': 'app-beneficiario'},{'name': 'ClientehnPage', 'selector': 'app-clientehn'},{'name': 'CulpablePage', 'selector': 'app-culpable'},{'name': 'DeclaracionPage', 'selector': 'app-declaracion'},{'name': 'EndProcessPage', 'selector': 'app-end-process'},{'name': 'ErrorMessageComponent', 'selector': 'app-error-message'},{'name': 'EsignaturePage', 'selector': 'app-esignature'},{'name': 'ExpedientePage', 'selector': 'app-expediente'},{'name': 'ExploreContainerComponent', 'selector': 'app-explore-container'},{'name': 'FiniquitoPage', 'selector': 'app-finiquito'},{'name': 'FormularioPage', 'selector': 'app-formulario'},{'name': 'FormulariosPage', 'selector': 'app-formularios'},{'name': 'FotografiasPage', 'selector': 'app-fotografias'},{'name': 'FotoReportePage', 'selector': 'app-foto-reporte'},{'name': 'FotoshnPage', 'selector': 'app-fotoshn'},{'name': 'LoginPage', 'selector': 'app-login'},{'name': 'LogoutPage', 'selector': 'app-logout'},{'name': 'MapaPage', 'selector': 'app-mapa'},{'name': 'MaterialesPage', 'selector': 'app-materiales'},{'name': 'ModalEmpresaConductorPage', 'selector': 'app-modal-empresa-conductor'},{'name': 'ModalGuardarPage', 'selector': 'app-modal-guardar'},{'name': 'NewPasswordPage', 'selector': 'app-new-password'},{'name': 'PopoverPage', 'selector': 'app-popover'},{'name': 'PrepareAudiencePage', 'selector': 'app-prepare-audience'},{'name': 'PrepareSendPage', 'selector': 'app-prepare-send'},{'name': 'PrinterPage', 'selector': 'app-printer'},{'name': 'PropiedadPage', 'selector': 'app-propiedad'},{'name': 'RecoveryPage', 'selector': 'app-recovery'},{'name': 'SegmentoCaracteristicasPage', 'selector': 'app-segmento-caracteristicas'},{'name': 'SegmentoCaseguradoPage', 'selector': 'app-segmento-casegurado'},{'name': 'SegmentoCconductorPage', 'selector': 'app-segmento-cconductor'},{'name': 'SegmentoCinformacionPage', 'selector': 'app-segmento-cinformacion'},{'name': 'SegmentoCvehiculoPage', 'selector': 'app-segmento-cvehiculo'},{'name': 'SegmentoDanioPage', 'selector': 'app-segmento-danio'},{'name': 'SegmentoFajustadorPage', 'selector': 'app-segmento-fajustador'},{'name': 'SegmentoFaseguradoPage', 'selector': 'app-segmento-fasegurado'},{'name': 'SegmentoSegmentRequestAjuPage', 'selector': 'app-segmento-segment-request-aju'},{'name': 'SegmentoSolicitantePage', 'selector': 'app-segmento-solicitante'},{'name': 'SegmentoVehiculoPage', 'selector': 'app-segmento-vehiculo'},{'name': 'Tab1Page', 'selector': 'app-tab1'},{'name': 'Tab2Page', 'selector': 'app-tab2'},{'name': 'Tab3Page', 'selector': 'app-tab3'},{'name': 'TabsPage', 'selector': 'app-tabs'},{'name': 'TallerhnPage', 'selector': 'app-tallerhn'},{'name': 'TerceroPage', 'selector': 'app-tercero'},{'name': 'VitalCorePage', 'selector': 'app-vital-core'}];
     var DIRECTIVES = [{'name': 'ParallaxHeader', 'selector': '[parallax-header]'},{'name': 'PressDirective', 'selector': '[appPress]'}];
     var ACTUAL_COMPONENT = {'name': 'FotoshnPage'};
 </script>
@@ -3821,6 +3876,19 @@ ion-card {
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
 
@@ -3832,7 +3900,6 @@ ion-card {
        <script src="../js/libs/es6-shim.min.js"></script>
        <script src="../js/libs/EventDispatcher.js"></script>
        <script src="../js/libs/promise.min.js"></script>
-       <script src="../js/libs/zepto.min.js"></script>
 
        <script src="../js/compodoc.js"></script>
 

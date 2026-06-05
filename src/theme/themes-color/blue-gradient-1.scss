@@ -32,13 +32,13 @@
   =======================================================*/
   --cs-background-primary: #fff;
   --cs-background-secondary: #f7f7f7;
-  --cs-background-accent: #10069f;
+  --cs-background-accent: #0058CB;
 
   /* Settings Color Text Our App
   =======================================================
   =======================================================*/
   --cs-text-primary: #fff;
-  --cs-text-secondary: #10069f;
+  --cs-text-secondary: #0058CB;
   --cs-text-accent: #455B65;
 
   /* Settings Color Gradient Our App
@@ -46,7 +46,7 @@
   =======================================================*/
   --cs-blandModes-primary: #3ABCFF;
   --cs-blandModes-secondary: #ffffff;
-  --cs-blandModes-accent: #10069f;
+  --cs-blandModes-accent: #0058CB;
   --cs-mode-image: multiply;
   --cs-gradient-linear: linear-gradient(to left, var(--cs-blandModes-primary) 0%, var(--cs-blandModes-accent) 100%);
 
@@ -54,7 +54,7 @@
   =======================================================
   =======================================================*/
   --cs-toolbar-primary: #3ABCFF;
-  --cs-toolbar-accent: #10069f;
+  --cs-toolbar-accent: #0058CB;
   --cs-gradient-linear-toolbar: linear-gradient(to left, var(--cs-toolbar-primary) 0%, var(--cs-toolbar-accent) 100%);
 
   /* Settings Size Avatar
@@ -70,7 +70,7 @@
   /* Settings Color Icon
   =======================================================
   =======================================================*/
-  --cs-icon-color-primary: #10069f;
+  --cs-icon-color-primary: #0058CB;
   --cs-icon-color-secondary: #fff;
 
 }

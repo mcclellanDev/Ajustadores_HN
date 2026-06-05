@@ -44,7 +44,48 @@ ion-radio {
     }
   }
 
-  
+  .meter { 
+    height: 5px;
+    position: relative;
+    background: #f3efe6;
+    overflow: hidden;
+}
+
+.meter span {
+    display: block;
+    height: 100%;
+}
+
+.progress-end {
+    background-color: var(--blueGrayColor);
+    animation: progressBarEnd 3s ease-in-out;
+    animation-fill-mode:both; 
+}
+
+.progress {
+    background-color: var(--blueGrayColor);
+    animation: progressBar infinite 3s ease-in-out;
+    animation-fill-mode:both; 
+}
+
+@keyframes progressBar {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+.required-index{
+  display: none;
+}
+
+.required-missing{
+  border: 2px solid red;
+  border-radius: 30px;
+}
+
+@keyframes progressBarEnd {
+  0% { width: 100%; }
+  100% { width: 100%; }
+}
 
   #save-ajustador-button, #nuevaFirma :not(#button-back) {
     --background: #f14f23;
@@ -167,7 +208,7 @@ ion-radio {
     //background-color: #00213f;
   }
   
-  ion-footer{
+  ion-:not(#footerAju){
     position: fixed;
       background: black;
       opacity: 0.6;
@@ -175,6 +216,17 @@ ion-radio {
       width: 100vw;
       z-index: 900;
       bottom: 0;
+  }
+
+  #footerAju{
+    position: fixed;
+      background: white;
+      opacity: 1;
+      height: 70px;
+      width: 100%;
+      z-index: 900;
+      bottom: 0;
+      left: 0;
   }
 
    

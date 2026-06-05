@@ -305,10 +305,10 @@ export class ToastService {
     //await this.toast.dismiss();
     const toast = await this.toaster.create({
       message: message,
-      color: 'primary',
+      color: clase,
       duration: 30000,
       position: position,
-      cssClass: ['custom-toast', clase],
+      cssClass: ['custom-toast'],
       buttons: [
         {
           text: 'NO SALIR',
@@ -534,8 +534,8 @@ export class ToastService {
           role: 'cancel',
         },
         {
-          text: 'AGREGAR DATOS',
-          role: 'cancel',
+          text: 'CONTINUAR',
+          role: 'confirm',
         },
       ],
     });

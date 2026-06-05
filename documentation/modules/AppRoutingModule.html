@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -60,20 +60,13 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -82,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -131,14 +124,57 @@
             </div>
         </div>
 
+        <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
 
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="204"
+                                    class="link-to-prism">src/app/app-routing.module.ts:204</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthGuard } from &#x27;./guards/auth.guard&#x27;;
-import { NgModule } from &#x27;@angular/core&#x27;;
+import { NgModule, ViewChild } from &#x27;@angular/core&#x27;;
 import { PreloadAllModules, RouterModule, Routes } from &#x27;@angular/router&#x27;;
+import { Router, NavigationEnd, RouterOutlet, ActivationStart } from &#x27;@angular/router&#x27;;
 
 const routes: Routes &#x3D; [
 
@@ -199,9 +235,6 @@ const routes: Routes &#x3D; [
   {
     path: &#x27;ajustadorhn&#x27;,
     loadChildren: () &#x3D;&gt; &quot;import(&#x27;./ajustadorhn/ajustadorhn.module&#x27;).then( m &#x3D;&gt; m.AjustadorhnPageModule)&quot;
-  },{
-    path: &#x27;ajustador&#x27;,
-    loadChildren: () &#x3D;&gt; &quot;import(&#x27;./ajustador/ajustador.module&#x27;).then( m &#x3D;&gt; m.AjustadorPageModule)&quot;
   },
   {
     path: &#x27;fotoshn&#x27;,
@@ -242,7 +275,8 @@ const routes: Routes &#x3D; [
   {
     path: &#x27;beneficiario&#x27;,
     loadChildren: () &#x3D;&gt; &quot;import(&#x27;./beneficiario/beneficiario.module&#x27;).then( m &#x3D;&gt; m.BeneficiarioPageModule)&quot;
-  },  {
+  },
+  {
     path: &#x27;segmento-solicitante&#x27;,
     loadChildren: () &#x3D;&gt; &quot;import(&#x27;./segmento-solicitante/segmento-solicitante.module&#x27;).then( m &#x3D;&gt; m.SegmentoSolicitantePageModule)&quot;
   },
@@ -270,6 +304,55 @@ const routes: Routes &#x3D; [
     path: &#x27;segmento-segment-request-aju&#x27;,
     loadChildren: () &#x3D;&gt; &quot;import(&#x27;./segmento-segment-request-aju/segmento-segment-request-aju.module&#x27;).then( m &#x3D;&gt; m.SegmentoSegmentRequestAjuPageModule)&quot;
   },
+  {
+    path: &#x27;segmento-casegurado&#x27;,
+    loadChildren: () &#x3D;&gt; &quot;import(&#x27;./segmento-casegurado/segmento-casegurado.module&#x27;).then( m &#x3D;&gt; m.SegmentoCaseguradoPageModule)&quot;
+  },
+  {
+    path: &#x27;segmento-cvehiculo&#x27;,
+    loadChildren: () &#x3D;&gt; &quot;import(&#x27;./segmento-cvehiculo/segmento-cvehiculo.module&#x27;).then( m &#x3D;&gt; m.SegmentoCvehiculoPageModule)&quot;
+  },
+  {
+    path: &#x27;segmento-cconductor&#x27;,
+    loadChildren: () &#x3D;&gt; &quot;import(&#x27;./segmento-cconductor/segmento-cconductor.module&#x27;).then( m &#x3D;&gt; m.SegmentoCconductorPageModule)&quot;
+  },
+  {
+    path: &#x27;segmento-cinformacion&#x27;,
+    loadChildren: () &#x3D;&gt; &quot;import(&#x27;./segmento-cinformacion/segmento-cinformacion.module&#x27;).then( m &#x3D;&gt; m.SegmentoCinformacionPageModule)&quot;
+  },
+  {
+    path: &#x27;vital-core&#x27;,
+    loadChildren: () &#x3D;&gt; &quot;import(&#x27;./vital-core/vital-core.module&#x27;).then( m &#x3D;&gt; m.VitalCorePageModule)&quot;
+  },
+  {
+    path: &#x27;formularios&#x27;,
+    loadChildren: () &#x3D;&gt; &quot;import(&#x27;./formularios/formularios.module&#x27;).then( m &#x3D;&gt; m.FormulariosPageModule)&quot;
+  },
+  {
+    path: &#x27;end-process&#x27;,
+    loadChildren: () &#x3D;&gt; &quot;import(&#x27;./end-process/end-process.module&#x27;).then( m &#x3D;&gt; m.EndProcessPageModule)&quot;
+  },
+  {
+    path: &#x27;materiales&#x27;,
+    loadChildren: () &#x3D;&gt; &quot;import(&#x27;./materiales/materiales.module&#x27;).then( m &#x3D;&gt; m.MaterialesPageModule)&quot;
+  },
+  {
+    path: &#x27;prepare-send&#x27;,
+    loadChildren: () &#x3D;&gt; &quot;import(&#x27;./prepare-send/prepare-send.module&#x27;).then( m &#x3D;&gt; m.PrepareSendPageModule)&quot;
+  },  {
+    path: &#x27;prepare-audience&#x27;,
+    loadChildren: () &#x3D;&gt; &quot;import(&#x27;./prepare-audience/prepare-audience.module&#x27;).then( m &#x3D;&gt; m.PrepareAudiencePageModule)&quot;
+  },
+  {
+    path: &#x27;modal-empresa-conductor&#x27;,
+    loadChildren: () &#x3D;&gt; &quot;import(&#x27;./Modales/modal-empresa-conductor/modal-empresa-conductor.module&#x27;).then( m &#x3D;&gt; m.ModalEmpresaConductorPageModule)&quot;
+  },
+  {
+    path: &#x27;modal-guardar&#x27;,
+    loadChildren: () &#x3D;&gt; &quot;import(&#x27;./Modales/modal-guardar/modal-guardar.module&#x27;).then( m &#x3D;&gt; m.ModalGuardarPageModule)&quot;
+  },
+
+
 
   
 
@@ -285,7 +368,18 @@ const routes: Routes &#x3D; [
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule {
+  @ViewChild(RouterOutlet) outlet: RouterOutlet;
+
+  constructor(private router:Router){}
+
+  ngOnInit(){
+    this.router.events.subscribe(e &#x3D;&gt; {
+      if (e instanceof ActivationStart &amp;&amp; e.snapshot.outlet &#x3D;&#x3D;&#x3D; &quot;tabs&quot;)
+        this.outlet.deactivate();
+    });
+  }
+}
 </code></pre>
     </div>
 </div>
@@ -336,6 +430,19 @@ export class AppRoutingModule {}
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
 
@@ -347,7 +454,6 @@ export class AppRoutingModule {}
        <script src="../js/libs/es6-shim.min.js"></script>
        <script src="../js/libs/EventDispatcher.js"></script>
        <script src="../js/libs/promise.min.js"></script>
-       <script src="../js/libs/zepto.min.js"></script>
 
        <script src="../js/compodoc.js"></script>
 

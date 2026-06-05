@@ -1,36 +1,60 @@
 <ion-header>
-  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
-  <ion-footer id="spinFooter" *ngIf="isLoading == true"></ion-footer>
-  <!--ion-toolbar>
-    <ion-title>Historial De Asignaciones Atención # {{idAtencion}}</ion-title>
-  </!--ion-toolbar>
-  <ion-toolbar>
-    <ion-searchbar #searchCase id="search-case" placeholder="Buscar asignación" inputmode="text" type="text"
-    [debounce]="1000" (ionInput)="handleInput($event)"></ion-searchbar>
-  </ion-toolbar -->
+  <ion-toolbar class="search-toolbar">
+    <div class="search-shell">
+      <div class="search-title">
+        <span class="panel-kicker">Busqueda</span>
+        <h1>Atenciones</h1>
+      </div>
+
+      <ion-searchbar animated="true" placeholder="Buscar fecha, atencion o asegurado" show-clear-button="focus"
+        show-cancel-button="never" cancel-button-text="Cancelar" cancel-button-icon="trash-bin" [debounce]="400"
+        (ionChange)="handleInput($event)" class="custom" mode="ios"></ion-searchbar>
+    </div>
+  </ion-toolbar>
 </ion-header>
-<ion-content [fullscreen]="true">
-  <!--ion-grid class="ion-no-padding" style="width: 100%;">
-    <ion-row>
-      <ion-col size="3" *ngFor="let item of iconos | filtro: busca: 2; let i = index">
-        <ion-card style="height: 100%;max-height:100%" (click)="'abreAtencion(atencionId.value, atencionEstadoColor.value)'">
-          <ion-card-header style="text-align: center;">
-            <ion-icon name="{{item.name}}" style="font-size: 6rem; margin: 5px; margin-top: 5%; color: lightgray;" id="open-modal-sign" (click)="'recargarFirma()'"></ion-icon>
-            <ion-card-subtitle color="primary">{{item.descripcion}}</ion-card-subtitle>
-            <ion-input #indexPrinter [value]="i" [hidden]="true"></ion-input>
-          </ion-card-header>
-          <ion-grid>
-            <ion-row>
-              <ion-col size="6">
-                <ion-button style="width: 100%; border-radius: 0;" fill="outline" (click)="imprimirPDF(1, indexPrinter.value)">VER</ion-button>
+
+<ion-content [fullscreen]="true" color="light">
+  <div class="loading-backdrop" *ngIf="isLoading == true">
+    <ion-spinner color="primary" name="lines"></ion-spinner>
+  </div>
+
+  <section class="search-workspace">
+    <div class="results-panel">
+      <div class="panel-heading">
+        <div>
+          <span class="panel-kicker">Listado</span>
+          <h2>Resultados</h2>
+        </div>
+        <ion-badge class="count-badge">{{results.length || 0}}</ion-badge>
+      </div>
+
+      <ion-list class="results-list" [inset]="true">
+        <ion-item *ngFor="let atencion of results; let i = index;" class="result-item"
+          [style.--status-color]="atencion.ColorEstado"
+          (click)="verExpedienteBusqueda(atencion.IdAtencion, indexInput.value)">
+          <div class="status-strip"></div>
+
+          <ion-grid class="ion-no-padding">
+            <ion-row class="result-main">
+              <ion-col size="7">
+                <strong>{{atencion.Cliente}}</strong>
+                <span class="result-service">{{atencion.Servicio}}</span>
               </ion-col>
-              <ion-col size="6">
-                <ion-button style="width: 100%; border-radius: 0;" fill="solid" (click)="imprimirPDF(2, indexPrinter.value)">IMPRIMIR</ion-button>
+
+              <ion-col size="5" class="result-timing">
+                <span class="result-id">#{{atencion.IdAtencion}}</span>
+                <span class="result-date">{{atencion.Fecha.split('T')[0]}}</span>
+                <span class="result-hour">{{atencion.Fecha.split('T')[1].substring(0, 5)}}</span>
               </ion-col>
             </ion-row>
           </ion-grid>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </!--ion-grid -->
+
+          <ion-input [hidden]="true" #colorInput [value]="atencion.ColorEstado"></ion-input>
+          <ion-input #indexInput [hidden]="true" [value]="i" class="index-input"></ion-input>
+        </ion-item>
+
+        <ion-item class="list-spacer">Ajustadores Ficohsa por Porsalud</ion-item>
+      </ion-list>
+    </div>
+  </section>
 </ion-content>

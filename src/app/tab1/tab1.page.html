@@ -1,61 +1,48 @@
 <ion-header>
   <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
-  <ion-footer id="spinFooter" *ngIf="isLoading == true"></ion-footer>
-   <ion-toolbar id="profile-toolbar">
-        <ion-card style="height: 160px;">
-          
-          <ion-card-content>
-            <ion-grid>
-              <ion-row>
-                <ion-col size="3">
-                  <ion-avatar (click)="goProfile()">
-                    <img *ngIf="user.Foto"  [src]="user.Foto" alt="" style="width: 90px; height:90px;"
-                    onerror="this.src='../../assets/img/usuario.svg'">
-                  <ion-icon *ngIf="user.Foto" name="pencil" style="font-size:2rem;position: absolute;margin-top: 8vh;"></ion-icon>
-                  <ion-icon *ngIf="!user.Foto" color="tertiary" name="person-circle" style="font-size:5rem;position: static;"></ion-icon>
-                  <ion-icon *ngIf="!user.Foto" name="pencil" style="font-size:2rem;position: absolute;margin-top: 0.6vh;"></ion-icon>
-                  </ion-avatar>
-                </ion-col>
-                <ion-col size="9">
-                  <h1 color="primary" style="margin-top: -20px;" class="text-size-lg">{{user.NombreAgente}}</h1>
-                  <p class="text-size-p">{{user.ProveedorName}}</p>
-                  <ion-col size="12" style="margin-top: -20px;">
-                    
-                      <ion-row *ngIf="isSearch == false">
-                        <!--ion-col color="primary" size="3"><ion-button id="open-modal-sign" color="primary" size="small" (click)="'openModal = true; modalOptions.present()'">Firma Actual Asegurado</ion-button></!--ion-col -->
-                        <ion-col size="8" style="margin-top: -6px;">
-                          <!--ion-button id="open-modal-sign" color="primary" size="small" (click)="'openModal = true; modalOptions.present()'">VER</!--ion-button -->
-                          <!--img style="width: 60px; height:60px" src="../../assets/img/vista.gif" alt="search" (click)="modalOptions.present()"/ -->
-                          <!--ion-icon name="eye" style="font-size: 2rem; margin: 15px; color: #f14f23;" (click)="'modalOptions.present()'"></!--ion-icon -->
-                        </ion-col>
-                        <!--img src={{banderaPais}} style="width: 56px; margin-left: -40px; margin-top: -85px; margin-bottom: 85px;color: #007cdc;"
-                        onerror="this.src='../../assets/img/el-mundo-0.svg'"
-                        (click)="tryIt()" -->
-                      </ion-row>
-                      
-                  </ion-col>
-                </ion-col>
-                
-              </ion-row>
-            </ion-grid>
-            <!--ion-badge [ngStyle]="{'right':notificationBadgeRight, 'top':notificationBadgeTop}" style="font-size: 0.8rem; margin: 15px; color: white; position: absolute; position: a; z-index: 999; background: none;"
-            (click)="modalNotify.present()">1</!--ion-badge -->
-            <ion-button style="
-            right: 3vw; top:5vh; position: fixed; --background: transparent;--background-hover:transparent;" (click)="cerrarSesion()" 
-            fill="clear">
-              <ion-icon color="primary" style="font-size: 30px;" name="menu"></ion-icon>
-            </ion-button>
-          </ion-card-content>
-        </ion-card>
-  </ion-toolbar>
+  <ion-footer id="loaderFooter" *ngIf="isLoading == true"></ion-footer>
+
+  <ion-grid id="connectIndicator" style="background: transparent; height: 53px;padding: 0; display: none; position: absolute;left: 0; top: 0; z-index: 1000;
+  width: 100%;">
+    <ion-row>
+      <ion-col size="12">
+        <ion-chip class="chip-connect">
+          <ion-label>
+            Estado de conectividad :<br>
+          <div style="margin-top: 5px;">{{estadoConexion}}</div>
+          </ion-label>
+          <ion-icon name="close-circle" style="position: absolute;
+          right: 15px;
+          color: white;
+          font-size: 1.6rem;"
+          (click)="'collapseConnectIndicator()'"></ion-icon>
+        </ion-chip>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-header>
 
-<!--ion-content id="mapaClienteContent"  style="--background:transparent;display: none;" #page>
-  <capacitor-google-map id="mapCliente" #mapCliente (mapClick)="'addMapMarker($event)'"></capacitor-google-map>
-</!--ion-content -->
+<!--ion-grid id="connectIndicatorLogin" style="background: transparent; height: 0px;padding: 0; display: none; position: absolute;left: 0; top: 0; z-index: 1000;
+        width: 100%;" (click)="permitirGPS(conectividadStat)">
+        <ion-row style="width: 100%;">
+          <ion-col size="12">
+            <ion-chip class="chip-connect">
+              <ion-icon name="locate" style="position: absolute;
+              left: 220px;
+              color: white;
+              font-size: 2rem;"
+              ></ion-icon>
+
+              <ion-label style="margin-left: 250px; font-size: 1.3rem;">
+                {{estadoConexionGPS}} 
+              </ion-label>
+            </ion-chip>
+          </ion-col>
+        </ion-row>
+      </ion-grid -->
 
 <ion-content id="clienteContent"   fullscreen="true" class="ion-page">
-  <ion-footer class="ion-no-border" style="position: fixed;bottom:0;height:73%;">
+  <ion-footer class="ion-no-border" style="position: fixed;bottom:0;height:89%;">
     <ion-refresher style="background: white;" slot="fixed" style="padding-bottom:5px" (ionRefresh)="handleRefresh($event)">
       <ion-refresher-content>
       </ion-refresher-content>
@@ -114,39 +101,157 @@
         </ion-col>
       </ion-row>
 
-      <ion-row id="greenStat" style="height: 100%;">
+      <br><br>
+      <ion-row id="greenStat" class="home-workspace">
         <ion-col size="12">
-          <ion-split-pane when="xs" contentId="main" style="overflow: hidden;">
-            <ion-menu id="atencionesContainer" contentId="main">
-              <ion-header>
-                <ion-toolbar color="primary">
-                  <ion-grid>
+          <div class="home-dashboard">
+            <section class="appointments-panel">
+              <div class="panel-heading">
+                <div>
+                  <span class="panel-kicker">Bandeja</span>
+                  <h1>Mis atenciones</h1>
+                </div>
+                <ion-badge class="count-badge">{{filtroAtenciones.length}}</ion-badge>
+              </div>
+
+              <ion-card class="empty-state-card" *ngIf="filtroAtenciones.length == 0">
+                <ion-card-content>
+                  <img src="../../assets/img/busqueda-icono.gif" alt="Buscar atenciones" />
+                  <h2>No hay atenciones asignadas</h2>
+                  <p>Cuando tu proveedor asigne una atencion a tu nombre, aparecera en esta bandeja.</p>
+                </ion-card-content>
+              </ion-card>
+
+              <ion-list class="appointments-list" [inset]="true" *ngIf="filtroAtenciones.length > 0">
+                <ion-item *ngFor="let item of filtroAtenciones; let i = index; let first = first; let last = last" (click)="seleccionarAtencion(item.IdAtencion, indexInput.value)"
+                  [style.--status-color]="item.ColorEstado" class="appointment-item">
+                  <div class="status-strip"></div>
+                  <ion-grid class="ion-no-padding">
                     <ion-row>
-                      <ion-col size="10">
-                        <ion-chip>Atenciones</ion-chip>
+                      <ion-col size="7">
+                        <strong>{{item.Cliente}}</strong>
                       </ion-col>
-                      <ion-col size="2">
-                        <ion-icon style="font-size: 1.2rem;margin-top:3px;" name="search" (click)="goSearch()"></ion-icon>
-                        
+                      <ion-col size="5" class="appointment-timing">
+                        <span class="appointment-id">#{{item.IdAtencion}}</span>
+                        <span class="appointment-date">{{item.Fecha}}</span>
+                        <span class="appointment-hour">{{item.Hora}}</span>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-badge class="new-badge" [hidden]="item.LogEstado==2">Nueva</ion-badge>
                       </ion-col>
                     </ion-row>
                   </ion-grid>
-                  
-                </ion-toolbar>
-              </ion-header>
-              <ion-content class="ion-padding">
+                  <ion-input #indexInput [hidden]="true" [value]="i" class="index-input"></ion-input>
+                </ion-item>
+              </ion-list>
+
+              <ion-label id="versionFooter" class="version-footer">
+                <ion-icon src="../../assets/img/versiones.svg"></ion-icon>
+                HELP Ajustadores, Version {{androidVersion}}
+              </ion-label>
+            </section>
+
+            <section class="case-panel">
+              <div class="case-summary">
+                <div class="case-title">
+                  <span class="panel-kicker">Atencion seleccionada</span>
+                  <h2 *ngIf="atIndexId == 0">Atencion #{{firstSegmentId}}</h2>
+                  <h2 *ngIf="atIndexId > 0">Atencion #{{atIndex}}</h2>
+                </div>
+                <ion-badge class="status-badge" [ngStyle]="{'--background':elColorEstado}">
+                  <ion-icon name="radio-button-on-outline"></ion-icon>
+                  Estado
+                </ion-badge>
+              </div>
+
+              <div class="case-meta">
+                <div>
+                  <span>Asegurado</span>
+                  <strong>{{elCliente}}</strong>
+                </div>
+                <div>
+                  <span>Servicio</span>
+                  <strong>{{elServicio}}</strong>
+                </div>
+              </div>
+
+              <div class="signature-section">
+                <div class="section-heading">
+                  <div>
+                    <span class="panel-kicker">Firma del cliente</span>
+                    <h3>Registro de firma</h3>
+                  </div>
+                  <div class="signature-tools">
+                    <ion-badge class="signature-status" *ngIf="!firmaPrecargada || firmaPrecargada == '' || firmaPrecargada == null || firmaPrecargada == undefined || firmaPrecargada == emptySignatureWhite || firmaPrecargada == emptySignature">Pendiente</ion-badge>
+                    <ion-badge class="signature-status ready" *ngIf="firmaPrecargada  && firmaPrecargada != '' && firmaPrecargada != null && firmaPrecargada != undefined && firmaPrecargada != emptySignatureWhite && firmaPrecargada != emptySignature">Guardada</ion-badge>
+                    <ion-button class="edit-signature-button" fill="clear" (click)="goESignature()" [disabled]="filtroAtenciones.length == 0">
+                      <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                    </ion-button>
+                  </div>
+                </div>
+
+                <div class="signature-preview" *ngIf="!firmaPrecargada || firmaPrecargada == '' || firmaPrecargada == null || firmaPrecargada == undefined || firmaPrecargada == emptySignatureWhite || firmaPrecargada == emptySignature">
+                  <ion-button class="signature-preview-action" fill="clear" (click)="goESignature()" [disabled]="filtroAtenciones.length == 0">
+                    <ion-icon class="signature-preview-icon" slot="icon-only" name="create-outline"></ion-icon>
+                  </ion-button>
+                  <span>Aun no se ha precargado una firma para el cliente.</span>
+                </div>
+                <ion-img id="firmaPrevisualizacionCliente" class="signature-image" *ngIf="firmaPrecargada  && firmaPrecargada != '' && firmaPrecargada != null && firmaPrecargada != undefined && firmaPrecargada != emptySignatureWhite && firmaPrecargada != emptySignature" src="{{firmaPrecargada}}"></ion-img>
+
+                <!--div class="signature-editor">
+                  <canvas id="canvasAsegurado" width="{{canvasAseguradoWidth}}" [height]="150" #canvas2></canvas>
+                  <div class="signature-actions">
+                    <ion-button fill="clear" (click)="clear()">
+                      <ion-icon slot="start" name="trash-outline"></ion-icon>
+                      Limpiar
+                    </ion-button>
+                    <ion-button *ngIf="filtroAtenciones.length == 0" disabled>
+                      <ion-icon slot="start" name="save-outline"></ion-icon>
+                      Guardar firma
+                    </ion-button>
+                    <ion-button *ngIf="filtroAtenciones.length > 0" (click)="saveSignatureAsegurado(atIndex)">
+                      <ion-icon slot="start" name="save-outline"></ion-icon>
+                      Guardar firma
+                    </ion-button>
+                  </div>
+                </div -->
+
+              </div>
+
+              <div class="case-actions">
+                <ion-button fill="outline" color="warning" (click)="grua()">
+                  <ion-icon slot="start" src="../../assets/img/remolque-de-camiones.svg"></ion-icon>
+                  Grua
+                </ion-button>
+                
+                <ion-button fill="outline" (click)="goFotos()" [disabled]="filtroAtenciones.length == 0">
+                  <ion-icon slot="start" name="camera-outline"></ion-icon>
+                  Fotos
+                </ion-button>
+                
+                <ion-button (click)="verExpediente(atIndex)" [disabled]="filtroAtenciones.length == 0">
+                  <ion-icon slot="start" name="folder-open-outline"></ion-icon>
+                  Expediente
+                </ion-button>
+              </div>
+
+              
+            </section>
+          </div>
+          <ion-grid style="height: 90%;">
+            <ion-row style="height: 100%;">
+              <ion-col size="4" style="padding-right: 15px; border-right: 1px solid lightgray;">
+                
                 <ion-card *ngIf="filtroAtenciones.length == 0">
                   <ion-card-header>
                     <ion-card-title>
                       <ion-grid>
                         <ion-row>
-                          <ion-col size="8">HELP</ion-col>
+                          <ion-col size="8"></ion-col>
                           <ion-col size="4">
-                            <!--ion-icon style="font-size: 3rem;color: #3880ff;" src="../../assets/img/facil-de-usar.svg"></!--ion-icon -->
                             <img style="width: 60px; height:60px" src="../../assets/img/busqueda-icono.gif" alt="search" />
-                            <!--img style="width: 40px;height: 40px;" src="../../assets/img/whatsapp-icono.svg">
-                            <img style="width: 40px;height: 40px;" src="../../assets/img/mundial.svg">
-                            <img style="width: 40px;height: 40px;" src="../../assets/img/phone.svg" -->
                           </ion-col>
                         </ion-row>
                       </ion-grid> 
@@ -170,7 +275,157 @@
                   </ion-card-content>
                 </ion-card>
 
-                <ion-list *ngIf="filtroAtenciones.length > 0">
+                <ion-list [inset]="true" style="width: 95%; overflow-y: scroll; height: 80%;">
+                  <ion-item *ngFor="let item of filtroAtenciones; let i = index; let first = first; let last = last" (click)="seleccionarAtencion(item.IdAtencion, indexInput.value)" 
+                  [style.--color]="item.ColorEstado" class="segment-item-atenciones">
+                  <ion-grid class="ion-no-padding">
+                    <ion-row>
+                      <ion-col size="8">
+                        <small><strong>{{item.Cliente}}</strong></small>
+                      </ion-col>
+                      <ion-col size="4" style="text-align: right;"><small>{{item.IdAtencion}}</small></ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="4" style="text-align: left;">
+                        <small [hidden]="item.LogEstado==2">
+                          <ion-badge color="danger">
+                              Nueva
+                          </ion-badge>
+                        </small>
+                    </ion-col>
+                      <ion-col size="8"><span class="end span-small ion-text-wrap" style="float: right;"><small style="font-size: 0.8rem;">{{item.Fecha| date:'short'}}</small></span></ion-col>
+                      
+                    <ion-input #indexInput [hidden]="true" [value]="i" class="index-input"></ion-input>
+                    </ion-row>
+                  </ion-grid>
+                    
+                    
+                    
+                  </ion-item>
+                </ion-list>
+
+                <ion-label id="versionFooter" style="text-align: right;padding-right:15px; color: #0058CB; background: white; position: absolute; bottom: 5%; left: 15px;">
+                  <ion-icon style="font-size: 2rem;" src="../../assets/img/versiones.svg"></ion-icon> HELP Ajustadores, Versión {{androidVersion}}
+                </ion-label>
+              </ion-col>
+              <ion-col size="8" style="padding-left: 15px; padding-top: 0px;">
+                <ion-card class="box-shadow ion-padding" style="margin: 0; height: 100%;margin-top: 0px;">
+                  <ion-grid style="width: 100%;">
+                    <ion-row>
+                      <ion-col size="12">
+                        <ion-item-divider color="primary" style="color: azure; box-shadow: 3px 3px 5px rgba(0,0,0,0.2); border-radius: 30px; margin-top: -5px;    height: 50px;
+    padding-top: 15px;">
+                          <ion-title id="titulo" style="font-size: 0.8rem;" *ngIf="atIndexId == 0">Atención {{firstSegmentId}} para {{elCliente}}, {{elServicio}} </ion-title>
+                          <ion-title id="titulo" style="font-size: 0.8rem;" *ngIf="atIndexId > 0">Atención {{atIndex}} para {{elCliente}}, {{elServicio}} </ion-title>
+                        </ion-item-divider>
+                      </ion-col>
+                    </ion-row>
+
+                    <br>
+                    <ion-row>
+                      <ion-col size="12" style="color: #3171e0;">
+                        <ion-label style="margin-left: 19px;"> Firma Actual Cliente</ion-label>
+                      </ion-col>
+                      <ion-col size="12">
+                        <ion-badge style="text-align: left;width: 87%;text-align: left;margin-left: 2.5%;height: 150px;border-radius: 30px; padding: 20px;" *ngIf="!firmaPrecargada || firmaPrecargada == '' || firmaPrecargada == null || firmaPrecargada == undefined || firmaPrecargada == emptySignatureWhite || firmaPrecargada == emptySignature">Aun no se ha precargado una firma para el cliente. <br>Puedes guardar una desde el panel de firma.</ion-badge>
+                        <ion-img id="firmaPrevisualizacionCliente" style="border: 6px solid rgb(237, 233, 233);padding-top: 10px; border-radius: 50px; width: 87%; margin-left: 2.5%;" *ngIf="firmaPrecargada  && firmaPrecargada != '' && firmaPrecargada != null && firmaPrecargada != undefined && firmaPrecargada != emptySignatureWhite && firmaPrecargada != emptySignature" src="{{firmaPrecargada}}"></ion-img>
+                      </ion-col>
+                    </ion-row>
+
+                    
+                    <ion-row>
+                      <ion-col size="11">
+                        <ion-grid>
+                          <ion-row>
+                            <ion-col size="12" style="color: #0058CB;">
+                              <ion-grid class="ion-no-padding">
+                                <ion-row>
+                                  <ion-col size="12" style="color: #3171e0;">
+                                    <ion-label style="margin-left: 19px;"> Cambiar Firma</ion-label>
+                                  </ion-col>
+                                </ion-row>
+                              </ion-grid>
+                            </ion-col>
+                            <ion-col size="12" style="margin-top: -10px;">
+                              <ion-card id="cardAsegurado">
+                                <ion-card-content>
+                                  <canvas id="canvasAsegurado" width="{{canvasAseguradoWidth}}" [height]="150"  #canvas2 style="border: 6px dashed #ede9e9"></canvas>
+                                </ion-card-content>
+                                <ion-grid>
+                                  <ion-row>
+                                    <ion-col size="6">
+                                      <ion-button expand="block" (click)="clear()">Limpiar Firma</ion-button>
+                                    </ion-col>
+                                    <ion-col size="6" *ngIf="filtroAtenciones.length == 0">
+                                      <ion-button expand="block" disabled>Guardar Firma</ion-button>
+                                    </ion-col>
+                                    <ion-col size="6" *ngIf="filtroAtenciones.length > 0">
+                                      <ion-button expand="block" (click)="saveSignatureAsegurado(atIndex)">Guardar Firma</ion-button>
+                                    </ion-col>
+                                  </ion-row>
+                                </ion-grid>
+                              </ion-card>
+                            </ion-col>
+                          </ion-row>
+                        </ion-grid>
+                      </ion-col>
+                      <ion-col size="1">
+                        <div class="card-header-image">
+                          <span class="span-small ion-text-wrap" style="position: absolute; right: 10px;top: 10px;z-index: 999;">
+                            <ion-icon [ngStyle]="{'color':elColorEstado}" name="radio-button-on-outline"></ion-icon></span>
+                        </div>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+          <!--ion-split-pane when="xs" contentId="main" style="overflow: hidden;">
+            <ion-menu id="atencionesContainer" contentId="main">
+              <ion-header>
+                <ion-toolbar color="primary" style="height: 30px;">
+                  <ion-grid style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                    <ion-row>
+                      <ion-col size="12">
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-toolbar>
+              </ion-header>
+              <ion-content class="ion-padding">
+                <ion-card *ngIf="filtroAtenciones.length == 0">
+                  <ion-card-header>
+                    <ion-card-title>
+                      <ion-grid>
+                        <ion-row>
+                          <ion-col size="8"></ion-col>
+                          <ion-col size="4">
+                            <img style="width: 60px; height:60px" src="../../assets/img/busqueda-icono.gif" alt="search" />
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid> 
+                    </ion-card-title>
+                    <ion-card-subtitle>Revisa tus atenciones.</ion-card-subtitle>
+                  </ion-card-header>
+                
+                  <ion-card-content>
+                    Haz click en el botón de búsqueda.
+                  </ion-card-content>
+                </ion-card>
+                <ion-card *ngIf="filtroAtenciones.length == 0">
+                  <ion-card-header>
+                    <ion-card-title>Bienvenido(a)!</ion-card-title>
+                    <ion-card-subtitle>Aun no cuentas con atenciones asignadas.</ion-card-subtitle>
+                  </ion-card-header>
+                
+                  <ion-card-content>
+                    Una vez que tu proveedor asigne atenciones a tu nombre, las verás disponibles en este listado.
+                    Éxitos! <ion-icon name="thumbs-up"></ion-icon>
+                  </ion-card-content>
+                </ion-card>
+
+                <ion-list>
                   <ion-item *ngFor="let item of filtroAtenciones; let i = index; let first = first; let last = last" (click)="seleccionarAtencion(item.IdAtencion, indexInput.value)" 
                   [style.--color]="item.ColorEstado" class="segment-item-atenciones">
                   <ion-grid class="ion-no-padding">
@@ -200,139 +455,109 @@
                 </ion-list>
                 
               </ion-content>
-              <ion-label style="text-align: right;padding-right:15px; color: #10069f; background: white;">
-                <ion-icon style="font-size: 2rem;" src="../../assets/img/versiones.svg"></ion-icon> HELP Ajustadores, Versión {{androidVersion}}
-              </ion-label>
+              
             </ion-menu>
           
             <div class="ion-page" id="main">
               <ion-header>
-                <ion-toolbar color="tertiary">
+                <ion-toolbar color="primary" style="height: 30px;">
                   
-                  <ion-title *ngIf="atIndexId == 0">Previsualización de atención {{firstSegmentId}}</ion-title>
-                  <ion-title *ngIf="atIndexId > 0">Previsualización de atención {{atIndex}}</ion-title>
+                  
                 </ion-toolbar>
               </ion-header>
               <ion-content class="ion-padding">
                 
-                <ion-card class="box-shadow ion-padding" style="margin: 0; height: 100%;margin-top: 0px;">
-                  <ion-grid style="width: 100%;">
-                    <ion-row>
-                      <ion-col size="11">
-                        <ion-item class="ion-no-padding transparent" lines="none">
-                          <ion-grid>
-                            <ion-row>
-                              <ion-col size="12">
-                                <h4 class="text-size-xs" style="margin-bottom: 0;margin-top: -20px;">
-                                  <ion-input *ngIf="filtroAtenciones.length == 0" id="nombreInput" type="text" placeholder="Ninguna atención disponible" value="{{elCliente}}"
-                                  [(ngModel)]="elCliente" disabled></ion-input>
-                                  <ion-input *ngIf="filtroAtenciones.length > 0" id="nombreInput" type="text" placeholder="Ninguna atención disponible" value="{{elCliente}}"
-                                  [(ngModel)]="elCliente"></ion-input>
-                                </h4>
-                                <h5 class="text-size-sm" style="color: rgb(188, 187, 187);margin-top: 0;">{{elServicio}}</h5>
-                              </ion-col>
-                            </ion-row>
-                          </ion-grid>
-                          
-                        </ion-item>
-                        <ion-grid>
-                          <ion-row>
-                            <ion-col size="12" style="color: #10069f;">
-                              <ion-grid class="ion-no-padding">
-                                <ion-row>
-                                  <ion-col size="8"></ion-col>
-                                  <!--ion-col size="4"><ion-label style="margin-left: 19px;"> Guardar Firma Asegurado</ion-label></!--ion-col -->
-                                  <ion-col size="4" style="text-align: right;">
-                                    <ion-button id="open-modal-sign" color="primary" size="small" (click)="'openModal = true; modalOptions.present()'"
-                                    style="margin-right: 15px;">Ver Firma Asegurado</ion-button>
-                                  </ion-col>
-                                  <!--ion-col size="4">
-                                    <ion-text style="right: 84px;position: absolute;">Usa póliza?</ion-text> &nbsp;
-                                    <ion-toggle [checked]="true" style="right: 14px;position: absolute;"></ion-toggle>
-                                  </!--ion-col -->
-                                </ion-row>
-                              </ion-grid>
-                            </ion-col>
-                            <ion-col size="12" style="margin-top: -10px;">
-                              <ion-card id="cardAsegurado">
-                                <ion-card-content>
-                                  <canvas id="canvasAsegurado" width="{{canvasAseguradoWidth}}" [height]="150"  #canvas2 style="border: 6px dashed #ede9e9"></canvas>
-                                </ion-card-content>
-                                <ion-grid>
-                                  <ion-row>
-                                    <ion-col size="6">
-                                      <ion-button expand="block" (click)="clear()">Limpiar Firma</ion-button>
-                                    </ion-col>
-                                    <ion-col size="6" *ngIf="filtroAtenciones.length == 0">
-                                      <ion-button expand="block" disabled>Guardar Firma</ion-button>
-                                    </ion-col>
-                                    <ion-col size="6" *ngIf="filtroAtenciones.length > 0">
-                                      <ion-button expand="block" (click)="saveSignatureAsegurado(atIndex)">Guardar Firma</ion-button>
-                                    </ion-col>
-                                  </ion-row>
-                                </ion-grid>
-                              </ion-card>
-                            </ion-col>
-                          </ion-row>
-                        </ion-grid>
-                      </ion-col>
-                      <ion-col size="1">
-                        <div class="card-header-image">
-                          
-                          <ion-list>
-                            <!--ion-item style="width: 99%;height: 150px;margin-top: 0px;" lines="none">
-                              <ion-thumbnail style="width:100%;box-shadow: 2px 4px 4px gray;" (click)="goFotos()">
-                                <img alt="Foto Siniestro" [src]="laImg"/>
-                              </ion-thumbnail>
-                            </!--ion-item -->
-                            <ion-item style="width: 99%;height: 150px;margin-top: 30px;">
-                            </ion-item>
-                          </ion-list>
-                          <span class="span-small ion-text-wrap" style="position: absolute; right: 10px;top: 10px;z-index: 999;">
-                            <ion-icon [ngStyle]="{'color':elColorEstado}" name="radio-button-on-outline"></ion-icon></span>
-                        </div>
-                      </ion-col>
-                    </ion-row>
-                  </ion-grid>
-                </ion-card>
+                
               </ion-content>
             </div>
-          </ion-split-pane>
+
+            <ion-router-outlet id="main"></ion-router-outlet>
+          </ion-split-pane -->
         </ion-col>
       </ion-row>
     </ion-grid>
   
-    <ion-fab id="gruaBoton" style="position: fixed;margin-bottom: 12%;" vertical="bottom" horizontal="end">
+    <ion-fab id="gruaBoton" class="home-floating-action" style="position: fixed;margin-bottom: 12%;" vertical="bottom" horizontal="end">
       <ion-fab-button (click)="grua()">
         <ion-icon style="font-size: 2rem; color: white;" src="../../assets/img/remolque-de-camiones.svg"></ion-icon>
       </ion-fab-button>
     </ion-fab>
 
-    <ion-fab *ngIf="isSearch == false && filtroAtenciones.length == 0" style="position: fixed;margin-bottom: 6%;" vertical="bottom" horizontal="end">
+    <ion-fab class="home-floating-action" *ngIf="isSearch == false && filtroAtenciones.length == 0" style="position: fixed;margin-bottom: 6%;" vertical="bottom" horizontal="end">
       <ion-fab-button (click)="goFotos()" disabled>
         <ion-icon name="camera"></ion-icon>
       </ion-fab-button>
     </ion-fab>
 
-    <ion-fab *ngIf="isSearch == false && filtroAtenciones.length == 0" style="position: fixed;" vertical="bottom" horizontal="end">
+    <ion-fab class="home-floating-action" *ngIf="isSearch == false && filtroAtenciones.length == 0" style="position: fixed;" vertical="bottom" horizontal="end">
       <ion-fab-button (click)="verExpediente(atIndex)" disabled>
-        <ion-icon name="eye"></ion-icon>
+        <ion-icon name="chevron-forward"></ion-icon>
       </ion-fab-button>
     </ion-fab>
 
-    <ion-fab *ngIf="isSearch == false && filtroAtenciones.length > 0" style="position: fixed;margin-bottom: 6%;" vertical="bottom" horizontal="end">
+    <ion-fab class="home-floating-action" *ngIf="isSearch == false && filtroAtenciones.length > 0" style="position: fixed;margin-bottom: 6%;" vertical="bottom" horizontal="end">
       <ion-fab-button (click)="goFotos()">
         <ion-icon name="camera"></ion-icon>
       </ion-fab-button>
     </ion-fab>
 
-    <ion-fab *ngIf="isSearch == false && filtroAtenciones.length > 0" style="position: fixed;" vertical="bottom" horizontal="end">
+    <ion-fab class="home-floating-action" *ngIf="isSearch == false && filtroAtenciones.length > 0" style="position: fixed;" vertical="bottom" horizontal="end">
       <ion-fab-button (click)="verExpediente(atIndex)">
-        <ion-icon name="eye"></ion-icon>
+        <ion-icon name="chevron-forward"></ion-icon>
       </ion-fab-button>
     </ion-fab>
 
 
+    <ion-grid id="saludoInicial" style="background: transparent; height: 100%;padding: 0; display: inherit; position: absolute;left: 0; bottom: 0; z-index: 1000;
+      width: 100%;">
+      <ion-row style="width: 100%; position: absolute; bottom: 420px; z-index: 1040;">
+        <ion-col size="12">
+          <ion-chip id="chipGPS" class="chip-gps">
+            <ion-button shape="round" class="boton-gps" (click)="permitirGPS()">
+              <ion-icon name="locate" style="position: absolute;
+              left: 0px;
+              color: white;
+              font-size: 2rem;"
+              ></ion-icon>
+
+              <ion-label style="margin-left: 10px; font-size: 1.1rem; text-transform: capitalize;">
+                Permisos de ubicación precisa
+              </ion-label>
+            </ion-button>
+
+            <br><br>
+            <span style="text-align: justify;">
+              HELP AJUSTADORES, para una mejor experiencia activa los permisos de ubicación precisa. <br><br>
+             Esto nos ayudará a brindarte un mejor servicio, con tiempos de respuesta más rápidos y una ubicación más precisa para tus atenciones. <br><br>
+             ¡Gracias por confiar en nosotros! <ion-icon name="heart"></ion-icon>
+            </span>
+            
+          </ion-chip>
+        </ion-col>
+      </ion-row>
+      <!--ion-row style="position: absolute;
+    top: 35%;
+    z-index: 3000;
+    left: 35%;
+    --height: 300px;
+    ">
+        
+        <ion-col size="12">
+          <ion-card id="gpsCard" style="height: 300px;border: none;
+    box-shadow: none;" [style.display]="gpsOn ? 'block' : 'none'">
+            <ion-card-header>
+              <ion-card-title>HELP AJUSTADOR</ion-card-title>
+              <ion-card-subtitle>Ubicación Precisa</ion-card-subtitle>
+            </ion-card-header>
+
+            <ion-card-content>
+              Activar  permisos de ubicación precisa.
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        
+      </ion-row -->
+    </ion-grid>
     
   </ion-footer>
 
@@ -420,7 +645,14 @@
   <div class="ion-page">
     <ion-header>
       <ion-toolbar>
-        <ion-title>App</ion-title>
+        <ion-title>
+                <img id="logoHelpBLanco" class="mi-logo" src="../../../assets/logos/help-white.png" alt="Ficohsa Logo" />
+        </ion-title>
+
+        <ion-button style="right: 2vw; top:2vh; position: fixed; --background: white; --border-radius: 30px;" (click)="cerrarSesion()"
+        [disabled]="!gpsOn">
+          <ion-icon color="primary" style="font-size: 30px; margin-left: 1px; margin-right: 0px;" name="menu"></ion-icon>
+        </ion-button>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">

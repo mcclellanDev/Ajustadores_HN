@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -60,20 +60,13 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="./" class="navbar-brand">help_ajustadores documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="./" class="navbar-brand">help_ajustadores documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -82,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -108,17 +101,17 @@
     </ol>
     <ul class="dependencies-list">
         <li>
-            <b>@angular/common</b> : ^14.0.0</li>
+            <b>@angular/common</b> : ^15.2.10</li>
         <li>
-            <b>@angular/core</b> : 14.0.0</li>
+            <b>@angular/core</b> : ^15.2.10</li>
         <li>
-            <b>@angular/forms</b> : ^14.0.0</li>
+            <b>@angular/forms</b> : ^15.2.10</li>
         <li>
-            <b>@angular/platform-browser</b> : ^14.0.0</li>
+            <b>@angular/platform-browser</b> : ^15.2.10</li>
         <li>
-            <b>@angular/platform-browser-dynamic</b> : ^14.0.0</li>
+            <b>@angular/platform-browser-dynamic</b> : ^15.2.10</li>
         <li>
-            <b>@angular/router</b> : ^14.0.0</li>
+            <b>@angular/router</b> : ^15.2.10</li>
         <li>
             <b>@auth0/angular-jwt</b> : ^5.1.0</li>
         <li>
@@ -132,13 +125,13 @@
         <li>
             <b>@capacitor-community/sqlite</b> : ^5.6.2</li>
         <li>
-            <b>@capacitor/android</b> : 4.3.0</li>
+            <b>@capacitor/android</b> : ^5.1.1</li>
         <li>
             <b>@capacitor/app</b> : 4.0.1</li>
         <li>
             <b>@capacitor/camera</b> : ^4.1.4</li>
         <li>
-            <b>@capacitor/core</b> : 4.3.0</li>
+            <b>@capacitor/core</b> : ^5.1.1</li>
         <li>
             <b>@capacitor/geolocation</b> : ^4.1.0</li>
         <li>
@@ -164,7 +157,7 @@
         <li>
             <b>@ionic-native/screen-orientation</b> : ^5.36.0</li>
         <li>
-            <b>@ionic/angular</b> : ^6.1.9</li>
+            <b>@ionic/angular</b> : ^6.7.5</li>
         <li>
             <b>@maskito/angular</b> : ^1.5.0</li>
         <li>
@@ -178,6 +171,8 @@
         <li>
             <b>call-number</b> : ^1.0.1</li>
         <li>
+            <b>capacitor-secure-storage-plugin</b> : ^0.9.0</li>
+        <li>
             <b>cordova-plugin-nativegeocoder</b> : ^3.5.1</li>
         <li>
             <b>cordova-plugin-screen-orientation</b> : ^3.0.3</li>
@@ -185,6 +180,8 @@
             <b>date-fns</b> : ^2.29.3</li>
         <li>
             <b>dom-to-image</b> : ^2.6.0</li>
+        <li>
+            <b>es6-promise-plugin</b> : ^4.2.2</li>
         <li>
             <b>html2canvas</b> : ^1.4.1</li>
         <li>
@@ -196,7 +193,7 @@
         <li>
             <b>onesignal-cordova-plugin</b> : ^3.3.0</li>
         <li>
-            <b>rxjs</b> : ~6.6.0</li>
+            <b>rxjs</b> : ^7.5.0</li>
         <li>
             <b>signature_pad</b> : ^4.1.4</li>
         <li>
@@ -243,6 +240,19 @@
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
        <script src="./js/libs/custom-elements.min.js"></script>
        <script src="./js/libs/lit-html.js"></script>
 
@@ -254,7 +264,6 @@
        <script src="./js/libs/es6-shim.min.js"></script>
        <script src="./js/libs/EventDispatcher.js"></script>
        <script src="./js/libs/promise.min.js"></script>
-       <script src="./js/libs/zepto.min.js"></script>
 
        <script src="./js/compodoc.js"></script>
 

@@ -24,43 +24,43 @@
 <title>cluster_SegmentoCaracteristicasPageModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 516,-195 516,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_SegmentoCaracteristicasPageModule_imports</title>
-<polygon fill="none" stroke="black" points="222,-78 222,-130 508,-130 508,-78 222,-78"/>
-</g>
 <g id="clust2" class="cluster">
 <title>cluster_SegmentoCaracteristicasPageModule_declarations</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 214,-130 214,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="310,-78 310,-130 508,-130 508,-78 310,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_SegmentoCaracteristicasPageModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 302,-130 302,-78 16,-78"/>
 </g>
 <!-- SegmentoCaracteristicasPage -->
 <g id="node1" class="node">
 <title>SegmentoCaracteristicasPage</title>
-<polygon fill="#ffffb3" stroke="black" points="205.6,-122 24.4,-122 24.4,-86 205.6,-86 205.6,-122"/>
-<text text-anchor="middle" x="115" y="-99.8" font-family="Times,serif" font-size="14.00">SegmentoCaracteristicasPage</text>
+<polygon fill="#ffffb3" stroke="black" points="499.6,-122 318.4,-122 318.4,-86 499.6,-86 499.6,-122"/>
+<text text-anchor="middle" x="409" y="-99.8" font-family="Times,serif" font-size="14.00">SegmentoCaracteristicasPage</text>
 </g>
 <!-- SegmentoCaracteristicasPageModule -->
 <g id="node2" class="node">
 <title>SegmentoCaracteristicasPageModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="359.65,-187 356.65,-191 335.65,-191 332.65,-187 134.35,-187 134.35,-151 359.65,-151 359.65,-187"/>
-<text text-anchor="middle" x="247" y="-164.8" font-family="Times,serif" font-size="14.00">SegmentoCaracteristicasPageModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="389.65,-187 386.65,-191 365.65,-191 362.65,-187 164.35,-187 164.35,-151 389.65,-151 389.65,-187"/>
+<text text-anchor="middle" x="277" y="-164.8" font-family="Times,serif" font-size="14.00">SegmentoCaracteristicasPageModule</text>
 </g>
 <!-- SegmentoCaracteristicasPage&#45;&gt;SegmentoCaracteristicasPageModule -->
 <g id="edge1" class="edge">
 <title>SegmentoCaracteristicasPage&#45;&gt;SegmentoCaracteristicasPageModule</title>
-<path fill="none" stroke="black" d="M170.11,-122.11C170.11,-122.11 170.11,-140.99 170.11,-140.99"/>
-<polygon fill="black" stroke="black" points="166.61,-140.99 170.11,-150.99 173.61,-140.99 166.61,-140.99"/>
+<path fill="none" stroke="black" d="M353.89,-122.11C353.89,-122.11 353.89,-140.99 353.89,-140.99"/>
+<polygon fill="black" stroke="black" points="350.39,-140.99 353.89,-150.99 357.39,-140.99 350.39,-140.99"/>
 </g>
 <!-- SegmentoCaracteristicasPageRoutingModule -->
 <g id="node3" class="node">
 <title>SegmentoCaracteristicasPageRoutingModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="500.27,-122 497.27,-126 476.27,-126 473.27,-122 229.73,-122 229.73,-86 500.27,-86 500.27,-122"/>
-<text text-anchor="middle" x="365" y="-99.8" font-family="Times,serif" font-size="14.00">SegmentoCaracteristicasPageRoutingModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="294.27,-122 291.27,-126 270.27,-126 267.27,-122 23.73,-122 23.73,-86 294.27,-86 294.27,-122"/>
+<text text-anchor="middle" x="159" y="-99.8" font-family="Times,serif" font-size="14.00">SegmentoCaracteristicasPageRoutingModule</text>
 </g>
 <!-- SegmentoCaracteristicasPageRoutingModule&#45;&gt;SegmentoCaracteristicasPageModule -->
 <g id="edge2" class="edge">
 <title>SegmentoCaracteristicasPageRoutingModule&#45;&gt;SegmentoCaracteristicasPageModule</title>
-<path fill="none" stroke="black" d="M294.72,-122.11C294.72,-122.11 294.72,-140.99 294.72,-140.99"/>
-<polygon fill="black" stroke="black" points="291.22,-140.99 294.72,-150.99 298.22,-140.99 291.22,-140.99"/>
+<path fill="none" stroke="black" d="M229.28,-122.11C229.28,-122.11 229.28,-140.99 229.28,-140.99"/>
+<polygon fill="black" stroke="black" points="225.78,-140.99 229.28,-150.99 232.78,-140.99 225.78,-140.99"/>
 </g>
 </g>
 </svg>

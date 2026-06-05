@@ -13,7 +13,7 @@
     </head>
     <body>
           <script>
-               // Blocking script to avaoid flickering dark mode
+               // Blocking script to avoid flickering dark mode
                // Dark mode toggle button
                var useDark = window.matchMedia('(prefers-color-scheme: dark)');
                var darkModeState = useDark.matches;
@@ -60,20 +60,13 @@
                     darkModeState = darkModeStateLocal === 'true';
                }
                toggleDarkMode(darkModeState);
-
-               if ($darkModeToggles.length > 0) {
-                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
-                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
-                              darkModeState = !darkModeState;
-                              toggleDarkMode(darkModeState);
-                         });
-                    }
-               }
           </script>
 
-        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
-            <a href="../" class="navbar-brand">help_ajustadores documentation</a>
-            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">help_ajustadores documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
         </div>
 
         <div class="xs-menu menu" id="mobile-menu">
@@ -82,7 +75,7 @@
 
         <div class="container-fluid main">
            <div class="row main">
-               <div class="hidden-xs menu">
+               <div class="d-none d-md-block menu">
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
@@ -129,6 +122,33 @@
 
 
 
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#clearSiniestroArrays" >clearSiniestroArrays</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
 
             <section data-compodoc="block-constructor">
     <h3 id="constructor">Constructor</h3>
@@ -149,7 +169,49 @@
         </table>
 </section>
 
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="clearSiniestroArrays"></a>
+                    <span class="name">
+                        <span ><b>clearSiniestroArrays</b></span>
+                        <a href="#clearSiniestroArrays"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>clearSiniestroArrays()</code>
+                </td>
+            </tr>
 
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">src/app/services/storage.service.ts:10</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
 
     </div>
 
@@ -163,6 +225,166 @@
 export class StorageService {
 
   constructor() { }
+
+  clearSiniestroArrays(){
+    // variables cliente
+    localStorage.removeItem(&#x27;dataProcess-Nombre&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-AutoridadInvolucrada&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-NombreConductor&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-IdentidaConductor&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-Poliza&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-NombreAtribuyeAccidente&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-TelefonoConductor&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-TelefonoAsegurado&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-CelularConductor&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-CelularAsegurado&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-CorreoElectronico&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-Licencia&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-Blindado&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-FechaNacimientoConductor&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-Edad&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-AseguradoUsoPoliza&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-PorqueNoUsoServicioAsistencia&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-PruebaAlcoholemia&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-AgendarAudiencia&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-VehiculoDetenido&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-ConductorDetenido&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-VehiculoVolcado&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-DireccionEnvioCorrespondencia&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-DireccionConductor&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-DondeSeEncuentraVehiculo&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-TerceroResponsable&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-UbicacionVehiculoDetenido&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-DescripcionAudiencia&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-LicenciaEstado&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-Vigencia&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-RefTipoLicenciaId&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-TipoLicencia&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-NumeroUnidad&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-DescripcionTercerosMuertos&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-DescripcionTercerosHeridos&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-Descripcion&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-DescripcionDanio&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-RefTipoConductorId&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-TercerosMuertos&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-TercerosHeridos&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-Parentesco&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-Poliza&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-Latitud&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-Longitud&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-AnioVehiculo&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-ModeloVehiculo&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-PlacaVehiculo&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-ColorVehiculo&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-MarcaVehiculo&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-ChasisVehiculo&#x27;);
+    localStorage.removeItem(&#x27;dataProcess-Motor&#x27;);
+    
+
+    // variables ajustador
+    localStorage.removeItem(&#x27;datos-Identificacion&#x27;);
+    localStorage.removeItem(&#x27;datos-IdentidaConductor&#x27;);
+    localStorage.removeItem(&#x27;datos-Nombre&#x27;);
+    localStorage.removeItem(&#x27;datos-NombreConductor&#x27;);
+    localStorage.removeItem(&#x27;datos-Licencia&#x27;);
+    localStorage.removeItem(&#x27;datos-TipoLicencia&#x27;);
+    localStorage.removeItem(&#x27;datos-RefTipoLicenciaId&#x27;);
+    localStorage.removeItem(&#x27;datos-Sexo&#x27;);
+    localStorage.removeItem(&#x27;datos-Parentesco&#x27;);
+    localStorage.removeItem(&#x27;datos-RefTipoSolicitanteInformeAjusteId&#x27;);
+    localStorage.removeItem(&#x27;datos-Identificacion&#x27;);
+    localStorage.removeItem(&#x27;datos-IdentidaConductor&#x27;);
+    localStorage.removeItem(&#x27;datos-TipoAcuerdoFicohsa&#x27;);
+    localStorage.removeItem(&#x27;datos-TelefonoConductor&#x27;);
+    localStorage.removeItem(&#x27;datos-CelularConductor&#x27;);
+    localStorage.removeItem(&#x27;datos-CorreoElectronico&#x27;);
+    localStorage.removeItem(&#x27;datos-MarcaVehiculo&#x27;);
+    localStorage.removeItem(&#x27;datos-ModeloVehiculo&#x27;);
+    localStorage.removeItem(&#x27;datos-ChasisVehiculo&#x27;);
+    localStorage.removeItem(&#x27;datos-PlacaVehiculo&#x27;);
+    localStorage.removeItem(&#x27;datos-Poliza&#x27;);
+    localStorage.removeItem(&#x27;datos-Kilometraje&#x27;);
+    localStorage.removeItem(&#x27;datos-TallerMecanicoId&#x27;);
+    localStorage.removeItem(&#x27;datos-ObservacionTaller&#x27;);
+    localStorage.removeItem(&#x27;datos-RefTipoCombustibleId&#x27;);
+    localStorage.removeItem(&#x27;datos-AC&#x27;);
+    localStorage.removeItem(&#x27;datos-BolsaAire&#x27;);
+    localStorage.removeItem(&#x27;datos-CierreCentralizado&#x27;);
+    localStorage.removeItem(&#x27;datos-Mecanico&#x27;);
+    localStorage.removeItem(&#x27;datos-RetrovisorElectronico&#x27;);
+    localStorage.removeItem(&#x27;datos-Overfenders&#x27;);
+    localStorage.removeItem(&#x27;datos-ColaPato&#x27;);
+    localStorage.removeItem(&#x27;datos-CintaDecorativa&#x27;);
+    localStorage.removeItem(&#x27;datos-Rines&#x27;);
+    localStorage.removeItem(&#x27;datos-DescripcionDanio&#x27;);
+    localStorage.removeItem(&#x27;datos-CulpableCompromisoPago&#x27;);
+    localStorage.removeItem(&#x27;datos-ObservacionCompromisoPago&#x27;);
+    localStorage.removeItem(&#x27;datos-Observaciones&#x27;);
+    localStorage.removeItem(&#x27;datos-ObservacionesFinales&#x27;);
+    localStorage.removeItem(&#x27;datos-DanioLataralIzquierdo&#x27;);
+    localStorage.removeItem(&#x27;datos-DanioLateralDerecho&#x27;);
+    localStorage.removeItem(&#x27;datos-VehiculoVolcado&#x27;);
+    localStorage.removeItem(&#x27;datos-DanioFrontal&#x27;);
+    localStorage.removeItem(&#x27;datos-DanioTrasero&#x27;);
+    localStorage.removeItem(&#x27;datos-FechaHora&#x27;);
+    localStorage.removeItem(&#x27;datos-AnioVehiculo&#x27;);
+
+    localStorage.removeItem(&#x27;deudaSent&#x27;);
+    
+
+    for (var i &#x3D; 0; i &lt; localStorage.length; i++){
+      if (localStorage.key(i).indexOf(&#x27;daniosSelect&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      }
+      if (localStorage.key(i).indexOf(&#x27;daniosSelectOtro&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      }
+      if (localStorage.key(i).indexOf(&#x27;TipoReparacion&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      }
+      if (localStorage.key(i).indexOf(&#x27;TipoReparacionIndex&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      }
+      if (localStorage.key(i).indexOf(&#x27;TipoReparacionX&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      }
+      if (localStorage.key(i).indexOf(&#x27;TipoReparacionIndexX&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      }
+      if (localStorage.key(i).indexOf(&#x27;daniosSelectCulpa&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      }
+      if (localStorage.key(i).indexOf(&#x27;TipoReparacionCulpa&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      }
+      if (localStorage.key(i).indexOf(&#x27;TipoReparacionCulpaIndex&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      }
+      if (localStorage.key(i).indexOf(&#x27;danioPic&#x27;) &#x3D;&#x3D; 0) {
+          localStorage.removeItem(localStorage.key(i));
+      } 
+      if (localStorage.key(i).indexOf(&#x27;danioOtro&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      } 
+      if (localStorage.key(i).indexOf(&#x27;danioOtroCulpa&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      } 
+      if (localStorage.key(i).indexOf(&#x27;deuda-&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      }
+
+      if (localStorage.key(i).indexOf(&#x27;acompaniante-&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      }
+
+      if (localStorage.key(i).indexOf(&#x27;lesionados-&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      }
+      if (localStorage.key(i).indexOf(&#x27;propiedadesprivadas-&#x27;) &#x3D;&#x3D; 0) {
+        localStorage.removeItem(localStorage.key(i));
+      }
+    }
+  }
 }
 </code></pre>
     </div>
@@ -211,6 +433,19 @@ export class StorageService {
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
 
@@ -222,7 +457,6 @@ export class StorageService {
        <script src="../js/libs/es6-shim.min.js"></script>
        <script src="../js/libs/EventDispatcher.js"></script>
        <script src="../js/libs/promise.min.js"></script>
-       <script src="../js/libs/zepto.min.js"></script>
 
        <script src="../js/compodoc.js"></script>
 

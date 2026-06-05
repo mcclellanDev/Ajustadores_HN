@@ -85,13 +85,19 @@ export class EsignaturePage implements OnInit {
             element.setAttribute('style', 'border: none');
             elementInput.setAttribute('style', 'border: none');
             //this.isSignature = true;
+            
           },
           async (res) => {
             this.tostador.presentToastDataMissing(res.error.Message, 'top', 'firma');
             //this.isSignature = false;
             this.isLoading = false;
+
           }
         )
+
+        setTimeout(() => {
+          this.goBack();
+        }, 900);
       } else {
         this.tostador.presentToastNoButtons("Necesitas escribir una firma para guardarla.", "top", "firma");
         this.isLoading = false;
@@ -104,18 +110,10 @@ export class EsignaturePage implements OnInit {
   }
 
   goBack(){
-    const navigateExtras: NavigationExtras = 
-    {
-      state:{
-        data: [
-          {'forma': 'this.expediente'},
-          {'latitud': 'this.latitud'},
-          {'longitud' : 'this.longitud'}
-        ]
-      }
-    }
     //$('#trackButton').attr('style', 'border: none');
-    this.router.navigate(['./clientehn'],navigateExtras);
+    const returnTo = localStorage.getItem('signatureReturnTo');
+    localStorage.removeItem('signatureReturnTo');
+    this.router.navigate([returnTo || './clientehn']);
               
     //this.navController.back();
   }

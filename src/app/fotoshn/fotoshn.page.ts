@@ -45,6 +45,23 @@ export class FotoshnPage implements OnInit {
 
     this.getTipoFotos();
   }
+
+  ionViewDidEnter(){
+    let fotosLocal = JSON.parse(localStorage.getItem('fotos-'+this.atencionId));
+    if (fotosLocal) {
+      this.fotos = fotosLocal;
+
+      if (this.fotos.length > 0) {
+        this.imagenesSeleccionadas = this.fotos.length;
+        this.isVideo = false;
+        $('#imagenesConteo').fadeIn();
+        $('#buttonSubmit').fadeIn();
+      }else{
+        this.isVideo = true; 
+      }
+    }
+  }
+
   openImg(foto:string){
     this.foto = foto;
     this.openFoto = !this.openFoto;
@@ -486,6 +503,11 @@ SubirVideo(atencionId:any, Archivo:FormData|null) : Observable<any> {
   
           if (index == (fileInput.length-1)) {
             this.isLoading = false
+
+            setTimeout(() => {
+              localStorage.setItem('fotos-'+this.atencionId, JSON.stringify(this.fotos));
+            }, 900);
+            
           }
           
         }
@@ -543,12 +565,13 @@ SubirVideo(atencionId:any, Archivo:FormData|null) : Observable<any> {
                       $("#buttonSubmit").fadeOut("slow");
                       $("#imagenesSubidas").fadeIn("xslow");
                       $("#buttonMore").fadeIn("xslow");
-
+                      localStorage.setItem('fotosEnviadas-'+this.atencionId, 'true');
                     }
                 },
                 async (res) => {
                   let codigo = res.status;
                   this.toaster.presentToastNoButtons(codigo, 'top', 'fotos');
+                  localStorage.setItem('fotosEnviadas-'+this.atencionId, 'false');
                 }
               )
             
@@ -559,6 +582,7 @@ SubirVideo(atencionId:any, Archivo:FormData|null) : Observable<any> {
             }
           }else{
             this.toaster.presentToastNoButtons("Necesitas cargar una imagen o más para guardarlas.", "top", "fotos");
+            localStorage.setItem('fotosEnviadas-'+this.atencionId, 'false');
           }
   }
   guardarFotosX(){
@@ -676,6 +700,7 @@ SubirVideo(atencionId:any, Archivo:FormData|null) : Observable<any> {
     this.fotos.splice(i,1);
     localStorage.removeItem('Foto '+i);
     this.imagenesSeleccionadas = this.imagenesSeleccionadas - 1;
+    localStorage.setItem('fotos-'+this.atencionId, JSON.stringify(this.fotos));
   }
 
   clearPhotos(){
