@@ -75,12 +75,12 @@ export class LoginPage implements OnInit {
       this.item.user = result.value;
       this.usuarioCache = this.item.user;
       console.log('User retrieved from secure storage:', this.item.user);
-    });
+    }).catch(() => {});
     SecureStoragePlugin.get({ key: 'Password' }).then((result) => {
       this.item.password = result.value;
       this.passwordCache = this.item.password;
       console.log('Password retrieved from secure storage:', this.item.password);
-    });
+    }).catch(() => {});
   }
 
   ionViewDidEnter(){
@@ -121,9 +121,11 @@ export class LoginPage implements OnInit {
         //alert('Estas credenciales ... usuario'+this.usuarioCache+' ... contraseña'+this.passwordCache)
         
       }, 900);
-      Keyboard.addListener('keyboardDidHide', () => {
-        this.showRegister();
-      });
+      if (this.platform.is('hybrid')) {
+        Keyboard.addListener('keyboardDidHide', () => {
+          this.showRegister();
+        });
+      }
 
     });
 
@@ -198,9 +200,22 @@ export class LoginPage implements OnInit {
         this.isLoading = false;
         console.log(res);
         const alert = await this.alert.create({
+          cssClass: 'login-menu-alert',
           header:'Fallo inicio de sesión',
           message:res.error.Message,
-          buttons:['Ok']
+          buttons:[{
+            text: '',
+            role: 'cancel',
+            cssClass: 'logout-menu-button logout-menu-danger'
+          } ,{
+            text: '',
+            role: 'cancel',
+            cssClass: 'logout-menu-button logout-menu-danger'
+          } ,{
+            text: 'OK',
+            role: 'cancel',
+            cssClass: 'logout-menu-button logout-menu-accept'
+          } ,]
           
         });
         await alert.present();

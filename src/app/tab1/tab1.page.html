@@ -123,7 +123,7 @@
               </ion-card>
 
               <ion-list class="appointments-list" [inset]="true" *ngIf="filtroAtenciones.length > 0">
-                <ion-item *ngFor="let item of filtroAtenciones; let i = index; let first = first; let last = last" (click)="seleccionarAtencion(item.IdAtencion, indexInput.value)"
+                <ion-item *ngFor="let item of filtroAtenciones; let i = index; let first = first; let last = last" (click)="seleccionarAtencion(item.IdAtencion, i)"
                   [style.--status-color]="item.ColorEstado" class="appointment-item">
                   <div class="status-strip"></div>
                   <ion-grid class="ion-no-padding">
@@ -160,9 +160,13 @@
                   <h2 *ngIf="atIndexId == 0">Atencion #{{firstSegmentId}}</h2>
                   <h2 *ngIf="atIndexId > 0">Atencion #{{atIndex}}</h2>
                 </div>
-                <ion-badge class="status-badge" [ngStyle]="{'--background':elColorEstado}">
+                <!--ion-badge class="status-badge" [ngStyle]="{'--background':elColorEstado}">
                   <ion-icon name="radio-button-on-outline"></ion-icon>
                   Estado
+                </!--ion-badge -->
+                <ion-badge class="status-badge" color="primary" (click)="verExpediente(atIndex)">
+                  <ion-icon name="folder-open-outline"></ion-icon>
+                  Exp
                 </ion-badge>
               </div>
 
@@ -236,7 +240,7 @@
                   Expediente
                 </ion-button>
               </div>
-
+              <br [style.display]="isTablet == false ? 'inherit' : 'none'"><br [style.display]="isTablet == false ? 'inherit' : 'none'">
               
             </section>
           </div>
@@ -276,7 +280,7 @@
                 </ion-card>
 
                 <ion-list [inset]="true" style="width: 95%; overflow-y: scroll; height: 80%;">
-                  <ion-item *ngFor="let item of filtroAtenciones; let i = index; let first = first; let last = last" (click)="seleccionarAtencion(item.IdAtencion, indexInput.value)" 
+                  <ion-item *ngFor="let item of filtroAtenciones; let i = index; let first = first; let last = last" (click)="seleccionarAtencion(item.IdAtencion, i)" 
                   [style.--color]="item.ColorEstado" class="segment-item-atenciones">
                   <ion-grid class="ion-no-padding">
                     <ion-row>
@@ -426,7 +430,7 @@
                 </ion-card>
 
                 <ion-list>
-                  <ion-item *ngFor="let item of filtroAtenciones; let i = index; let first = first; let last = last" (click)="seleccionarAtencion(item.IdAtencion, indexInput.value)" 
+                  <ion-item *ngFor="let item of filtroAtenciones; let i = index; let first = first; let last = last" (click)="seleccionarAtencion(item.IdAtencion, i)" 
                   [style.--color]="item.ColorEstado" class="segment-item-atenciones">
                   <ion-grid class="ion-no-padding">
                     <ion-row>
@@ -558,7 +562,7 @@
         
       </ion-row -->
     </ion-grid>
-    
+
   </ion-footer>
 
   <ion-modal [isOpen]="openModal" #modalOptions trigger="open-modal-sign" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.5, 0.75, 1]">
@@ -644,12 +648,12 @@
 
   <div class="ion-page">
     <ion-header>
-      <ion-toolbar>
-        <ion-title>
-                <img id="logoHelpBLanco" class="mi-logo" src="../../../assets/logos/help-white.png" alt="Ficohsa Logo" />
+      <ion-toolbar id="profile-toolbar">
+        <ion-title class="home-logo-title" slot="start">
+          <img id="logoHelpBLanco" class="mi-logo" src="../../../assets/logos/help-white.png" alt="HELP" />
         </ion-title>
 
-        <ion-button style="right: 2vw; top:2vh; position: fixed; --background: white; --border-radius: 30px;" (click)="cerrarSesion()"
+        <ion-button class="home-menu-button" slot="end" (click)="cerrarSesion()"
         [disabled]="!gpsOn">
           <ion-icon color="primary" style="font-size: 30px; margin-left: 1px; margin-right: 0px;" name="menu"></ion-icon>
         </ion-button>
@@ -753,29 +757,51 @@
 </ion-modal>
 
 <ion-button id="open-modal-update" expand="block" hidden>Accionar Modal</ion-button>
-    <ion-modal #modalUpdate trigger="open-modal-update" [canDismiss]="canDismiss" [presentingElement]="presentingElement">
+    <ion-modal class="update-modal" #modalUpdate trigger="open-modal-update" [canDismiss]="canDismiss" [presentingElement]="presentingElement">
       <ng-template>
-        <ion-header>
-          <ion-toolbar>
-            <ion-title>HELP AJUSTADORES</ion-title>
-            <ion-buttons slot="end">
-              <ion-button id="closeUpdate" (click)="modalUpdate.dismiss()" hidden>Close</ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content>
-          <ion-card style="margin-top: 10%; border: none; box-shadow: none;text-align: center;">
-            <img alt="Eeeexittoooo!" [src]="updateIcon" style="width: 180px; margin-bottom: -18px;"/>
-            <h3> <strong> Hay una nueva versión disponible; </strong> </h3>
-            <ion-button id="submitClaim" style="position: relative;width: 24%;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: #f14f23;
-            --background-activated: #a8462a;
-            --background-hover: #f66e48;
-            --border-radius: 15px;
-            --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
-            --color: white;" vertical="bottom" horizontal="end" (click)="openStore(store)">
-              ACTUALIZAR
-            </ion-button>
-          </ion-card>
+        <ion-content class="update-modal-content" [scrollY]="false">
+          <div class="update-card">
+            <button class="update-info" type="button" (click)="openReleaseInfo()" aria-label="Ver mejoras">
+              <ion-icon name="information"></ion-icon>
+            </button>
+
+            <button class="update-close" type="button" (click)="modalUpdate.dismiss()" aria-label="Cerrar">
+              <ion-icon name="close"></ion-icon>
+            </button>
+
+            <section class="update-hero">
+              <div class="update-badge">
+                <ion-icon name="sparkles"></ion-icon>
+              </div>
+
+              <p class="update-kicker">Nueva versión disponible</p>
+              <h1>HELP Ajustadores se actualizó</h1>
+              <p class="update-copy">
+                Hay una versión más reciente lista para instalar. Puedes actualizar ahora o continuar y hacerlo más tarde desde el aviso del inicio.
+              </p>
+            </section>
+
+            <section class="update-version-row">
+              <div>
+                <span>Instalada</span>
+                <strong>{{androidVersion || 'N/D'}}</strong>
+              </div>
+              <ion-icon name="arrow-forward"></ion-icon>
+              <div>
+                <span>Disponible</span>
+                <strong>{{dbVersion || 'N/D'}}</strong>
+              </div>
+            </section>
+
+            <section class="update-actions">
+              <ion-button class="update-primary-button" expand="block" shape="round" color="primary" (click)="openStore(store)">
+                ACTUALIZAR
+              </ion-button>
+              <ion-button expand="block" fill="clear" color="medium" (click)="modalUpdate.dismiss()">
+                Ahora no
+              </ion-button>
+            </section>
+          </div>
         </ion-content>
       </ng-template>
     </ion-modal>

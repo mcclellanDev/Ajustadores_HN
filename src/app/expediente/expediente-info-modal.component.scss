@@ -1,0 +1,22 @@
+ion-toolbar {
+  --background: var(--primaryColor);
+  --color: #ffffff;
+}
+
+#botonCerrarModal {
+  --background: var(--primaryColor);
+  --background-activated: var(--primaryColor);
+  --background-hover: var(--primaryColor);
+  --box-shadow: none;
+}
+
+.route-icon {
+  color: aliceblue;
+  float: right;
+  font-size: 5rem;
+  margin-right: 2%;
+}
+
+.ruta {
+  float: right;
+}

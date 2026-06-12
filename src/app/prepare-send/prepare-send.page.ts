@@ -31,6 +31,22 @@ export class PrepareSendPage implements OnInit {
   dataSiniestro: any;  identidadCliente: any;  elTipoLicencia: any;  nulosAtencion: any = [];  isEeexittoooo: boolean;
   miLogRespuesta: any; sucessIcon:any; disData: any = []; AutoridadInvolucrada:any; firmaIcono:any = editarFirmaIcono;
   emptySignatureWhite = emptySignatureWhite; emptySignature = emptySignatureWhite; errorImage = errorImage;
+  validationAttempted = false;
+  invalidCoverage = false;
+  invalidDriverName = false;
+  invalidGender = false;
+  invalidSignature = false;
+  invalidAuthority = false;
+  coverageSelectOptions = {
+    cssClass: 'form-choice-alert',
+    header: 'Tipo de cobertura',
+    subHeader: 'Selecciona una opción'
+  };
+  genderSelectOptions = {
+    cssClass: 'form-choice-alert',
+    header: 'Tipo de género',
+    subHeader: 'Selecciona una opción'
+  };
 
   abogadosAudiencias = abogadosAudiencias
   laExpediente: any = [];
@@ -101,10 +117,8 @@ export class PrepareSendPage implements OnInit {
     }, 1000);
     
     
-    const state = this.router.getCurrentNavigation().extras.state;
-      console.log(state.data);
-      console.log(state.data[1])
-      this.idAtencion = state.data[1].idAtencion;
+    const state = this.router.getCurrentNavigation()?.extras?.state as any;
+      this.idAtencion = state?.data?.[1]?.idAtencion || localStorage.getItem('atencionEnProceso');
 
       console.log('La atencion es '+this.idAtencion)
       this.atencionId = parseInt(this.idAtencion);
@@ -139,7 +153,7 @@ export class PrepareSendPage implements OnInit {
   
       )
       
-      this.cliente = state.data[0].forma;
+      this.cliente = state?.data?.[0]?.forma || this.laExpediente;
       console.log('Mi cliente');
       console.dir(this.cliente)
 
@@ -166,6 +180,46 @@ export class PrepareSendPage implements OnInit {
     this.loadGeneros();
   }
 
+  ionViewWillEnter() {
+    this.firmaPrecargada = localStorage.getItem('dSignatureAsegurado');
+    this.isSignature = !!this.firmaPrecargada &&
+      this.firmaPrecargada !== this.emptySignatureWhite &&
+      this.firmaPrecargada !== this.emptySignature;
+    this.invalidSignature = this.validationAttempted && !this.isSignature;
+  }
+
+  updateValidationState() {
+    const firmaActual = this.firmaPrecargada || localStorage.getItem('dSignatureAsegurado');
+    this.isSignature = !!firmaActual &&
+      firmaActual !== this.errorImage &&
+      firmaActual !== this.emptySignatureWhite &&
+      firmaActual !== this.emptySignature;
+    this.invalidCoverage = !this.coberturaDisplayName?.toString().trim();
+    this.invalidDriverName = !this.nombreConductor?.toString().trim();
+    this.invalidGender = !this.elGenero?.toString().trim();
+    this.invalidSignature = !this.isSignature;
+    this.invalidAuthority = !this.AutoridadInvolucrada?.toString().trim();
+  }
+
+  canSubmit(): boolean {
+    this.validationAttempted = true;
+    this.updateValidationState();
+
+    const hasMissingData = this.invalidCoverage ||
+      this.invalidDriverName ||
+      this.invalidGender ||
+      this.invalidAuthority ||
+      this.invalidSignature;
+
+    if (hasMissingData) {
+      this.isLoading = false;
+      this.openAccordionData();
+      return false;
+    }
+
+    return true;
+  }
+
   entraPorqueNoUso(event) {
     this.dataProcess.PorqueNoUsoServicioAsistencia = event.target.value;
     this.dataProcess['PorqueNoUsoServicioAsistencia'] = parseInt(event.target.value);
@@ -183,6 +237,7 @@ export class PrepareSendPage implements OnInit {
     localStorage.setItem('tipoCobertura', event.target.value);
     $("#TipoAcuerdoDisplay").text(this.tipoDeCobertura);
     this.coberturaDisplayName = this.tipoDeCobertura;
+    this.invalidCoverage = false;
     localStorage.setItem('laCobertura', this.idAtencion.toString()+'-'+this.coberturaDisplayName);
     localStorage.setItem('datos-TipoAcuerdoFicohsa', this.coberturaDisplayName);
     this.setAtencionActual();
@@ -228,6 +283,7 @@ export class PrepareSendPage implements OnInit {
     this.dataProcess.NombreConductor = event.target.value;
     this.dataProcess['NombreConductor'] = event.target.value;
     this.nombreConductor = event.target.value;
+    this.invalidDriverName = !this.nombreConductor?.trim();
     localStorage.setItem('nombreConductor', this.cliente.NombreConductor);
     localStorage.setItem('dataProcess-NombreConductor', event.target.value);
   }
@@ -242,6 +298,8 @@ export class PrepareSendPage implements OnInit {
   }
 
   goESignature() {
+    localStorage.setItem('signatureReturnTo', '/prepare-send');
+    localStorage.setItem('origin', '/prepare-send');
     this.router.navigate(['./esignature']);
   }
 
@@ -294,6 +352,9 @@ export class PrepareSendPage implements OnInit {
   }
 
   guardarCacheCliente(){
+    if (!this.canSubmit()) {
+      return;
+    }
     
     /*
     
@@ -431,13 +492,17 @@ export class PrepareSendPage implements OnInit {
 
 
   testSave(){
-    this.isLoading = true;
-    let laFirma = $('#firmaAsegurado').attr('src');
-    let testFirmaError :boolean = (laFirma == errorImage);
-    let testFirmaWhite :boolean = (laFirma == emptySignatureWhite);
-    console.log($('#firmaAsegurado').attr('src'))
+    if (!this.canSubmit()) {
+      return;
+    }
 
-    if (testFirmaError == true || testFirmaWhite == true) {
+    this.isLoading = true;
+    const laFirma = this.firmaPrecargada || localStorage.getItem('dSignatureAsegurado');
+    const testFirmaError = !laFirma || laFirma === errorImage;
+    const testFirmaWhite = laFirma === this.emptySignatureWhite || laFirma === this.emptySignature;
+    this.invalidSignature = testFirmaError || testFirmaWhite;
+
+    if (this.invalidSignature) {
       this.toaster.presentToastNoButtonsRed("Necesitas escribir una firma para guardar los datos.", "top", "firma");
       this.isLoading = false;
     }else{
@@ -520,6 +585,7 @@ export class PrepareSendPage implements OnInit {
 
   entraAutoridadInvolucrada(event) {
     this.AutoridadInvolucrada = event.target.value;
+    this.invalidAuthority = !this.AutoridadInvolucrada?.toString().trim();
     this.dataProcess.AutoridadInvolucrada = event.target.value;
     this.dataProcess['AutoridadInvolucrada'] = event.target.value;
     localStorage.setItem('dataProcess-AutoridadInvolucrada', event.target.value);
@@ -535,6 +601,10 @@ export class PrepareSendPage implements OnInit {
   }
 
   guardarFormulario(){
+    if (!this.canSubmit()) {
+      return;
+    }
+
     //console.log('Predeterminados');
     this.isLoading = true;
 
@@ -554,28 +624,28 @@ export class PrepareSendPage implements OnInit {
 
     //alert('Esta cobertura '+this.elGenero)
 
-      if (this.coberturaDisplayName == undefined) {
+      this.updateValidationState();
+
+      if (this.invalidCoverage) {
         this.validaNulos.push(0);
-        $('.data-label').eq(0).attr('style', 'color:orangered;');
       }else{
         this.validaNulos.splice(0, 1);
-        $('.data-label').eq(0).attr('style', 'color:#7da1c4;');
       }
 
-      if (this.nombreConductor == undefined || this.nombreConductor == '') {
+      if (this.invalidDriverName) {
         this.validaNulos.push(1);
-        $('.data-label').eq(1).attr('style', 'color:orangered;');
       }else{
         this.validaNulos.splice(1, 1);
-        $('.data-label').eq(1).attr('style', 'color:#7da1c4;');
       }
 
-      if (this.elGenero == undefined) {
+      if (this.invalidGender) {
         this.validaNulos.push(2);
-        $('.data-label').eq(2).attr('style', 'color:orangered;');
       }else{
         this.validaNulos.splice(2, 1);
-        $('.data-label').eq(2).attr('style', 'color:#7da1c4;');
+      }
+
+      if (this.invalidAuthority) {
+        this.validaNulos.push(3);
       }
 
       if (this.cliente.PorqueNoUsoServicioAsistencia == undefined || this.cliente.PorqueNoUsoServicioAsistencia == '') {
@@ -657,7 +727,7 @@ export class PrepareSendPage implements OnInit {
           CorreoElectronico: "NULL",
           RefTipoLicenciaId: 0,
           NombreAtribuyeAccidente: "NULL",
-          AutoridadInvolucrada: "NULL",
+          AutoridadInvolucrada: this.AutoridadInvolucrada,
           UbicacionVehiculoDetenido: "NULL",
           PruebaAlcoholemia: 0,
           RefTipoCombustibleId: 0,
@@ -883,6 +953,7 @@ export class PrepareSendPage implements OnInit {
       const element = this.tipoGeneros[index];
       if (element.Id == event.target.value) {
         this.elGenero = element.Genero;
+        this.invalidGender = false;
         this.elTipoGenero = element.Id;
         localStorage.setItem('datos-Sexo', element.Id);
         localStorage.setItem('elGenero', this.idAtencion.toString()+'-'+this.elGenero);
@@ -979,7 +1050,7 @@ export class PrepareSendPage implements OnInit {
   openAccordionData = () => {
     this.toaster.presentToastNoButtonsRed('Falta información para el envío. Los siguientes valores son requeridos.', 'top', 'danger');
     const nativeEl = this.accordionGroup;
-    nativeEl.value = 'second';
+    nativeEl.value = this.invalidAuthority ? ['first', 'second'] : 'second';
    /*
     if (nativeEl.value === 'second') {
       nativeEl.value = undefined;

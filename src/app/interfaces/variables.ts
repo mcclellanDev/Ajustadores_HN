@@ -1,5 +1,5 @@
 export const versionAndroid = {
-    versionNumero: '1',
+    versionNumero: '2.1.0',
     versionCodigo: '2.0.10',
 }
 

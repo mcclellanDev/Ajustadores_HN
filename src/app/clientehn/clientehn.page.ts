@@ -1,7 +1,7 @@
 import { culpable, personaHn, propiedaPrivadaHn, tipoLicencia } from './../interfaces/formulario';
 import { Component, OnInit, ViewChild, ElementRef, NgModule } from '@angular/core';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
-import { AlertController, LoadingController, ToastController, Platform, IonModal, ModalController, NavParams, IonContent, InfiniteScrollCustomEvent } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController, Platform, IonModal, ModalController, NavParams, IonContent, InfiniteScrollCustomEvent, MenuController } from '@ionic/angular';
 import { ajustadorHn } from '../interfaces/formulario';
 import { ApiService } from '../services/api.service';
 import { finalize } from 'rxjs/operators';
@@ -96,6 +96,24 @@ export class ClientehnPage implements OnInit {
   nombreConductor: any;  daTipoConductor: any;  daNombreConductor: any;  daIdentidadConductor: any;  identidad: any; daTelefonoFijoConductor:any;
   tel: any;  daCelularConductor: any;  cel: any;  horaSiniestro: any;  TelefonoFijoConductor: any;  CelularConductor: string | null;
   elResponsableTipo: number;  laExpediente: any = [];  clienteLatitud: any;  clienteLongitud: any; DatosDeAtencion:any = [];
+  segmentoTitulo: string = 'Formulario del cliente';
+  readonly birthDateMin = '1900-01-01';
+  readonly birthDateMax = new Date().toISOString().split('T')[0];
+  driverTypeSelectOptions = {
+    cssClass: 'form-choice-alert',
+    header: 'Tipo de conductor',
+    subHeader: 'Selecciona una opción'
+  };
+  relationshipSelectOptions = {
+    cssClass: 'form-choice-alert',
+    header: 'Tipo de parentesco',
+    subHeader: 'Selecciona una opción'
+  };
+  licenceTypeSelectOptions = {
+    cssClass: 'form-choice-alert',
+    header: 'Tipo de licencia',
+    subHeader: 'Selecciona una opción'
+  };
 
   public progress = 0;  nullsIndex: any = []; textoInfo = 'Validando ... Cuando todos los datos estén completos, se habilitará el botón de guardar.';
   identidadDelCliente: any;  progInterval: any;  indexFront: any; firmaIcono:any = editarFirmaIcono;
@@ -104,7 +122,8 @@ export class ClientehnPage implements OnInit {
   // INICIALIZACION
   constructor(private router: Router,    private route: ActivatedRoute,    private loading: LoadingController,    private alert: AlertController,
     private api: ApiService,    private toast: ToastController,    private location: Location,    private platform: Platform,    private so: ScreenOrientation,
-    private geo: NativeGeocoder,    private toaster: ToastService,    private formateador:FormatosService, private countryService:CountrydataService) {
+    private geo: NativeGeocoder,    private toaster: ToastService,    private formateador:FormatosService, private countryService:CountrydataService,
+    private menuController: MenuController) {
 
     let datAtencion:any = localStorage.getItem('datosDeAtencion');
     this.DatosDeAtencion = JSON.parse(datAtencion);
@@ -1189,12 +1208,12 @@ export class ClientehnPage implements OnInit {
 
       
       Keyboard.addListener('keyboardDidShow', () => {
-        $('#firmaChip').fadeOut();
+        $('.cliente-action-footer').fadeOut();
       });
 
 
       Keyboard.addListener('keyboardDidHide', () => {
-              $('#firmaChip').fadeIn();
+              $('.cliente-action-footer').fadeIn();
             });
       
 
@@ -1654,7 +1673,7 @@ export class ClientehnPage implements OnInit {
   }
 
   goFotos() {
-    this.router.navigate(['./fotoshn']);
+    this.router.navigate(['./cargar-archivos']);
   }
 
   async presentToast(message:any, position:any, clase:any) {
@@ -2689,7 +2708,7 @@ export class ClientehnPage implements OnInit {
     let daFirstTitleContainer = document.getElementsByClassName('segment-title');
     let daFirstSegmentsButton = document.getElementsByClassName('segment-item');
 
-    this.setSegment('segmentCoordinates', 0);
+    this.setSegment('segmentCoordinates', 0, false);
 
     let howManySegments = daFirstSegmentsButton.length;
     if (howManySegments > 0) {
@@ -2700,7 +2719,11 @@ export class ClientehnPage implements OnInit {
     }
   }
 
-  setSegment(segmentInput:any, indexInput:any) {
+  closeClientForm() {
+    this.menuController.close('cliente-form-menu');
+  }
+
+  setSegment(segmentInput:any, indexInput:any, openForm: boolean = true) {
 
     setTimeout(() => {
       let losIconos = document.getElementsByTagName('ion-select');
@@ -2759,6 +2782,7 @@ export class ClientehnPage implements OnInit {
     let daSegmentsButton = document.getElementsByClassName('segment-item');
     this.daSegment = segmentInput;
     let daIndex = indexInput;
+    this.segmentoTitulo = segments[daIndex]?.titulo || 'Formulario del cliente';
 
     
     if (this.daSegment == 'ribbon') {
@@ -2796,6 +2820,12 @@ export class ClientehnPage implements OnInit {
         element.setAttribute('style', 'color:#7da1c4');
         title.setAttribute('style', 'color:#7da1c4;margin-left: 9px');
       }
+    }
+
+    if (openForm && !window.matchMedia('(min-width: 900px) and (orientation: landscape)').matches) {
+      setTimeout(() => {
+        this.menuController.open('cliente-form-menu');
+      }, 120);
     }
   }
 
@@ -3006,6 +3036,7 @@ export class ClientehnPage implements OnInit {
                 $('#goSignButton').fadeOut('slow');
                 $('#saveButton').fadeOut('slow');
                 $('#camButton').fadeOut('slow');
+                $('#footerSignButton').fadeOut('slow');
 
                 $("#successLabel").fadeIn('slow');
                 $("#buttonGoAjuste").fadeIn('slow');
@@ -3040,6 +3071,7 @@ export class ClientehnPage implements OnInit {
                 $('#goSignButton').fadeOut('slow');
                 $('#saveButton').fadeOut('slow');
                 $('#camButton').fadeOut('slow');
+                $('#footerSignButton').fadeOut('slow');
                 $('#saveDataButton').fadeOut();
                 $('#validateAgainButton').fadeOut();
                 $('#cancelaButton').fadeOut();
@@ -3419,18 +3451,29 @@ export class ClientehnPage implements OnInit {
     this.formateadaNacimiento = this.elExpediente.FechaNacimientoConductor.split('T')[0];//his.formateador.formatearFechaNacimiento(laFecha);
 
     this.edad = this.calcularEdad(laFecha);
+    this.esMenor = this.edad < 18;
   }
 
   calcularEdad(fecha:any){
-    console.log(fecha)
-    let dAnio = fecha.toString().substring(0, 4);
-    console.log(dAnio)
-    let thisYear = new Date().getFullYear();
-    let dYear = parseInt(dAnio);
-    let laEdad = thisYear - dYear;
+    const fechaTexto = fecha?.toString().split('T')[0];
+    const partes = fechaTexto?.split('-').map(Number);
+
+    if (!partes || partes.length !== 3 || partes.some((parte) => Number.isNaN(parte))) {
+      return 0;
+    }
+
+    const [anio, mes, dia] = partes;
+    const hoy = new Date();
+    let laEdad = hoy.getFullYear() - anio;
+    const aunNoCumple = hoy.getMonth() + 1 < mes ||
+      (hoy.getMonth() + 1 === mes && hoy.getDate() < dia);
+
+    if (aunNoCumple) {
+      laEdad--;
+    }
+
     localStorage.setItem('dataProcess-Edad', laEdad.toString());
     this.dataProcess['Edad'] = laEdad;
-    console.log(laEdad)
     return laEdad;
   }
 
@@ -3620,17 +3663,21 @@ export class ClientehnPage implements OnInit {
 
   async alertPrepare() {
     const alert = await this.alert.create({
-      header: 'HELP',
-      message: 'Vamos a preparar el envío sin póliza para la atención '+this.idAtencion+'. Continuar?',
+      cssClass: 'form-choice-alert no-policy-alert',
+      header: 'Continuar sin póliza',
+      subHeader: 'Atención #'+this.idAtencion,
+      message: 'Se preparará el envío de esta atención sin utilizar la póliza. ¿Deseas continuar?',
       buttons: [
       {
-        text: 'CANCELAR',
+        text: 'Cancelar',
         role: 'cancel',
+        cssClass: 'form-choice-cancel',
         handler: () => { this.setUtilizacionAsistencia(1) }
       } ,
       {
-        text: 'CONTINUAR',
+        text: 'Continuar',
         role: 'confirm',
+        cssClass: 'form-choice-confirm',
         handler: () => { this.goPrepare(this.idAtencion) }
       }
       ]

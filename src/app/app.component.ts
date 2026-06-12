@@ -17,6 +17,7 @@ import { ConnectionService } from './services/connection.service';
 import { NetworkInfo } from './environments/network';
 import { Observable } from 'rxjs';
 import { AppConnectionStatus } from './services/connection.service';
+import { DeviceService } from './services/device.service';
 import * as $ from 'jquery';
 
 
@@ -31,6 +32,7 @@ export class AppComponent {
   @ViewChild(RouterOutlet) outlet: RouterOutlet | undefined;
   screenlock:ScreenlockService | undefined;
   conexion: ConnectionStatus | undefined;
+  isTablet: boolean = false;
   emptySignature:any = emptySignature;stripeForm: any;
   connectionStatus$: Observable<AppConnectionStatus>;
   conectividad?: boolean;  conectividadStat: string | undefined;
@@ -41,7 +43,8 @@ export class AppComponent {
     private so: ScreenOrientation,
     private tostador:ToastService,
     private router:Router,
-    private connectionService: ConnectionService
+    private connectionService: ConnectionService,
+    private deviceService: DeviceService
   ) 
   {
     this.connectionStatus$ = this.connectionService.status$;
@@ -128,6 +131,7 @@ export class AppComponent {
   initializeApp(){
     this.plt.ready().then(async ()=>{
       console.log('Initialize here');
+      this.applyOrientationPolicy();
       this.api.loadToken();
       //Debug:temporal
       this.geolocation();
@@ -135,6 +139,21 @@ export class AppComponent {
 
     })
 
+  }
+
+  applyOrientationPolicy() {
+    this.deviceService.configure(this.platform);
+    this.isTablet = this.deviceService.isTablet;
+    if (!this.platform.is('hybrid')) {
+      return;
+    }
+
+    if (this.isTablet) {
+      this.so.unlock();
+      return;
+    }
+
+    this.so.lock(this.so.ORIENTATIONS.PORTRAIT);
   }
   OneSignalInit() {
     //alert('inicialicemos el onesignal')
@@ -288,4 +307,3 @@ export class AppComponent {
     
 }
 }
-

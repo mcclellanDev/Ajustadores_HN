@@ -20,3 +20,9 @@ export interface ResponseUser {
     Mensaje:string;
     Data: User
 }
+
+export const fotoTipos = [
+    {tipo: 'el conductor'},
+    {tipo: 'la unidad'},
+    {tipo: 'imagen'}
+]

@@ -1,11 +1,12 @@
 import { beneficiariosTipos } from './../environments/beneficiarios';
 import { emptySignature, emptySignatureWhite, firmaDemoAjustador, anySignature } from '../environments/signatures';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { tipoBeneficiario } from '../environments/predeterminados';
 import { ToastService } from '../services/toast.service';
 import { ApiService } from '../services/api.service';
 import { finalize } from 'rxjs/operators';
-import { Platform } from '@ionic/angular';
+import { AlertController, Platform } from '@ionic/angular';
+import { Router } from '@angular/router';
 import SignaturePad from 'signature_pad';
 import { logoFicohsa } from '../environments/default-images';
 import { meses } from '../environments/calendario';
@@ -16,8 +17,8 @@ import * as $ from 'jquery';
   templateUrl: './finiquito.page.html',
   styleUrls: ['./finiquito.page.scss'],
 })
-export class FiniquitoPage implements OnInit {
-  @ViewChild("canvas6", { static: true }) canvas6: ElementRef;
+export class FiniquitoPage implements OnInit, AfterViewInit {
+  @ViewChild("canvas6", { static: false }) canvas6: ElementRef<HTMLCanvasElement>;
   sig6: SignaturePad;
 
   fsLogo:any;  acuerdoFiniquito:any=[];  idAtencion:any;  finiquitoCompleto:boolean=false;  isLoading: boolean;
@@ -27,7 +28,8 @@ export class FiniquitoPage implements OnInit {
   tipoDeBeneficiario:any; idBeneficiarioTipo:any;  fechaSiniestro: any;  atencion: any;  TipoCoberturaFicohsa: any;
   isEmptySignature: any;  ya: boolean=false; fechaDesde:any; fechaHasta:any; fecaCheque:any;
 
-  constructor(private platform:Platform, private toaster:ToastService, private api:ApiService) { 
+  constructor(private platform:Platform, private toaster:ToastService, private api:ApiService,
+    private alertController: AlertController, private router: Router) { 
     setTimeout(() => {
       $('#scrollIcon').fadeIn('xslow');
     }, 2000);
@@ -75,26 +77,17 @@ export class FiniquitoPage implements OnInit {
   "Motor": "string" // de la info del asegurado
 }
     */
-    this.acuerdoFiniquito = JSON.parse(localStorage.getItem('elFiniquito'));
-    this.fechaDesde = this.acuerdoFiniquito.FechaDesde.split('T')[0];
-    this.fechaHasta = this.acuerdoFiniquito.FechaHasta.split('T')[0];
+    this.acuerdoFiniquito = JSON.parse(localStorage.getItem('elFiniquito') || '{}') || {};
+    this.fechaDesde = this.acuerdoFiniquito.FechaDesde?.split('T')[0] || '';
+    this.fechaHasta = this.acuerdoFiniquito.FechaHasta?.split('T')[0] || '';
     this.idAtencion = localStorage.getItem('idAtencion');
+    this.finiquitoCompleto = localStorage.getItem(`finiquitoEnviado-${this.idAtencion}`) === 'true';
     this.fsLogo = logoFicohsa
   }
 
   ngOnInit() {
-    this.sig6 = new SignaturePad(this.canvas6.nativeElement);
-    this.sig6.fromDataURL(emptySignatureWhite);
-
-    setTimeout(() => {
-      this.sig6.clear();
-    }, 1000);
-
-    this.sig6.backgroundColor = "rgb(255, 255, 255)";this.sig6.minWidth = 1;this.sig6.maxWidth = 1.5;
-    this.sig6.dotSize = 3;
-
-    this.idBeneficiarioTipo = this.acuerdoFiniquito.beneficiarioTipo;
-    this.tipoDeBeneficiario = tipoBeneficiario[this.idBeneficiarioTipo-1].etiqueta;
+    this.idBeneficiarioTipo = Number(this.acuerdoFiniquito.beneficiarioTipo);
+    this.tipoDeBeneficiario = tipoBeneficiario[this.idBeneficiarioTipo - 1]?.etiqueta || 'beneficiario';
 
     this.idAtencion = localStorage.getItem('idAtencion');
     if (this.hasNonDigit(this.idAtencion) == false) {
@@ -159,37 +152,95 @@ export class FiniquitoPage implements OnInit {
     }
   }
 
+  ngAfterViewInit() {
+    setTimeout(() => this.initializeSignaturePad());
+  }
+
+  ionViewDidEnter() {
+    if (!this.finiquitoCompleto && !this.sig6) {
+      setTimeout(() => this.initializeSignaturePad());
+    }
+  }
+
+  private initializeSignaturePad() {
+    const canvas = this.canvas6?.nativeElement;
+    if (!canvas || this.finiquitoCompleto || this.sig6) {
+      return;
+    }
+
+    const containerWidth = canvas.parentElement?.clientWidth || this.deviceWidth || this.platform.width();
+    const displayHeight = this.platform.width() <= 699 ? 155 : 180;
+    const pixelRatio = Math.max(window.devicePixelRatio || 1, 1);
+
+    canvas.width = Math.floor(containerWidth * pixelRatio);
+    canvas.height = Math.floor(displayHeight * pixelRatio);
+    canvas.style.width = `${containerWidth}px`;
+    canvas.style.height = `${displayHeight}px`;
+    canvas.getContext('2d')?.scale(pixelRatio, pixelRatio);
+
+    this.sig6 = new SignaturePad(canvas, {
+      backgroundColor: 'rgb(255, 255, 255)',
+      minWidth: 1,
+      maxWidth: 1.5,
+      dotSize: 3
+    });
+    this.sig6.clear();
+  }
+
   hasNonDigit(str){
     return /\D/g.test(str.toString());
   }
   
   clear() {
-    this.sig6.clear();
+    this.sig6?.clear();
+  }
+
+  async confirmarEnvio() {
+    if (!this.sig6) {
+      this.initializeSignaturePad();
+    }
+
+    if (!this.sig6) {
+      this.toaster.presentToastNoButtonsRed("No fue posible activar el área de firma. Intenta abrir nuevamente la pantalla.", "top", "firma");
+      return;
+    }
+
+    this.isEmptySignature = this.sig6.isEmpty();
+    if (this.isEmptySignature) {
+      this.toaster.presentToastNoButtonsRed("Necesitas escribir una firma para guardar el acuerdo.", "top", "firma");
+      return;
+    }
+
+    const alert = await this.alertController.create({
+      cssClass: 'form-choice-alert',
+      header: 'Confirmar envío',
+      subHeader: `Atención #${this.idAtencion}`,
+      message: 'Verifica que los datos del finiquito sean correctos. Después de enviarlo, el documento quedará registrado con esta firma.',
+      buttons: [
+        {
+          text: 'Revisar nuevamente',
+          role: 'cancel'
+        },
+        {
+          text: 'Sí, enviar',
+          role: 'confirm',
+          handler: () => this.testSave()
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   testSave(){
     this.isLoading = true;
-    this.isEmptySignature = this.sig6.isEmpty();
-    console.log(this.sig6.isEmpty())
-    if (this.sig6.isEmpty()) {
-      this.toaster.presentToastNoButtonsRed("Necesitas escribir una firma para guardar el acuerdo.", "top", "firma");
-      //this.isLoading = false;
-    }else{
-      this.sig6.backgroundColor = "rgb(255, 255, 255)";this.sig6.minWidth = 1;this.sig6.maxWidth = 1.5;
-    this.sig6.dotSize = 3; const mySignature = this.sig6.toDataURL("image/jpeg"); console.log(mySignature);
-
-      //const mySignature =this.sig5.toDataURL("image/jpeg");
-      //this.acuerdoDeuda.FirmaDeudor = mySignature.split(',')[1];
-      this.acuerdoFiniquito.FirmaCliente = mySignature.split(',')[1];
-      
-      console.dir(this.acuerdoFiniquito);
-
-      setTimeout(() => {
-        this.guardarFiniquito();  
-      }, 1800);
-
-    }
-
+    this.sig6.backgroundColor = "rgb(255, 255, 255)";
+    this.sig6.minWidth = 1;
+    this.sig6.maxWidth = 1.5;
+    this.sig6.dotSize = 3;
+    const mySignature = this.sig6.toDataURL("image/jpeg");
+    this.acuerdoFiniquito.FirmaCliente = mySignature.split(',')[1];
+    this.guardarFiniquito();
   }
 
   guardarFiniquito(){
@@ -207,31 +258,41 @@ export class FiniquitoPage implements OnInit {
           
           //alert(this.CodigoReclamo)
 
-          if (this.CodigoReclamo == null) {
+          if (!this.CodigoReclamo?.toString().trim()) {
             this.toaster.presentToastNoButtonsRed("Esta atención aún no ha sido completada y no cumple los requisitos para generar un finiquito.", "top", "finiquito");
             this.isLoading = false;
           }else{
             
           this.api.insertarFiniquitoManual(this.acuerdoFiniquito).pipe( 
-            finalize(async ()=>{
-              
-              this.ya = true;
-              this.toaster.presentToastNoButtons('Finiquito Guardado con Exito. Puedes descargar una copia y enviarla a tu correo.', 'middle', 'deuda');
-              this.finiquitoCompleto = true;
-              //await load.dismiss();
-            })
+            finalize(() => this.isLoading = false)
             
           ).subscribe(
              async (res) =>{
-              this.isLoading = false;
+              this.ya = true;
+              this.finiquitoCompleto = true;
+              localStorage.setItem(`finiquitoEnviado-${this.idAtencion}`, 'true');
+              this.sig6.off();
+              this.toaster.presentToastNoButtons('Finiquito guardado exitosamente.', 'middle', 'finiquito');
               console.log('Esto viene del finiquito');
               console.dir(res);
-              //this.idTablaAjustador = res.toString();
+             },
+             (error) => {
+              this.toaster.presentToastNoButtonsRed(
+                error?.error?.Message || 'No fue posible enviar el finiquito. Intenta nuevamente.',
+                'top',
+                'finiquito'
+              );
              })
             /**/
           }
 
            
+  }
+
+  goExpediente() {
+    this.router.navigate(['./expediente'], {
+      queryParams: { Id: this.atencionId || Number(this.idAtencion), Source: 1 }
+    });
   }
 
   printPdf(){

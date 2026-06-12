@@ -9,6 +9,7 @@ import { emptySignature, emptySignatureWhite, firmaDemoAjustador } from '../envi
 import { ApiService } from '../services/api.service';
 import { NavigationExtras, Router } from '@angular/router';
 import { logoFicohsa } from '../environments/default-images';
+import { DeviceService } from '../services/device.service';
 
 @Component({
   selector: 'app-esignature',
@@ -24,20 +25,27 @@ export class EsignaturePage implements OnInit {
   firma: any = [];
   atIndex:any;
   deviceWidth:any;
+  canvasHeight = 150;
   idAtencion:any;
   sig: SignaturePad;
   component=AjustadorhnPage;
   wait: any;
   fsLogo: string;
   constructor(private platform:Platform, private navController:NavController, private api:ApiService, private tostador:ToastService,
-    private router: Router) { 
+    private router: Router, private deviceService: DeviceService) { 
       this.fsLogo = logoFicohsa
     this.idAtencion = localStorage.getItem('idAtencion');
     this.elCliente = localStorage.getItem('elCliente');
-    if (this.platform.is('android')) {
-      this.deviceWidth = this.platform.width()-90;
-    }else{
-      this.deviceWidth = this.platform.width()-100;
+    const platformWidth = this.platform.width();
+    const platformHeight = this.platform.height();
+    const isPhonePortrait = this.deviceService.isPhone && platformHeight > platformWidth;
+    if (isPhonePortrait) {
+      this.deviceWidth = Math.max(platformWidth - 28, 280);
+      this.canvasHeight = 178;
+    } else if (this.platform.is('android')) {
+      this.deviceWidth = platformWidth - 90;
+    } else {
+      this.deviceWidth = platformWidth - 100;
     }
   }
 
@@ -79,13 +87,13 @@ export class EsignaturePage implements OnInit {
         ).subscribe(
           (res) => {
             console.log(res, 'token respuesta');
+            localStorage.setItem('dSignatureAsegurado', this.firmaPrecargada);
             this.tostador.presentToastNoButtons("Firma guardada exitosamente! Ya puedes reutilizarla cuando sea necesario.", "top", "firma");
             const element = document.getElementById('cardAsegurado');
             const elementInput = document.getElementById('nombreInput');
-            element.setAttribute('style', 'border: none');
-            elementInput.setAttribute('style', 'border: none');
-            //this.isSignature = true;
-            
+            element?.setAttribute('style', 'border: none');
+            elementInput?.setAttribute('style', 'border: none');
+            this.goBack();
           },
           async (res) => {
             this.tostador.presentToastDataMissing(res.error.Message, 'top', 'firma');
@@ -95,9 +103,6 @@ export class EsignaturePage implements OnInit {
           }
         )
 
-        setTimeout(() => {
-          this.goBack();
-        }, 900);
       } else {
         this.tostador.presentToastNoButtons("Necesitas escribir una firma para guardarla.", "top", "firma");
         this.isLoading = false;

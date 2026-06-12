@@ -121,12 +121,14 @@ export class Tab2Page implements OnInit{
         this.atenciones?.sort((a,b)=> b.IdAtencion-a.IdAtencion);
         
         setTimeout(() => {
-            const atencionesIds = document.getElementsByClassName('atencion-id');
+            const atencionesIds = document.getElementsByClassName('result-id');
+            const clientesNombres = document.getElementsByClassName('cliente-nombre');
             //alert(atencionesIds.length)  
             if (this.atenciones) {
               for (let index = 0; index < this.atenciones.length; index++) {
               const element = this.atenciones[index];
               atencionesIds[index].setAttribute('style', 'color:'+element.ColorEstado);
+              clientesNombres[index].setAttribute('style', 'color: black');
             }
             }
             

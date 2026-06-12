@@ -4,14 +4,14 @@
 
 export const environment = {
   production: false,
-  api_url: "https://testportal.porsalud.net/Outer/WSRestApiHelp/api",
+  api_url: "https://portal.porsalud.net/Outer/WSRestApiHelp/api",
   message: "PRU"
   
 };
 
 export const helpFilesUrlTest = {
   production : false,
-  api_url: "https://testportal.porsalud.net/Applications/HELP/help_CargaDeArchivos/UploadArchive"
+  api_url: "https://portal.porsalud.net/Applications/HELP/help_CargaDeArchivos/UploadArchive"
 }
 
 export const helpFilesUrl = {

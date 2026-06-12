@@ -82,19 +82,19 @@
         <ion-card id="cardFirmaAjustador" class="signature-canvas-card">
           <ion-card-content>
             <canvas id="canvas3" #canvas3 width="{{canvasAseguradoWidth}}" [height]="170"></canvas>
+
+            <div class="signature-actions">
+              <ion-button fill="clear" (click)="clear()">
+                <ion-icon slot="start" name="trash-outline"></ion-icon>
+                Limpiar
+              </ion-button>
+              <ion-button (click)="saveSignature()">
+                <ion-icon slot="start" name="save-outline"></ion-icon>
+                Guardar firma
+              </ion-button>
+            </div>
           </ion-card-content>
         </ion-card>
-
-        <div class="signature-actions">
-          <ion-button fill="clear" (click)="clear()">
-            <ion-icon slot="start" name="trash-outline"></ion-icon>
-            Limpiar
-          </ion-button>
-          <ion-button (click)="saveSignature()">
-            <ion-icon slot="start" name="save-outline"></ion-icon>
-            Guardar firma
-          </ion-button>
-        </div>
       </div>
     </main>
   </section>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <defs>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="200%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#15305f" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <circle cx="120" cy="110" r="82" fill="#1bb5dd" opacity="0.08" stroke="#1bb5dd" stroke-width="3">
+    <animate attributeName="r" values="56;88;56" dur="2.2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.28;0;0.28" dur="2.2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="120" cy="110" r="64" fill="#0058cb" opacity="0.10" stroke="#0058cb" stroke-width="3">
+    <animate attributeName="r" values="50;76;50" dur="2.2s" begin="0.7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.24;0;0.24" dur="2.2s" begin="0.7s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="120" cy="110" r="49" fill="#ffffff" opacity="0.82"/>
+
+  <g filter="url(#shadow)">
+    <path d="M120 188 99 157h42z" fill="#14365f"/>
+    <circle cx="120" cy="111" r="55" fill="#ffffff" stroke="#14365f" stroke-width="7"/>
+    <circle cx="120" cy="111" r="42" fill="#14365f"/>
+  </g>
+
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="7">
+    <path d="M120 82v58"/>
+    <path d="M91 95h58"/>
+    <path d="m97 98-15 27h30z"/>
+    <path d="m143 98-15 27h30z"/>
+    <path d="M101 143h38"/>
+  </g>
+</svg>

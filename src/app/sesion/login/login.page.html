@@ -1,101 +1,77 @@
-<!-- lOGIN FROMA --COMPONENT 1 -->
-    <!-- Content -->
-    <ion-content style="position: absolute;bottom:0;left:0; overflow: hidden; overflow-y: hidden;">
-      <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
-      <ion-footer *ngIf="isLoading == true"></ion-footer>
+<ion-content class="login-page" [fullscreen]="true">
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer id="spinFooter" *ngIf="isLoading == true"></ion-footer>
 
-      
+  <img id="olaArriba" class="login-wave login-wave-top" src="../../../assets/materiales/ola_arriba.svg" alt="" />
+  <img id="olaAbajo" class="login-wave login-wave-bottom" src="../../../assets/materiales/ola_abajo.svg" alt="" />
 
-      <strong></strong>
-      <img id="logoHelp" class="mi-logo" src="../../../assets/logos/help.png" alt="Ficohsa Waves" />
+  <main class="login-shell">
+    <section class="login-brand" aria-label="HELP Ajustadores">
+      <img id="logoHelp" class="login-logo" src="../../../assets/logos/help.png" alt="HELP" />
+      <div class="login-brand-copy">
+        <p>HELP Ajustadores</p>
+        <h1>Acceso de ajustadores</h1>
+      </div>
+    </section>
 
-      <img id="olaAbajo" class="mi-imagen" src="../../../assets/materiales/ola_abajo.svg" alt="Ficohsa Waves" />
-      <img id="olaArriba" class="mi-imagensita" src="../../../assets/materiales/ola_arriba.svg" alt="Ficohsa Waves"/>
-      <ion-footer style="position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 50%;
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      box-shadow: none;
-      border: none;
-      margin-left: 26%;
-      z-index: 1050;">
-        <ion-grid id="someGrid" style="background: transparent;" class="login-grid">
-          <ion-row style="margin-left: -5px; margin-right: 2px;" class="login-row">
-            <ion-col size="12">
-              <form (ngSubmit)="login()" [formGroup]="credenciales" id="loginform">
-                <ion-col class="ion-padding" size="12" size-md="10" push-md="1">
+    <section class="login-panel">
+      <form (ngSubmit)="login()" [formGroup]="credenciales" id="loginform" class="login-form">
+        <header class="login-form-header">
+          <p>Iniciar sesión</p>
+          <h2>Bienvenido</h2>
+        </header>
 
-                  <ion-label style="padding-left: 0; margin-left: -15px; color: #0058CB;">Correo electrónico</ion-label>
-                  <ion-input class="sesion-dato" required type="email" formControlName="user" (ionChange)="walkEmail($event)" (ionBlur)="validateEmail()" [(ngModel)]="item.user" 
-                      (click)="hideRegister()" onfocusin="readInput($event)" name="usernamevalue" placeholder="Introduzca su dirección email" label="Correo electrónico"> 
-                      </ion-input>
+        <label class="login-field-label" for="login-email">Correo electrónico</label>
+        <ion-input
+          id="login-email"
+          class="sesion-dato"
+          required
+          type="email"
+          formControlName="user"
+          (ionChange)="walkEmail($event)"
+          (ionBlur)="validateEmail()"
+          [(ngModel)]="item.user"
+          name="usernamevalue"
+          placeholder="correo@dominio.com">
+        </ion-input>
 
-                      <br>
-                      <ion-label style="padding-left: 0; margin-left: 0px; color: #0058CB;">Contraseña</ion-label>
-                      <ion-input class="sesion-dato" required [type]="isVisible ? 'text' : 'password'" formControlName="password" (ionChange)="validatePassword()" [(ngModel)]="item.password"
-                      (click)="hideRegister()" placeholder="Introduzca su clave de acceso"></ion-input>
+        <label class="login-field-label" for="login-password">Contraseña</label>
+        <div class="password-field">
+          <ion-input
+            id="login-password"
+            class="sesion-dato password-input"
+            required
+            [type]="isVisible ? 'text' : 'password'"
+            formControlName="password"
+            (ionChange)="validatePassword()"
+            [(ngModel)]="item.password"
+            placeholder="Clave de acceso">
+          </ion-input>
 
-                      <ion-icon id="eyeButton" [name]="isVisible ? 'eye-off' : 'eye'" aria-hidden="true" color="primary" style="    float: right;
-                        font-size: 1.5rem;
-                        z-index: 1090;
-                        position: absolute;
-                        right: -500px;
-                        bottom: 23%;"
-                        (click)="toggleVisual()">
-                      </ion-icon>
-                    
-                </ion-col>
-                <ion-col class="ion-padding" size="12" size-md="10" push-md="1">
-                  <ion-row class="ion-padding-top ion-margin-top">
-                    <ion-col size="12" class="ion-no-padding ion-align-self-center">
-                      <ion-button class="button-round ion-text-capitalize" expand="full" shape="round" type="submit" [disabled]="!credenciales.valid"
-                      color="primary" style="height: 50px;">
-                        Iniciar Sesion
-                      </ion-button>
-                    </ion-col>
-                  </ion-row>
-                  <ion-row class="ion-padding-top ion-margin-top login-row">
-                    <ion-col size="12" class="ion-no-padding ion-align-self-center">
-                      <ion-button class="button-round ion-text-capitalize warning-button ion-align-self-right" shape="round"
-                      style="color: #F04F23;float: right;"
-                      fill="outline" (click)="recoveryPassword()" >
-                        Recuperar Contraseña
-                      </ion-button>
-  
-                    </ion-col>
-                  </ion-row>
-                </ion-col> 
-              </form>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-footer>
-      
-    </ion-content>
+          <ion-button class="password-toggle" fill="clear" type="button" (click)="toggleVisual()" aria-label="Mostrar u ocultar contraseña">
+            <ion-icon [name]="isVisible ? 'eye-off' : 'eye'" aria-hidden="true"></ion-icon>
+          </ion-button>
+        </div>
 
-    <ion-grid id="connectIndicatorLogin" style="background: transparent; height: 0px;padding: 0; display: none; position: absolute;left: 0; top: 0; z-index: 1000;
-        width: 100%;" (click)="permitirGPS(conectividadStat)">
-        <ion-row style="width: 100%;">
-          <ion-col size="12">
-            <ion-chip class="chip-connect">
-              <ion-icon name="locate" style="position: absolute;
-              left: 220px;
-              color: white;
-              font-size: 2rem;"
-              ></ion-icon>
+        <ion-button class="login-submit ion-text-capitalize" expand="block" shape="round" type="submit" [disabled]="!credenciales.valid">
+          Iniciar sesión
+        </ion-button>
 
-              <ion-label style="margin-left: 250px; font-size: 1.3rem;">
-                {{estadoConexionGPS}} <!--span>{{estadoConexionGPS}}</span -->
-              </ion-label>
-              <!--ion-icon name="close-circle" style="position: absolute;
-              right: 15px;
-              color: white;
-              font-size: 1.6rem;"
-              ></ion-icon -->
-            </ion-chip>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+        <ion-button class="recovery-button ion-text-capitalize" expand="block" fill="clear" shape="round" type="button" (click)="recoveryPassword()">
+          Recuperar contraseña
+        </ion-button>
+      </form>
+    </section>
+  </main>
+</ion-content>
+
+<ion-grid id="connectIndicatorLogin" class="connect-indicator" (click)="permitirGPS(conectividadStat)">
+  <ion-row>
+    <ion-col size="12">
+      <ion-chip class="chip-connect">
+        <ion-icon name="locate"></ion-icon>
+        <ion-label>{{estadoConexionGPS}}</ion-label>
+      </ion-chip>
+    </ion-col>
+  </ion-row>
+</ion-grid>

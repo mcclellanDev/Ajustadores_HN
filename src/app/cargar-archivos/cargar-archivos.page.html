@@ -1,0 +1,143 @@
+<ion-header [translucent]="true">
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer id="loaderFooter" *ngIf="isLoading == true"></ion-footer>
+
+  <ion-toolbar>
+    <div style="display: flex; justify-content: flex-end; padding: 40px 13px">
+      <ion-icon
+        id="botonAtras"
+        (click)="goBack()"
+        name="arrow-back"
+        color="whiteColor"
+        style="font-size: 24px; position: absolute; left: 5px; margin-top: -7px;"
+      ></ion-icon>
+      <div *ngIf="esSolicitud == true" color="whiteColor" style="color: white;position:absolute;left:10%;font-size:1.1rem;top:40%;">Subir Imágenes</div>
+       <div *ngIf="esSolicitud == false" color="whiteColor" style="color: white;position:absolute;left:10%;font-size:1.1rem;top:40%;">Atención # {{idAtencion}}</div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <br>
+  
+  <br>
+  <ion-chip (click)="openFilesInput(0)" style="margin-left: 2%;" class="chip-imagenes" size="small" color="primary" [outline]="true">
+    <ion-icon name="image"  size="small" color="primary"></ion-icon>
+    <ion-label class="chip-label">Galería</ion-label>
+    <!--ion-icon name="chevron-up" class="chip-icon"></!--ion-icon -->
+  </ion-chip>
+
+  <ion-chip (click)="abrirCamara()" style="margin-left: 2%;" class="chip-imagenes-camara" size="small" [outline]="true">
+    <ion-icon name="camera" size="small"  class="icono-camara"></ion-icon>
+    <ion-label class="chip-label">Cámara</ion-label>
+    <!--ion-icon name="chevron-up" class="chip-icon"></!--ion-icon -->
+  </ion-chip>
+
+  <ion-chip (click)="openFilesInput(1)" style="margin-left: 2%;" class="chip-imagenes-video" size="small" [outline]="true">
+    <ion-icon name="videocam" size="small"  class="icono-video"></ion-icon>
+    <ion-label class="chip-label">Video</ion-label>
+    <!--ion-icon name="chevron-up" class="chip-icon"></!--ion-icon -->
+  </ion-chip>
+  
+
+  
+
+  <input #fotoInput type="file" id="fileInput" name="files[]" hidden multiple accept="image/*"/>
+  <input #videoInput type="file" id="fileInputV" name="filesv[]" hidden multiple accept="video/*"/>
+  <input #pdfInput type="file" id="fileInputP" name="filesv[]" hidden multiple accept="application/pdf"/>
+
+  <br><br><br>
+  <ion-card>
+    <ion-card-header id="loadingHeader" style="display: none;">
+      <ion-card-title>Carga de {{archivoTipo}}</ion-card-title>
+      <ion-card-subtitle>{{cantidad}} archivos seleccionados ... </ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+
+      
+
+      <ul id="title-list" style="list-style-type: none; display: none;max-height: 300px; overflow-y:scroll;">
+        <li>
+          <ion-grid style="width: 100%;">
+            <ion-row>
+              <ion-col size="9"><strong>Editar Lista de {{archivoTipo}}</strong></ion-col>
+              <ion-col size="3" (click)="'goTo(1, videos)'"><ion-icon name="cog" style="position: absolute; right:0; font-size:1.8rem; color:#f44336"></ion-icon></ion-col>
+            </ion-row>
+          </ion-grid>
+        </li>
+      </ul>
+
+      <ul id="sortable-list" style="list-style-type: none;" class="foto-lista">
+        
+        <li *ngFor="let foto of fotos; let i = index"  class="sortable-item foto-list">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="3" (click)="handleFileModal(1, foto, i)">
+                <ion-thumbnail>
+                  <img [src]=foto.Foto />
+                </ion-thumbnail>
+              </ion-col>
+              <ion-col size="7">
+                {{ foto.Nombre }}
+              </ion-col>
+              <ion-col size="2" class="delete-image-column">
+                <ion-button fill="clear" color="danger" class="delete-image-button" (click)="confirmDeleteFoto(i, $event)">
+                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+          <ion-input style="display: none;" #descripcionFoto class="descripcion-foto descripcion-entrada" [value]="foto.Descripcion"></ion-input>
+          <ion-input style="display: none;" #indexFoto [value]="i"></ion-input>
+          
+          <ion-chip [outline]="true" color="primary" class="chip-tipo-foto">
+            <ion-label class="" position="fixed">
+              Tipo de Fotografía</ion-label>
+            <ion-select class="select-tipo-foto" [(ngModel)]="foto.IdTipo" multiple="false"
+            interface="action-sheet" 
+                      okText="Seleccionar" cancelText="No seleccionar" [interfaceOptions]="customActionSheetOptions" mode="ios">
+              <ion-select-option *ngFor="let tipo of tipoFotos;" [value]="tipo.Id"
+              (ionChange)="seleccionarTipoDeFoto()">{{tipo.TipoFotografia}}
+                
+              </ion-select-option>
+              <br>
+              <br>
+              <ion-select-option style="color: white;">Ajustadores App</ion-select-option>
+              <br>
+            </ion-select>
+            <ion-input [hidden]="true" #descripcionFoto [value]="foto.Descripcion"></ion-input>
+            <ion-input [hidden]="true" #indexFoto [value]="i"></ion-input>
+            <!--ion-input placeholder="Entra Una Descripción"  [(ngModel)]="foto.Descripcion" class="form-control descripcion-entrada" (ionBlur)="'entraDescripcionFoto(descripcionFoto.value, indexFoto.value)'"></!--ion-input -->
+          </ion-chip>
+
+          <ion-chip color="primary" [(ngModel)]="foto.Descripcion" class="chip-descripcion"
+          (click)="handleFileModal(1, foto, i)">
+            <ion-label class="chip-descripcion-texto">{{foto.Descripcion}}</ion-label>
+            <ion-icon name="cog" style="font-size: 1.6rem;"></ion-icon>
+          </ion-chip>          
+          
+          <br> <small style="float: right; color: #f44336;"> {{foto.SizeMb}} Mb </small>
+          <progress *ngIf="isLoadingItem" #loadValue id="loadValue" value="0" max="100" style="width: 100%;" class="progress-value"></progress>
+        </li>
+        <li *ngFor="let video of videos let i = index" (click)="handleFileModal(2, video, i)" class="sortable-item">
+          {{ video.Descripcion }}
+          <br> <small style="float: right; color: #f44336;"> {{video.SizeMb}} Mb </small>
+          <progress *ngIf="isLoadingItem" #loadValue id="loadValue" value="0" max="100" style="width: 100%;" class="progress-value"></progress>
+        </li>
+        <br><br>
+      </ul>
+
+      
+
+      
+
+    </ion-card-content>
+  </ion-card>
+
+  <ion-footer style="position: fixed;bottom:0;left:0;width:100%;height: auto;background: white;">
+    <ion-chip (click)="handleSave(tipo, idAtencion)" color="primary" class="button-chip">
+      <ion-label>Guardar</ion-label>
+    </ion-chip>
+  </ion-footer>
+
+</ion-content>

@@ -2,7 +2,7 @@ import { ajustadorHn, clienteHn } from './../interfaces/formulario';
 import { Ajustador } from './../interfaces/ajustador';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router, NavigationExtras, RouterOutlet, ActivationStart } from '@angular/router';
-import {  AlertController, LoadingController, ToastController, Platform } from '@ionic/angular';
+import {  ActionSheetController, AlertController, LoadingController, ToastController, Platform } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
 import { Expedientes } from '../interfaces/expedientes';
 import { ApiService } from '../services/api.service';
@@ -13,11 +13,13 @@ import { ConnectionStatus } from '@capacitor/network';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { NativeGeocoder} from '@ionic-native/native-geocoder/ngx';
 import { GoogleMap } from '@capacitor/google-maps';
-import { iconColors } from '../environments/mapas';
 //import { GoogleMaps } from '@ionic-native/google-maps';
 import { Location } from '@angular/common';
 import * as $ from 'jquery';
 import { meses } from '../environments/calendario';
+import { DeviceService } from '../services/device.service';
+import * as L from 'leaflet';
+import { ExpedienteInfoModalComponent } from './expediente-info-modal.component';
 
 @Component({
   selector: 'app-expediente',
@@ -26,7 +28,6 @@ import { meses } from '../environments/calendario';
 })
 export class ExpedientePage implements OnInit {
   @ViewChild('mapExpediente') mapRef: ElementRef<HTMLElement>;
-  @ViewChild('#modalInfo') modalInfo: ElementRef;
   @ViewChild(RouterOutlet) outlet: RouterOutlet;
 
   newMaP: GoogleMap;
@@ -40,10 +41,22 @@ export class ExpedientePage implements OnInit {
   directionsService: google.maps.DirectionsService; directionsDisplay: google.maps.DirectionsRenderer;trackInterval: NodeJS.Timeout; moveCoords: any; moverCoordenadas: string;
   diferencia: string;  distanciaFinal: string;  distanciaInicialMetros: number;  distanciaMetros: any;  diferenciaMetros: number;  rutaInicial: any;  mediaLatitud: string;
   mediaLongitud: string;  counter: any;  ajuMarker: google.maps.Marker;  pointsArray: any;  puntos: string;  firstInterval: NodeJS.Timeout;  crashMarker: google.maps.Marker;
+  crashOverlay: google.maps.OverlayView;
+  leafletMap: L.Map;
+  leafletCrashMarker: L.Marker;
+  leafletAjuMarker: L.Marker;
+  leafletRouteLine: L.Polyline;
+  leafletTravelLine: L.Polyline;
+  leafletTravelPoints: L.LatLng[] = [];
+  leafletAutoFollow = true;
+  leafletIdleTimer: ReturnType<typeof setTimeout>;
+  readonly leafletFollowZoom = 17;
   bounds: google.maps.LatLngBounds;  marcadorAju: any; routeString:any; ajustadorId:any; watcher:any;  geoloc: Geolocation;  distanciaConvert: string;  distanciaString: string;
   mapInfoText: any; anyInterval:any; isArrived:boolean = false; isTracking:boolean=false;  arrayString: string;  elCliente: any;  atenciones: any;  bpmFicohsa: any;breakpoint:number = 1;
   newMarkers:any=[]; coordsLat:any; coordsLon:any; cacheCount:number=0; cacheCliente:any=[]; forwardUrl:any; lugar:any;
   source: any;  proveedorLatitud: number;  proveedorLongitud: number; coordenadasDeCorreccion:any=[]; coordenadasAju:any;
+  nuevaLatitud: number;
+  nuevaLongitud: number;
   elFiniquito: {
     NombreCliente: any; // de la info del asegurado
     Poliza: any; // de la info del asegurado
@@ -70,11 +83,14 @@ export class ExpedientePage implements OnInit {
   };
   now: Date;  diaPie: number;  mesPie: number;  anioPie: number;  daDate: Date;  dia: any;  mes: any;  anio: any;  fechaParrafo: string;  fechaPie: string;
   formateadaSiniestro: string;  identidadAsegurado: any;  laExpediente: any = [];
+  isTablet: boolean = false;  isItTablet: boolean = false;
+  customActionSheetOptions = {cssClass: 'custom-action-sheet'}; initialBrakeInfo:any='0.9';
   
 
   constructor(private router: Router,private loading: LoadingController,private alert: AlertController,private toaster: ToastController,private toastr: ToastService,
     private api: ApiService,private routeActive: ActivatedRoute,private call: CallNumber,private myModal: ModalController,private platform:Platform,
-    private so: ScreenOrientation,private geo:NativeGeocoder, private location:Location) {
+    private so: ScreenOrientation,private geo:NativeGeocoder, private location:Location, private actionSheetCtrl: ActionSheetController,
+    private deviceService: DeviceService) {
       this.user= this.api.currentUser; this.routeActive.queryParams.subscribe(params => {
         this.idAtencion= params.Id;
       })
@@ -106,6 +122,12 @@ export class ExpedientePage implements OnInit {
   }
 
   ionViewDidEnter(){
+    this.isItTablet = this.platform.is('tablet');
+
+    if (this.isItTablet == true) {
+      this.initialBrakeInfo = '1';
+    }
+
   let polNum:any;
   let cerNum:any;
    this.getExpediente();
@@ -161,6 +183,7 @@ export class ExpedientePage implements OnInit {
 
   ngOnInit() {
     // Manejo de botón de regreso
+    this.isTablet = this.deviceService.isTablet;
     
     localStorage.setItem('origin', window.location.pathname);
     this.platform.backButton.subscribe(()=>{
@@ -186,7 +209,6 @@ export class ExpedientePage implements OnInit {
       
       setTimeout(() => {
         this.obtenerCacheCliente(this.idAtencion);
-        this.triggerModalInfo();
         
         this.api.ActualizaLogAtencion(this.idAtencion).pipe(
           finalize(async () => {
@@ -275,19 +297,39 @@ export class ExpedientePage implements OnInit {
   }
 
   triggerModalInfo(){
-    console.dir(document.getElementById('open-modal-info'))
-    $('#open-modal-info').click();
-    setTimeout(() => {
-      $('.ion-accordion-toggle-icon').eq(2).click();
-     }, 600);
+    this.openInfoModal(true);
+  }
+
+  async openInfoModal(openThirdAccordion: boolean = true) {
+    const topActionSheet = await this.actionSheetCtrl.getTop();
+    if (topActionSheet) {
+      await topActionSheet.dismiss();
+      await topActionSheet.onDidDismiss();
+    }
+
+    const modal = await this.myModal.create({
+      component: ExpedienteInfoModalComponent,
+      componentProps: {
+        expediente: this.expediente,
+        idAtencion: this.idAtencion,
+        miMoneda: this.miMoneda,
+        openThirdAccordion,
+        traceRoute: () => this.retraceRoute()
+      },
+      presentingElement: document.querySelector('ion-router-outlet') as HTMLElement,
+      backdropDismiss: true,
+      initialBreakpoint: this.initialBrakeInfo,
+      breakpoints: [0, 0.25, 0.5, 0.8, 0.9, 1],
+      cssClass: 'expediente-info-modal',
+      mode: 'ios'
+    });
+
+    await modal.present();
   }
 
   moveTo(breakpoint: number) {
-    const { nativeElement } = this.modalInfo;
-    if (!nativeElement) {
-      return;
-    }
-    nativeElement.setCurrentBreakpoint(breakpoint);
+    const modal = document.querySelector('ion-modal.expediente-info-modal') as HTMLIonModalElement;
+    modal?.setCurrentBreakpoint(breakpoint);
   }
 
   goAdeuda(){
@@ -375,6 +417,91 @@ export class ExpedientePage implements OnInit {
     this.router.navigate(['./printer']);
   }
 
+  async presentExpedienteActions(event?: Event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    const topModal = await this.myModal.getTop();
+    await topModal?.dismiss().catch(() => {});
+
+    let shouldOpenInfo = false;
+    const actionSheet = await this.actionSheetCtrl.create({
+      cssClass: 'expediente-actions-sheet',
+      header: 'Expediente',
+      subHeader: 'Atención #' + this.idAtencion,
+      buttons: [
+        {
+          text: 'Audiencia',
+          icon: 'chatbubbles-outline',
+          handler: () => {
+            this.goAudience();
+          }
+        },
+        {
+          text: 'Imprimir',
+          icon: 'print-outline',
+          handler: () => {
+            this.goPrinter();
+          }
+        },
+        
+        {
+          text: 'Finiquito',
+          icon: 'cash-outline',
+          handler: () => {
+            this.goBeneficiario();
+          }
+        },
+        {
+          text: 'Fotos',
+          icon: 'camera-outline',
+          handler: () => {
+            this.goFotos();
+          }
+        },
+        {
+          text: 'Solicitar grúa',
+          icon: 'car-sport-outline',
+          cssClass: 'expediente-action-warning',
+          handler: () => {
+            this.grua();
+          }
+        },
+        {
+          text: 'Información',
+          icon: 'information-circle-outline',
+          cssClass: 'expediente-action-bluegray',
+          handler: () => {
+            shouldOpenInfo = true;
+          }
+        },
+        {
+          text: 'Trazar ruta',
+          icon: 'navigate-outline',
+          cssClass: 'expediente-action-primary',
+          handler: () => {
+            this.retraceRoute();
+          }
+        },
+        {
+          text: 'Cancelar',
+          icon: 'close-outline',
+          role: 'cancel',
+          cssClass: 'expediente-action-cancel'
+        }
+      ]
+    });
+
+    await actionSheet.present();
+    await actionSheet.onDidDismiss();
+
+    if (shouldOpenInfo) {
+      await this.openInfoModal(true);
+    }
+  }
+
+
+
   async getExpediente(){
     this.isLoading = true;
     this.api.Expediente(this.idAtencion).pipe( 
@@ -408,8 +535,10 @@ export class ExpedientePage implements OnInit {
           this.formateadaSiniestro = 'Fecha : '+fechaRegistro.toString().split('T')[0].toString()+', Hora : '+(fechaRegistro.toString().split('T')[1].toString()).split('.')[0];
 
         this.directionsService = new google.maps.DirectionsService;
-      this.directionsDisplay = new google.maps.DirectionsRenderer;
-      this.directionsDisplay.setMap(this.mapa);
+      this.directionsDisplay = new google.maps.DirectionsRenderer({ suppressMarkers: true });
+      if (this.mapa) {
+        this.directionsDisplay.setMap(this.mapa);
+      }
 
         this.createMap(this.directionsService, this.directionsDisplay);
 
@@ -425,18 +554,18 @@ export class ExpedientePage implements OnInit {
           Motor: this.expediente[0].Motor, // de la info del asegurado
     
           // variables desde inputs
-          NumeroReclamo: 'string', // despues de crear el reclamo
+          NumeroReclamo: '', // despues de crear el reclamo
           FechaDesde: "2023-11-14T19:55:55.849Z", // Input directo
           FechaHasta: "2023-11-14T19:55:55.849Z", // Input directo
-          TipoCoberturaFicohsa: "string", // Input directo
-          NombreQuienRecibe: "string", // Input directo
-          IdentidadQuienRecibe: "string", // Input directo
-          NumeroCheque: "string", // Input directo
+          TipoCoberturaFicohsa: "", // Input directo
+          NombreQuienRecibe: "", // Input directo
+          IdentidadQuienRecibe: "", // Input directo
+          NumeroCheque: "", // Input directo
           FechaDelCheque: "2023-11-14T19:55:55.849Z", // Input directo
           ValorDelCheque: 0, // Input directo
-          NombreAFavor: "string", // Input directo
+          NombreAFavor: "", // Input directo
           FechaFirma: this.fechaPie, // Input directo
-          FirmaCliente: "string", // Desde el canvas
+          FirmaCliente: "", // Desde el canvas
 
         }
 
@@ -918,6 +1047,255 @@ export class ExpedientePage implements OnInit {
     
   }
 
+  private initLeafletMap(coordenadas: {lat: any, lng: any}, zoom: number = 11) {
+    const center = L.latLng(Number(coordenadas.lat), Number(coordenadas.lng));
+
+    if (!this.leafletMap) {
+      this.leafletMap = L.map('mapExpediente', {
+        attributionControl: false,
+        zoomControl: false
+      }).setView(center, zoom);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+      }).addTo(this.leafletMap);
+
+      L.control.zoom({
+        position: 'topright'
+      }).addTo(this.leafletMap);
+
+      this.bindLeafletCameraControls();
+    } else {
+      this.leafletMap.setView(center, zoom);
+    }
+
+    setTimeout(() => {
+      this.leafletMap.invalidateSize();
+    }, 250);
+  }
+
+  private bindLeafletCameraControls() {
+    if (!this.leafletMap) {
+      return;
+    }
+
+    const container = this.leafletMap.getContainer();
+    const handleUserInteraction = () => this.activateLeafletManualMode();
+
+    L.DomEvent.on(container, 'mousedown', handleUserInteraction);
+    L.DomEvent.on(container, 'touchstart', handleUserInteraction);
+    L.DomEvent.on(container, 'wheel', handleUserInteraction);
+
+    this.leafletMap.on('drag zoom', () => {
+      if (!this.leafletAutoFollow) {
+        this.scheduleLeafletAutoFollow();
+      }
+    });
+  }
+
+  private activateLeafletManualMode() {
+    const wasAutoFollowing = this.leafletAutoFollow;
+    this.leafletAutoFollow = false;
+
+    if (wasAutoFollowing && this.leafletRouteLine) {
+      setTimeout(() => {
+        if (!this.leafletAutoFollow && this.leafletMap && this.leafletRouteLine) {
+          this.leafletMap.fitBounds(this.leafletRouteLine.getBounds(), {
+            padding: [36, 36]
+          });
+        }
+      }, 80);
+    }
+
+    this.scheduleLeafletAutoFollow();
+  }
+
+  private scheduleLeafletAutoFollow() {
+    if (this.leafletIdleTimer) {
+      clearTimeout(this.leafletIdleTimer);
+    }
+
+    this.leafletIdleTimer = setTimeout(() => {
+      this.resumeLeafletAutoFollow();
+    }, 12000);
+  }
+
+  private resumeLeafletAutoFollow() {
+    this.leafletAutoFollow = true;
+
+    if (this.leafletMap && this.leafletAjuMarker) {
+      this.leafletMap.flyTo(this.leafletAjuMarker.getLatLng(), this.leafletFollowZoom, {
+        animate: true,
+        duration: 0.8
+      });
+    }
+  }
+
+  private appendLeafletTravelPoint(position: L.LatLng) {
+    const previousPoint = this.leafletTravelPoints[this.leafletTravelPoints.length - 1];
+
+    if (previousPoint && previousPoint.distanceTo(position) < 3) {
+      return;
+    }
+
+    this.leafletTravelPoints.push(position);
+
+    if (!this.leafletTravelLine) {
+      this.leafletTravelLine = L.polyline(this.leafletTravelPoints, {
+        color: '#14365f',
+        dashArray: '8 12',
+        lineCap: 'round',
+        opacity: 0.9,
+        weight: 5
+      }).addTo(this.leafletMap);
+      return;
+    }
+
+    this.leafletTravelLine.setLatLngs(this.leafletTravelPoints);
+  }
+
+  private bindLeafletCorrectionClick(directionsService, directionsDisplay, fallbackCoordinates: {lat: any, lng: any}) {
+    if (!this.leafletMap) {
+      return;
+    }
+
+    this.leafletMap.off('click');
+    this.leafletMap.on('click', (event: L.LeafletMouseEvent) => {
+      const nuevaLatitud = event.latlng.lat;
+      const nuevaLongitud = event.latlng.lng;
+
+      this.nuevaLatitud = nuevaLatitud;
+      this.nuevaLongitud = nuevaLongitud;
+
+      localStorage.setItem('coords-latitud', nuevaLatitud.toString());
+      localStorage.setItem('coords-longitud', nuevaLongitud.toString());
+      localStorage.setItem('coords-latitud-' + this.idAtencion, nuevaLatitud.toString());
+      localStorage.setItem('coords-longitud-' + this.idAtencion, nuevaLongitud.toString());
+      this.setCrashIconNew(nuevaLatitud, nuevaLongitud);
+
+      this.geoloc = navigator.geolocation;
+      this.geoloc.getCurrentPosition(pos => {
+        this.proveedorLatitud = pos.coords.latitude;
+        this.proveedorLongitud = pos.coords.longitude;
+
+        if (this.proveedorLatitud !== undefined && this.proveedorLatitud !== null) {
+          this.coordenadasAju = {lat: this.proveedorLatitud, lng: this.proveedorLongitud};
+        } else {
+          this.coordenadasAju = fallbackCoordinates;
+        }
+
+        setTimeout(() => {
+          const coordenadas = {lat: nuevaLatitud, lng: nuevaLongitud};
+          directionsService.route({
+            origin: this.coordenadasAju,
+            destination: coordenadas,
+            travelMode: 'DRIVING',
+          }, (response, status) => {
+            if (status === 'OK') {
+              this.renderRoute(response, directionsDisplay);
+              this.rutaInicial = response.routes[0];
+              this.pointsArray = response.routes[0].legs[0];
+              this.routeString = JSON.stringify(response);
+            }
+          });
+        }, 1000);
+      });
+
+      const jsonPositionCorreccion = {
+        Latitud: nuevaLatitud,
+        Longitud: nuevaLongitud,
+        RefAtencionId: this.idAtencion,
+        RefUsuarioId: this.api.currentUser.ProveedorAgenteId,
+        Tipo: 'AJU_CORRECCION',
+        Contador: 0
+      };
+
+      this.api.setPositionNRoute(jsonPositionCorreccion).pipe( 
+        finalize(async ()=>{
+          console.log('fin');
+        })
+      ).subscribe(
+         (res) =>{
+        },
+        async (res) => {
+          const alert = await this.alert.create({
+            header:'HELP',
+            message:res.error.Message,
+            buttons:['Ok']
+          });
+          await alert.present();
+        }
+      );
+    });
+  }
+
+  private getClientCrashIcon() {
+    return L.divIcon({
+      className: '',
+      html: `
+        <div class="help-client-crash-marker leaflet-client-crash-marker">
+          <span class="help-client-crash-halo help-client-crash-halo-one"></span>
+          <span class="help-client-crash-halo help-client-crash-halo-two"></span>
+          <span class="help-client-crash-pin">
+            <span class="help-client-crash-icon">
+              <img src="assets/iconos/localizacion.svg" alt="" aria-hidden="true" />
+            </span>
+          </span>
+        </div>
+      `,
+      iconSize: [115, 115],
+      iconAnchor: [57.5, 67],
+      popupAnchor: [0, -64]
+    });
+  }
+
+  private getAdjusterIcon() {
+    return L.icon({
+      iconUrl: 'assets/iconos/ajustador-legal-halo-preview.svg',
+      iconSize: [100, 100],
+      iconAnchor: [50, 78],
+      popupAnchor: [0, -72]
+    });
+  }
+
+  private renderRoute(response, directionsDisplay?) {
+    if (this.leafletMap) {
+      this.drawLeafletRoute(response);
+      return;
+    }
+
+    if (directionsDisplay) {
+      directionsDisplay.setDirections(response);
+    }
+  }
+
+  private drawLeafletRoute(response) {
+    const overviewPath = response?.routes?.[0]?.overview_path || [];
+    const latLngs = overviewPath.map(point => L.latLng(point.lat(), point.lng()));
+
+    if (!latLngs.length || !this.leafletMap) {
+      return;
+    }
+
+    if (this.leafletRouteLine) {
+      this.leafletMap.removeLayer(this.leafletRouteLine);
+    }
+
+    this.leafletRouteLine = L.polyline(latLngs, {
+      color: '#0058cb',
+      opacity: 0.88,
+      weight: 6
+    }).addTo(this.leafletMap);
+
+    if (this.leafletAutoFollow && this.leafletAjuMarker) {
+      this.leafletMap.setView(this.leafletAjuMarker.getLatLng(), this.leafletFollowZoom);
+    } else {
+      this.leafletMap.fitBounds(this.leafletRouteLine.getBounds(), {
+        padding: [36, 36]
+      });
+    }
+  }
+
   createMap(directionsService, directionsDisplay) {
     this.coordsLat = localStorage.getItem('coords-latitud');
     //let latitud = localStorage.getItem('expedienteLatitud');
@@ -934,112 +1312,226 @@ export class ExpedientePage implements OnInit {
       console.log("Las coordenadas");
       console.dir(coodernadas);
       
-      let mapOptions = {
-        zoom:11,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false
-      }
-  
-      this.mapa = new google.maps.Map(document.getElementById("mapExpediente"), mapOptions);
-      
-
-      if (this.mapa) {
-        this.mapa.addListener("click", (event) => {
-          let nuevaLatitud = event.latLng.lat();
-          let nuevaLongitud = event.latLng.lng();
-          localStorage.setItem('coords-latitud', nuevaLatitud);
-          localStorage.setItem('coords-longitud', nuevaLongitud);
-          this.setCrashIconNew(nuevaLatitud, nuevaLongitud);
-  
-          this.geoloc = navigator.geolocation;
-          this.geoloc.getCurrentPosition(pos=>{
-            this.proveedorLatitud = pos.coords.latitude;
-            this.proveedorLongitud = pos.coords.longitude;
-  
-            if (this.proveedorLatitud!=undefined && this.proveedorLatitud!=null) {
-              this.coordenadasAju = {lat: this.proveedorLatitud, lng: this.proveedorLongitud}
-            }else{
-              this.coordenadasAju = coodernadas;
-            }
-  
-            let coordenadas;
-          setTimeout(() => {
-            coordenadas = {lat: nuevaLatitud, lng: nuevaLongitud}
-            console.log('coordenadas de ');
-            console.dir(coordenadas);
-            console.dir(this.coordenadasAju)
-            //this.displayDirectionInit(this.directionsService,this.directionsDisplay, parseFloat(nuevaLatitud), parseFloat(nuevaLongitud), this.latitudAju, this.longitudAju);  
-            directionsService.route({
-              origin: this.coordenadasAju,
-              destination: coordenadas,
-              travelMode: 'DRIVING',
-            }, (response, status) => {
-              
-              if (status === 'OK') {
-                directionsDisplay.setDirections(response);
-                $('#botonRuta').click();
-                this.rutaInicial = response.routes[0];
-                this.pointsArray = response.routes[0].legs[0];
-                this.routeString = JSON.stringify(response)
-              }
-            })
-          }, 1000);
-          })
-  
-          
-  
-          
-    
-          const jsonPositionCorreccion = {
-            Latitud: nuevaLatitud,
-            Longitud: nuevaLongitud,
-            RefAtencionId: this.idAtencion,
-            RefUsuarioId: this.api.currentUser.ProveedorAgenteId,
-            Tipo: 'AJU_CORRECCION',
-            Contador: 0
-          }
-    
-          this.api.setPositionNRoute(jsonPositionCorreccion).pipe( 
-            finalize(async ()=>{
-              console.log('fin');
-            })
-          ).subscribe(
-             (res) =>{
-            },
-            async (res) => {
-              const alert = await this.alert.create({
-                header:'HELP',
-                message:res.error.Message,
-                buttons:['Ok']
-                
-              });
-              await alert.present();
-            }
-          )
-    
-    
-          
-        })
-      }
+      this.initLeafletMap(coodernadas, 11);
+      this.bindLeafletCorrectionClick(directionsService, directionsDisplay, coodernadas);
       
 
       this.directionsService = new google.maps.DirectionsService;
-      this.directionsDisplay = new google.maps.DirectionsRenderer;
-      this.directionsDisplay.setMap(this.mapa);
+      this.directionsDisplay = new google.maps.DirectionsRenderer({ suppressMarkers: true });
+      if (this.mapa) {
+        this.directionsDisplay.setMap(this.mapa);
+      }
 
       this.isTracking = true;
       this.isLoadingData = true;
       this.isTrack = true;
       setTimeout(() => {
-        this.displayDirectionInit(this.directionsService,this.directionsDisplay, this.latitud, this.longitud, this.latitud, this.longitud);
+        this.traceRouteFromCurrentPosition(this.directionsService, this.directionsDisplay, true);
       }, 1000);
-      setTimeout(() => {
-        this.mapa.setZoom(18);
-      }, 2500);
     }, 2000);
     
+  }
+
+  private getCrashRouteDestination(): Promise<{lat: number, lng: number}> {
+    if (Number.isFinite(this.nuevaLatitud) && Number.isFinite(this.nuevaLongitud)) {
+      return Promise.resolve({
+        lat: this.nuevaLatitud,
+        lng: this.nuevaLongitud
+      });
+    }
+
+    const cachedLatitudValue = localStorage.getItem('coords-latitud-' + this.idAtencion);
+    const cachedLongitudValue = localStorage.getItem('coords-longitud-' + this.idAtencion);
+    const cachedLatitud = Number(cachedLatitudValue);
+    const cachedLongitud = Number(cachedLongitudValue);
+
+    if (cachedLatitudValue !== null && cachedLongitudValue !== null &&
+        Number.isFinite(cachedLatitud) && Number.isFinite(cachedLongitud)) {
+      this.nuevaLatitud = cachedLatitud;
+      this.nuevaLongitud = cachedLongitud;
+      return Promise.resolve({
+        lat: cachedLatitud,
+        lng: cachedLongitud
+      });
+    }
+
+    return new Promise(resolve => {
+      this.api.obtenerCoordenadasPorAtencion(this.idAtencion, 'AJU_CORRECCION').pipe(
+        finalize(async () => {
+          console.log('getting corrected route');
+        })
+      ).subscribe(
+        (res) => {
+          if (res.length > 0) {
+            this.coordenadasDeCorreccion = res.sort((a,b) => {
+              return new Date(b.FechaRegistro).getTime() - new Date(a.FechaRegistro).getTime();
+            });
+            const fixedCoords = this.coordenadasDeCorreccion[0];
+            this.nuevaLatitud = parseFloat(fixedCoords.Latitud);
+            this.nuevaLongitud = parseFloat(fixedCoords.Longitud);
+            resolve({
+              lat: this.nuevaLatitud,
+              lng: this.nuevaLongitud
+            });
+          } else {
+            resolve({
+              lat: Number(this.latitud),
+              lng: Number(this.longitud)
+            });
+          }
+        },
+        () => {
+          resolve({
+            lat: Number(this.latitud),
+            lng: Number(this.longitud)
+          });
+        }
+      );
+    });
+  }
+
+  private setAdjusterRouteMarker(coordenadasAju: {lat: number, lng: number}) {
+    if (this.leafletMap) {
+      const position = L.latLng(coordenadasAju.lat, coordenadasAju.lng);
+
+      if (this.leafletAjuMarker) {
+        this.leafletAjuMarker.setLatLng(position);
+      } else {
+        this.leafletAjuMarker = L.marker(position, {
+          icon: this.getAdjusterIcon()
+        }).addTo(this.leafletMap);
+      }
+
+      this.appendLeafletTravelPoint(position);
+
+      if (this.leafletAutoFollow) {
+        this.leafletMap.setView(position, this.leafletFollowZoom);
+      }
+
+      return;
+    }
+
+    const ajuIconUrl = '../../assets/iconos/ajustador-legal-halo-preview.svg';
+    const ajuIcon = {
+      url: ajuIconUrl,
+      color: 'orange',
+      scaledSize: new google.maps.Size(45,45),
+      origin: new google.maps.Point(0, 0),
+      anchor: new google.maps.Point(0, 0)
+    }
+
+    if (this.ajuMarker) {
+      this.ajuMarker.setMap(null);
+    }
+
+    this.ajuMarker = new google.maps.Marker({
+      map: this.mapa,
+      position: coordenadasAju,
+      icon: ajuIcon
+    });
+    this.ajuMarker.setMap(this.mapa);
+  }
+
+  private saveInitialAdjusterPosition(coordenadasAju: {lat: number, lng: number}) {
+    const jsonAjuPosition = {
+      Latitud: coordenadasAju.lat,
+      Longitud: coordenadasAju.lng,
+      RefUsuarioId: this.api.currentUser.ProveedorAgenteId,
+    };
+
+    this.api.obtenerCoordenadasPorAtencion(this.idAtencion, 'AJU_INI').pipe(
+      finalize(async () => {
+        console.log('fin');
+      })
+    ).subscribe(
+      (res) => {
+        if (res.length > 0) {
+          return;
+        }
+
+        this.api.setAjuPosition(jsonAjuPosition).pipe(
+          finalize(async () => {
+            console.log('fin');
+          })
+        ).subscribe(() => {
+          const jsonPosition = {
+            Latitud: coordenadasAju.lat,
+            Longitud: coordenadasAju.lng,
+            RefAtencionId: this.idAtencion,
+            RefUsuarioId: this.api.currentUser.ProveedorAgenteId,
+            Tipo: 'AJU_INI',
+            Contador: 0
+          };
+
+          this.api.setPositionNRoute(jsonPosition).pipe(
+            finalize(async () => {
+              console.log('fin');
+            })
+          ).subscribe();
+        });
+      }
+    );
+  }
+
+  private traceRouteFromCurrentPosition(directionsService, directionsDisplay, isAutomatic: boolean = false) {
+    this.isLoading = true;
+
+    if (!isAutomatic) {
+      $('#botonCerrarModal').click();
+    }
+
+    this.geoloc = navigator.geolocation;
+    this.geoloc.getCurrentPosition(async pos => {
+      this.proveedorLatitud = pos.coords.latitude;
+      this.proveedorLongitud = pos.coords.longitude;
+
+      const coordenadasAju = {
+        lat: this.proveedorLatitud,
+        lng: this.proveedorLongitud
+      };
+      const coordenadas = await this.getCrashRouteDestination();
+
+      this.setAdjusterRouteMarker(coordenadasAju);
+      this.setClientCrashOverlay(coordenadas);
+
+      directionsService.route({
+        origin: coordenadasAju,
+        destination: coordenadas,
+        travelMode: 'DRIVING',
+      }, (response, status) => {
+        this.isLoading = false;
+        this.isLoadingData = false;
+
+        if (status !== 'OK') {
+          return;
+        }
+
+        this.renderRoute(response, directionsDisplay);
+        this.rutaInicial = response.routes[0];
+        this.pointsArray = response.routes[0].legs[0];
+        this.routeString = JSON.stringify(response);
+
+        const dist = response.routes[0].legs[0].distance.text;
+        const distM = response.routes[0].legs[0].distance.value;
+        localStorage.setItem('dist', dist);
+        localStorage.setItem('distM', distM.toString());
+        localStorage.setItem('rutaInicial', JSON.stringify(this.rutaInicial));
+        localStorage.setItem('routeString', JSON.stringify(this.routeString));
+        this.puntos = JSON.stringify(this.rutaInicial);
+
+        this.saveInitialAdjusterPosition(coordenadasAju);
+      });
+    }, () => {
+      this.isLoading = false;
+      this.isLoadingData = false;
+      this.setClientCrashOverlay({lat: this.latitud, lng: this.longitud});
+    }, {
+      enableHighAccuracy: true
+    });
+  }
+
+  retraceRoute() {
+    this.traceRouteFromCurrentPosition(this.directionsService, this.directionsDisplay, false);
   }
 
   trazaRuta(directionsService, directionsDisplay){
@@ -1060,7 +1552,7 @@ export class ExpedientePage implements OnInit {
       console.log('proveedorLatitud ' + this.proveedorLatitud);
       //alert('Aca 1 proveedorLatitud ' + this.proveedorLatitud);
 
-      const ajuIconUrl = '../../assets/img/ajucar-violet.svg';
+      const ajuIconUrl = '../../assets/iconos/ajustador-legal-halo-preview.svg';
       const ajuIcon = {
         url: ajuIconUrl,
         color: 'orange',
@@ -1095,12 +1587,22 @@ export class ExpedientePage implements OnInit {
 
       let coordenadasAju = {lat: this.proveedorLatitud, lng: this.proveedorLongitud}
 
-      this.ajuMarker = new google.maps.Marker({
-        map: this.mapa,
-        position: coordenadasAju,
-        icon: ajuIcon
-      });
-      this.ajuMarker.setMap(this.mapa);
+      if (this.leafletMap) {
+        if (this.leafletAjuMarker) {
+          this.leafletAjuMarker.setLatLng(L.latLng(coordenadasAju.lat, coordenadasAju.lng));
+        } else {
+          this.leafletAjuMarker = L.marker([coordenadasAju.lat, coordenadasAju.lng], {
+            icon: this.getAdjusterIcon()
+          }).addTo(this.leafletMap);
+        }
+      } else {
+        this.ajuMarker = new google.maps.Marker({
+          map: this.mapa,
+          position: coordenadasAju,
+          icon: ajuIcon
+        });
+        this.ajuMarker.setMap(this.mapa);
+      }
 
       setTimeout(() => {
         console.log('Ok pues ');
@@ -1113,9 +1615,19 @@ export class ExpedientePage implements OnInit {
         travelMode: 'DRIVING',
       }, (response, status) => {
         if (status === 'OK') {
-          directionsDisplay.setDirections(response);
-          this.bounds.extend(this.ajuMarker.getPosition());
-          this.mapa.fitBounds(this.bounds);
+          this.renderRoute(response, directionsDisplay);
+
+          if (this.leafletMap) {
+            this.leafletMap.fitBounds(L.latLngBounds([
+              L.latLng(coordenadasAju.lat, coordenadasAju.lng),
+              L.latLng(coordenadas.lat, coordenadas.lng)
+            ]), {
+              padding: [36, 36]
+            });
+          } else {
+            this.bounds.extend(this.ajuMarker.getPosition());
+            this.mapa.fitBounds(this.bounds);
+          }
 
           this.isLoading = false;
           
@@ -1226,7 +1738,7 @@ export class ExpedientePage implements OnInit {
         localStorage.setItem('moveCoords', JSON.stringify(coordsAju));
 
 
-        const ajuIconUrl = '../../assets/img/ajucar-violet.svg';
+        const ajuIconUrl = '../../assets/iconos/ajustador-legal-halo-preview.svg';
         const ajuIcon = {
           url: ajuIconUrl,
           color: 'orange',
@@ -1388,16 +1900,24 @@ export class ExpedientePage implements OnInit {
       fullscreenControl: false
     }
 
-    this.mapa = new google.maps.Map(document.getElementById("mapExpediente"), mapOptions);
+    if (this.leafletMap) {
+      this.initLeafletMap({lat: this.latitud, lng: this.longitud}, 18);
+    } else {
+      this.mapa = new google.maps.Map(document.getElementById("mapExpediente"), mapOptions);
+    }
     //this.initAutocomplete();
 
   
 
     this.directionsService = new google.maps.DirectionsService;
-    this.directionsDisplay = new google.maps.DirectionsRenderer;
-    this.directionsDisplay.setMap(this.mapa);
-
+    this.directionsDisplay = new google.maps.DirectionsRenderer({ suppressMarkers: true });
     if (this.mapa) {
+      this.directionsDisplay.setMap(this.mapa);
+    }
+
+    if (this.leafletMap) {
+      this.bindLeafletCorrectionClick(this.directionsService, this.directionsDisplay, {lat: this.latitud, lng: this.longitud});
+    } else if (this.mapa) {
       this.mapa.addListener("click", (event) => {
         let nuevaLatitud = event.latLng.lat();
         let nuevaLongitud = event.latLng.lng();
@@ -1642,13 +2162,21 @@ export class ExpedientePage implements OnInit {
       fullscreenControl: false
     }
 
-    this.mapa = new google.maps.Map(document.getElementById("mapExpediente"), mapOptions);
+    if (this.leafletMap) {
+      this.initLeafletMap({lat: this.latitud, lng: this.longitud}, 18);
+    } else {
+      this.mapa = new google.maps.Map(document.getElementById("mapExpediente"), mapOptions);
+    }
 
     this.directionsService = new google.maps.DirectionsService;
-    this.directionsDisplay = new google.maps.DirectionsRenderer;
-    this.directionsDisplay.setMap(this.mapa);
-
+    this.directionsDisplay = new google.maps.DirectionsRenderer({ suppressMarkers: true });
     if (this.mapa) {
+      this.directionsDisplay.setMap(this.mapa);
+    }
+
+    if (this.leafletMap) {
+      this.bindLeafletCorrectionClick(this.directionsService, this.directionsDisplay, {lat: this.latitud, lng: this.longitud});
+    } else if (this.mapa) {
       
     
     this.mapa.addListener("click", (event) => {
@@ -1795,7 +2323,8 @@ export class ExpedientePage implements OnInit {
       // console.log('La distancia es '+ distancia)
 
      if (status === 'OK') {
-       directionsDisplay.setDirections(response);
+       this.renderRoute(response, directionsDisplay);
+       this.setClientCrashOverlay(coordenadas);
 
       let title = 'LUGAR DEL SINIESTRO : ';
       let subtitle =  this.expediente[0].Ciudad +', '+ this.expediente[0].Direccion;
@@ -1810,18 +2339,32 @@ export class ExpedientePage implements OnInit {
         "</div>" +
         "</div>";
 
-        var infowindow2 = new google.maps.InfoWindow();
-        infowindow2.setContent(contentString);
-        infowindow2.setPosition(coordenadas);
-        infowindow2.open(this.mapa);
+        let leafletPopup: L.Popup;
+        let infowindow2: google.maps.InfoWindow;
+
+        if (this.leafletMap) {
+          leafletPopup = L.popup()
+            .setLatLng(L.latLng(Number(coordenadas.lat), Number(coordenadas.lng)))
+            .setContent(contentString)
+            .openOn(this.leafletMap);
+        } else {
+          infowindow2 = new google.maps.InfoWindow();
+          infowindow2.setContent(contentString);
+          infowindow2.setPosition(coordenadas);
+          infowindow2.open(this.mapa);
+        }
         
         setTimeout(() => {
           let miElemento = document.getElementById('dInfoWindow');//document.querySelectorAll('[role="dialog"]');
           console.dir(miElemento)  
-          $('#dInfoWindow').click(function(){
-            $('#open-modal-info').click();
+          $('#dInfoWindow').click(() => {
+            this.openInfoModal(true);
             setTimeout(() => {
-              infowindow2.close();
+              if (leafletPopup) {
+                leafletPopup.close();
+              } else if (infowindow2) {
+                infowindow2.close();
+              }
               //$('.ion-accordion-toggle-icon').eq(2).click();
              }, 300);
           })
@@ -1853,7 +2396,7 @@ export class ExpedientePage implements OnInit {
   }
 
   displayDirection(directionsService, directionsDisplay, latI, lngI, latF, lngF) {
-    const ajuIconUrl = '../../assets/img/ajucar-violet.svg';
+    const ajuIconUrl = '../../assets/iconos/ajustador-legal-halo-preview.svg';
     //alert(latI+', '+lngI+', '+latF+', '+lngF)
     const ajuIcon = {
       url: ajuIconUrl,
@@ -1868,14 +2411,27 @@ export class ExpedientePage implements OnInit {
 
     let coordenadasAju = {lat: parseFloat(latF), lng: parseFloat(lngF)}
 
-    this.ajuMarker = new google.maps.Marker({
-      map: this.mapa,
-      position: coordenadasAju,
-      icon: ajuIcon
-    });
+    if (this.leafletMap) {
+      const adjusterPosition = L.latLng(coordenadasAju.lat, coordenadasAju.lng);
 
-    
-    this.ajuMarker.setMap(this.mapa);
+      if (this.leafletAjuMarker) {
+        this.leafletAjuMarker.setLatLng(adjusterPosition);
+      } else {
+        this.leafletAjuMarker = L.marker(adjusterPosition, {
+          icon: this.getAdjusterIcon()
+        }).addTo(this.leafletMap);
+      }
+
+      this.appendLeafletTravelPoint(adjusterPosition);
+    } else {
+      this.ajuMarker = new google.maps.Marker({
+        map: this.mapa,
+        position: coordenadasAju,
+        icon: ajuIcon
+      });
+
+      this.ajuMarker.setMap(this.mapa);
+    }
 
     this.setCrashIcon();
 
@@ -1885,7 +2441,7 @@ export class ExpedientePage implements OnInit {
      travelMode: 'DRIVING',
    }, (response, status) => {
      if (status === 'OK') {
-       //directionsDisplay.setDirections(response);
+       this.renderRoute(response, directionsDisplay);
        this.rutaInicial = response.routes[0];
        this.pointsArray = response.routes[0].legs[0];
        this.routeString = JSON.stringify(response)
@@ -1903,93 +2459,94 @@ export class ExpedientePage implements OnInit {
   
 
   setCrashIcon(){
-    let coordenadas;
-    coordenadas = {lat: this.latitud, lng: this.longitud}
-
-    let ii:number = 0;
-
-    let tiempo:any;
-      tiempo = this.randomTimer(0,1);
-
-      this.anyInterval = this.firstInterval;
-      
-      this.firstInterval = setInterval(()=>{
-        tiempo = this.randomTimer(0,1);
-        const crashIconUrl = iconColors[3].url;
-        const crashIcon = {
-          url: crashIconUrl,
-          color: 'green',
-          scaledSize: new google.maps.Size(50,50),
-          origin: new google.maps.Point(0, 0),
-          anchor: new google.maps.Point(0, 0)
-        }
-
-        this.crashMarker = new google.maps.Marker({
-          map: this.mapa,
-          position: coordenadas,
-          icon: crashIcon
-        });
-        this.crashMarker.setMap(this.mapa);
-
-        if (ii == 3){
-          ii=0;
-        }else{
-          ii++;
-        }
-        
-      } ,  200);
+    const coordenadas = {lat: this.latitud, lng: this.longitud};
+    this.setClientCrashOverlay(coordenadas);
   }
 
   setCrashIconNew(lat, lon){
-    let coordenadas; let markersCount:any; let tempMark:any;
-    coordenadas = {lat: lat, lng: lon}
-      
-      this.anyInterval = this.firstInterval;
-      
-        const crashIconUrl = iconColors[3].url;
-        const crashIcon = {
-          url: crashIconUrl,
-          color: 'green',
-          draggable: true,
-          scaledSize: new google.maps.Size(50,50),
-          origin: new google.maps.Point(0, 0),
-          anchor: new google.maps.Point(0, 60)
+    const coordenadas = {lat: lat, lng: lon};
+    this.setClientCrashOverlay(coordenadas);
+
+        if (!this.leafletMap && this.mapa) {
+          this.mapa.panTo(coordenadas);
+          this.mapa.setCenter(coordenadas);
+          this.mapa.setZoom(23);
         }
-
-        this.crashMarker = new google.maps.Marker({
-          map: this.mapa,
-          position: coordenadas,
-          icon: crashIcon
-        });
-        this.crashMarker.setMap(this.mapa);
-
-        this.newMarkers.push(this.crashMarker);
-        markersCount = this.newMarkers.length;
-        for (let index = 0; index < markersCount; index++) {
-          //const element = this.newMarkers[index];
-          //element.setMap(null);
-          
-          //console.dir(element, 'el nuevo marcador')
-
-          if (markersCount>1) {
-            if (index != (markersCount-1)) {
-              this.newMarkers[index].setMap(null);
-            }  
-          }
-          
-
-        }
-
-        this.mapa.panTo(coordenadas);
-        this.mapa.setCenter(coordenadas);
-        this.mapa.setZoom(23);
 
         setTimeout(() => {
-          this.mapa.setCenter(coordenadas);
-          this.mapa.setZoom(18);
+          if (!this.leafletMap && this.mapa) {
+            this.mapa.setCenter(coordenadas);
+            this.mapa.setZoom(18);
+          }
         }, 3000);
         
 
+  }
+
+  setClientCrashOverlay(coordenadas: {lat: any, lng: any}) {
+    if (this.leafletMap) {
+      const position = L.latLng(Number(coordenadas.lat), Number(coordenadas.lng));
+
+      if (this.leafletCrashMarker) {
+        this.leafletCrashMarker.setLatLng(position);
+      } else {
+        this.leafletCrashMarker = L.marker(position, {
+          icon: this.getClientCrashIcon(),
+          keyboard: false
+        }).addTo(this.leafletMap);
+      }
+
+      return;
+    }
+
+    const position = new google.maps.LatLng(Number(coordenadas.lat), Number(coordenadas.lng));
+
+    if (this.crashMarker) {
+      this.crashMarker.setMap(null);
+    }
+
+    if (this.crashOverlay) {
+      this.crashOverlay.setMap(null);
+    }
+
+    let markerElement: HTMLElement;
+    const overlay = new google.maps.OverlayView();
+
+    overlay.onAdd = () => {
+      markerElement = document.createElement('div');
+      markerElement.className = 'help-client-crash-marker';
+      markerElement.innerHTML = `
+        <span class="help-client-crash-halo help-client-crash-halo-one"></span>
+        <span class="help-client-crash-halo help-client-crash-halo-two"></span>
+        <span class="help-client-crash-pin">
+          <span class="help-client-crash-icon">
+            <img src="assets/iconos/localizacion.svg" alt="" aria-hidden="true" />
+          </span>
+        </span>
+      `;
+
+      const panes = overlay.getPanes();
+      panes.overlayMouseTarget.appendChild(markerElement);
+    };
+
+    overlay.draw = () => {
+      const projection = overlay.getProjection();
+      const point = projection.fromLatLngToDivPixel(position);
+
+      if (point && markerElement) {
+        markerElement.style.left = point.x + 'px';
+        markerElement.style.top = point.y + 'px';
+      }
+    };
+
+    overlay.onRemove = () => {
+      if (markerElement && markerElement.parentNode) {
+        markerElement.parentNode.removeChild(markerElement);
+      }
+    };
+
+    overlay.setMap(this.mapa);
+    this.crashOverlay = overlay;
   }
 
   randomTimer(min, max) { // min and max included 
@@ -2077,7 +2634,7 @@ export class ExpedientePage implements OnInit {
       var R = 6371;
       console.log('GPS posicion actual');
       console.dir(pos);
-      const ajuIconUrl = '../../assets/img/ajucar-violet.svg';
+      const ajuIconUrl = '../../assets/iconos/ajustador-legal-halo-preview.svg';
   
       const ajuIcon = {
         url: ajuIconUrl,
@@ -2173,6 +2730,27 @@ export class ExpedientePage implements OnInit {
     }
 
     moveMarker(location, mLat, mLng) {
+      if (this.leafletMap) {
+        const position = L.latLng(Number(mLat), Number(mLng));
+
+        if (this.leafletAjuMarker) {
+          this.leafletAjuMarker.setLatLng(position);
+        } else {
+          this.leafletAjuMarker = L.marker(position, {
+            icon: this.getAdjusterIcon()
+          }).addTo(this.leafletMap);
+        }
+
+        this.appendLeafletTravelPoint(position);
+
+        if (this.leafletAutoFollow) {
+          this.leafletMap.setView(position, this.leafletFollowZoom, {
+            animate: true
+          });
+        }
+        return;
+      }
+
       this.bounds = new google.maps.LatLngBounds();
       if (this.ajuMarker) {
         this.ajuMarker.setMap(null);
@@ -2186,7 +2764,7 @@ export class ExpedientePage implements OnInit {
             this.mapa.fitBounds(this.bounds);
           
       }else{
-        const ajuIconUrl = '../../assets/img/ajucar-violet.svg';
+        const ajuIconUrl = '../../assets/iconos/ajustador-legal-halo-preview.svg';
         const ajuIcon = {
           url: ajuIconUrl,
           color: 'orange',
@@ -2267,6 +2845,10 @@ export class ExpedientePage implements OnInit {
 
     if (this.trackInterval) {
       clearInterval(this.trackInterval);
+    }
+
+    if (this.leafletIdleTimer) {
+      clearTimeout(this.leafletIdleTimer);
     }
     
   }

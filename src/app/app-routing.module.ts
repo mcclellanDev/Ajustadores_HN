@@ -178,6 +178,18 @@ const routes: Routes = [
     path: 'modal-guardar',
     loadChildren: () => import('./Modales/modal-guardar/modal-guardar.module').then( m => m.ModalGuardarPageModule)
   },
+  {
+    path: 'cargar-archivos',
+    loadChildren: () => import('./cargar-archivos/cargar-archivos.module').then( m => m.CargarArchivosPageModule)
+  },
+  {
+    path: 'cargar-archivos',
+    loadChildren: () => import('./cargar-archivos/cargar-archivos.module').then( m => m.CargarArchivosPageModule)
+  },
+  {
+    path: 'modal-imagen',
+    loadChildren: () => import('./Modales/modal-imagen/modal-imagen.module').then( m => m.ModalImagenPageModule)
+  },
 
 
 

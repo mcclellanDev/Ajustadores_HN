@@ -1,62 +1,362 @@
-ion-spinner{
-	position: fixed;
-    top: 28%;
-    left: 40%;
-    z-index: 999;
-    width: 20%;
-    height: 20%;
-	//background-color: #00213f;
+ion-spinner {
+  height: 20%;
+  left: 40%;
+  position: fixed;
+  top: 28%;
+  width: 20%;
+  z-index: 999;
 }
 
-#spinFooter{
-	position: fixed;
-    background: black;
-    opacity: 0.6;
-    height: 100vh;
-    width: 100vw;
-    z-index: 900;
-    bottom: 0;
+#spinFooter {
+  background: rgba(0, 0, 0, 0.6);
+  bottom: 0;
+  height: 100vh;
+  position: fixed;
+  width: 100vw;
+  z-index: 900;
 }
 
-.opcion-correccion{
-    margin-left: 5px;
-    --border-radius: 4px;
-  --inner-border-radius: 4px;
+ion-header ion-title {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  padding-inline: 56px;
+  text-align: center;
+}
+
+.prepare-send-content {
+  --background: #eef3f7;
+  --padding-bottom: 24px;
+  --padding-end: 12px;
+  --padding-start: 12px;
+  --padding-top: 12px;
+}
+
+#accordionGroup {
+  display: block;
+  margin: 0 auto;
+  max-width: 1100px;
+  width: 100%;
+}
+
+.prepare-section {
+  background: #ffffff;
+  border: 1px solid #d8e3ed;
+  border-radius: 7px;
+  margin: 0 0 10px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.prepare-section ion-item[slot='header'] {
+  --background: #ffffff;
+  --color: #17365d;
+  --inner-padding-end: 14px;
+  --min-height: 54px;
+  --padding-start: 14px;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.prepare-section.accordion-expanded ion-item[slot='header'],
+.prepare-section.accordion-expanding ion-item[slot='header'] {
+  --background: var(--primaryColor);
+  --color: #ffffff;
+}
+
+.prepare-section-content {
+  background: #f8fafc;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.prepare-field {
+  background: #ffffff;
+  border: 1px solid #dce5ed;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.prepare-field.field-invalid,
+.signature-section.field-invalid {
+  border-color: #d93636;
+  box-shadow: 0 0 0 1px #d93636;
+}
+
+.prepare-field.field-invalid > ion-label,
+.signature-section.field-invalid .signature-heading span,
+.signature-section.field-invalid .signature-heading h3 {
+  color: #c62828;
+}
+
+.prepare-field.field-invalid ion-input,
+.prepare-field.field-invalid ion-textarea,
+.prepare-field.field-invalid .prepare-select-control > span,
+.prepare-field.field-invalid .prepare-select-control ion-select,
+.signature-section.field-invalid .signature-panel {
+  border-color: #d93636;
+}
+
+.prepare-field > ion-label {
+  color: #617b94;
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.prepare-field ion-input,
+.prepare-field ion-textarea,
+.prepare-field ion-select {
+  --background: #f5f8fb;
+  --color: #17365d;
+  --highlight-color-focused: var(--primaryColor);
+  --padding-bottom: 9px;
+  --padding-end: 10px;
+  --padding-start: 10px;
+  --padding-top: 9px;
+  border: 1px solid #d8e3ed;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 0.92rem;
+  min-height: 42px;
+  width: 100%;
+}
+
+.prepare-field ion-checkbox,
+.prepare-field ion-radio {
+  height: 28px;
+  width: 28px;
+}
+
+.prepare-select-control {
+  align-items: stretch;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) 48px;
+}
+
+.prepare-select-control > span {
+  align-items: center;
+  background: #edf2f6;
+  border: 1px solid #d8e3ed;
+  border-radius: 5px;
+  color: #315b80;
+  display: flex;
+  font-size: 0.84rem;
+  font-weight: 700;
+  min-height: 42px;
+  overflow-wrap: anywhere;
+  padding: 8px 10px;
+}
+
+.prepare-select-control ion-select {
+  --padding-end: 8px;
+  --padding-start: 8px;
+  min-width: 48px;
+}
+
+.prepare-select-control ion-select::part(text),
+.prepare-select-control ion-select::part(placeholder) {
+  display: none;
+}
+
+.prepare-select-control ion-select::part(icon) {
+  color: var(--primaryColor);
+  font-size: 1.35rem;
+  opacity: 1;
+}
+
+.select-label,
+ion-input.custom,
+ion-textarea.custom {
+  text-transform: uppercase;
+}
+
+.claim-summary-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.claim-summary-section {
+  background: #ffffff;
+  border: 1px solid #d8e3ed;
+  border-radius: 6px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.claim-summary-section h3 {
+  color: #17365d;
+  font-size: 0.9rem;
+  margin: 0 0 9px;
+}
+
+.claim-summary-section dl,
+.claim-summary-section dd {
+  margin: 0;
+}
+
+.claim-summary-section dl > div {
+  border-top: 1px solid #edf1f5;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(78px, 0.42fr) minmax(0, 1fr);
+  padding: 7px 0;
+}
+
+.claim-summary-section dt {
+  color: #71879d;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.claim-summary-section dd {
+  color: #17365d;
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+.signature-section {
+  background: #ffffff;
+  border: 1px solid #d8e3ed;
+  border-radius: 7px;
+  padding: 12px;
+}
+
+.signature-heading {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.signature-heading span {
+  color: #617b94;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.signature-heading h3 {
+  color: #17365d;
+  font-size: 0.94rem;
+  margin: 2px 0 0;
+}
+
+.signature-heading ion-icon {
+  color: var(--primaryColor);
+  font-size: 1.45rem;
+}
+
+.signature-panel {
+  align-items: center;
+  appearance: none;
+  background: #f5f8fb;
+  border: 2px dashed #bfd0df;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  min-height: 170px;
+  overflow: hidden;
+  padding: 10px;
+  width: 100%;
+}
+
+.signature-panel img {
+  height: 150px;
+  object-fit: contain;
+  width: 100%;
+}
+
+.signature-empty {
+  align-items: center;
+  color: #617b94;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: center;
+}
+
+.signature-empty ion-icon {
+  color: var(--primaryColor);
+  font-size: 2rem;
+}
+
+.signature-empty strong {
+  color: #17365d;
+  font-size: 0.92rem;
+}
+
+.signature-empty span {
+  font-size: 0.78rem;
+}
+
+.signature-edit-button {
+  --border-color: var(--primaryColor);
+  --border-radius: 5px;
+  --color: var(--primaryColor);
+  font-size: 0.84rem;
+  font-weight: 800;
+  margin: 10px 0 0;
+}
+
+.prepare-send-footer {
+  background: #ffffff;
+  border-top: 1px solid #d9e1e8;
+  box-shadow: 0 -4px 14px rgba(0, 33, 63, 0.08);
+}
+
+.prepare-send-footer ion-toolbar {
+  --background: #ffffff;
+  --min-height: 66px;
+  --padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  --padding-end: 12px;
+  --padding-start: 12px;
+  --padding-top: 8px;
+}
+
+.prepare-send-footer ion-button {
+  --border-radius: 6px;
+  --box-shadow: none;
+  font-size: 0.9rem;
+  font-weight: 800;
+  height: 46px;
+  margin: 0 auto;
+  max-width: 520px;
+}
+
+@media (max-width: 600px) {
+  .prepare-send-content {
+    --padding-end: 8px;
+    --padding-start: 8px;
+    --padding-top: 8px;
   }
 
-ion-accordion {
-    margin: 0 auto;
-    --width: 100% !important;
+  .prepare-section-content {
+    padding: 8px;
   }
 
-  ion-accordion-group {
-    width: 100%;
-  }
-  
-  ion-accordion.accordion-expanding,
-  ion-accordion.accordion-expanded {
-    width: calc(100% - 32px);
-  
-    margin: 16px auto;
-  }
-  
-  ion-accordion.accordion-collapsing ion-item[slot='header'],
-  ion-accordion.accordion-collapsed ion-item[slot='header'] {
-    --background: var(--ion-color-light);
-    --color: var(--ion-color-light-contrast);
-
-  }
-  
-  ion-accordion.accordion-expanding ion-item[slot='header'],
-  ion-accordion.accordion-expanded ion-item[slot='header'] {
-    --background: #7da1c4;//var(--ion-color-primary);
-    --color: white;//var(--ion-color-primary-contrast);
+  .claim-summary-grid {
+    grid-template-columns: 1fr;
   }
 
-  ion-input.custom {
-    text-transform: uppercase !important;
+  .claim-summary-section dl > div {
+    grid-template-columns: minmax(82px, 0.4fr) minmax(0, 1fr);
   }
 
-  .select-label{
-    text-transform: uppercase;
+  .signature-panel {
+    min-height: 150px;
   }
+
+  .signature-panel img {
+    height: 130px;
+  }
+}

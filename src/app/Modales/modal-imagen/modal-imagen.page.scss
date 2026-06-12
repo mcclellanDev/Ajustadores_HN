@@ -1,0 +1,40 @@
+#fotoFooter{
+  position: fixed;
+  bottom: 0;
+  height: 20%;
+  border: none;
+  box-shadow: none;
+}
+
+.textArea {
+  margin-left: 10px;
+  width: 94%;
+  border: 1px solid rgb(16, 6, 159);
+  border-radius: 30px;
+  padding: 6px !important;
+}
+
+
+ion-chip:not(.button-chip){
+  width: 100%;
+  height: 130px;
+  margin-left: 0px;
+  text-align: left;
+  ion-thumbnail{
+    margin-left: 0;
+    margin-top: -15%;
+    border-radius: 15px;
+  }
+  ion-label{
+    position: absolute;
+    left: 40%;
+  }
+}
+
+.button-chip{
+  width: 98%;
+  height: 50px;
+  float: right;
+  text-align: center;
+  padding-left: 40%;
+}

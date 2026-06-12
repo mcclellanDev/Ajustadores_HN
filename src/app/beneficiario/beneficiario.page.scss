@@ -1,111 +1,338 @@
-ion-spinner{
-	position: fixed;
-    top: 28%;
-    left: 40%;
-    z-index: 999;
-    width: 20%;
-    height: 20%;
-	//background-color: #00213f;
+ion-spinner {
+  height: 20%;
+  left: 40%;
+  position: fixed;
+  top: 28%;
+  width: 20%;
+  z-index: 999;
 }
 
-.etiqueta-opcion{
-        font-size: 1.2rem;
-        color: var(--blueGrayColor);
+#spinFooter {
+  background: rgba(0, 0, 0, 0.6);
+  bottom: 0;
+  height: 100vh;
+  position: fixed;
+  width: 100vw;
+  z-index: 900;
 }
 
-.etiqueta-fecha{
-    width: 230px;
-    font-size: 1.2rem;
-    color: var(--primaryColor);
+ion-header ion-title {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  padding-inline: 56px;
+  text-align: center;
 }
 
-.bene-input{
-    margin-left: 70px;
+ion-header ion-button,
+ion-header ion-icon {
+  --color: #ffffff;
+  color: #ffffff;
 }
 
-.implicado-opcion{
-    margin-left: 3px;
-    --border-radius: 4px;
-  --inner-border-radius: 4px;
+.beneficiary-content {
+  --background: #eef3f7;
+  --padding-bottom: 22px;
+  --padding-end: 12px;
+  --padding-start: 12px;
+  --padding-top: 12px;
 }
 
-.etiqueta-input{
-    flex: initial;
-    max-width: 230px;
-    pointer-events: none;
-    width: 230px;
-    color: var(--primaryColor);
+.beneficiary-form {
+  display: grid;
+  gap: 12px;
+  margin: 0 auto;
+  max-width: 980px;
 }
 
-.modal-guardar{
-    height: 50%;
+.form-section {
+  background: #ffffff;
+  border: 1px solid #d8e3ed;
+  border-radius: 7px;
+  padding: 14px;
 }
 
-.custom-modal-size .modal-wrapper {
-  height: 50vh;       // 50% del alto de la pantalla
-  min-width: 60vw;    // mínimo 60% del ancho de la pantalla
-  max-width: 90vw;    // opcional: limita a no ser demasiado grande
-  border-radius: 12px;
-  align-self: center; // centra verticalmente en pantallas grandes
+.section-heading {
+  border-bottom: 1px solid #e4ebf1;
+  margin-bottom: 12px;
+  padding-bottom: 9px;
 }
 
-ion-alert.custom-alert {
-  --backdrop-opacity: 0.7;
+.section-heading span {
+  color: #617b94;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
-.custom-alert .alert-button-group {
-  padding: 8px;
+.section-heading h2 {
+  color: #17365d;
+  font-size: 1rem;
+  margin: 2px 0 0;
 }
 
-button.alert-button.alert-button-confirm {
-  background-color: var(--ion-color-success);
-  color: var(--ion-color-success-contrast);
+.form-grid,
+.date-fields {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.md button.alert-button.alert-button-confirm {
-  border-radius: 4px;
+.date-fields {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.ios .custom-alert button.alert-button {
-  border: 0.55px solid rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.2);
+.form-field {
+  background: #ffffff;
+  border: 1px solid #dce5ed;
+  border-radius: 6px;
+  padding: 10px;
 }
 
-.ios button.alert-button.alert-button-cancel {
-  border-right: 0;
-  border-bottom-left-radius: 13px;
-  border-top-left-radius: 13px;
+.form-field-wide {
+  grid-column: 1 / -1;
 }
 
-.ios button.alert-button.alert-button-confirm {
-  border-bottom-right-radius: 13px;
-  border-top-right-radius: 13px;
+.form-field > ion-label {
+  color: #617b94;
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+  text-transform: uppercase;
 }
 
-ion-button.date-button{
-    --background: var(--blueGrayColor);
-
-  --color: white;
+.form-field ion-input,
+.form-field ion-select {
+  --background: #f5f8fb;
+  --color: #17365d;
+  --highlight-color-focused: var(--primaryColor);
+  --padding-bottom: 9px;
+  --padding-end: 10px;
+  --padding-start: 10px;
+  --padding-top: 9px;
+  border: 1px solid #d8e3ed;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 0.92rem;
+  min-height: 42px;
+  width: 100%;
 }
 
-#spinFooter{
-	position: fixed;
-    background: black;
-    opacity: 0.6;
-    height: 100vh;
-    width: 100vw;
-    z-index: 900;
-    bottom: 0;
+.select-control {
+  align-items: stretch;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) 48px;
 }
 
-ion-select::part(text) {
-    font-size: 1.1rem;
+.select-control > span {
+  align-items: center;
+  background: #edf2f6;
+  border: 1px solid #d8e3ed;
+  border-radius: 5px;
+  color: #315b80;
+  display: flex;
+  font-size: 0.84rem;
+  font-weight: 700;
+  min-height: 42px;
+  overflow-wrap: anywhere;
+  padding: 8px 10px;
 }
 
-#button-back-bene{
-    border-radius: 50%;
-    margin-bottom: 9px;
-    ion-fab-button{
-      padding-bottom: 25px;
-      ion-icon{color: white;}
-    }
+.select-control ion-select {
+  --padding-end: 8px;
+  --padding-start: 8px;
+  min-width: 48px;
+}
+
+.select-control ion-select::part(text),
+.select-control ion-select::part(placeholder) {
+  display: none;
+}
+
+.select-control ion-select::part(icon) {
+  color: var(--primaryColor);
+  font-size: 1.35rem;
+  opacity: 1;
+}
+
+.beneficiary-type-field ion-radio-group {
+  display: grid;
+  gap: 7px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.beneficiary-type-field ion-item {
+  --background: #f5f8fb;
+  --inner-padding-end: 6px;
+  --min-height: 76px;
+  --padding-start: 6px;
+  border: 1px solid #d8e3ed;
+  border-radius: 5px;
+}
+
+.beneficiary-type-field ion-item::part(native) {
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 4px;
+}
+
+.beneficiary-type-field ion-label {
+  color: #315b80;
+  font-size: 0.76rem;
+  font-weight: 800;
+  margin: 0 0 7px;
+  text-align: center;
+  white-space: normal;
+}
+
+.beneficiary-type-field ion-radio {
+  height: 28px;
+  margin: 0;
+  min-height: 28px;
+  min-width: 28px;
+  width: 28px;
+}
+
+.date-field {
+  appearance: none;
+  background: #f5f8fb;
+  border: 1px solid #d8e3ed;
+  border-radius: 6px;
+  color: #17365d;
+  min-height: 82px;
+  padding: 10px 40px 10px 11px;
+  position: relative;
+  text-align: left;
+}
+
+.date-field span {
+  color: #617b94;
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.date-field strong {
+  font-size: 0.88rem;
+}
+
+.date-field ion-icon {
+  color: var(--primaryColor);
+  font-size: 1.35rem;
+  position: absolute;
+  right: 12px;
+  top: calc(50% - 11px);
+}
+
+.field-invalid,
+.date-field.field-invalid {
+  border-color: #d93636;
+  box-shadow: 0 0 0 1px #d93636;
+}
+
+.field-invalid > ion-label,
+.date-field.field-invalid span {
+  color: #c62828;
+}
+
+.field-invalid ion-input,
+.field-invalid .select-control > span,
+.field-invalid .select-control ion-select,
+.field-invalid ion-item {
+  border-color: #d93636;
+}
+
+.beneficiary-footer {
+  background: #ffffff;
+  border-top: 1px solid #d9e1e8;
+  box-shadow: 0 -4px 14px rgba(0, 33, 63, 0.08);
+}
+
+.beneficiary-footer ion-toolbar {
+  --background: #ffffff;
+  --min-height: 66px;
+  --padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  --padding-end: 12px;
+  --padding-start: 12px;
+  --padding-top: 8px;
+}
+
+.beneficiary-footer ion-button {
+  --border-radius: 6px;
+  --box-shadow: none;
+  font-size: 0.88rem;
+  font-weight: 800;
+  height: 46px;
+  margin: 0 auto;
+  max-width: 520px;
+}
+
+ion-modal.beneficiary-date-modal {
+  --backdrop-opacity: 0.48;
+  --border-radius: 12px;
+  --height: min(590px, calc(100vh - 28px));
+  --max-width: 430px;
+  --width: calc(100% - 12px);
+}
+
+.beneficiary-date-modal ion-toolbar {
+  --background: var(--primaryColor);
+  --color: #ffffff;
+}
+
+.beneficiary-date-modal ion-title {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.beneficiary-date-modal ion-button,
+.beneficiary-date-modal ion-icon {
+  --color: #ffffff;
+  color: #ffffff;
+}
+
+.date-modal-content {
+  --background: #f4f7fa;
+  --padding-bottom: 12px;
+  --padding-end: 6px;
+  --padding-start: 6px;
+  --padding-top: 12px;
+}
+
+.date-modal-content ion-datetime {
+  --background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 5px 18px rgba(18, 54, 87, 0.12);
+  margin: 0 auto;
+  max-width: calc(100vw - 24px);
+  overflow: hidden;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .beneficiary-content {
+    --padding-end: 8px;
+    --padding-start: 8px;
+    --padding-top: 8px;
   }
+
+  .form-section {
+    padding: 10px;
+  }
+
+  .form-grid,
+  .date-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .form-field-wide {
+    grid-column: auto;
+  }
+}

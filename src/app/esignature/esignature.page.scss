@@ -1,4 +1,4 @@
-ion-fab-button {
+  ion-fab-button {
     /*
     --background: #f14f23;
     --background-activated: #a8462a;
@@ -7,6 +7,13 @@ ion-fab-button {
     --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
     */
     --color: white;
+  }
+
+  .signature-back-button {
+    left: 8px;
+    position: fixed;
+    top: calc(env(safe-area-inset-top) + 4px);
+    z-index: 20;
   }
 
   ion-spinner{
@@ -18,6 +25,8 @@ ion-fab-button {
       height: 20%;
     //background-color: #00213f;
   }
+
+
   
   #spinFooter{
     position: fixed;
@@ -27,4 +36,200 @@ ion-fab-button {
       width: 100vw;
       z-index: 900;
       bottom: 0;
+  }
+
+  .signature-page {
+    --background: #ffffff;
+  }
+
+  .signature-brand-logo {
+    height: 61px;
+    margin-left: 15px;
+    margin-top: 15px;
+    object-fit: contain;
+    object-position: left center;
+    width: 281px;
+  }
+
+  .signature-legal-copy {
+    color: #111827;
+    font-size: 1rem;
+    height: 39%;
+    overflow-y: scroll;
+    padding: 3%;
+    text-align: justify;
+    white-space: normal;
+    width: 99%;
+  }
+
+  .signature-footer {
+    background: white;
+    bottom: 0;
+    height: 50%;
+    left: 0;
+    position: fixed;
+  }
+
+  .signature-label-row {
+    color: #3171e0;
+  }
+
+  .signature-label-row ion-label {
+    margin-left: 19px;
+  }
+
+  .signature-card-column {
+    margin-top: -10px;
+  }
+
+  .signature-card {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .signature-card-content {
+    padding: 13px 16px;
+  }
+
+  .signature-canvas {
+    border: 6px dashed #ede9e9;
+    display: block;
+    max-width: 100%;
+  }
+
+  .signature-actions-grid ion-button {
+    --border-radius: 8px;
+  }
+
+  .card-signature-mobile{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 95%;
+  }
+
+  .card-canvas-mobile{
+    width: 100%;
+  }
+
+  @media (orientation: portrait) and (max-width: 699px) {
+    .signature-back-button {
+      top: calc(env(safe-area-inset-top) + 0px);
+    }
+
+    ion-toolbar ion-title {
+      font-size: 0.82rem;
+      padding-inline: 48px;
+      text-align: center;
+    }
+
+    ion-toolbar ion-title ion-grid {
+      padding: 0;
+    }
+
+    ion-toolbar ion-title ion-col:first-child,
+    ion-toolbar ion-title ion-col:last-child {
+      display: none;
+    }
+
+    ion-toolbar ion-title ion-col:nth-child(2) {
+      flex: 0 0 100%;
+      max-width: 100%;
+      text-align: center;
+      width: 100%;
+    }
+
+    .signature-brand {
+      margin-top: 2px;
+    }
+
+    .signature-brand-logo {
+      height: auto;
+      margin-left: 12px;
+      margin-top: 10px;
+      max-width: 220px;
+      width: 58vw;
+    }
+
+    .signature-legal-copy {
+      font-size: 0.88rem;
+      height: 44%;
+      line-height: 1.35;
+      padding: 10px 14px 2px;
+      width: 100%;
+    }
+
+    .signature-footer {
+      height: 43%;
+      padding-bottom: max(4px, env(safe-area-inset-bottom));
+    }
+
+    .signature-footer-grid {
+      height: 100%;
+      padding: 0 6px 0;
+    }
+
+    .signature-footer-grid > ion-row {
+      width: 100%;
+    }
+
+    .signature-label-row {
+      padding-bottom: 0;
+      padding-top: 2px;
+    }
+
+    .signature-label-row ion-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-left: 8px;
+    }
+
+    .signature-card-column {
+      margin-top: -4px;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .signature-card {
+      border-radius: 8px;
+      box-shadow: 0 8px 22px rgba(15, 45, 82, 0.10);
+      margin: 0;
+      width: 100%;
+    }
+
+    .signature-card-content {
+      padding: 6px 8px 5px;
+    }
+
+    .signature-canvas {
+      border-width: 4px;
+      box-sizing: border-box;
+      height: 170px;
+      width: 100%;
+    }
+
+    .signature-actions-grid {
+      padding: 0 6px 6px;
+    }
+
+    .signature-actions-grid ion-button {
+      font-size: 0.84rem;
+      height: 42px;
+      margin: 0;
+    }
+  }
+
+  @media (orientation: portrait) and (max-width: 699px) and (max-height: 760px) {
+    .signature-legal-copy {
+      height: 39%;
+    }
+
+    .signature-footer {
+      height: 48%;
+    }
+
+    .signature-canvas {
+      height: 150px;
+    }
   }

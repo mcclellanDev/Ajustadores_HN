@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { ExpedientePageRoutingModule } from './expediente-routing.module';
 
 import { ExpedientePage } from './expediente.page';
+import { ExpedienteInfoModalComponent } from './expediente-info-modal.component';
 
 @NgModule({
   imports: [
@@ -16,6 +17,6 @@ import { ExpedientePage } from './expediente.page';
     ExpedientePageRoutingModule
   ],
   schemas:[CUSTOM_ELEMENTS_SCHEMA],
-  declarations: [ExpedientePage]
+  declarations: [ExpedientePage, ExpedienteInfoModalComponent]
 })
 export class ExpedientePageModule {}

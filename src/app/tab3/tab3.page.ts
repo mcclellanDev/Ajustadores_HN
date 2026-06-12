@@ -86,10 +86,12 @@ export class Tab3Page {
 
   async cerrarSesion(){
     const alert = await this.alert.create({
-          header:'HELP',
-          message:'Asistencia de Seguros',
+          cssClass: 'profile-menu-alert',
+          header:'HELP Ajustadores',
+          message:'Selecciona una accion para continuar.',
           buttons:[{
-            text:'Cerrar sesión?',
+            text:'Cerrar sesión',
+            cssClass: 'profile-menu-danger',
               handler: ()=> {
                 this.isLogout = true; 
                 localStorage.setItem('isLogout', this.isLogout.toString());
@@ -98,11 +100,13 @@ export class Tab3Page {
           },
           {
             text:'Continuar',
-            role:'cancel'
+            role:'cancel',
+            cssClass: 'profile-menu-cancel'
           },
           {
             text:'Cambiar Contraseña',
             role:'confirm',
+            cssClass: 'profile-menu-password',
             handler: ()=> {this.goPasswordChange()}
           }
         ]

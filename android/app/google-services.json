@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "262828920172",
+    "project_id": "help-55429",
+    "storage_bucket": "help-55429.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262828920172:android:9a6d1da731ec9ea9f73749",
+        "android_client_info": {
+          "package_name": "net.ajustadores.help"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "262828920172-ob55ip1pvsr2gmvt431322tqe1op6a9l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwZp_AO2LEX7chxG8oDUDrVIsyiPj0bys"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "262828920172-ob55ip1pvsr2gmvt431322tqe1op6a9l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

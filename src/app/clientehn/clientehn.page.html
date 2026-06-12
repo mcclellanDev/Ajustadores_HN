@@ -5,29 +5,31 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title>
-      <ion-grid>
-        <ion-row>
-          <ion-col size="4"></ion-col>
-          <ion-col size="4">Atención # {{idAtencion}} - {{miMoneda}}</ion-col>
-          <input class="required-index" value="40">
-          <ion-col size="4"></ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-title>
+    <ion-title class="cliente-page-title">Atención # {{idAtencion}} - {{miMoneda}}</ion-title>
+    <input class="required-index" value="40">
   </ion-toolbar>
 </ion-header>
 <ion-split-pane id="big-pane-nulls" contentId="main-nulls">
   <div class="ion-page" id="main-nulls"></div>
 </ion-split-pane>
-<ion-split-pane id="big-pane-cliente" when="xs" contentId="main">
-  <ion-menu id="ele" style="width: 99%;padding: 3%;text-align: justify;font-size: 1rem;white-space: normal;overflow-y: scroll;height: 92%;">
+<ion-split-pane id="big-pane-cliente" when="(min-width: 900px) and (orientation: landscape)" contentId="main">
+  <ion-menu id="ele" menuId="cliente-form-menu" contentId="main" type="overlay" class="cliente-form-menu">
     <ion-header>
-      <ion-toolbar style="color: var(--blueGrayColor);">
-        <ion-title>Menú</ion-title>
+      <ion-toolbar class="cliente-form-toolbar">
+        <ion-title>{{segmentoTitulo || 'Formulario del cliente'}}</ion-title>
+        <ion-buttons slot="end" class="cliente-form-close">
+          <ion-button aria-label="Cerrar formulario" (click)="closeClientForm()">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content class="ion-padding" id="segmentsContent" style="width: 99%;padding: 3%;text-align: justify;font-size: 1rem;white-space: normal;overflow-y: scroll;height: 39%;">
+    <ion-content class="ion-padding cliente-form-content" id="segmentsContent">
+      <ion-fab slot="fixed" vertical="top" horizontal="end" class="cliente-form-floating-close">
+        <ion-fab-button size="small" aria-label="Cerrar formulario" (click)="closeClientForm()">
+          <ion-icon name="close"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
       <ion-grid>
         <ion-row>
           
@@ -118,7 +120,7 @@
               </ion-badge>
             </ion-label>
     
-            <ion-content color="light" style="height: 100vh">
+            <div class="segment-form-body">
               <ion-list [inset]="true">
                 
                 <ion-item class="ion-no-padding  input required-data">
@@ -208,7 +210,7 @@
                       Correo electrónico
                     </ion-row>
                     <ion-row>
-                      <ion-col size="7">
+                      <ion-col size="12" class="insured-email-column">
                         <ion-input type="email" [(ngModel)]="cliente.CorreoElectronico" (ionChange)="entraCorreoConductor($event)" class="required-data custom"></ion-input>
                         <input class="required-index" value="7">
                       </ion-col>
@@ -233,14 +235,11 @@
                     <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                       Fecha y hora del siniestro
                     </ion-row>
-                    <ion-row style="padding-top: 6px;">
-                      <ion-col offset="9" size="3">
-                        <ion-badge style="margin-top: 2.5px;" class="required-data">{{formateadaSiniestro}} <small>{{horaSiniestro}}</small> </ion-badge>
+                    <ion-row style="padding-top: 6px;" class="accident-date-row">
+                      <ion-col size="12" class="accident-date-column">
+                        <ion-badge style="margin-top: 2.5px;" class="required-data accident-date-badge">{{formateadaSiniestro}} <small>{{horaSiniestro}}</small> </ion-badge>
                         <input class="required-index" value="9">
                         <!--span color="danger" style="padding: 6px;height: 23px;width: 23px;">*</!--span -->
-                      </ion-col>
-                      <ion-col size="3">
-                        <!--ion-button id="open-modal-fecha-siniestro" expand="block" (click)="modalFechaSiniestro.present()">Seleccionar Fecha</!--ion-button -->
                       </ion-col>
                     </ion-row>
                   </ion-grid>
@@ -262,7 +261,7 @@
                 </ion-row>
               </ion-grid>
               <br><br><br><br><br><br>
-            </ion-content>
+            </div>
             
           </ion-col>
     
@@ -273,7 +272,7 @@
               </ion-badge>
             </ion-label>
     
-            <ion-content color="light" style="height: 100vh">
+            <div class="segment-form-body">
             <ion-list [inset]="true">
               <ion-item class="ion-no-padding  input">
                 <ion-grid>
@@ -413,7 +412,7 @@
               <br><br><br><br><br><br>
             </ion-list>
             
-          </ion-content>
+          </div>
           </ion-col>
 
           <ion-col class="segmento" id="segmentDriver" size="12">
@@ -423,7 +422,7 @@
               </ion-badge>
             </ion-label>
     
-            <ion-content color="light" style="height: 100vh">
+            <div class="segment-form-body">
             <ion-list [inset]="true">
             <ion-item class="ion-no-padding  input">
               <ion-grid>
@@ -434,13 +433,13 @@
                     Seleccionar
                   </ion-chip>
                 </ion-row>
-                <ion-row>
-                  <ion-col id="tipoSiniestrosDisplay" size="9" class="select-label">{{elTipoDeConductor}}</ion-col>
-                    <ion-col size="3">
-                      <ion-select [(ngModel)]="laExpediente[0].ConducidoPor" multiple="false" (ionChange)="seleccionarTipoConductor($event)"
-                        style="float: right;color: white;"
-                        toggleIcon="caret-down-sharp"
-                        placeholder="Seleccionar">
+                <ion-row class="driver-type-row">
+                  <ion-col id="tipoSiniestrosDisplay" size="9" class="select-label driver-type-display">{{elTipoDeConductor}}</ion-col>
+                    <ion-col size="3" class="driver-type-select-column">
+                      <ion-select class="driver-type-select" [(ngModel)]="laExpediente[0].ConducidoPor" multiple="false"
+                        (ionChange)="seleccionarTipoConductor($event)" interface="alert"
+                        [interfaceOptions]="driverTypeSelectOptions" okText="Seleccionar" cancelText="Cancelar"
+                        toggleIcon="chevron-down-outline" placeholder="Seleccionar">
                       <ion-select-option *ngFor="let tipoC of tipoConductor" [value]="tipoC.Id" >{{tipoC.TipoConductor}}</ion-select-option>
                     </ion-select>
                     </ion-col>
@@ -482,9 +481,9 @@
             <ion-item  class="ion-no-padding  input">
               <ion-grid>
                 <ion-row size="12" style="color: #7da1c4;font-size:1rem;">Fecha de nacimiento</ion-row>
-                <ion-row style="padding-top: 6px;">
-                  <ion-col size="12">
-                    <ion-chip>
+                <ion-row style="padding-top: 6px;" class="birth-date-row">
+                  <ion-col size="12" class="birth-date-displays">
+                    <ion-chip class="birth-date-chip">
                       <ion-avatar>
                         <img src="https://ionicframework.com/docs/img/demos/avatar.svg" />
                       </ion-avatar>
@@ -492,13 +491,13 @@
                       <ion-icon name="calendar" class="chip-icon"></ion-icon>
                     </ion-chip>
                     <input class="required-index" value="21">
-                    <ion-chip [color]="esMenor == true ? 'danger' : ''">
+                    <ion-chip class="birth-age-chip" [color]="esMenor == true ? 'danger' : ''">
                       <ion-icon name="hourglass" style="color: var(--blueGrayColor);"></ion-icon>
                       <ion-label>{{edad}} años</ion-label>
                       <ion-icon name="time" class="chip-icon"></ion-icon>
                     </ion-chip>
                   </ion-col>
-                  <ion-col offset="9" size="3">
+                  <ion-col size="12" class="birth-date-button-column">
                     <ion-button id="open-modal-fecha-nacimiento" expand="block" (click)="modalFechaNacimiento.present()">Seleccionar Fecha</ion-button>
                   </ion-col>
                 </ion-row>
@@ -513,11 +512,13 @@
                     Seleccionar
                   </ion-chip>
                 </ion-row>
-                <ion-row>
-                  <ion-col id="tipoSiniestrosDisplay" size="9" class="select-label">{{elTipoDeParentesco}}</ion-col>
-                    <ion-col size="3">
-                      <ion-select class="text-size-xs" [(ngModel)]="elTipoParentesco" multiple="false" (ionChange)="getElTipoParentesco($event)"
-                    style="float: right;color: white;">
+                <ion-row class="compact-choice-row">
+                  <ion-col id="tipoSiniestrosDisplay" size="9" class="select-label compact-choice-display">{{elTipoDeParentesco}}</ion-col>
+                    <ion-col size="3" class="compact-choice-select-column">
+                      <ion-select class="text-size-xs compact-choice-select" [(ngModel)]="elTipoParentesco" multiple="false"
+                      (ionChange)="getElTipoParentesco($event)" interface="alert"
+                      [interfaceOptions]="relationshipSelectOptions" okText="Seleccionar" cancelText="Cancelar"
+                      toggleIcon="chevron-down-outline" placeholder="Seleccionar">
                       <ion-select-option *ngFor="let parentesco of tipoParentescos" [value]="parentesco.CODIGO" class="required-data">
                         {{parentesco.DESCRIPCION}}
                         <ion-input #parentescoId [hidden]="true" [value]="parentesco.Id"></ion-input>
@@ -539,11 +540,13 @@
                     Seleccionar
                   </ion-chip>
                 </ion-row>
-                <ion-row>
-                  <ion-col id="tipoSiniestrosDisplay" size="9" class="select-label">{{elTipoDeLicencia}}</ion-col>
-                    <ion-col size="3">
-                      <ion-select class="text-size-xs" [(ngModel)]="laExpediente[0].TipoLicencia" multiple="false" (ionChange)="entraTipoLicencia($event)"
-                    style="float: right;color: white;">
+                <ion-row class="compact-choice-row">
+                  <ion-col id="tipoSiniestrosDisplay" size="9" class="select-label compact-choice-display">{{elTipoDeLicencia}}</ion-col>
+                    <ion-col size="3" class="compact-choice-select-column">
+                      <ion-select class="text-size-xs compact-choice-select" [(ngModel)]="laExpediente[0].TipoLicencia" multiple="false"
+                      (ionChange)="entraTipoLicencia($event)" interface="alert"
+                      [interfaceOptions]="licenceTypeSelectOptions" okText="Seleccionar" cancelText="Cancelar"
+                      toggleIcon="chevron-down-outline" placeholder="Seleccionar">
                       <ion-select-option *ngFor="let licencia of tipoLicencia" [value]="[licencia.TipoLicencia]" class="required-data">
                         {{licencia.TipoLicencia}}
                       </ion-select-option>
@@ -570,14 +573,14 @@
 
             <ion-item class="ion-no-padding  input">
               <ion-grid>
-                <ion-row>
-                  <ion-col size="7">
+                <ion-row class="licence-expiration-row">
+                  <ion-col size="12" class="licence-expiration-display">
                     <ion-text style="color: var(--blueGrayColor);">Fecha de Vencimiento : </ion-text><br>
                     {{formateadaVigencia}}
                   </ion-col>
-                  <ion-col offset="2" size="3">
+                  <ion-col size="12" class="licence-expiration-input-column">
                     <ion-input [maskito]="idMaskFechaVencimiento" [maskitoElement]="predicateCliente"
-                    placeholder="DD/MM/AAAA" [(ionModel)]="formateadaVigencia" (ionChange)="entraVencimiento($event)" class="required-data"
+                    placeholder="DD/MM/AAAA" [(ngModel)]="formateadaVigencia" (ionChange)="entraVencimiento($event)" class="required-data licence-expiration-input"
                     style="text-align: right;"></ion-input>
                     <input class="required-index" value="25">
                   </ion-col>
@@ -686,7 +689,7 @@
             </ion-row>
           </ion-grid>
           <br><br><br><br><br><br>
-        </ion-content>
+        </div>
           </ion-col>
 
           <ion-col class="segmento" id="segmentInfo" size="12">
@@ -696,7 +699,7 @@
               </ion-badge>
             </ion-label>
 
-            <ion-content color="light" style="height: 100vh">
+            <div class="segment-form-body">
               <ion-list [inset]="true">
                 <ion-item  class="ion-no-padding  input">
                   
@@ -995,7 +998,7 @@
                 </ion-grid>
                 <br><br><br><br><br><br>
               </ion-list>
-            </ion-content>
+            </div>
 
           
           </ion-col>
@@ -1079,7 +1082,7 @@
               </ion-button>
             </ion-item>
 
-            <ion-content color="light" style="height: 100vh">
+            <div class="segment-form-body">
               <ion-list [inset]="true">
                 <ion-item *ngFor="let item of lesionados; let i = index ">
                   <ion-icon style="color: red;" (click)="deletePersona(i, item.TipoPersona)" slot="start" name="trash"></ion-icon>
@@ -1087,7 +1090,7 @@
                   <ion-icon (click)="editPersona(i, item.TipoPersona)" slot="end" style="color: #7da1c4; "name="create"></ion-icon>
                 </ion-item>
               </ion-list>
-            </ion-content>
+            </div>
           </ion-col>
 
           <ion-col class="segmento" id="segmentSignature" size="12">
@@ -1187,131 +1190,78 @@
   </ion-menu>
   <div class="ion-page" id="main">
     <ion-header>
-      <ion-toolbar>
-        <ion-title>Main View</ion-title>
+      <ion-toolbar class="cliente-segments-toolbar">
+        <ion-title>Secciones del formulario</ion-title>
+        <ion-buttons slot="end" class="cliente-form-shortcut">
+          <ion-menu-button menu="cliente-form-menu" aria-label="Abrir formulario"></ion-menu-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-no-padding" style="width: 99%;padding: 3%;text-align: justify;font-size: 1rem;white-space: normal;overflow-y: scroll;height: 39%;">
       <ion-list style="width: 100%;">
-        <ion-item *ngFor="let segment of segments; let i = index" class="segment-item" (click)="setSegment(segmentInput.value, indexInput.value)">
+        <ion-item *ngFor="let segment of segments; let i = index" class="segment-item" (click)="setSegment(segmentInput.value, indexInput.value, true)">
           <ion-input #segmentInput [hidden]="true" [value]="segment.name"></ion-input>
           <ion-input #indexInput [hidden]="true" [value]="i"></ion-input>
           <ion-icon style="color: gray;" class="segment-icon" name={{segment.name}}></ion-icon><span class="segment-title" style="margin-left: 9px;">{{segment.titulo}}</span>
         </ion-item>
       </ion-list>
 
-      <ion-chip id="firmaChip" class="chip-firma" style="    position: absolute;
-    height: 70px;
-    right: 8%;
-    bottom: 12%;
-    width: 80%;
-    --background: none;
-    color: gray;
-    padding-top: 52px;
-    text-align: right;
-    float: right;
-    padding-left: 65px;" (click)="goESignature()">
-        
-        Editar Firma
-
-        <img src="{{firmaIcono}}" style="width: 50px; height: auto; position: absolute; right: 5px; bottom: 0; "/>
-      </ion-chip>
     </ion-content>
   </div>
   
 
 </ion-split-pane>
 
-    <!--ion-button id="signButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 15%; z-index: 999;--background: var(--blueGrayColor);
-  --background-activated: var(--blueGrayColor);
-  --background-hover: var(--blueGrayColor);
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white;" vertical="bottom" horizontal="end" (click)="firmar()">
-  <ion-icon name="refresh"></ion-icon>
-</ion-button>
+<ion-footer class="cliente-action-footer">
+  <div class="cliente-action-bar">
+    <div class="cliente-fixed-actions">
+      <ion-button id="camButton" fill="outline" class="cliente-action-button" (click)="goFotos()">
+        <ion-icon slot="start" name="camera-outline"></ion-icon>
+        Fotos
+      </ion-button>
 
-    <ion-button id="goSignButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 8%; z-index: 999;--background: var(--blueGrayColor);
-  --background-activated: var(--blueGrayColor);
-  --background-hover: var(--blueGrayColor);
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white;" vertical="bottom" horizontal="end" (click)="goESignature()">
-  <ion-icon name="pencil"></ion-icon>
-</ion-button>
+      <ion-button id="footerSignButton" fill="outline" class="cliente-action-button" (click)="goESignature()">
+        <ion-icon slot="start" name="create-outline"></ion-icon>
+        Firma
+      </ion-button>
+    </div>
 
-  <ion-button id="saveButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 60px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: var(--blueGrayColor);
-  --background-activated: var(--blueGrayColor);
-  --background-hover: var(--blueGrayColor);
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white;" vertical="bottom" horizontal="end" (click)="GuardarDatos()">
-  <ion-icon name="chevron-forward"></ion-icon>
-</ion-button -->
-<ion-button id="audienciaButton" *ngIf="esAudiencia == true" style="position: fixed;width: 200px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: var(--blueGrayColor);
-  --background-activated: var(--blueGrayColor);
-  --background-hover: var(--blueGrayColor);
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white;" vertical="bottom" horizontal="end" (click)="goPrepare(idAtencion)">
-  Seguir Sin Poliza
-</ion-button>
+    <div class="cliente-state-actions">
+      <ion-button id="audienciaButton" *ngIf="esAudiencia == true" class="cliente-primary-action" (click)="goPrepare(idAtencion)">
+        <ion-icon slot="start" name="arrow-forward-outline"></ion-icon>
+        Seguir sin póliza
+      </ion-button>
 
-<ion-button id="validateButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 200px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: var(--blueGrayColor);
-  --background-activated: var(--blueGrayColor);
-  --background-hover: var(--blueGrayColor);
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white;" vertical="bottom" horizontal="end" (click)="validarDatos()">
-  Validar Datos
-</ion-button>
+      <ion-button id="validateButton" *ngIf="daSegment == 'ribbon'" class="cliente-primary-action" (click)="validarDatos()">
+        <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+        Validar datos
+      </ion-button>
 
-<ion-button id="cancelaButton" *ngIf="daSegment == 'ribbon'" fill="outline" color="--blueGrayColor" style="position: fixed;width: 200px;height: 60px;bottom: 1%;right: 35%; z-index: 999;
---border-radius: 15px; 
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: var(--blueGrayColor); display: none;" vertical="bottom" horizontal="end" (click)="goBack()">
-  Cancelar Envío
-</ion-button>
+      <ion-button id="cancelaButton" *ngIf="daSegment == 'ribbon'" fill="outline" class="cliente-secondary-action" style="display: none;" (click)="goBack()">
+        <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+        Cancelar
+      </ion-button>
 
-<ion-button id="validateAgainButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 200px;height: 60px;bottom: 1%;right: 18%; z-index: 999;--background: var(--blueGrayColor);
-  --background-activated: var(--blueGrayColor);
-  --background-hover: var(--blueGrayColor);
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white; display: none;" vertical="bottom" horizontal="end" (click)="validarDatos()">
-  Validar Datos <ion-icon name="reload" style="    position: absolute;
-    right: 0px;
-    color: white;"></ion-icon>
-</ion-button>
+      <ion-button id="validateAgainButton" *ngIf="daSegment == 'ribbon'" fill="outline" class="cliente-secondary-action" style="display: none;" (click)="validarDatos()">
+        <ion-icon slot="start" name="refresh-outline"></ion-icon>
+        Revisar
+      </ion-button>
 
-<ion-button id="saveDataButton" *ngIf="daSegment == 'ribbon'" style="position: fixed;width: 200px;height: 60px;bottom: 1%;right: 1%; z-index: 999;--background: var(--primaryColor);
-  --background-activated: var(--primaryColor);
-  --background-hover: var(--primaryColor);
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white;display: none;" vertical="bottom" horizontal="end" (click)="GuardarDatos()">
-  Guardar Datos
-</ion-button>
+      <ion-button id="saveDataButton" *ngIf="daSegment == 'ribbon'" class="cliente-primary-action" style="display: none;" (click)="GuardarDatos()">
+        <ion-icon slot="start" name="save-outline"></ion-icon>
+        Guardar datos
+      </ion-button>
+    </div>
 
-<ion-button id="camButton" style="position: fixed;width: 60px;height: 60px;bottom: 1%;left: 1%; z-index: 999;--background: var(--blueGrayColor);
-  --background-activated: var(--blueGrayColor);
-  --background-hover: var(--blueGrayColor);
---border-radius: 15px;
---box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
---color: white;" vertical="bottom" horizontal="end" (click)="goFotos()">
-  <ion-icon name="camera"></ion-icon>
-</ion-button>
-
-<ion-badge id="successLabel" color="warning" style="position: fixed; left: 10px; bottom: 10px; width: auto; padding: 15px; height: 46px; text-align: left;z-index: 999; display: none;color: white;--background: var(--blueGrayColor);
-  --background-activated: var(--blueGrayColor);
-  --background-hover: var(--blueGrayColor);" vertical="bottom" horizontal="end">
-  Registro guardado con éxito! 
-</ion-badge>
-
-<ion-button id="buttonGoAjuste" style="position: fixed; left: 290px; bottom: 7px;height: 46px; z-index: 999; display: none;color: white;" vertical="bottom" horizontal="start"
-(click)="goAjuste()">Ir a Ajustador</ion-button>
-
-<ion-footer slot="fixed" style="bottom: 0;left:0;height:80px; background: white;"></ion-footer>
+    <div class="cliente-success-actions">
+      <ion-badge id="successLabel" style="display: none;">Registro guardado con éxito</ion-badge>
+      <ion-button id="buttonGoAjuste" style="display: none;" class="cliente-primary-action" (click)="goAjuste()">
+        <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
+        Ir a Ajustador
+      </ion-button>
+    </div>
+  </div>
+</ion-footer>
 
 
 
@@ -1562,16 +1512,34 @@
   </ng-template>
 </ion-modal>
 
-<ion-modal #modalFechaNacimiento trigger="open-modal-fecha-nacimiento" [initialBreakpoint]="1" [breakpoints]="[0, 0.25, 0.5, 0.75, 1]">
+<ion-modal #modalFechaNacimiento trigger="open-modal-fecha-nacimiento" class="birth-date-modal">
   <ng-template>
-    <ion-content>
-      <ion-datetime style="margin-left:120px" [showDefaultButtons]="true" doneText="Guardar" cancelText="Cancelar"
-      [(ngModel)]="formateadaNacimiento" (ionChange)="marcarFechaNacimiento($event)"
-      class="required-data"></ion-datetime>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Fecha de nacimiento</ion-title>
+        <ion-buttons slot="end">
+          <ion-button aria-label="Cerrar" (click)="modalFechaNacimiento.dismiss()">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="birth-date-modal-content">
+      <div class="birth-date-guidance">
+        Selecciona día, mes y año. La edad se calculará automáticamente.
+      </div>
+      <ion-datetime presentation="date" [preferWheel]="true" locale="es-HN" [firstDayOfWeek]="1"
+      [min]="birthDateMin" [max]="birthDateMax" [showDefaultButtons]="true"
+      doneText="Guardar" cancelText="Cancelar" [(ngModel)]="formateadaNacimiento"
+      (ionChange)="marcarFechaNacimiento($event)" class="required-data birth-date-picker"></ion-datetime>
+      <div class="birth-date-result" *ngIf="edad !== undefined && edad !== null">
+        <strong>{{edad}} años</strong>
+        <span [class.minor-driver-warning]="esMenor">
+          {{esMenor ? 'Advertencia: conductor menor de edad' : 'Conductor mayor de edad'}}
+        </span>
+      </div>
       <input class="required-index" value="38">
-      <!--span color="danger" style="padding: 6px;height: 23px;width: 23px;">*</!--span -->
     </ion-content>
-    <!--ion-button>Guardar Fecha</!--ion-button -->
   </ng-template>
 </ion-modal>
 
@@ -1587,5 +1555,3 @@
     <!--ion-button>Guardar Fecha</!--ion-button -->
   </ng-template>
 </ion-modal>
-
-

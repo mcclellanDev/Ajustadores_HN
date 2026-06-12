@@ -13,11 +13,11 @@
             <ion-icon style="font-size: 2rem; color: white;" name="chevron-back"></ion-icon>
           </ion-button>
     </ion-buttons>
-    <ion-title>
+    <ion-title style="padding-left: 0;">
       <ion-grid>
         <ion-row>
-          <ion-col size="4"></ion-col>
-          <ion-col size="4">Expediente atención # {{idAtencion}} - {{miMoneda}}</ion-col>
+          <ion-col size="12" size-md="4" size-lg="4" [style.display]="isItTablet == false ? 'none' : 'inherit'"></ion-col>
+          <ion-col size="12" size-md="4" size-lg="4">Expediente atención # {{idAtencion}} <br>- {{miMoneda}}</ion-col>
           <ion-col offset="8" size="2" style="text-align: left;">
             <ion-fab *ngIf="true" style="position: fixed;padding-right: 10px;width: 50%;" vertical="top" horizontal="end">
               <!--ion-searchbar animated="true" placeholder="Buscar Fecha, Atención o Asegurado" show-clear-button="focus" show-cancel-button="never" cancel-button-text="Cancelar"
@@ -32,10 +32,15 @@
       </ion-grid>
     </ion-title>
   </ion-toolbar>
+
+  <ion-icon id="open-modal-info"
+  src="../../assets/img/ruta.svg"
+  class="boton-modal-info boton-trazar-ruta"
+  (click)="retraceRoute()"></ion-icon>
 </ion-header>
 
 <ion-content id="expedienteContent"  style="--background:transparent" #page>
-  <capacitor-google-map id="mapExpediente" #mapExpediente (mapClick)="'addMapMarker($event)'"></capacitor-google-map>
+  <div id="mapExpediente" class="leaflet-expediente-map" #mapExpediente></div>
 </ion-content>
 <ion-content id="mapaContent" style="--background: transparent;display: none;">
   <ion-grid fixed style="overflow: hidden;">
@@ -175,45 +180,7 @@
           <ion-icon style="font-size: 3rem;" name="checkmark"></ion-icon>
         </ion-fab-button>
       </ion-fab>
-
-
-    <ion-fab  style="position: fixed;right: 37.3%;" vertical="bottom">
-      <ion-fab-button style="font-weight: bolder;" (click)="goAudience()">
-        <ion-icon style="font-size: 2rem; color: white;" src="../../assets/img/discusion.svg"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-    <ion-fab  style="position: fixed;right: 31%;" vertical="bottom">
-      <ion-fab-button style="font-weight: bolder;" (click)="goPrinter()">
-        <ion-icon style="font-size: 2rem; color: white;" src="../../assets/img/imprimir.svg"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-    <ion-fab  style="position: fixed;right: 25%;" vertical="bottom">
-      <ion-fab-button style="font-weight: bolder;" (click)="grua()">
-        <ion-icon style="font-size: 2rem; color: white;" src="../../assets/img/remolque-de-camiones.svg"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-    <ion-fab  style="position: fixed;right: 19%;" vertical="bottom">
-      <ion-fab-button style="font-weight: bolder;" (click)="goBeneficiario()">
-        <ion-icon style="font-size: 2rem; color: white;" src="../../assets/img/gastos.svg"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-    <ion-fab  style="position: fixed;right: 13%;" vertical="bottom">
-      <ion-fab-button style="font-weight: bolder;" (click)="goFotos()">
-        <ion-icon id="statusArrow" style="font-size: 2rem;font-weight: bolder;" name="camera"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-    <ion-fab style="position: fixed;margin-right: 6%;" vertical="bottom" horizontal="end">
-      <ion-fab-button id="open-modal-info" (click)="modalInfo.present(); triggerModalInfo()">
-        <ion-icon style="font-size: 3rem;" name="alert-outline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-    <!--ion-fab [hidden]="source==2" style="position: fixed;margin-right: 6%;" vertical="bottom" horizontal="end">
-      <ion-fab-button>
-        
-        <ion-icon style="font-size: 3rem;" src="../../assets/img/clear-cache.svg"></ion-icon>
-      </ion-fab-button>
-    </!--ion-fab>
-    <ion-fab [hidden]="source==1" style="position: fixed;margin-right: 6%;" vertical="bottom" horizontal="end">
+    <!--ion-fab [hidden]="source==1" style="position: fixed;margin-right: 6%;" vertical="bottom" horizontal="end">
       <ion-fab-button>
         
         <ion-icon style="font-size: 3rem;" src="../../assets/img/clear-cache.svg"></ion-icon>
@@ -244,6 +211,12 @@
     <ion-fab id="buttonGoCliente" style="position: fixed;" vertical="bottom" horizontal="end">
       <ion-fab-button (click)="handleForward()">
         <ion-icon name="chevron-forward"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+    <ion-fab class="mobile-expediente-actions-fab" vertical="bottom" horizontal="center" style="margin-left:-20px">
+      <ion-fab-button (click)="presentExpedienteActions($event)">
+        <ion-icon name="apps-outline"></ion-icon>
       </ion-fab-button>
     </ion-fab>
 
@@ -286,126 +259,6 @@
 </ion-modal>
 
 
-<ion-modal id="modalInfo" #modalInfo trigger="open-modal-info" [presentingElement]="page" [backdropDismiss]=true [initialBreakpoint]="1" [breakpoints]="[0, 0.25, 0.5, 0.75, 1]"
-class="info-modal" style="overflow-y: scroll;width:100%">
-  <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        
-        
-        <ion-buttons slot="start">
-          <ion-fab slot="start" style="background: transparent;">
-            <ion-fab-button id="botonCerrarModal" (click)="cerrarModal()">
-              <ion-icon style="font-size: 2rem; color: aliceblue;" name="chevron-down"></ion-icon>
-              <!--ion-icon style="font-size: 3rem;color: aliceblue;" src="../../assets/img/map-icon.svg"></!--ion-icon -->
-            </ion-fab-button>
-          </ion-fab>
-        </ion-buttons>
-        <ion-title slot="end">Atención # {{idAtencion}}</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="ion-padding">
-      <ion-grid id="mapGrid">
-        <!--ion-row>
-          <ion-col size="6" (click)="setStatusAccept(2)" style="border-bottom-left-radius: 9px;border-top-right-radius: 9px;border: 1px solid lightgray;">
-            <ion-grid>
-              <ion-row>
-                <ion-col size="9">
-                  <ion-select #razonesSelect id="razonesSelect" class="text-size-xs" [(ngModel)]="laRazon" multiple="false" 
-                    style="float: right; color: white;display: none;" (ionChange)="InsertarAsignacion()" ok-text="Seleccionar" cancel-text="Cancelar"
-                    (ionCancel)="handleCancel()">Razón de Rechazo
-                    <ion-select-option *ngFor="let razon of razonesAsignacion; let i = index;" [value]="razon.IdRazon">
-                      {{razon.LaRazon}}
-                    </ion-select-option>
-                  </ion-select>
-
-                  <ion-card-subtitle>
-                    <ion-label><strong>Rechazar</strong></ion-label>
-                  </ion-card-subtitle>
-                </ion-col>
-                <ion-col size="3">
-                  <ion-toggle [enableOnOffLabels]="true" [checked]="acceptStatus" (ionChange)="'setStatus($event)'">Habilitar Unidad</ion-toggle>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-          </ion-col>
-          <ion-col size="6" (click)="setStatusAccept(1)" style="background: #007CDC;border-bottom-right-radius: 9px;border-top-left-radius: 9px;">
-            <ion-grid>
-              <ion-row>
-                <ion-col size="12">
-                  <ion-card-subtitle style="text-align: right; color: white; margin-right: 13px;">
-                    <ion-label><strong>Aceptar</strong></ion-label>
-                  </ion-card-subtitle>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-            
-          </ion-col>
-        </!--ion-row>
-
-        <br -->
-        <ion-row>
-          <ion-accordion-group *ngFor="let item of expediente">
-            <ion-accordion class="acordion" value="first">
-              <ion-item slot="header">
-                <ion-label>Datos del asegurado</ion-label>
-              </ion-item>
-              <div class="ion-padding" slot="content">
-                <strong>Nombre: {{item.Cliente| titlecase}}</strong><br><br>
-                Telefono: {{item.TelefonoOrigen}}<br>
-                Poliza: {{item.PolizaExterna.split('-')[1]| titlecase}}<br>
-                Moneda: {{miMoneda}}
-              </div>
-            </ion-accordion>
-            <ion-accordion class="acordion" value="second">
-              <ion-item slot="header">
-                <ion-label>Datos del vehículo</ion-label>
-              </ion-item>
-              <div class="ion-padding" slot="content">
-                <strong> Marca: {{item.Marca| titlecase}}</strong><br><br>
-                Modelo: {{item.Modelo| titlecase}}<br>
-                Color: {{item.Color || "N/D"| titlecase}}<br>
-                Año: {{item.Year || "N/D"}}<br>
-                Placa: {{item.NumeroPlaca || "N/D"}}
-              </div>
-            </ion-accordion>
-            <ion-accordion class="acordion" value="third">
-              <ion-item slot="header">
-                <ion-label>Datos del siniestro</ion-label>
-              </ion-item>
-              <div class="ion-padding" slot="content">
-                <strong> {{item.Direccion}}</strong><br><br>
-                Ciudad: {{item.Ciudad | titlecase}}
-                Zona: {{item.Zona | titlecase}}<br>
-                Dirección: {{item.Direccion  | titlecase}}<br>
-                Direción Destino: {{item.DireccionDestino | titlecase}}<br>
-                Servicio: {{item.Servicio | titlecase}}<br>
-                <ion-grid>
-                  <ion-row>
-                    <ion-col size="12">
-                      <ion-icon style="font-size: 5rem;
-                      color: aliceblue;
-                      margin-right: 2%;
-                      float: right;" src="../../assets/img/ruta.svg"></ion-icon>
-                    </ion-col>
-                    <ion-col offset="8" size="4">
-                      <ion-button id="botonRuta" class="ruta" style="float: right;" (click)="trazaRuta(directionsService, directionsDisplay)">
-                        Trazar Ruta
-                      </ion-button>
-                    </ion-col>
-                  </ion-row>
-                </ion-grid>
-              </div>
-              
-            </ion-accordion>
-          </ion-accordion-group>
-        </ion-row>
-      
-      </ion-grid>
-    </ion-content>
-  </ng-template>
-</ion-modal>
-
 <ion-modal id="modalOpciones" #modalOpciones trigger="open-modal-opciones" [presentingElement]="page" [backdropDismiss]=true [initialBreakpoint]="0.25" [breakpoints]="[0, 0.25]"
 class="info-modal">
   <ng-template>
@@ -431,4 +284,3 @@ class="info-modal">
 
 
   
-

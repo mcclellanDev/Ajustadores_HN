@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { ToastController,LoadingController } from '@ionic/angular';
 import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
 import { finalize } from 'rxjs/operators';
-import { ApiService } from '../services/api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +14,7 @@ export class ToastService {
   lasAtenciones:any=[];
   siniestroTercero:any=[];
   toastMessage:any; toastPosition:any; toastClass:any
-  constructor(private toaster:ToastController, private miApi:ApiService, private loading: LoadingController, private router: Router) { 
+  constructor(private toaster:ToastController, private loading: LoadingController, private router: Router) { 
     this.toastMessage = 'PORSALUD 360';
     this.toastPosition = 'top';
     this.toastClass ='por-salud';

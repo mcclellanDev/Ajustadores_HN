@@ -1,218 +1,629 @@
 :host {
-    --img-logo: 30vh;
-  }
-  
-  form{
-    width: 86%;
-  }
-  ion-grid:not(.login-grid),
-  ion-row:not(.login-row)  {
-    height: 100%;
-    background: var(--cs-background-primary, #fff);
-  }
-
-  ion-input.sesion-dato {
-  --background: transparent;
-  --color: black;
-  --placeholder-color: #7a85c4;
-  --placeholder-opacity: 0.8;
-
-  --padding-bottom: 10px;
-  --padding-end: 10px;
-  --padding-start: 10px;
-  --padding-top: 10px;
-  border: 1px solid lightgray;
-  border-radius: 30px;
-  --highlight-color-focused : white;
-  height: 50px;
+  display: block;
+  height: 100%;
 }
 
-ion-input.login-dato{
-  --background: var(--quaterniaryColor);
-  --color: var(--primaryColor);
-  --placeholder-color: #7a85c4;
-  --placeholder-opacity: 0.8;
-
-  --padding-bottom: 10px;
-  --padding-end: 10px;
-  --padding-start: 10px;
-  --padding-top: 10px;
-  border: 1px solid var(--quaterniaryColor);
-  border-radius: 30px;
-  --highlight-color-focused : white;
-  font-weight: bold;
-}
-  
-  
-  ion-img {
-    width: var(--img-logo);
-    text-align: center;
-    margin: 0 auto;
-  }
-  
-  ion-item {
-    ion-input {
-      --padding-end: 8px;
-      --margin-right: 8px;
-    }
-   ion-icon {
-     position: absolute;
-     right: 0;
-     bottom: 8px
-    }
-
-    
-  }
-
-  ion-button.warning-button {
-    --background: none;
-    --background-hover: none;
-    --background-activated: none;
-    --background-focused: none;
-  
-    --color: #F04F23;
-  
-    --border-radius: 60px;
-    --border-color: none;
-    --border-style: none;
-    --border-width: none;
-  
-    --box-shadow: 0 2px 6px 0 rgb(0, 0, 0, 0.25);
-  
-    --ripple-color: rgb(41, 35, 38);
-  
-    --padding-top: 10px;
-    --padding-bottom: 10px;
-    --color-hover: blue;
-  }
-
-  ion-split-pane {
-    --side-width: 40%;
-    --side-max-width: 40%;
-
-    --border: 10px groove #b3baff;
-
-    ion-menu{
-      border-radius:30%;
-    }
-  }
-
-  #formularioInicio{
-    background: transparent;
-    z-index: 1050;
-  }
-
-  #someGrid{
-    background: transparent;
-  }
-
-  .mi-logo{
-        width: 190px;
-    position: fixed;
-    top: 4%;
-    left: 28%;
-  }
-
-  .mi-imagen{
-    border: none;
-    box-shadow: none;
-    position: fixed;
-    bottom: -182px;
-    left: 0;
-    width: 100%;
-    height: 1000px;
-    transform: rotate(0deg);
-    object-fit: contain;   /* Equivalente a background-size: contain */
-    object-position: left; /* Equivalente a background-position: left */
-    z-index: 999;
-  }
-
-  .chip-connect {
-    margin-left: 20%;
-    width: 60%;
-    height: 100px;
-    --background: #7da1c4;
-    --color: white;
-    border-radius: 90px;
-  }
-
-  .mi-imagensita{
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
-    position: fixed;
-    top: 0px;
-    right: 0px;
-    width: auto;
-    height: auto;
-    transform: rotate(0deg);
-    background-size: contain;
-    background-position: left;
-    background-color: transparent;
-    image-rendering: crisp-edges;
-    z-index: 999;
-  }
-
-  ion-split-pane:before {
-    --border: 10px groove orangered;
-  }
-
-  
-
-  ion-grid{
-    height: 100%;
-}
-ion-row{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+.login-page {
+  --background: #f6f9fc;
+  overflow: hidden;
 }
 
-ion-spinner{
-	position: fixed;
-    top: 28%;
-    left: 40%;
-    z-index: 999;
-    width: 20%;
-    height: 20%;
-	//background-color: #00213f;
+.login-page::part(scroll) {
+  overflow: hidden;
 }
 
-#spinFooter{
-	position: fixed;
-    background: black;
-    opacity: 0.6;
-    height: 100vh;
-    width: 100vw;
-    z-index: 900;
-    bottom: 0;
+.login-shell {
+  box-sizing: border-box;
+  display: grid;
+  gap: clamp(18px, 4vw, 48px);
+  grid-template-columns: minmax(260px, 0.9fr) minmax(340px, 460px);
+  min-height: 100%;
+  padding: clamp(24px, 4vw, 54px);
+  place-items: center;
+  position: relative;
+  z-index: 2;
 }
 
-.custom-toast-multi{
+.login-wave {
+  border: none;
+  box-shadow: none;
+  pointer-events: none;
+  position: fixed;
+  transform: rotate(0deg);
+  z-index: 0;
+}
+
+.login-wave-top {
+  background-color: transparent;
+  height: auto;
+  image-rendering: crisp-edges;
+  outline: none;
+  right: 0;
+  top: 0;
+  width: auto;
+}
+
+.login-wave-bottom {
+  bottom: -182px;
+  height: 1000px;
+  left: 0;
+  max-width: none;
+  object-fit: contain;
+  object-position: left;
+  width: 100%;
+}
+
+.login-brand {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  justify-self: stretch;
+  max-width: 520px;
+  padding-left: clamp(4px, 2vw, 28px);
+}
+
+.login-logo {
+  height: auto;
+  width: clamp(170px, 18vw, 250px);
+}
+
+.login-brand-copy {
+  color: #0f315f;
+}
+
+.login-brand-copy p,
+.login-form-header p {
+  color: #0058cb;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.login-brand-copy h1 {
+  color: #123662;
+  font-size: clamp(2rem, 5vw, 4.8rem);
+  font-weight: 850;
+  line-height: 0.98;
+  margin: 0;
+  max-width: 520px;
+}
+
+.login-panel {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(0, 88, 203, 0.10);
+  border-radius: 8px;
+  box-shadow: 0 24px 60px rgba(18, 54, 98, 0.16);
+  box-sizing: border-box;
+  justify-self: stretch;
+  max-width: 460px;
+  padding: clamp(22px, 4vw, 34px);
+  width: 100%;
+}
+
+.login-form {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+.login-form-header {
+  margin-bottom: 6px;
+}
+
+.login-form-header h2 {
+  color: #123662;
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
+  font-weight: 850;
+  line-height: 1;
+  margin: 0;
+}
+
+.login-field-label {
+  color: #315b80;
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 800;
+  margin: 8px 0 -2px;
+}
+
+ion-input.sesion-dato {
+  --background: #ffffff;
+  --color: #101828;
+  --highlight-color-focused: transparent;
+  --padding-bottom: 0;
+  --padding-end: 16px;
+  --padding-start: 16px;
+  --padding-top: 0;
+  --placeholder-color: #667085;
+  --placeholder-opacity: 0.72;
+  border: 1px solid #cbd7e6;
+  border-radius: 8px;
+  font-size: 1rem;
+  height: 52px;
+}
+
+ion-input.sesion-dato.ion-focused {
+  border-color: #0058cb;
+  box-shadow: 0 0 0 3px rgba(0, 88, 203, 0.12);
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-input {
+  --padding-end: 54px;
+}
+
+.password-toggle {
+  --background-hover: rgba(0, 88, 203, 0.08);
+  --border-radius: 8px;
+  --color: #0058cb;
+  --padding-bottom: 0;
+  --padding-end: 0;
+  --padding-start: 0;
+  --padding-top: 0;
+  height: 44px;
+  margin: 0;
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 44px;
+  z-index: 3;
+}
+
+.password-toggle ion-icon {
+  font-size: 1.35rem;
+}
+
+.login-submit {
+  --background: #0058cb;
+  --background-activated: #004aa8;
+  --background-hover: #0b66de;
+  --border-radius: 8px;
+  --box-shadow: 0 14px 24px rgba(0, 88, 203, 0.22);
+  --color: #ffffff;
+  height: 52px;
+  margin-top: 16px;
+}
+
+.login-submit::part(native) {
+  color: #ffffff;
+}
+
+.login-submit.button-disabled::part(native) {
+  color: #ffffff;
+}
+
+.recovery-button {
+  --background-hover: rgba(240, 79, 35, 0.08);
+  --border-radius: 8px;
+  --color: #f04f23;
+  font-weight: 700;
+  height: 44px;
+  margin-top: 2px;
+}
+
+ion-spinner {
+  height: 20%;
+  left: 40%;
+  position: fixed;
+  top: 28%;
+  width: 20%;
+  z-index: 999;
+}
+
+#spinFooter {
+  background: black;
+  bottom: 0;
+  height: 100vh;
+  opacity: 0.6;
+  position: fixed;
+  width: 100vw;
+  z-index: 900;
+}
+
+.connect-indicator {
+  background: transparent;
+  display: none;
+  height: 0;
+  left: 0;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.connect-indicator ion-row {
+  width: 100%;
+}
+
+.chip-connect {
+  --background: #7da1c4;
+  --color: white;
+  border-radius: 90px;
+  height: 74px;
+  margin-left: 20%;
+  width: 60%;
+}
+
+.chip-connect ion-icon {
+  color: white;
+  font-size: 1.5rem;
+  margin-left: 14px;
+}
+
+.chip-connect ion-label {
+  font-size: 1rem;
+}
+
+.custom-toast-multi {
   transform: translateY(56px) !important;
 }
 
-  /*
-  ion-button.warning-button {
-    --background: #F04F23;
-    --background-hover: #F04F23;
-    --background-activated: #F04F23;
-    --background-focused: #F04F23;
-  
-    --color: white;
-  
-    --border-radius: 60px;
-    --border-color: #85341d;
-    --border-style: solid;
-    --border-width: 1px;
-  
-    --box-shadow: 0 2px 6px 0 rgb(0, 0, 0, 0.25);
-  
-    --ripple-color: rgb(41, 35, 38);
-  
-    --padding-top: 10px;
-    --padding-bottom: 10px;
-    
+::ng-deep {
+  .alert-wrapper {
+  --min-width: 500px;
+  --max-width: 500px;
+  --width: 500px;
   }
-*/
+
+  .login-menu-alert {
+    --backdrop-opacity: 0.42;
+
+    .alert-wrapper {
+      --width: 430px;
+      --min-width: 430px;
+      --max-width: 430px;
+      border-radius: 18px;
+      box-shadow: 0 22px 55px rgba(21, 48, 95, 0.28);
+      overflow: hidden;
+    }
+
+    .alert-head {
+      background: #0058cb;
+      padding: 18px 22px 16px;
+    }
+
+    .alert-title {
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      margin: 0;
+      text-transform: uppercase;
+    }
+
+    .alert-sub-title {
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+
+    .alert-message {
+      color: #15305f;
+      font-size: 0.96rem;
+      font-weight: 700;
+      line-height: 1.35;
+      padding: 18px 22px 4px;
+    }
+
+    .alert-button-group {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      padding: 14px 22px 22px;
+    }
+
+    .alert-button {
+      background: #ffffff;
+      border: 1.5px solid #d8e4f0;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      height: 46px;
+      justify-content: center;
+      letter-spacing: 0;
+      margin: 0;
+      min-width: 0;
+      padding-inline: 6px;
+      text-transform: none;
+      width: 100%;
+    }
+
+    .alert-button-inner {
+      justify-content: center;
+    }
+
+    .logout-menu-danger {
+      border-color: white;
+      color: white;
+    }
+
+    .logout-menu-cache {
+      border-color: white;
+      color: white;
+    }
+
+    .logout-menu-cancel {
+      border-color: white;
+      color: white;
+    }
+    .logout-menu-accept {
+      border-color: var(--blueGrayColor);
+      color: var(--blueGrayColor);
+    }
+  }
+
+
+  
+  
+
+  .cache-switch-alert {
+    --backdrop-opacity: 0.46;
+
+    .alert-wrapper {
+      --width: 500px;
+      --min-width: 500px;
+      --max-width: 500px;
+      border-radius: 18px;
+      box-shadow: 0 22px 55px rgba(21, 48, 95, 0.30);
+      overflow: hidden;
+    }
+
+    .alert-head {
+      background: #15305f;
+      padding: 18px 22px 16px;
+    }
+
+    .alert-title {
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      margin: 0;
+      text-transform: uppercase;
+    }
+
+    .alert-sub-title {
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+
+    .alert-message {
+      color: #15305f;
+      font-size: 0.94rem;
+      font-weight: 700;
+      line-height: 1.45;
+      padding: 18px 22px 6px;
+    }
+
+    .alert-button-group {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      padding: 14px 22px 22px;
+    }
+
+    .alert-button {
+      background: #ffffff;
+      border: 1.5px solid #d8e4f0;
+      border-radius: 12px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      height: 46px;
+      justify-content: center;
+      letter-spacing: 0;
+      margin: 0;
+      min-width: 0;
+      padding-inline: 6px;
+      text-transform: none;
+      width: 100%;
+    }
+
+    .alert-button-inner {
+      justify-content: center;
+    }
+
+    .cache-switch-cancel {
+      border-color: #b9c8d8;
+      color: #15305f;
+    }
+
+    .cache-switch-confirm {
+      border-color: #ef5a22;
+      color: #ef5a22;
+    }
+  }
+}
+
+@media (max-width: 699px) {
+  ::ng-deep {
+    .login-menu-alert,
+    .cache-switch-alert {
+      align-items: center;
+      padding-bottom: 0;
+      padding-top: 0;
+
+      .alert-wrapper {
+        --width: calc(100vw - 32px);
+        --min-width: 0;
+        --max-width: 360px;
+        border-radius: 14px;
+      }
+
+      .alert-head {
+        padding: 15px 18px 13px;
+      }
+
+      .alert-title {
+        font-size: 1rem;
+      }
+
+      .alert-sub-title {
+        font-size: 0.72rem;
+      }
+
+      .alert-message {
+        font-size: 0.88rem;
+        padding: 15px 18px 2px;
+      }
+
+      .alert-button-group {
+        gap: 6px;
+        padding: 12px 14px 16px;
+      }
+
+      .alert-button {
+        border-radius: 9px;
+        font-size: 0.69rem;
+        height: 42px;
+        padding-inline: 2px;
+      }
+    }
+
+    .cache-switch-alert {
+      .alert-wrapper {
+        --width: calc(100vw - 32px);
+        --min-width: 0;
+        --max-width: 370px;
+      }
+
+      .alert-message {
+        font-size: 0.82rem;
+        line-height: 1.35;
+        padding: 14px 16px 2px;
+      }
+
+      .alert-button-group {
+        gap: 8px;
+        padding: 12px 14px 16px;
+      }
+
+      .alert-button {
+        font-size: 0.72rem;
+        height: 42px;
+      }
+    }
+  }
+}
+
+@media (orientation: portrait), (max-width: 720px) {
+  .login-page::part(scroll) {
+    overflow-y: auto;
+  }
+
+  .login-shell {
+    align-content: start;
+    gap: 22px;
+    grid-template-columns: 1fr;
+    min-height: 100%;
+    padding: max(22px, env(safe-area-inset-top)) 18px max(20px, env(safe-area-inset-bottom));
+  }
+
+  .login-wave-top {
+    max-width: 560px;
+    opacity: 0.9;
+    width: 76vw;
+  }
+
+  .login-wave-bottom {
+    bottom: -18vh;
+    height: 68vh;
+    left: -36vw;
+    width: 172vw;
+  }
+
+  .login-brand {
+    align-items: center;
+    gap: 12px;
+    max-width: none;
+    padding: 8px 0 0;
+    text-align: center;
+  }
+
+  .login-logo {
+    width: clamp(150px, 42vw, 210px);
+  }
+
+  .login-brand-copy h1 {
+    font-size: clamp(1.85rem, 8vw, 3rem);
+    max-width: 360px;
+  }
+
+  .login-panel {
+    margin: 0 auto;
+    max-width: 420px;
+    padding: 22px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .login-shell {
+    gap: 18px;
+    grid-template-columns: minmax(220px, 0.8fr) minmax(330px, 420px);
+    padding: 14px 34px;
+  }
+
+  .login-brand {
+    gap: 12px;
+  }
+
+  .login-logo {
+    width: 150px;
+  }
+
+  .login-brand-copy h1 {
+    font-size: clamp(1.8rem, 5vh, 2.8rem);
+  }
+
+  .login-panel {
+    padding: 14px 20px;
+  }
+
+  .login-form {
+    gap: 6px;
+  }
+
+  .login-form-header {
+    margin-bottom: 0;
+  }
+
+  .login-form-header h2 {
+    font-size: 1.65rem;
+  }
+
+  .login-field-label {
+    margin-top: 5px;
+  }
+
+  ion-input.sesion-dato,
+  .login-submit {
+    height: 42px;
+  }
+
+  .password-toggle {
+    height: 34px;
+    width: 38px;
+  }
+
+  .login-submit {
+    margin-top: 10px;
+  }
+
+  .recovery-button {
+    height: 36px;
+    margin-top: 0;
+  }
+}

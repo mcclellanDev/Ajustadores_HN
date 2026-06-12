@@ -316,18 +316,18 @@ export class AjustadorhnPage implements OnInit {
             Motor: this.elExpediente[0].Motor, // de la info del asegurado
       
             // variables desde inputs
-            NumeroReclamo: 'string', // despues de crear el reclamo
+            NumeroReclamo: '', // despues de crear el reclamo
             FechaDesde: "2023-11-14T19:55:55.849Z", // Input directo
             FechaHasta: "2023-11-14T19:55:55.849Z", // Input directo
-            TipoCoberturaFicohsa: "string", // Input directo
-            NombreQuienRecibe: "string", // Input directo
-            IdentidadQuienRecibe: "string", // Input directo
-            NumeroCheque: "string", // Input directo
+            TipoCoberturaFicohsa: "", // Input directo
+            NombreQuienRecibe: "", // Input directo
+            IdentidadQuienRecibe: "", // Input directo
+            NumeroCheque: "", // Input directo
             FechaDelCheque: "2023-11-14T19:55:55.849Z", // Input directo
             ValorDelCheque: 0, // Input directo
-            NombreAFavor: "string", // Input directo
+            NombreAFavor: "", // Input directo
             FechaFirma: this.fechaPie, // Input directo
-            FirmaCliente: "string", // Desde el canvas
+            FirmaCliente: "", // Desde el canvas
 
           }
 

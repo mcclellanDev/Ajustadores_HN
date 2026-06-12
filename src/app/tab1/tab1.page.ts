@@ -24,6 +24,7 @@ import { NativeGeocoder, NativeGeocoderResult } from '@ionic-native/native-geoco
 import { tipofotos } from './../interfaces/formulario';
 import { CountrydataService } from '../services/countrydata.service';
 import { versionAndroid } from '../interfaces/variables';
+import { DeviceService } from '../services/device.service';
 
 import * as $ from 'jquery';
 import { datosAtencionKeys } from '../environments/predeterminados';
@@ -64,13 +65,13 @@ export class Tab1Page implements OnInit {
 
   emptySignatureWhite = emptySignatureWhite;
   conectividadStat: string | undefined;  estadoConexion: string | undefined;  estadoConexionGPS: string | undefined; 
-  gpsOn: boolean = false;
+  gpsOn: boolean = false;  isTablet: boolean = false;
 
 
   constructor(private router: Router, private loading: LoadingController,private alert: AlertController,private api: ApiService,private toast: ToastController,
     private tostador: ToastService,private actionSheetCtrl: ActionSheetController,private platform: Platform,private toaster: ToastController,private so: ScreenOrientation,
     private geo: NativeGeocoder,private locateIt: LocateService,private alertController: AlertController,private call: CallNumber, private myModal: ModalController, 
-    private countryService:CountrydataService, private storageService:StorageService) {
+    private countryService:CountrydataService, private storageService:StorageService, private deviceService: DeviceService) {
       
       // console.log(window.location.pathname);
       
@@ -140,7 +141,7 @@ export class Tab1Page implements OnInit {
   }
 
   goFotos(){
-    this.router.navigate(['./fotoshn']);
+    this.router.navigate(['./cargar-archivos']);
   }
 
   goFotoReporte(){
@@ -149,15 +150,20 @@ export class Tab1Page implements OnInit {
 
   openNotification(i) {$('.notification-item').eq(i).toggleClass('read');}
 
-  checkAtencionEnProceso(idAtencionSeleccionada, idAtencionEnProceso){
-    
-      let iguales = (idAtencionSeleccionada==idAtencionEnProceso);
-      if (iguales==false) {
-        setTimeout(() => {
-          this.presentAlertClearCache(idAtencionSeleccionada, 'HELP', 'Ajustadores', 'Existen datos en caché para la atención '+idAtencionEnProceso+'. Deseas cambiar a la atención '+idAtencionSeleccionada+'? Si aceptas, se borrarán los datos de la atención '+idAtencionEnProceso+' y se cargarán los de la atención '+idAtencionSeleccionada+'.');  
-        }, 1000);
-        /**/
-      }
+  checkAtencionEnProceso(idAtencionSeleccionada, idAtencionEnProceso, onConfirm?: () => void){
+    const seleccionada = idAtencionSeleccionada ? idAtencionSeleccionada.toString() : '';
+    const enProceso = idAtencionEnProceso ? idAtencionEnProceso.toString() : '';
+    const iguales = seleccionada === enProceso;
+
+    if (iguales == false) {
+      setTimeout(() => {
+        this.presentAlertClearCache(idAtencionSeleccionada, 'HELP', 'Ajustadores', 'Existen datos en caché para la atención '+idAtencionEnProceso+'. Deseas cambiar a la atención '+idAtencionSeleccionada+'? Si aceptas, se borrarán los datos de la atención '+idAtencionEnProceso+' y se cargarán los de la atención '+idAtencionSeleccionada+'.', onConfirm);  
+      }, 300);
+
+      return true;
+    }
+
+    return false;
   }
 
   
@@ -232,7 +238,7 @@ export class Tab1Page implements OnInit {
         this.store = 'https://portal.porsalud.net/Outer/AppRepositorio/HELP/NuevaVersion/HELP.apk';
         this.androidVersion = versionAndroid.versionCodigo;
 
-        let numbersDB = this.androidVersion.toString().replace(/[^0-9]/g,"");
+        let numbersDB = versionAndroid.versionCodigo.toString().replace(/[^0-9]/g,"");
         let numbersDV = this.dbVersion.toString().replace(/[^0-9]/g,"");
         if (numbersDB==numbersDV) {}else{
           setTimeout(() => {
@@ -248,6 +254,17 @@ export class Tab1Page implements OnInit {
     this.outletDeactivate();
     
     window.open(store, '_system', 'location=yes');
+  }
+
+  async openReleaseInfo() {
+    const alert = await this.alertController.create({
+      cssClass: 'update-info-alert',
+      header: 'Qué mejora esta versión?',
+      message: 'Estos son los cambios más importantes preparados para tu trabajo diario:\n\n- Ajustamos el inicio para que el listado de atenciones sea más claro.\n- Mejoramos la vista principal para trabajar mejor en tablet.\n- Pulimos el registro de firma, expediente, fotos y solicitud de grúa.\n- Mejoramos la validación del aviso de actualización.',
+      buttons: ['Entendido']
+    });
+
+    await alert.present();
   }
 
   ionViewWillEnter(){
@@ -333,6 +350,8 @@ export class Tab1Page implements OnInit {
 
   enterView(){
     if (this.firmaPrecargadaAjustador != null && this.firmaPrecargadaAjustador != undefined) {this.isSign = true;} else {this.isSign = false;}
+    
+    this.isTablet = this.deviceService.isTablet;
 
     if (this.platform.is('android') == true) {
       this.geoCodeReverse();
@@ -551,8 +570,47 @@ export class Tab1Page implements OnInit {
         }, 1000);
     
         localStorage.setItem('atencionesCount', atencionesCount.toString());
+        this.restoreLastActiveAttention();
       }
     )
+  }
+
+  private restoreLastActiveAttention() {
+    if (!this.filtroAtenciones.length) {
+      this.atIndex = null;
+      this.idAtencion = null;
+      return;
+    }
+
+    const storedAttentionIds = [
+      localStorage.getItem('ultimaAtencionSeleccionada'),
+      localStorage.getItem('atencionEnProceso'),
+      localStorage.getItem('idAtencion')
+    ].filter(Boolean);
+
+    let selectedIndex = -1;
+
+    for (const storedId of storedAttentionIds) {
+      selectedIndex = this.filtroAtenciones.findIndex(
+        attention => attention.IdAtencion.toString() === storedId
+      );
+
+      if (selectedIndex >= 0) {
+        break;
+      }
+    }
+
+    if (selectedIndex < 0) {
+      selectedIndex = this.getActiveAttentionIndex();
+    }
+
+    if (selectedIndex < 0 || selectedIndex >= this.filtroAtenciones.length) {
+      selectedIndex = 0;
+    }
+
+    const selectedAttention = this.filtroAtenciones[selectedIndex];
+    clearInterval(this.firstInterval);
+    this.seleccionarAtencion(selectedAttention.IdAtencion, selectedIndex, true);
   }
 
   getActiveAttentionIndex() {
@@ -646,10 +704,13 @@ export class Tab1Page implements OnInit {
 
   async cerrarSesion() {
     const alert = await this.alert.create({
-      header: 'HELP',
-      message: 'Asistencia de Seguros',
+      cssClass: 'logout-menu-alert',
+      header: 'HELP Ajustadores',
+      subHeader: 'Asistencia de Seguros',
+      message: 'Selecciona una accion para continuar.',
       buttons: [{
-        text: 'Cerrar sesión?',
+        text: 'Cerrar sesión',
+        cssClass: 'logout-menu-button logout-menu-danger',
         handler: () => {
           this.isLogout = true;
           localStorage.setItem('isLogout', this.isLogout.toString());
@@ -659,11 +720,13 @@ export class Tab1Page implements OnInit {
       },
       {
         text: 'Continuar',
-        role: 'cancel'
+        role: 'cancel',
+        cssClass: 'logout-menu-button logout-menu-cancel'
       } ,
       {
         text: 'Limpiar Caché',
         role: 'confirm',
+        cssClass: 'logout-menu-button logout-menu-cache',
         handler: () => { this.limpiarCache() }
       }
       ]
@@ -719,6 +782,7 @@ export class Tab1Page implements OnInit {
 
     actionSheet.present();
   }
+
   verExpediente(idAtencion: number) {
     this.router.navigate(['./expediente'], { queryParams: { Id: idAtencion, Source:1 } });
   }
@@ -801,8 +865,9 @@ export class Tab1Page implements OnInit {
     await toast.present();
   }
 
-  async presentAlertClearCache(idAtencion, header, subheader, message) {
+  async presentAlertClearCache(idAtencion, header, subheader, message, onConfirm?: () => void) {
     const alert = await this.alertController.create({
+      cssClass: 'cache-switch-alert',
       header: header,
       subHeader: subheader,
       message: message,
@@ -810,12 +875,14 @@ export class Tab1Page implements OnInit {
         {
           text: 'NO CAMBIAR',
           role: 'cancel',
+          cssClass: 'cache-switch-button cache-switch-cancel',
           handler: () => {
           },
         },
         {
           text: 'CAMBIAR',
           role: 'confirm',
+          cssClass: 'cache-switch-button cache-switch-confirm',
           handler: () => {
             this.isLoading = true;
             setTimeout(() => {
@@ -832,6 +899,9 @@ export class Tab1Page implements OnInit {
               localStorage.removeItem('dataProcess-DescripcionAudiencia');
               localStorage.setItem('atencionEnProceso', idAtencion);
               localStorage.setItem('estaEvaluado', 'false');
+              if (onConfirm) {
+                onConfirm();
+              }
               this.isLoading = false;
             }, 1800);
             
@@ -1119,7 +1189,7 @@ permitirGPS(){
   }
 
   obtenerCacheCliente(AtencionId){
-    this.api.ObtenercacheCliente(this.idAtencion).pipe(
+    this.api.ObtenercacheCliente(AtencionId).pipe(
       finalize(async () => {
         this.isLoading = false;
       })
@@ -1157,22 +1227,28 @@ permitirGPS(){
     )
   }
 
-  seleccionarAtencion(idAtencion, indexInput) {
+  seleccionarAtencion(idAtencion, indexInput, restoring: boolean = false) {
+    
+    let idAtencionEnProceso = localStorage.getItem('atencionEnProceso');
+    if (idAtencionEnProceso && !restoring) {
+      const requiereConfirmacion = this.checkAtencionEnProceso(idAtencion, idAtencionEnProceso, () => {
+        this.seleccionarAtencion(idAtencion, indexInput);
+      });
+
+      if (requiereConfirmacion) {
+        return;
+      }
+    }
 
     this.obtenerCacheCliente(idAtencion);
 
     this.isLoad = false;
-    let idAtencionEnProceso = localStorage.getItem('atencionEnProceso');
-    if (idAtencionEnProceso) {
-      this.checkAtencionEnProceso(idAtencion, idAtencionEnProceso);
-    }else{
-    }
-
     this.elColorEstado = this.filtroAtenciones[indexInput].ColorEstado;
     localStorage.setItem('elColorEstado', this.elColorEstado);
     this.atIndex = idAtencion; this.idAtencion = this.atIndex;
     this.atIndexId = indexInput;
     localStorage.setItem('idAtencion', idAtencion);
+    localStorage.setItem('ultimaAtencionSeleccionada', idAtencion.toString());
     localStorage.setItem('indexAtencion', indexInput.toString());
     localStorage.setItem('indexAtencion-0', indexInput.toString());
     localStorage.setItem('elCliente', this.filtroAtenciones[indexInput].Cliente);
@@ -1244,7 +1320,7 @@ permitirGPS(){
       this.textoEmergente2 = 'Para mayor detalle, consulta a tu administrador de sistema.';
     }
 
-    let daSegmentsContainer = document.getElementsByClassName('segment-item-atenciones');
+    let daSegmentsContainer = document.getElementsByClassName('appointment-item');
     
     let daIndex = indexInput;
     for (let index = 0; index < daSegmentsContainer.length; index++) {
@@ -1266,7 +1342,7 @@ permitirGPS(){
         this.laFecha = element.Fecha;
       }
     }
-    this.sig.clear();
+    this.sig?.clear();
   }
 
   validarCorreo() {
@@ -1594,30 +1670,30 @@ permitirGPS(){
 
   goFiniquito(){
     let elFiniquito = {
-      NumeroReclamo: "string", // despues de crear el reclamo
+      NumeroReclamo: "", // despues de crear el reclamo
       FechaDesde: "2023-11-14T19:55:55.849Z", // Input directo
       FechaHasta: "2023-11-14T19:55:55.849Z", // Input directo
       NombreCliente: this.elCliente, // de la info del asegurado
-      TipoCoberturaFicohsa: "string", // Input directo
+      TipoCoberturaFicohsa: "", // Input directo
       FechaFirma: "2023-11-14T19:55:55.849Z", // Input directo
-      FirmaCliente: "string", // Desde el canvas
-      NombreQuienRecibe: "string", // Input directo
-      IdentidadQuienRecibe: "string", // Input directo
-      NumeroCheque: "string", // Input directo
+      FirmaCliente: "", // Desde el canvas
+      NombreQuienRecibe: "", // Input directo
+      IdentidadQuienRecibe: "", // Input directo
+      NumeroCheque: "", // Input directo
       FechaDelCheque: "2023-11-14T19:55:55.849Z", // Input directo
       ValorDelCheque: 0, // Input directo
-      NombreAFavor: "string", // Input directo
-      Poliza: "string", // de la info del asegurado
+      NombreAFavor: "", // Input directo
+      Poliza: "", // de la info del asegurado
       RefAtencionId: 0, // de la info del asegurado
-      Marca: "string", // de la info del asegurado
-      Modelo: "string", // de la info del asegurado
+      Marca: "", // de la info del asegurado
+      Modelo: "", // de la info del asegurado
       Anio: 0, // de la info del asegurado
-      Placa: "string", // de la info del asegurado
-      Chasis: "string", // de la info del asegurado
-      Motor: "string", // de la info del asegurado
+      Placa: "", // de la info del asegurado
+      Chasis: "", // de la info del asegurado
+      Motor: "", // de la info del asegurado
 
-      beneficiarioTipo: 'string', // falta
-      fechaSiniestro: 'string'
+      beneficiarioTipo: '', // falta
+      fechaSiniestro: ''
     }
 
     localStorage.setItem('finiquito', JSON.stringify(elFiniquito));

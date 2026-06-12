@@ -37,6 +37,22 @@ anioPie:any;dia :any;mes :any;anio:any;numeroCheque:any;montoCheque:any;receptor
 aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moneda: any;  miMoneda: string;
   calendarTitle: string; calendarTitles:any=[]=calendarTitles; chequeFecha:string; hastaFecha:string; desdeFecha:string;
   canDismiss: boolean = false;
+  validationAttempted = false;
+  invalidBeneficiaryType = false;
+  invalidCoverage = false;
+  invalidStartDate = false;
+  invalidEndDate = false;
+  invalidCheckDate = false;
+  invalidCheckNumber = false;
+  invalidCheckAmount = false;
+  invalidReceiverName = false;
+  invalidReceiverId = false;
+  invalidPayee = false;
+  coverageSelectOptions = {
+    cssClass: 'form-choice-alert',
+    header: 'Tipo de cobertura',
+    subHeader: 'Selecciona una opción'
+  };
   constructor(private router:Router, private api:ApiService, private toaster:ToastService, private myModal:ModalController,
     private animationCtrl: AnimationController, private alert: AlertController
   ) { 
@@ -62,7 +78,11 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
     this.fechaParrafo = this.dia+' de '+ meses[this.mes].mes+' de '+this.anio;
     this.fechaPie = (this.diaPie)+ ' días'+' del mes de '+ meses[this.mesPie].mes+' de '+this.anioPie;
 
-    this.elFiniquito =  JSON.parse(localStorage.getItem('elFiniquito'));
+    this.elFiniquito = JSON.parse(localStorage.getItem('elFiniquito') || '{}') || {};
+    if (this.elFiniquito.TipoCoberturaFicohsa?.toString().trim().toLowerCase() === 'string') {
+      this.elFiniquito.TipoCoberturaFicohsa = '';
+      localStorage.removeItem('tipoCobertura');
+    }
     console.log('El Finiquito');
     console.dir(this.elFiniquito);
     this.numeroDeReclamo = localStorage.getItem('codigoReclamo');
@@ -148,8 +168,14 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
   }
 
   seleccionarTipoBeneficiario(event){
-    //alert(event.target.value)
     this.elFiniquito.beneficiarioTipo = event.target.value;
+    this.invalidBeneficiaryType = false;
+  }
+
+  seleccionarTipoCobertura(event) {
+    this.elFiniquito.TipoCoberturaFicohsa = event.target.value;
+    localStorage.setItem('tipoCobertura', event.target.value);
+    this.invalidCoverage = false;
   }
 
   goBack(){
@@ -165,6 +191,7 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
 
   async alertaSalir() {
     const alert = await this.alert.create({
+      cssClass: 'form-choice-alert',
       header:'Salir del formulario?',
       message:'Los datos se perderan sin haber guardado. Salir?',
       buttons:this.alertButtons
@@ -209,26 +236,35 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
 
   entraAFavorDe(event) {
     this.elFiniquito.NombreAFavor = event.target.value;
+    this.invalidPayee = !this.elFiniquito.NombreAFavor?.toString().trim();
     localStorage.setItem('NombreAFavor', this.elFiniquito.NombreAFavor);
     }
     entraentraReceptorIdentidad(event) {
     this.elFiniquito.IdentidadQuienRecibe = event.target.value;
+    this.invalidReceiverId = !this.elFiniquito.IdentidadQuienRecibe?.toString().trim();
     localStorage.setItem('IdentidadQuienRecibe', this.elFiniquito.IdentidadQuienRecibe);
     }
     entraReceptorNombre(event) {
     this.elFiniquito.NombreQuienRecibe = event.target.value;
+    this.invalidReceiverName = !this.elFiniquito.NombreQuienRecibe?.toString().trim();
     localStorage.setItem('NombreQuienRecibe', this.elFiniquito.NombreQuienRecibe);
     }
     entraChequeMonto(event) {
     this.elFiniquito.ValorDelCheque = event.target.value;
+    this.invalidCheckAmount = !this.elFiniquito.ValorDelCheque || Number(this.elFiniquito.ValorDelCheque) <= 0;
     localStorage.setItem('ValorDelCheque', this.elFiniquito.ValorDelCheque);
     }
     entraChequeNumero(event) {
     this.elFiniquito.NumeroCheque = event.target.value;
+    this.invalidCheckNumber = !this.elFiniquito.NumeroCheque?.toString().trim();
     localStorage.setItem('NumeroCheque', this.elFiniquito.NumeroCheque);
     }
 
   goFiniquito(){
+    if (!this.canContinue()) {
+      return;
+    }
+
     console.log('antes de ir al finiquito');
     this.elFiniquito.NumeroReclamo = localStorage.getItem('codigoReclamo');
     this.elFiniquito.FechaFirma = new Date().toISOString();
@@ -296,7 +332,8 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
   }
 
   obtenerCache(){
-      this.elFiniquito.beneficiarioTipo = parseInt(localStorage.getItem('finiquito-beneficiarioTipo'));
+      const beneficiaryType = localStorage.getItem('finiquito-beneficiarioTipo');
+      this.elFiniquito.beneficiarioTipo = beneficiaryType ? parseInt(beneficiaryType, 10) : this.elFiniquito.beneficiarioTipo;
       this.desdeFecha = localStorage.getItem('finiquito-FechaDesde');
       this.hastaFecha = localStorage.getItem('finiquito-FechaHasta');
       this.chequeFecha = localStorage.getItem('finiquito-FechaDelCheque');
@@ -305,7 +342,58 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
       this.receptorNombre = localStorage.getItem('finiquito-NombreQuienRecibe');
       this.receptorIdentidad = localStorage.getItem('finiquito-IdentidadQuienRecibe');
       this.aFavorDe = localStorage.getItem('finiquito-NombreAFavor');
+      this.elFiniquito.FechaDesde = this.desdeFecha || this.elFiniquito.FechaDesde;
+      this.elFiniquito.FechaHasta = this.hastaFecha || this.elFiniquito.FechaHasta;
+      this.elFiniquito.FechaDelCheque = this.chequeFecha || this.elFiniquito.FechaDelCheque;
+      this.elFiniquito.NumeroCheque = this.numeroCheque || this.elFiniquito.NumeroCheque;
+      this.elFiniquito.ValorDelCheque = this.montoCheque || this.elFiniquito.ValorDelCheque;
+      this.elFiniquito.NombreQuienRecibe = this.receptorNombre || this.elFiniquito.NombreQuienRecibe;
+      this.elFiniquito.IdentidadQuienRecibe = this.receptorIdentidad || this.elFiniquito.IdentidadQuienRecibe;
+      this.elFiniquito.NombreAFavor = this.aFavorDe || this.elFiniquito.NombreAFavor;
+      const cachedCoverage = localStorage.getItem('tipoCobertura');
+      this.elFiniquito.TipoCoberturaFicohsa = this.elFiniquito.TipoCoberturaFicohsa ||
+        (cachedCoverage?.trim().toLowerCase() === 'string' ? '' : cachedCoverage);
       this.isLoading = false;
+  }
+
+  openDatePicker(type: number, modal: any) {
+    this.tipoFecha = type;
+    this.calendarTitle = this.calendarTitles[type - 1].title;
+    const currentDate = type === 1 ? this.desdeFecha : type === 2 ? this.hastaFecha : this.chequeFecha;
+    this.laFecha = currentDate || new Date().toISOString();
+    modal.present();
+  }
+
+  updateValidationState() {
+    this.invalidBeneficiaryType = !this.elFiniquito.beneficiarioTipo;
+    this.invalidCoverage = !this.elFiniquito.TipoCoberturaFicohsa?.toString().trim();
+    this.invalidStartDate = !this.desdeFecha;
+    this.invalidEndDate = !this.hastaFecha || (!!this.desdeFecha && this.hastaFecha < this.desdeFecha);
+    this.invalidCheckDate = !this.chequeFecha;
+    this.invalidCheckNumber = !this.numeroCheque?.toString().trim();
+    this.invalidCheckAmount = !this.montoCheque || Number(this.montoCheque) <= 0;
+    this.invalidReceiverName = !this.receptorNombre?.toString().trim();
+    this.invalidReceiverId = !this.receptorIdentidad?.toString().trim();
+    this.invalidPayee = !this.aFavorDe?.toString().trim();
+  }
+
+  canContinue(): boolean {
+    this.validationAttempted = true;
+    this.updateValidationState();
+    const invalid = this.invalidBeneficiaryType || this.invalidCoverage || this.invalidStartDate ||
+      this.invalidEndDate || this.invalidCheckDate || this.invalidCheckNumber || this.invalidCheckAmount ||
+      this.invalidReceiverName || this.invalidReceiverId || this.invalidPayee;
+
+    if (invalid) {
+      this.toaster.presentToastNoButtonsRed(
+        'Completa los campos marcados antes de revisar y firmar el finiquito.',
+        'top',
+        'finiquito'
+      );
+      return false;
+    }
+
+    return true;
   }
 
   marcarFecha(laFecha, tipoFecha){
@@ -317,6 +405,7 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
       this.desdeFecha = new Date(laFecha).toISOString().split("T")[0];
       this.formateada = new Date(laFecha).toISOString();
       console.log(this.fechaInicio+', '+tipoFecha);
+      this.invalidStartDate = false;
     }
     if(tipoFecha == 2){
       this.elFiniquito.FechaHasta = new Date(laFecha).toISOString().split("T")[0];
@@ -324,6 +413,7 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
       this.hastaFecha = new Date(laFecha).toISOString().split("T")[0];
       this.formateada = new Date(laFecha).toISOString();
       console.log(this.fechaFinal+', '+tipoFecha);
+      this.invalidEndDate = !!this.desdeFecha && this.hastaFecha < this.desdeFecha;
     }
 
     if(tipoFecha == 3){
@@ -332,6 +422,7 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
       this.chequeFecha = new Date(laFecha).toISOString().split("T")[0];
       this.formateada = new Date(laFecha).toISOString();
       console.log(this.fechaCheque+', '+tipoFecha);
+      this.invalidCheckDate = false;
     }
 
     setTimeout(() => {
