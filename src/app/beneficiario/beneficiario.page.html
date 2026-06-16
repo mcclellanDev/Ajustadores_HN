@@ -12,7 +12,26 @@
 </ion-header>
 
 <ion-content class="beneficiary-content">
-  <div class="beneficiary-form">
+  <section class="claim-blocked-state" *ngIf="claimEligibilityChecked && !canGenerateSettlement">
+    <div class="claim-blocked-icon">
+      <ion-icon [name]="claimValidationError ? 'cloud-offline-outline' : 'document-lock-outline'"></ion-icon>
+    </div>
+    <span>Validación previa</span>
+    <h2>{{claimValidationError ? 'No pudimos verificar el reclamo' : 'Finiquito no disponible'}}</h2>
+    <p *ngIf="!claimValidationError">
+      La atención #{{idAtencion}} todavía no tiene un reclamo generado. Completa ese proceso antes de
+      registrar al beneficiario, el cheque y la firma.
+    </p>
+    <p *ngIf="claimValidationError">
+      Revisa tu conexión y vuelve a intentar la consulta antes de completar el finiquito.
+    </p>
+    <div class="claim-blocked-actions">
+      <ion-button fill="outline" (click)="goExpediente()">Regresar al expediente</ion-button>
+      <ion-button *ngIf="claimValidationError" (click)="validateClaimEligibility()">Reintentar</ion-button>
+    </div>
+  </section>
+
+  <div class="beneficiary-form" *ngIf="claimEligibilityChecked && canGenerateSettlement">
     <section class="form-section">
       <div class="section-heading">
         <span>Beneficiario del pago</span>
@@ -88,6 +107,22 @@
         <h2>Información del cheque</h2>
       </div>
 
+      <aside class="exchange-rate-notice" *ngIf="isDollarPolicy">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <div>
+          <strong>La póliza está expresada en dólares, pero el cheque se emite en lempiras.</strong>
+          <p>
+            Referencia BCH: US$1.00 = L {{bchUsdReference.rate | number:'1.4-4'}},
+            vigente al {{bchUsdReference.effectiveDate}}. El monto debe registrarse manualmente y
+            verificarse contra la publicación oficial antes de continuar.
+          </p>
+          <ion-button fill="clear" size="small" (click)="openBchExchangeRate()">
+            <ion-icon slot="start" name="open-outline"></ion-icon>
+            Consultar tasa vigente en BCH
+          </ion-button>
+        </div>
+      </aside>
+
       <div class="form-grid">
         <div class="form-field" [class.field-invalid]="validationAttempted && invalidCheckNumber">
           <ion-label>Número de cheque</ion-label>
@@ -95,7 +130,7 @@
             (ionInput)="entraChequeNumero($event); guardaCache(4)"></ion-input>
         </div>
         <div class="form-field" [class.field-invalid]="validationAttempted && invalidCheckAmount">
-          <ion-label>Monto del cheque</ion-label>
+          <ion-label>Monto del cheque (Lempiras)</ion-label>
           <ion-input type="number" inputmode="decimal" [(ngModel)]="montoCheque"
             (ionInput)="entraChequeMonto($event); guardaCache(5)"></ion-input>
         </div>
@@ -119,7 +154,7 @@
   </div>
 </ion-content>
 
-<ion-footer class="beneficiary-footer">
+<ion-footer class="beneficiary-footer" *ngIf="claimEligibilityChecked && canGenerateSettlement">
   <ion-toolbar>
     <ion-button expand="block" (click)="goFiniquito()">
       Revisar y firmar finiquito

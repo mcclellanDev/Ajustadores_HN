@@ -42,6 +42,10 @@ export class SegmentoVehiculoPage implements OnInit {
   laPolizaExternaAsegurado: any;contadorSegmentos:number=0; marcasVehiculos:any=marcasVehiculos; modelosMarca:any=[]; elExpediente:any;
   isMarca:boolean=false; isModelo:boolean=false; talleresFiltrados:any=[];  esPesado: any; elExpedienteKilometraje:any; ajustador: ajustadorHn={};
   datos:any=[]; esKilometraje:boolean=false;  elExpedienteSerie: any; segmentoTitulo:any; isLoading:boolean = false;
+
+  brandSelectOptions = { cssClass: 'form-choice-alert', header: 'Marca del vehículo', subHeader: 'Selecciona una opción' };
+  modelSelectOptions = { cssClass: 'form-choice-alert', header: 'Modelo del vehículo', subHeader: 'Selecciona una opción' };
+
   constructor(private api: ApiService, public toaster:ToastService) { 
     this.idAtencion = localStorage.getItem('idAtencion');
     let dIdAtencion = parseInt(this.idAtencion);

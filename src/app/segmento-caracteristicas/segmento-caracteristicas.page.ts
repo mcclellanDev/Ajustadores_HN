@@ -16,11 +16,15 @@ import * as $ from 'jquery';
 export class SegmentoCaracteristicasPage implements OnInit {
 
   idAtencion:any; miMoneda: string; moneda: any; segmentoTitulo:any; esTraslado:any; tipoGrua:any; datos:any=[]; talleresFiltrados:any=[];
-  tallerOtro: any;  tallerOtroDireccion: any; esPesado:any; anioAsegurado:any; isLoading:boolean=false; tiposTransmision= tiposTransmision;
+  tallerOtro: any = '';  tallerOtroDireccion: any = ''; esPesado:any; anioAsegurado:any; isLoading:boolean=false; tiposTransmision= tiposTransmision;
   tallerNombreDisplay: any; tipoCombustible:tipoCombustible[]=[]; ajustador: ajustadorHn={};  tipoDeCombustible: string; tipotransmision:any;
   rinesId: number; contadorTallerOtro:number = 0; esTallerOtro:boolean=false; tallerCategoria:any=[]; tallerCategoriaA:any=[];tallerCategoriaB:any=[];
   tallerCategoriaC:any=[]; talleresCategorias:any=[];  elExpediente: any = [];  ciudad: any;
   talleresTGU: any = [];  talleresSPS: any = [];
+
+  workshopSelectOptions = { cssClass: 'form-choice-alert', header: 'Taller mecánico', subHeader: 'Selecciona una opción' };
+  fuelTypeSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de combustible', subHeader: 'Selecciona una opción' };
+  transmissionTypeSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de transmisión', subHeader: 'Selecciona una opción' };
 
   constructor(private api: ApiService, private alert: AlertController, private toaster:ToastService) { 
     this.talleresCategorias = TalleresCategorias
@@ -136,12 +140,12 @@ export class SegmentoCaracteristicasPage implements OnInit {
     }
     
     if (tallerOtro) {
-      this.tallerOtro = tallerOtro.split('-')[1];
+      this.tallerOtro = this.sanitizarValor(tallerOtro.split('-')[1]);
       this.setTallerOtro(this.tallerOtro);
     }
 
     if (tallerOtroDireccion) {
-      this.tallerOtroDireccion = tallerOtroDireccion.split('-')[1];
+      this.tallerOtroDireccion = this.sanitizarValor(tallerOtroDireccion.split('-')[1]);
       this.setDireccionTallerOtro(this.tallerOtroDireccion);
     }
 
@@ -339,12 +343,22 @@ export class SegmentoCaracteristicasPage implements OnInit {
    /* */
   }
 
+  sanitizarValor(valor){
+    if (valor === undefined || valor === null || valor === 'undefined' || valor === 'null') {
+      return '';
+    }
+    return valor;
+  }
+
   entraTallerOtro(OtrosTalleres){
-    localStorage.setItem('OtrosTalleres', OtrosTalleres);
+    this.tallerOtro = this.sanitizarValor(OtrosTalleres);
+    localStorage.setItem('OtrosTalleres', this.tallerOtro);
     localStorage.setItem('elTallerOtro', this.idAtencion.toString()+'-'+this.tallerOtro);
   }
 
-  setTallerOtro(taller){}
+  setTallerOtro(taller){
+    this.tallerOtro = this.sanitizarValor(taller);
+  }
 
   entraTallerOtroDireccion(event){
     this.tallerOtroDireccion = event.target.value;

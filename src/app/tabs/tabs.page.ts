@@ -25,21 +25,21 @@ export class TabsPage {
   }
 
   ngOnInit(){
-    //alert(window.location.pathname);
     let previousPage = localStorage.getItem('previous');
       if (previousPage) {
         //console.log('La pagina anterior ha sido '+previousPage);
       }
-
-      this.router.events.subscribe(e => {
-        if (e instanceof ActivationStart && e.snapshot.outlet === "tabs")
-          this.outlet.deactivate();
-      });
   }
 
   ionViewDidEnter(){
     let gpsOn = localStorage.getItem('conectividad');
-    this.gpsOn = gpsOn === 'true' ? true : false;
+
+    if (gpsOn !== null) {
+      this.gpsOn = gpsOn === 'true';
+    } else {
+      // Tras reinstalar la app se pierde localStorage pero la sesión nativa puede persistir.
+      this.gpsOn = true;
+    }
   }
 
   handleNavigation(origin:any){

@@ -19,10 +19,12 @@ export class SegmentoDanioPage implements OnInit {
   ajustador: ajustadorHn={}; 
   idAtencion:any; miMoneda: string; moneda: any;  segmentoTitulo: string;  isSearch: boolean=false; public results = [];
   danios:any=[]; daniosExtras: any = []; daniosSelect:any=[];  danioResults:any=[];  daniosOtros:any=[]; danioSearchable:any=[]; isLoading:boolean=false;
-  daniosIndex: any;  contador: number = 0; datos:any=[];  selectedIndex: any=[]; selectedExtra: any=[];  valorReserva:any;
+  daniosIndex: any;  contador: number = 0; datos:any=[];  selectedIndex: any=[]; selectedExtra: any=[];  valorReserva:any = 0;
   elTipoSiniestro:any; tipoSiniestros:any=[];  elTipoDeSiniestro: any; formulario: Formulario= {}; danioMessage:string; 
   danioPosition:string; danioClass:string; ssucessIconRecycle:any; danioOtro:any=[]; TipoReparacion:any; daniosSeleccionados: any[];
   daniosSelectOtro: any = []; isXOpen:boolean=false;
+
+  caseTypeSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de siniestro', subHeader: 'Selecciona una opción' };
 
   leaveAnimation = (baseEl: HTMLElement) => {
     return this.enterAnimation(baseEl).direction('reverse');
@@ -258,7 +260,7 @@ export class SegmentoDanioPage implements OnInit {
         this.danios = res;
         this.danioSearchable = res;
         this.results = res;
-        
+        this.listarDanios();
       },
       async (res) => {
         this.toaster.presentToast(res.error.Message, 'top', 'danios');
@@ -282,24 +284,18 @@ export class SegmentoDanioPage implements OnInit {
   
 
   entraDanio(danioId, posicion){
-    for (let index = 0; index < this.danios.length; index++) {
-      const element = this.danios[index];
-      console.dir(element)
-      console.log(element.Id+', '+danioId)
-      console.log(element.Id===danioId);
-      if (element.Id===danioId) {
-        let elItem = $('.danio-item').eq(index);
-        if (elItem.hasClass("selected")) {
-          this.eliminaDanio(danioId, posicion, element.Descripcion);
-          elItem.removeClass('selected');
-        }else{
-          this.daniosSelect.push(element);
-          this.contador = this.daniosSelect.length;
-          localStorage.setItem('daniosSelect-'+posicion, danioId);  
-          elItem.addClass('selected');
-        }
-      }
+    const damage = this.danios.find((item) => Number(item.Id) === Number(danioId));
+    if (!damage) {
+      return;
     }
+
+    if (this.isDanioSelected(danioId)) {
+      this.eliminaDanio(danioId, posicion, damage.Descripcion);
+      return;
+    }
+
+    this.daniosSelect = [...this.daniosSelect, damage];
+    this.persistSelectedDamages();
   }
 
   entraDanioOtro(danio){
@@ -344,10 +340,6 @@ export class SegmentoDanioPage implements OnInit {
               setTimeout(() => {
                 this.recargarDaniosExtras();
               }, 300);
-
-              setTimeout(() => {
-                this.openOtrosDanios();
-              }, 600);
              }
           )
         }else{}
@@ -425,19 +417,30 @@ export class SegmentoDanioPage implements OnInit {
   }
 
   openDanioSearch(){
+    this.listarDanios();
+    this.results = this.danioSearchable || this.danios;
     this.isSearch = true;
-    this.clearStorageDanios();
-    let danioContainer = document.getElementsByClassName('danio-entrada');
-    if (this.daniosSelect.length > 0) {
-      console.dir(danioContainer);
-      
-      setTimeout(() => {
-        for (let index = 0; index < this.selectedIndex.length; index++) {
-          const element = this.selectedIndex[index];
-          $('.danio-item').eq(element).addClass('selected');
-        }
-      }, 1000);
+  }
+
+  isDanioSelected(danioId: any): boolean {
+    return this.daniosSelect.some((danio) => Number(danio.Id) === Number(danioId));
+  }
+
+  private persistSelectedDamages() {
+    const keysToRemove: string[] = [];
+    for (let index = 0; index < localStorage.length; index++) {
+      const key = localStorage.key(index);
+      if (key?.startsWith('daniosSelect-')) {
+        keysToRemove.push(key);
+      }
     }
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
+
+    this.daniosSelect.forEach((danio) => {
+      localStorage.setItem(`daniosSelect-${danio.Id}`, danio.Id.toString());
+    });
+    localStorage.setItem('daniosSelectAju', JSON.stringify(this.daniosSelect));
+    this.contador = this.daniosSelect.length;
   }
 
   closeDanioSearch(){
@@ -451,52 +454,15 @@ export class SegmentoDanioPage implements OnInit {
   }
 
   eliminaDanio(danioInputId, index, descripcion){
-    //alert(danioInputId+', '+index+', '+descripcion);
-    console.log('El daño en tabla ajustador :');
-    console.dir(this.danios[danioInputId-1]);
-
-    for (var i = 0; i < localStorage.length; i++){
-      if (localStorage.key(i).indexOf('daniosSelect-') == 0) {
-        let idEliminate = localStorage.getItem(localStorage.key(i));
-        let idE = parseInt(idEliminate);
-        if((idE) == danioInputId){
-          localStorage.removeItem(localStorage.key(i));
-        }
-      }
-    }
-
-    setTimeout(() => {
-      for (let indexDan = 0; indexDan < this.daniosSelect.length; indexDan++) {
-        const element = this.daniosSelect[indexDan];
-  
-
-        if (indexDan == (this.daniosSelect.length-1)) {
-          for (let indexDan = 0; indexDan < this.daniosSelect.length; indexDan++) {
-            const elementEnd = this.daniosSelect[indexDan];
-            if (elementEnd.Id === danioInputId) {
-              this.daniosSelect.splice(index,1);
-              localStorage.removeItem('TipoReparacion-'+danioInputId);
-              localStorage.removeItem('TipoReparacionIndex-'+danioInputId);
-            }
-          }
-
-          setTimeout(() => {
-            this.listarDanios();
-          }, 500);
-        }
-        
-        if (indexDan > index) {
-          console.log('En tabla : '+indexDan+', '+element.Id+', '+element.Descripcion+'... Seleccionado : '+danioInputId+', '+index+', '+descripcion); 
-          let resta = indexDan-1;
-          let elTipo = localStorage.getItem('TipoReparacion-'+element.Id);
-
-          localStorage.setItem('TipoReparacionIndex-'+element.Id, resta.toString()); 
-          this.setReparacion(element.Id, elTipo, resta, 2);
-          //
-        }
-        
-      }
-    }, 300);
+    this.daniosSelect = this.daniosSelect.filter(
+      (danio) => Number(danio.Id) !== Number(danioInputId)
+    );
+    localStorage.removeItem('TipoReparacion-'+danioInputId);
+    localStorage.removeItem('TipoReparacionIndex-'+danioInputId);
+    this.daniosSelect.forEach((danio, selectedIndex) => {
+      localStorage.setItem(`TipoReparacionIndex-${danio.Id}`, selectedIndex.toString());
+    });
+    this.persistSelectedDamages();
   }
 
   eliminaDanioX(danioInputId, index, tipo, codigo){
@@ -611,17 +577,38 @@ export class SegmentoDanioPage implements OnInit {
 
   setReserva(valor){
 
-      if (valor === undefined || valor === null || valor === '' || valor === '0' || valor === 0) {
+      // Nunca enviamos null/negativos: vacío/inválido/negativo => 0 (el servidor rechaza null).
+      const reservaCoercida = this.coerceReserva(valor);
+
+      if (reservaCoercida === 0) {
         $('#noReservaTexto').fadeIn();
       }else{
         $('#noReservaTexto').fadeOut();
       }
 
     console.log('Soy el valor de reserva '+this.valorReserva)
-    this.valorReserva = valor;
-    localStorage.setItem('laReserva', this.idAtencion.toString()+'-'+this.valorReserva);
-    localStorage.setItem('bpmArray-ValorReserva', valor);
+    this.valorReserva = reservaCoercida;
+    localStorage.setItem('laReserva', this.idAtencion.toString()+'-'+reservaCoercida);
+    localStorage.setItem('bpmArray-ValorReserva', reservaCoercida.toString());
 
+  }
+
+  private coerceReserva(valor: any): number {
+    if (valor === undefined || valor === null) {
+      return 0;
+    }
+
+    const normalizado = typeof valor === 'string' ? valor.trim().toLowerCase() : valor;
+    if (normalizado === '' || normalizado === 'null' || normalizado === 'undefined' || normalizado === 'nan') {
+      return 0;
+    }
+
+    const parseado = Number(normalizado);
+    if (!Number.isFinite(parseado) || parseado < 0) {
+      return 0;
+    }
+
+    return parseado;
   }
 
   loadSiniestros(){
@@ -750,13 +737,15 @@ export class SegmentoDanioPage implements OnInit {
   }
 
   listarDanios(){
-    
-    this.daniosSelect = [];
-    
+    const selectedIds = new Set<number>();
+    const storedSelection = JSON.parse(localStorage.getItem('daniosSelectAju') || '[]') || [];
+    storedSelection.forEach((danio) => selectedIds.add(Number(danio.Id)));
+
     for (var i = 0; i < localStorage.length; i++){
       if (localStorage.key(i).indexOf('daniosSelect-') == 0) {
         let elCodigo = localStorage.getItem(localStorage.key(i));
         let daCode = parseInt(elCodigo);
+        selectedIds.add(daCode);
 
         let elTipo = localStorage.getItem('TipoReparacion-'+daCode);
         let daType = parseInt(elTipo);
@@ -772,25 +761,11 @@ export class SegmentoDanioPage implements OnInit {
             $('.action-change').eq(daIndex).attr("style","background:#0058CB;border-radius:10px; width: 100%"); 
           }  
         }, 2000);
-
-          let indexSelect = parseInt(localStorage.getItem(localStorage.key(i)));//+1;
-          console.log('los select')
-          for (let indexDanio = 0; indexDanio < this.danios.length; indexDanio++) {
-            const elementD = this.danios[indexDanio];
-            
-            console.log('un daño en danios Select');
-            console.dir(elementD)
-            console.log(indexSelect+', '+elementD.Id)
-            console.log(indexSelect == elementD.Id);
-
-            if (indexSelect == elementD.Id) {
-              this.daniosSelect.push(elementD);
-            }
-            
-          }
-          
       }
     }
+
+    this.daniosSelect = this.danios.filter((danio) => selectedIds.has(Number(danio.Id)));
+    this.contador = this.daniosSelect.length;
   }
 
   listarDaniosExtras(){

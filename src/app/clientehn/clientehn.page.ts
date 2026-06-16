@@ -116,6 +116,7 @@ export class ClientehnPage implements OnInit {
   };
 
   public progress = 0;  nullsIndex: any = []; textoInfo = 'Validando ... Cuando todos los datos estén completos, se habilitará el botón de guardar.';
+  validacionCompleta: boolean = false;
   identidadDelCliente: any;  progInterval: any;  indexFront: any; firmaIcono:any = editarFirmaIcono;
   esAudiencia: boolean | undefined;
 
@@ -147,9 +148,12 @@ export class ClientehnPage implements OnInit {
     //self.alert(this.clienteLongitud);
 
             let nombreC = localStorage.getItem('dataProcess-NombreConductor');
+            let tipoCondEarly:any = localStorage.getItem('dataProcess-RefTipoConductorId');
+            let esPropietario = !tipoCondEarly || tipoCondEarly === 'undefined' || parseInt(tipoCondEarly) === 1;
 
         //self.alert(nombreC == '')
         if (nombreC == 'undefined' || nombreC == '') {
+          if (!esPropietario) {
           //self.alert('Puej ji')
 
           setTimeout(() => {
@@ -158,6 +162,7 @@ export class ClientehnPage implements OnInit {
             localStorage.setItem('dataProcess-NombreConductor', '');
             this.setNombreConductor('');
           }, 900);
+          }
           
         }else{
           this.nombreConductor = localStorage.getItem('dataProcess-NombreConductor');
@@ -233,8 +238,7 @@ export class ClientehnPage implements OnInit {
             }else{
               this.conductorEsAfiliado = true;
               this.elExpediente.ConducidoPor = 1;
-
-
+              this.syncConductorFromPropietario();
             }
 
             
@@ -386,7 +390,9 @@ export class ClientehnPage implements OnInit {
                 }, 3000);
                 
               }else{
-                if (uso == 1) {
+                if (this.conductorEsAfiliado || !tipoConductor || parseInt(tipoConductor) === 1) {
+                  this.syncConductorFromPropietario();
+                } else if (uso == 1) {
                   localStorage.setItem('dataProcess-NombreConductor', this.elExpediente.Cliente);
                   this.elExpediente.NombreConductor = this.elExpediente.Cliente;
                 }
@@ -623,35 +629,7 @@ export class ClientehnPage implements OnInit {
 
       this.seTipoConductor(this.daTipoConductor, 3);
       if (this.daTipoConductor == 1) {
-        this.conductorEsAfiliado = true;
-        this.elExpediente.NombreConductor = this.elExpediente.Cliente;
-        this.laExpediente[0].NombreConductor = this.laExpediente[0].Cliente;
-        this.laExpediente[0].IdentidaConductor = this.identidadDelCliente;
-
-        /*
-        if (uso == 1) {
-          localStorage.setItem('dataProcess-NombreConductor', this.nombreConductor);
-          this.elExpediente.NombreConductor = this.nombreConductor;
-        }
-        */
-        localStorage.setItem('dataProcess-NombreConductor', this.laExpediente[0].NombreConductor);
-        localStorage.setItem('datos-NombreConductor', this.laExpediente[0].NombreConductor);
-        localStorage.setItem('NombreConductor', this.laExpediente[0].NombreConductor);
-        localStorage.setItem('nombreConductor', this.laExpediente[0].NombreConductor);
-
-        //const element = this.tipoParentescos[0];
-        //this.elTipoParentesco = element.CODIGO;
-        //this.elTipoDeParentesco = element.DESCRIPCION;
-
-        this.nombreCliente = this.laExpediente[0].Cliente;
-        this.cliente.IdentidadConductor = this.identidadAsegurado;
-        this.laExpediente[0].TelefonoFijoConductor = this.cliente.TelefonFijo;
-        this.laExpediente[0].CelularConductor = this.cliente.Celular;
-        this.nombreCliente = this.laExpediente[0].Cliente;
-        this.dataProcess.CelularConductor = this.cliente.TelefonoOrigen;
-        this.dataProcess['CelularConductor'] = this.cliente.TelefonoOrigen;
-        this.dataProcess.ConductorAfiliado = 1;
-        this.dataProcess['ConductorAfiliado'] = 1;
+        this.syncConductorFromPropietario();
       }else{
         let nombreC = localStorage.getItem('dataProcess-NombreConductor');
 
@@ -754,6 +732,7 @@ export class ClientehnPage implements OnInit {
             }else{
               this.conductorEsAfiliado = true;
               this.elExpediente.ConducidoPor = 1;
+              this.syncConductorFromPropietario();
             }
   
             if (parentesco) {
@@ -881,7 +860,9 @@ export class ClientehnPage implements OnInit {
                 }, 3000);
                 
               }else{
-                if (uso == 1) {
+                if (this.conductorEsAfiliado || !tipoConductor || parseInt(tipoConductor) === 1) {
+                  this.syncConductorFromPropietario();
+                } else if (uso == 1) {
                   localStorage.setItem('dataProcess-NombreConductor', this.elExpediente.Cliente);
                 this.elExpediente.NombreConductor = this.elExpediente.Cliente;
                 }
@@ -1094,6 +1075,7 @@ export class ClientehnPage implements OnInit {
     }else{
       this.daTipoConductor = 1;
       this.seTipoConductor(this.daTipoConductor, 5);
+      this.syncConductorFromPropietario();
       
     }
 
@@ -1202,6 +1184,8 @@ export class ClientehnPage implements OnInit {
   ionViewDidEnter(){
     let origin = localStorage.getItem('origin');
 
+    this.isTablet = this.platform.is('tablet');
+    
     this.esAudiencia = (origin === '/prepare-send');
 
     this.platform.ready().then(() => {
@@ -1658,7 +1642,7 @@ export class ClientehnPage implements OnInit {
     this.showPropiedad = !this.showPersona;
   }
   next() {
-    this.router.navigate(['./fotoshn'])
+    this.router.navigate(['./cargar-archivos'])
   }
   goAdeuda() {
     this.router.navigate(['./adeuda'])
@@ -1866,37 +1850,7 @@ export class ClientehnPage implements OnInit {
 
 
     if (tipoCId.target.value == 1) {
-      this.conductorEsAfiliado = true;
-      this.elExpediente.NombreConductor = this.elExpediente.Cliente;
-      this.laExpediente[0].NombreConductor = this.laExpediente[0].Cliente;
-      this.laExpediente[0].IdentidaConductor = this.identidadDelCliente;
-      localStorage.setItem('dataProcess-NombreConductor', this.laExpediente[0].NombreConductor);
-      localStorage.setItem('datos-NombreConductor', this.laExpediente[0].NombreConductor);
-      localStorage.setItem('NombreConductor', this.laExpediente[0].NombreConductor);
-      localStorage.setItem('nombreConductor', this.laExpediente[0].NombreConductor);
-      
-     
-
-      //const element = this.tipoParentescos[0];
-      //this.elTipoParentesco = element.CODIGO;
-      //this.elTipoDeParentesco = element.DESCRIPCION;
-
-      this.nombreCliente = this.laExpediente[0].Cliente;
-      this.cliente.IdentidadConductor = this.identidadAsegurado;
-      this.laExpediente[0].TelefonoFijoConductor = this.cliente.TelefonFijo;
-      this.laExpediente[0].CelularConductor = this.cliente.Celular;
-      this.nombreCliente = this.laExpediente[0].Cliente;
-      this.dataProcess.CelularConductor = this.cliente.TelefonoOrigen;
-      this.dataProcess['CelularConductor'] = this.cliente.TelefonoOrigen;
-      this.dataProcess.ConductorAfiliado = 1;
-      this.dataProcess['ConductorAfiliado'] = 1;
-      localStorage.setItem('dataProcess-ConductorAfiliado', '1');
-      
-      //this.identidadAsegurado = localStorage.getItem('identidadAsegurado');
-      this.daIdentidadConductor = localStorage.getItem('identidadAsegurado');
-      this.daTelefonoFijoConductor = this.laExpediente[0].TelefonoOrigen;
-      this.daCelularConductor = this.laExpediente[0].TelefonoOrigen;
-
+      this.syncConductorFromPropietario();
     } else {
       this.conductorEsAfiliado = false;
       this.daNombreConductor = '';
@@ -1958,40 +1912,7 @@ export class ClientehnPage implements OnInit {
               let uso = parseInt(use);
 
       if (parseInt(tipoC) == 1) {
-        this.cliente.Celular = $('#celularAsegurado').val();
-        this.conductorEsAfiliado = true;
-        this.elExpediente.NombreConductor = this.elExpediente.Cliente;
-        this.laExpediente[0].NombreConductor = this.laExpediente[0].Cliente;
-        this.nombreCliente = this.laExpediente[0].Cliente;
-        this.nombreConductor = this.elExpediente.Cliente;
-        this.cliente.IdentidadConductor = this.identidadAsegurado;
-        this.laExpediente[0].TelefonoFijoConductor = this.cliente.TelefonFijo;
-        this.elExpediente.TelefonoFijoConductor = this.cliente.TelefonFijo;
-        this.elExpediente.CelularConductor = this.cliente.Celular;
-        this.laExpediente[0].CelularConductor = this.cliente.Celular;
-        this.dataProcess.CelularConductor = this.cliente.TelefonoOrigen;
-        this.dataProcess['CelularConductor'] = this.cliente.TelefonoOrigen;
-        this.dataProcess.ConductorAfiliado = 1;
-        this.dataProcess['ConductorAfiliado'] = 1;
-        localStorage.setItem('nombreConductor', this.laExpediente[0].Cliente);
-
-        if (uso == 1) {
-                  localStorage.setItem('dataProcess-NombreConductor', this.laExpediente[0].Cliente);
-                }
-        
-        this.dataProcess.ConductorAfiliado = 1;
-        this.dataProcess['ConductorAfiliado'] = 1;
-        localStorage.setItem('dataProcess-ConductorAfiliado', '1');
-
-        this.laExpediente[0].IdentidaConductor = this.identidadDelCliente;
-        localStorage.setItem('datos-NombreConductor', this.laExpediente[0].NombreConductor);
-        localStorage.setItem('NombreConductor', this.laExpediente[0].NombreConductor);
-
-        this.daIdentidadConductor = localStorage.getItem('identidadAsegurado');
-        this.daTelefonoFijoConductor = this.laExpediente[0].TelefonoOrigen;
-        this.daCelularConductor = this.cliente.Celular;//this.laExpediente[0].TelefonoOrigen;
-        this.setCelularConductor(this.daCelularConductor);
-        //alert('Celular Conductor '+this.daCelularConductor+', '+this.cliente.Celular)
+        this.syncConductorFromPropietario();
       } else {
         this.conductorEsAfiliado = false;
         this.elExpediente.NombreConductor = localStorage.getItem('dataProcess-NombreConductor');
@@ -2016,14 +1937,59 @@ export class ClientehnPage implements OnInit {
     
   }
 
+  syncConductorFromPropietario() {
+    const nombrePropietario = this.laExpediente?.[0]?.Cliente || this.elExpediente?.Cliente || '';
+    if (!nombrePropietario) {
+      return;
+    }
+
+    this.conductorEsAfiliado = true;
+    this.daType = 1;
+    this.elExpediente.ConducidoPor = 1;
+    this.laExpediente[0].ConducidoPor = 1;
+    this.elExpediente.NombreConductor = nombrePropietario;
+    this.laExpediente[0].NombreConductor = nombrePropietario;
+    this.nombreConductor = nombrePropietario;
+
+    const identidad = this.identidadAsegurado || this.identidadDelCliente || '';
+    this.laExpediente[0].IdentidaConductor = identidad;
+    this.cliente.IdentidadConductor = identidad;
+    if (identidad) {
+      this.dataProcess['IdentidaConductor'] = identidad;
+      localStorage.setItem('dataProcess-IdentidaConductor', identidad);
+    }
+
+    if (this.cliente?.TelefonFijo) {
+      this.laExpediente[0].TelefonoFijoConductor = this.cliente.TelefonFijo;
+      this.elExpediente.TelefonoFijoConductor = this.cliente.TelefonFijo;
+    }
+    if (this.cliente?.Celular) {
+      this.laExpediente[0].CelularConductor = this.cliente.Celular;
+    }
+    if (this.cliente?.TelefonoOrigen) {
+      this.dataProcess['CelularConductor'] = this.cliente.TelefonoOrigen;
+      this.dataProcess.CelularConductor = this.cliente.TelefonoOrigen;
+    }
+    this.daIdentidadConductor = identidad || this.daIdentidadConductor;
+    this.daTelefonoFijoConductor = this.cliente?.TelefonFijo ?? this.daTelefonoFijoConductor;
+    this.daCelularConductor = this.cliente?.Celular ?? this.daCelularConductor;
+    this.dataProcess.ConductorAfiliado = 1;
+    this.dataProcess['ConductorAfiliado'] = 1;
+    localStorage.setItem('dataProcess-ConductorAfiliado', '1');
+
+    this.setNombreConductor(nombrePropietario);
+  }
+
   setNombreConductor(nombre:any) {
     this.elExpediente.NombreConductor = nombre;
     this.laExpediente[0].NombreConductor = nombre;
     this.dataProcess.NombreConductor = nombre;
     this.dataProcess['NombreConductor'] = nombre;
     this.nombreCliente = nombre;
-    localStorage.setItem('nombreConductor', this.laExpediente[0].NombreConductor);
+    localStorage.setItem('nombreConductor', nombre);
     localStorage.setItem('dataProcess-NombreConductor', nombre);
+    localStorage.setItem('datos-NombreConductor', nombre);
+    localStorage.setItem('NombreConductor', nombre);
   }
   
   entraNombreConductor(event:any) {
@@ -2865,8 +2831,13 @@ export class ClientehnPage implements OnInit {
 
   // ENVIO
   validarDatos(){
+    this.validacionCompleta = false;
     $('#dataNull').fadeIn('xslow');
     //$('#segmentSignature').fadeOut();
+
+    if (this.conductorEsAfiliado || this.daType == 1 || this.daTipoConductor == 1 || parseInt(this.laExpediente?.[0]?.ConducidoPor) === 1) {
+      this.syncConductorFromPropietario();
+    }
 
     if (this.daCelularConductor == null || this.daCelularConductor == undefined || this.daCelularConductor == 0 || isNaN(this.daCelularConductor) || this.daCelularConductor == ''  ){
       this.daCelularConductor = this.laExpediente[0].TelefonoOrigen;
@@ -2958,19 +2929,13 @@ export class ClientehnPage implements OnInit {
             $('#cancelaButton').fadeIn();
             this.progress = 1;
             clearInterval(this.progInterval);
+            this.validacionCompleta = true;
             this.textoInfo = 'Datos completados con éxito! Ahora puedes proceder a enviarlos haciendo click en GUARDAR DATOS';
             $('#spanProgress').removeClass('progress');
             $('#spanProgress').addClass('progress-end');
-            let iconoContenedor:any = document.getElementById('infoText');
-            let iconoAprobado = document.createElement('img');
-            iconoAprobado.src = '../../assets/img/aprobar.svg';
-            iconoAprobado.style.width = '45px';
-            iconoAprobado.style.height = '45px';
-            iconoAprobado.style.position = 'absolute';
-            iconoAprobado.style.top = '-5px';
-            iconoAprobado.style.right = '-5px';
-            iconoContenedor.appendChild(iconoAprobado);
-            
+          } else {
+            this.validacionCompleta = false;
+            this.textoInfo = 'Validación completada. Revisa los datos incompletos para continuar.';
           }
         }
       }
@@ -3136,8 +3101,13 @@ export class ClientehnPage implements OnInit {
 
   entraNombreAsegurado(event:any) {
     this.elExpediente.Cliente = event.target.value;
+    this.laExpediente[0].Cliente = event.target.value;
     this.nombreCliente = event.target.value;
     localStorage.setItem('dataProcess-Nombre', event.target.value);
+    this.dataProcess['Cliente'] = event.target.value;
+    if (this.conductorEsAfiliado || this.daType == 1 || this.daTipoConductor == 1) {
+      this.syncConductorFromPropietario();
+    }
   }
 
   setNombreAsegurado(nombre:any) {

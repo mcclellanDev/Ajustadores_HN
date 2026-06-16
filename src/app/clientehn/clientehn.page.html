@@ -5,7 +5,7 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title class="cliente-page-title">Atención # {{idAtencion}} - {{miMoneda}}</ion-title>
+    <ion-title class="cliente-page-title">Atención # {{idAtencion}} <br>- {{miMoneda}}</ion-title>
     <input class="required-index" value="40">
   </ion-toolbar>
 </ion-header>
@@ -25,8 +25,9 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding cliente-form-content" id="segmentsContent">
-      <ion-fab slot="fixed" vertical="top" horizontal="end" class="cliente-form-floating-close">
-        <ion-fab-button size="small" aria-label="Cerrar formulario" (click)="closeClientForm()">
+      <ion-fab slot="fixed" vertical="top" horizontal="end" [ngClass]="isTablet == true ? 'cliente-form-floating-close-tablet' : 'cliente-form-floating-close'">
+        <ion-fab-button size="small" aria-label="Cerrar formulario" (click)="closeClientForm()"
+        >
           <ion-icon name="close"></ion-icon>
         </ion-fab-button>
       </ion-fab>
@@ -483,19 +484,15 @@
                 <ion-row size="12" style="color: #7da1c4;font-size:1rem;">Fecha de nacimiento</ion-row>
                 <ion-row style="padding-top: 6px;" class="birth-date-row">
                   <ion-col size="12" class="birth-date-displays">
-                    <ion-chip class="birth-date-chip">
-                      <ion-avatar>
-                        <img src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-                      </ion-avatar>
-                      <ion-label class="date-label">{{formateadaNacimiento}}</ion-label>
-                      <ion-icon name="calendar" class="chip-icon"></ion-icon>
-                    </ion-chip>
+                    <div class="birth-date-value">
+                      <ion-icon name="calendar" class="birth-date-value-icon"></ion-icon>
+                      <span class="birth-date-value-text">{{formateadaNacimiento}}</span>
+                    </div>
                     <input class="required-index" value="21">
-                    <ion-chip class="birth-age-chip" [color]="esMenor == true ? 'danger' : ''">
-                      <ion-icon name="hourglass" style="color: var(--blueGrayColor);"></ion-icon>
-                      <ion-label>{{edad}} años</ion-label>
-                      <ion-icon name="time" class="chip-icon"></ion-icon>
-                    </ion-chip>
+                    <div class="birth-age-value" [class.birth-age-value--minor]="esMenor == true">
+                      <ion-icon name="hourglass" class="birth-age-value-icon"></ion-icon>
+                      <span class="birth-age-value-text">{{edad}} años</span>
+                    </div>
                   </ion-col>
                   <ion-col size="12" class="birth-date-button-column">
                     <ion-button id="open-modal-fecha-nacimiento" expand="block" (click)="modalFechaNacimiento.present()">Seleccionar Fecha</ion-button>
@@ -1093,97 +1090,83 @@
             </div>
           </ion-col>
 
+          <ion-row id="dataNull" style="display: none;">
+            <ion-col size="12">
+              <ion-card>
+                <ion-card-header>
+                  <ion-card-subtitle>
+                    <div class="meter">
+                        <span id="spanProgress" style="width:100%;"><span class="progress"></span></span>
+                    </div>
+                  </ion-card-subtitle>
+                  <ion-card-subtitle id="infoText">
+                    <img *ngIf="validacionCompleta" src="../../assets/img/aprobar.svg" class="validation-success-icon" alt="Validación completada" />
+                    {{textoInfo}}
+                  </ion-card-subtitle>
+                </ion-card-header>
+                <ion-card-content>
+                  
+                  <br>
+                    <ion-icon name="flag" color="danger"></ion-icon> Elementos Incompletos<br>
+                    <ion-icon name="flag" color="medium"></ion-icon> Elementos Completos
+                  <ion-list>
+                    <ion-item class="nulo-item" *ngFor="let nulo of validaNulos; let i = index" style="color: gray;" (click)="analizaNulo(i, nulo.valor, nulo.inputIndex);scrollToElement();">
+                      <ion-label>{{i+1}}. {{nulo.etiqueta}} : <strong *ngIf="nulo.valor != 'undefined' && nulo.valor != undefined">{{nulo.valor}}</strong></ion-label>
+                      <div class="meter">
+                          <span style="width:100%;"><span class="progress"></span></span>
+                      </div>
+                      <input class="index-input" style="display: none;" [value]=nulo.inputIndex />
+                      <input class="value-input" style="display: none;" [value]=nulo.valor />
+                      <ion-chip *ngIf="nulo.valor == 'undefined' || nulo.valor == undefined" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 7%; font-size: 1rem;
+                      color: red; border-color: red;">Ir</ion-chip>
+                    </ion-item>
+                    <br>
+                    <ion-item style="color: white;">Ajustadores HELP Porsalud Ficohsa</ion-item>
+                  </ion-list>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+
           <ion-col class="segmento" id="segmentSignature" size="12">
-            <ion-grid>
+            <ion-grid class="signature-stack">
               <ion-row>
-                <ion-col size="6">
-                    <ion-grid>
-                      <ion-row>
-                        <ion-col size="12">
-                          <ion-label class="text-size-lg" style="padding-left: 10px;color: #3171e0;">
-                             Firma Asegurado o conductor
-                          </ion-label>
-                            <ion-card style="height:202px">
-                              <img #imagen id="imagenFirma" alt="Firmar" src="{{firmaPrecargada}}" onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'"
-                              style="    border: 6px dashed rgb(237, 233, 233);margin-top: 1%; width: 98%; height: 150px; margin-left: 1%;"/>
-                            
-                              <ion-card-content style="padding: 0; margin-bottom: 6px;padding-left: 1%;" (click)="signatureDisplay();goESignature()">
-                                {{laExpediente[0].Cliente}} <ion-text style="position: absolute; right: 60px; bottom: 0; top: 16px;">Editar firma</ion-text> <img src="{{firmaIcono}}" style="width: 50px; height: auto; position: absolute; right: 5px; bottom: 0; top: -13px;"/>
-                              </ion-card-content>
-                            </ion-card>
-                        </ion-col>
+                <ion-col size="12" class="signature-block">
+                  <ion-label class="text-size-lg signature-block-title">
+                     Firma Asegurado o conductor
+                  </ion-label>
+                  <ion-card class="signature-card">
+                    <img #imagen id="imagenFirma" alt="Firmar" src="{{firmaPrecargada}}" onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'"
+                    class="signature-card-image"/>
 
-                      </ion-row>
-                    </ion-grid>
-
-                </ion-col>
-                <ion-col size="6">
-                <ion-content class="ion-no-padding">
-                  <ion-grid style="padding-top: 0;">
-                    <ion-row>
-                      
-                      <ion-col size="12">
-                        <ion-label class="text-size-lg" style="padding-left: 10px;color: #3171e0;">
-                          Fecha del Siniestro
-                        </ion-label>
-                        <ion-card style="height:210px">
-                          <ion-card-content style="margin-top: 10%;">
-                            <ion-chip class="date-siniestro">
-                              <ion-icon name="calendar" style="color: var(--blueGrayColor);"></ion-icon>
-                              <ion-label class="chip-label">{{formateadaSiniestro}}</ion-label>
-                              <ion-icon name="time" class="chip-icon"></ion-icon>
-                            </ion-chip>
-                          </ion-card-content>
-                        </ion-card>
-                      </ion-col>
-                      
-                    </ion-row>
-                  </ion-grid>
-                </ion-content>
-                
+                    <ion-card-content class="signature-card-content" (click)="signatureDisplay();goESignature()">
+                      <span class="signature-card-name">{{laExpediente[0].Cliente}}</span>
+                      <span class="signature-card-edit">
+                        <ion-text>Editar firma</ion-text>
+                        <img src="{{firmaIcono}}" class="signature-card-edit-icon"/>
+                      </span>
+                    </ion-card-content>
+                  </ion-card>
                 </ion-col>
               </ion-row>
               <ion-row>
-                <ion-col size="12">
-                  
+                <ion-col size="12" class="signature-block">
+                  <ion-label class="text-size-lg signature-block-title">
+                    Fecha del Siniestro
+                  </ion-label>
+                  <ion-card class="signature-card signature-card--date">
+                    <ion-card-content class="signature-card-content signature-card-content--date">
+                      <ion-chip class="date-siniestro">
+                        <ion-icon name="calendar" style="color: var(--blueGrayColor);"></ion-icon>
+                        <ion-label class="chip-label">{{formateadaSiniestro}}</ion-label>
+                        <ion-icon name="time" class="chip-icon"></ion-icon>
+                      </ion-chip>
+                    </ion-card-content>
+                  </ion-card>
                 </ion-col>
               </ion-row>
             </ion-grid>
           </ion-col>          
-        </ion-row>
-        <ion-row id="dataNull" style="display: none;">
-          <ion-col size="12">
-            <ion-card>
-              <ion-card-header>
-                <ion-card-subtitle>
-                  <div class="meter">
-                      <span id="spanProgress" style="width:100%;"><span class="progress"></span></span>
-                  </div>
-                </ion-card-subtitle>
-                <ion-card-subtitle id="infoText">{{textoInfo}}</ion-card-subtitle>
-              </ion-card-header>
-              <ion-card-content>
-                
-                <br>
-                  <ion-icon name="flag" color="danger"></ion-icon> Elementos Incompletos<br>
-                  <ion-icon name="flag" color="medium"></ion-icon> Elementos Completos
-                <ion-list>
-                  <ion-item class="nulo-item" *ngFor="let nulo of validaNulos; let i = index" style="color: gray;" (click)="analizaNulo(i, nulo.valor, nulo.inputIndex);scrollToElement();">
-                    <ion-label>{{i+1}}. {{nulo.etiqueta}} : <strong *ngIf="nulo.valor != 'undefined' && nulo.valor != undefined">{{nulo.valor}}</strong></ion-label>
-                    <div class="meter">
-                        <span style="width:100%;"><span class="progress"></span></span>
-                    </div>
-                    <input class="index-input" style="display: none;" [value]=nulo.inputIndex />
-                    <input class="value-input" style="display: none;" [value]=nulo.valor />
-                    <ion-chip *ngIf="nulo.valor == 'undefined' || nulo.valor == undefined" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 7%; font-size: 1rem;
-                    color: red; border-color: red;">Ir</ion-chip>
-                  </ion-item>
-                  <br>
-                  <ion-item style="color: white;">Ajustadores HELP Porsalud Ficohsa</ion-item>
-                </ion-list>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
         </ion-row>
       </ion-grid>
     </ion-content>

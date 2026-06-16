@@ -8,7 +8,7 @@ import { tipoSolicitante, tipoLicencia, tipoFirma, tipoCombustible, Formulario, 
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { AlertController, LoadingController, ToastController, PopoverController, Platform, InfiniteScrollCustomEvent, 
-  CheckboxCustomEvent, IonModal, AnimationController, IonAccordionGroup, ModalController } from '@ionic/angular';
+  CheckboxCustomEvent, IonModal, AnimationController, IonAccordionGroup, ModalController, IonContent, NavController } from '@ionic/angular';
 import { ApiService } from '../services/api.service';
 import { tiposTransmision } from '../environments/vehicles';
 import { finalize } from 'rxjs/operators';
@@ -44,6 +44,7 @@ const USER_DATA = 'MY_USER_DATA';
   styleUrls: ['./ajustadorhn.page.scss'],
 })
 export class AjustadorhnPage implements OnInit {
+  @ViewChild('ajustadorContent', { static: false }) ajustadorContent: IonContent;
   @ViewChild('accordionGroup', { static: true }) accordionGroup: IonAccordionGroup;
   @ViewChild('accordionGroup2', { static: true }) accordionGroup2: IonAccordionGroup;
   @ViewChild('modalNulosAju') modal: IonModal;
@@ -113,32 +114,41 @@ export class AjustadorhnPage implements OnInit {
   //sig: SignaturePad;
   menu=[false,false,false,false,false,false,false,false,false,false];  inputInicialGenero: any;  esPesado: any = '2';  idAjustador: any;  validaNulosAju: any = [];
   AjustadorFiltro: any[]; requiredD = requiredDataAjustador;  requiredDLabels = requiredDataLabels;  cantidadNulos: number;  fechaValida: boolean=true; // Debug : fechaValida
+  validacionCompleta: boolean = false; // true sólo cuando la última validación dejó 0 datos incompletos
   atencionId: number; expediente: any; moneda: any;  miMoneda: string; isBPMcomplete:boolean=false;
   daDate: Date;  identidadCliente: any;  nombreCliente: any;  elTelefonoOrigen: any; elCorreoElectronico:any; laMarcaAsegurado:any;  elModeloAsegurado: any;
   elAnioAsegurado:any; elChasisAsegurado:any; elNumeroPlacaAsegurado:any; elMotorAsegurado:any; isFirstTime:boolean=true; clickCount:number=0;
-  laPolizaExternaAsegurado: any;contadorSegmentos:number=0; segmentoTitulo:any;  storageKeys: any=[]; countTrue:number=0; fechaInspeccion:any;
+  laPolizaExternaAsegurado: any;contadorSegmentos:number=0; segmentoTitulo:any;  storageKeys: any=[]; countTrue:number=0; fechaInspeccion:any; minFechaInspeccion:string;
   danioMessage:string; danioPosition:string; danioClass:string; storageArrayFilter:any=[];  idSelect: any;  storageArrayIndexs: any[];  storageArrayStrings: any[];
   sucessIcon:any; ssucessIconRecycle:any; losParentescos:any=[];  idTabla: any;  audienciaId: any;  cacheCliente: any[]; OtrosTalleres:any;
   elParentesco: any; refreshIcon:any; isRefreshing:boolean = false; isPressed:boolean=false; deudaSent:boolean;
   acompaniantes: any = [];  testigos: any = [];  lesionados: any = [];  propiedades: any = []; formularioCompleto:boolean=false;
   fechaInspeccionLocal: string;  clienteFiltroAju: any = [];  nullsIndexAju: any = [];
+  mostrarPanelValidacion:boolean=false; validationPanelIsActive:boolean=false;
   textoInfo = 'Validando ... Cuando todos los datos estén completos, se habilitará el botón de guardar.';
   textoInfoIncompleto = 'Faltan datos por completar. Por favor, revisa el formulario.';
   textoInfoDanios = 'Aún no se han seleccionado daños. Puedes guardar la atención, sin embargo no se reflejarán daños en los informes.';
   textoNoFotos = 'No hay fotografías o las fotografías se eliminaron.'; textoFotosNoEnviadas = 'No se enviaron fotografías';  textoFotos:any;
   textoFotosInfo = 'Puedes continuar, pero no se reflejarán tus fotos en los informes.';
   textoInfoDaniosCulpa = 'Falta completar el acuerdo de deuda. Puedes guardar la atención, sin embargo no se reflejarán datos del culpable en los informes.';
-  cacheClienteFix: any = []; datosCompletados:any = []; datosIncompletos:any = [];  datosComunes: any = [];
+  cacheClienteFix: any = []; datosCompletados:any = []; datosIncompletos:any = [];  datosComunes: any = []; datosAdvertencias: any = [];
   estaEvaluado: boolean = false; daniosSelectCulpa:any=[];  datosDeEnvio: any = [];
   datosDeEnvioFix: any = [];  fotos: any = [];  fotosEnviadas: boolean; AcuerdoDeDeuda: boolean;
   seleccionDeDanios: any = []; seleccionDeDaniosCulpable: any = [];  arregloDeEnvio: any = [] ;  isRefreshingCulpa: boolean;
+  // Daños manuales ("Otros") del tercero/culpable cargados desde el servidor
+  // (ObtenerDaniosExtras, misma fuente que usa culpable). Se guarda aparte para
+  // que la reconstrucción síncrona del catálogo no borre lo cargado async.
+  daniosManualesCulpa: any = [];
+  // Daños manuales ("Otros") del afiliado cargados desde el servidor.
+  daniosManualesAju: any = [];
   coberturas:any = [];  producto: string;  esConduceSeguro: boolean = false;
 
   // INICIALIZACION
   constructor(private router: Router, private loading: LoadingController, private alert: AlertController,
     private api: ApiService, private toast: ToastController, private platform:Platform, private so: ScreenOrientation,
     private geo:NativeGeocoder, public toaster:ToastService, private popControl:PopoverController, private sanitizer: DomSanitizer,
-    private formateador:FormatosService, private animationCtrl: AnimationController, private thisModal:ModalController) { 
+    private formateador:FormatosService, private animationCtrl: AnimationController, private thisModal:ModalController,
+    private navCtrl: NavController) { 
 
       
 
@@ -278,19 +288,17 @@ export class AjustadorhnPage implements OnInit {
           // Setups date from register, if there is not a date set it up as today
           
           
-          let hoy = localStorage.getItem('FechaHora');//this.elExpediente[0].FechaRegistro;
-          let ahora = new Date().toLocaleString();
-          //let inspeccionFecha = ahora.getFullYear()+'-'+ahora.getMonth()+'-'+ahora.getDate()+''
-          console.log('Esto es ahora : '+ahora+' ///////////////////////////////////////////////////////////');
+          const fechaSiniestro = this.elExpediente[0].FechaRegistro;
+          const fechaInspeccionInicial = this.getFechaInspeccionInicial();
 
-          this.fechaInspeccion = new Date().toISOString();
-//          localStorage.setItem('datos-FechaHora', this.fechaInspeccion);
-          localStorage.setItem('datos-FechaHora', this.elExpediente[0].FechaRegistro);
-          
+          console.log('Fecha de inspeccion inicial : '+fechaInspeccionInicial+' ///////////////////////////////////////////////////////////');
 
-          this.marcarFecha(hoy);
-          this.marcarFechaAjustador(ahora);
-          this.marcarFechaInspeccion(hoy);
+          this.fechaInspeccion = fechaInspeccionInicial;
+          localStorage.setItem('datos-FechaHora', fechaInspeccionInicial);
+
+          this.marcarFecha(fechaSiniestro);
+          this.marcarFechaAjustador(fechaInspeccionInicial);
+          this.marcarFechaInspeccion(fechaInspeccionInicial);
 
           /*
           console.log('Esto es hoy'+ hoy);
@@ -470,9 +478,30 @@ export class AjustadorhnPage implements OnInit {
       nativeEl.value = position;
     };
 
+    /*
     toogleAccordion2 = (position) => {
       const nativeEl = this.accordionGroup2;
       nativeEl.value = position;
+    }
+    */
+
+    private focusValidationPanel(){
+      const panel = document.getElementById('dataNullAju');
+      if (!panel) {
+        return;
+      }
+
+      //this.toogleAccordion2(this.cantidadNulos > 0 ? 'tres' : 'dos');
+      this.validationPanelIsActive = true;
+
+      setTimeout(() => {
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        this.ajustadorContent?.scrollToPoint(0, Math.max(panel.offsetTop - 10, 0), 450);
+      }, 80);
+
+      setTimeout(() => {
+        this.validationPanelIsActive = false;
+      }, 1800);
     }
 
     closeAccordions(){
@@ -504,25 +533,13 @@ export class AjustadorhnPage implements OnInit {
 
       setTimeout(() => {
         
+        // La reconstrucción de "Daños vehículo afiliado" (seleccionDeDanios) se
+        // hace en reconstruirSeleccionDanios(), invocada desde getDanios() y
+        // ionViewWillEnter() para que siempre refleje lo seleccionado al volver
+        // de segmento-danio sin duplicar la lista.
+        this.reconstruirSeleccionDanios();
+
         for (var i = 0; i < localStorage.length; i++){
-
-          if (localStorage.key(i).indexOf('daniosSelect-') == 0) {
-            let indexSelect = parseInt(localStorage.getItem(localStorage.key(i)));
-            for (let indexDanio = 0; indexDanio < this.danios.length; indexDanio++) {
-              const elementD = this.danios[indexDanio];
-              if (indexSelect == elementD.Id) {
-                let tipo:any;
-                this.daniosSelectAju.push(elementD);
-                let tipoIndex = parseInt(localStorage.getItem('TipoReparacionIndex-'+indexSelect));
-                let tipoId = parseInt(localStorage.getItem('TipoReparacion-'+indexSelect));
-
-                if (tipoId == 1) {tipo = 'Reparación';}else{tipo = 'Cambio';}
-
-                this.seleccionDeDanios.push({Codigo: elementD.Codigo, Descripcion: elementD.Descripcion, Id: elementD.Id, tipo:tipo, tipoId:tipoId});
-                //console.dir(elementD);
-              } 
-            }
-          }
 
           if (localStorage.key(i).indexOf('daniosSelectCulpa-') == 0) {
             let indexSelect = parseInt(localStorage.getItem(localStorage.key(i)));
@@ -1063,7 +1080,7 @@ export class AjustadorhnPage implements OnInit {
                         Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
                         FechaOcurrencia: fechaSplit,//fechaSplit,//this.elExpediente[0].FechaRegistro, OJO
                         Causa: valoresPredeterminados[0].Causa, // Pendiente
-                        ValorReserva: this.valorReserva.toString(), // Formulario
+                        ValorReserva: this.coerceValorReservaParaEnvio(this.valorReserva).toString(), // Formulario (siempre numérico >= 0, nunca null)
                         UsuarioBPM: this.elUsuario.UsuarioBPM, // Login
                         Latitud: this.latitud,//"14.0985125",//localStorage.getItem('latitud'), // Formulario
                         Longitud: this.longitud,//"-87.1849219",//localStorage.getItem('longitud'), // Formulario
@@ -1220,24 +1237,26 @@ export class AjustadorhnPage implements OnInit {
     validarDatos(origen:any){
 
       this.isLoading = true;
+      this.mostrarPanelValidacion = true;
       this.datosComunes = [];
       this.cacheCliente = [];
       this.validaNulosAju = [];
       this.cacheClienteFix = [];
       this.datosIncompletos = [];
       this.datosCompletados = [];
+      this.datosAdvertencias = [];
       
       this.evaluarFotos();
       this.evaluarDeuda();
       this.cantidadNulos = 1;
-      $('#dataNullAju').fadeIn('xslow');
+      this.validacionCompleta = false;
       $('#camButtonAju').fadeOut();
       
-      this.accordionGroup.value = [];
-      this.toogleAccordion2('second');
+      //this.accordionGroup.value = [];
+      //this.toogleAccordion2('second');
       
       let fotosLocal = JSON.parse(localStorage.getItem('fotos-'+this.atencionId));
-        if (fotosLocal) {
+      if (fotosLocal) {
           this.fotos = fotosLocal;
         }
 
@@ -1246,138 +1265,20 @@ export class AjustadorhnPage implements OnInit {
         })
       ).subscribe(
         async (res) =>{
-        this.cacheCliente = res[0];
-        
+          this.cacheCliente = res && res.length > 0 ? res[0] : {};
+          this.cacheClienteFix = this.normalizeRecordForReview(this.cacheCliente);
+          this.datosCompletados = this.collectAjustadorLocalData();
+          this.completeAjustadorValidationReview();
+        },
+        async (error) => {
+          console.log('No se pudo obtener el cache del cliente para validacion');
+          console.dir(error);
+          this.cacheCliente = [];
+          this.cacheClienteFix = [];
+          this.datosCompletados = this.collectAjustadorLocalData();
+          this.completeAjustadorValidationReview();
         }
       )
-      
-
-      setTimeout(() => {
-        const texto = JSON.stringify(this.cacheCliente); //"Arreglo { variable1: valor1, variable2: valor2, variable3: valor3 }";
-
-          // Extraer todo lo que está dentro de las llaves
-          const contenido = texto.match(/\{([^}]+)\}/)[1];
-
-          // Separar por comas
-          const pares = contenido.split(",").map(p => p.trim());
-
-          // Separar clave y valor
-          const resultado = pares.map(p => {
-            const [nombre, valor] = p.split(":").map(x => x.trim().replace('"', '').replace('"', ''));
-            return { nombre, valor };
-          });
-
-          this.cacheClienteFix = resultado;
-          
-          console.log('resultado'); console.dir(resultado);
-
-          for (var i = 0; i < localStorage.length; i++){
-            if (localStorage.key(i).indexOf('datos-') == 0) {
-              console.log('Para datos 1')
-              let storageKey = localStorage.key(i)?.split('-')[1];
-              let storageVal = localStorage.getItem(localStorage.key(i));
-              let tryValue = parseInt(storageVal);
-
-              console.log('storage key : '+storageKey+', storage val : '+storageVal+', try value : '+tryValue);
-
-              this.datosCompletados.push({nombre: storageKey, valor: storageVal});
-
-              if (typeof tryValue == 'number' && !isNaN(tryValue) && (storageVal.length < 7)) {
-                this.datos.push(
-                  {nombre: storageKey, valor: tryValue}
-                  )
-              }else{
-                this.datos.push(
-                  {nombre: storageKey, valor: storageVal}
-                  )
-                }
-          }
-        }
-
-      }, 900);
-
-      setTimeout(() => {
-        console.log('Los datos listos ');
-        console.dir(this.datosCompletados);
-      }, 1300);
-      
-      setTimeout(() => {
-        const datosAjustador = this.buildAjustadorValidationRecord();
-        const validationResult = validateClaimStage(datosAjustador, ajustadorScreenValidationRules);
-
-        this.datosIncompletos = validationResult.missing.map((issue) => {
-          const item = requiredDataAjustador.find((requiredItem) => requiredItem.nombre === issue.field);
-          return {
-            nombre: issue.label,
-            valor: 'null',
-            elementSegmento: item?.pagSegmento,
-            indexSegmento: item?.segmentIndex
-          };
-        });
-        this.datosComunes = ajustadorScreenValidationRules
-          .filter((rule) => !validationResult.missing.some((issue) => issue.field === rule.field))
-          .map((rule) => ({ nombre: rule.field, valor: datosAjustador[rule.field] }));
-      }, 1600);
-      
-      
-      setTimeout(() => {
-        $('#camButtonAju').fadeIn();
-        this.cantidadNulos = this.datosIncompletos.length;
-        
-        this.isLoading = false;
-        if (this.cantidadNulos == 0) {
-          this.estaEvaluado = true;
-          
-          localStorage.setItem('estaEvaluado', 'true');
-          
-          this.evaluarDanios();
-
-          let iconoContenedor = document.getElementById('infoText');
-            let iconoAprobado = document.createElement('img');
-            iconoAprobado.src = '../../assets/img/aprobar.svg';
-            iconoAprobado.style.width = '45px';
-            iconoAprobado.style.height = '45px';
-            iconoAprobado.style.position = 'absolute';
-            iconoAprobado.style.top = '-5px';
-            iconoAprobado.style.right = '-5px';
-            iconoContenedor.appendChild(iconoAprobado);
-
-          //$('#validateButtona').fadeOut();
-            //$('#saveDataButtona').fadeIn();
-            //$('#validateAgainButtona').fadeIn();
-            //$('#cancelaButtona').fadeIn();
-            //clearInterval(this.progInterval);
-            this.textoInfo = 'Datos completados con éxito! Ahora puedes proceder a enviarlos haciendo click en GUARDAR DATOS';
-            $('#spanProgressAju').removeClass('progress');
-            $('#spanProgressAju').addClass('progress-end');
-            
-        }else{
-          this.estaEvaluado = false;
-          setTimeout(() => {
-            localStorage.setItem('estaEvaluado', 'true');
-            $('#dataNullAju').fadeIn(); $('#dataNullAju').attr('style', 'display:inherit !important;');
-
-            if (this.cantidadNulos > 0) {
-              //$('#validateButtona').fadeIn();
-              //$('#infoIncompleto').fadeIn();
-              
-              //$('#saveDataButtona').fadeOut();
-              //$('#validateAgainButtona').fadeOut();
-              //$('#cancelaButtona').fadeOut();
-              //$('#dataNullAju').fadeOut(); $('#dataNullAju').attr('style', 'display:none !important;');
-            }else{
-              //$('#validateButtona').fadeOut();
-              //$('#infoIncompleto').fadeOut();
-
-              //$('#saveDataButtona').fadeIn();
-              //$('#validateAgainButtona').fadeIn();
-              //$('#cancelaButtona').fadeIn();
-              
-            }
-          }, 2500);
-          
-        }
-      }, 2800);
 
     }
   evaluarDeuda() {
@@ -1519,16 +1420,182 @@ export class AjustadorhnPage implements OnInit {
       }, {});
     }
 
-    buildAjustadorValidationRecord(){
-      const datosAjustador = this.toValidationRecord(this.datosCompletados);
+    normalizeRecordForReview(record: any){
+      if (!record) {
+        return [];
+      }
+
+      const source = Array.isArray(record) ? record[0] : record;
+
+      if (!source || typeof source !== 'object') {
+        return [];
+      }
+
+      return Object.keys(source)
+        .filter((key) => key && key !== '$id')
+        .map((key) => ({
+          nombre: key === 'IdAtencion' ? 'RefAtencionId' : key,
+          valor: source[key]
+        }));
+    }
+
+    private valueBelongsToCurrentAttention(value: any){
+      if (value === null || value === undefined) {
+        return false;
+      }
+
+      const stringValue = value.toString();
       const currentAttention = this.idAtencion?.toString();
 
-      return requiredDataAjustador.reduce((record, item) => {
-        const storageValue = localStorage.getItem(item.storageKey);
-        const belongsToCurrentAttention = storageValue?.startsWith(currentAttention+'-');
+      if (!currentAttention || !stringValue.includes('-')) {
+        return true;
+      }
 
-        if (belongsToCurrentAttention) {
-          record[item.nombre] = datosAjustador[item.nombre] ?? storageValue.split('-').slice(1).join('-');
+      const [possibleAttention] = stringValue.split('-');
+      if (possibleAttention === currentAttention) {
+        return true;
+      }
+
+      return /^\d{5,}$/.test(possibleAttention) ? false : true;
+    }
+
+    // Coerces a "Valor de Reserva" raw value into a non-negative number that is
+    // always safe to send. The server rejects null, so empty/null/undefined/NaN/''
+    // (and the stringified variants) become 0, and negative numbers are clamped to 0.
+    private coerceValorReservaParaEnvio(rawValue: any): number {
+      if (rawValue === null || rawValue === undefined) {
+        return 0;
+      }
+
+      const normalized = typeof rawValue === 'string' ? rawValue.trim().toLowerCase() : rawValue;
+      if (normalized === '' || normalized === 'null' || normalized === 'undefined' || normalized === 'nan') {
+        return 0;
+      }
+
+      const parsed = Number(normalized);
+      if (!Number.isFinite(parsed) || parsed < 0) {
+        return 0;
+      }
+
+      return parsed;
+    }
+
+    private cleanStoredValue(value: any){
+      if (value === null || value === undefined) {
+        return value;
+      }
+
+      const stringValue = value.toString();
+      const currentAttention = this.idAtencion?.toString();
+
+      if (currentAttention && stringValue.startsWith(currentAttention+'-')) {
+        return stringValue.split('-').slice(1).join('-');
+      }
+
+      return value;
+    }
+
+    collectAjustadorLocalData(){
+      const completed = [];
+
+      for (let i = 0; i < localStorage.length; i++){
+        const key = localStorage.key(i);
+
+        if (!key || key.indexOf('datos-') !== 0) {
+          continue;
+        }
+
+        const storageKey = key.split('-').slice(1).join('-');
+        const storageVal = localStorage.getItem(key);
+
+        // 'datos-*' values are stored raw (never prefixed with the attention id),
+        // so we must NOT run the attention-prefix heuristic on them. Doing so would
+        // wrongly drop/truncate legit values that contain dashes (e.g. polizas or
+        // license numbers like '12345-678').
+        completed.push({
+          nombre: storageKey,
+          valor: storageVal
+        });
+      }
+
+      return completed;
+    }
+
+    completeAjustadorValidationReview(){
+      console.log('Cache cliente para revision');
+      console.dir(this.cacheClienteFix);
+      console.log('Datos completados para revision');
+      console.dir(this.datosCompletados);
+
+      const datosAjustador = this.buildAjustadorValidationRecord();
+      const validationResult = validateClaimStage(datosAjustador, ajustadorScreenValidationRules);
+
+      this.datosIncompletos = validationResult.missing.map((issue) => {
+        const item = requiredDataAjustador.find((requiredItem) => requiredItem.nombre === issue.field);
+        return {
+          nombre: issue.label,
+          valor: 'null',
+          elementSegmento: item?.pagSegmento,
+          indexSegmento: item?.segmentIndex
+        };
+      });
+
+      this.datosComunes = ajustadorScreenValidationRules
+        .filter((rule) => !validationResult.missing.some((issue) => issue.field === rule.field))
+        .map((rule) => ({ nombre: rule.field, valor: datosAjustador[rule.field] }));
+
+      this.datosAdvertencias = validationResult.advisories.map((advisory) => ({
+        nombre: advisory.label,
+        valor: advisory.value,
+        mensaje: advisory.message
+      }));
+
+      $('#camButtonAju').fadeIn();
+      this.cantidadNulos = this.datosIncompletos.length;
+      this.isLoading = false;
+      this.focusValidationPanel();
+
+      if (this.cantidadNulos == 0) {
+        this.estaEvaluado = true;
+        this.validacionCompleta = true;
+        localStorage.setItem('estaEvaluado', 'true');
+        this.evaluarDanios();
+
+        this.textoInfo = 'Datos completados con éxito! Ahora puedes proceder a enviarlos haciendo click en GUARDAR DATOS';
+        if (this.datosAdvertencias.length > 0) {
+          this.textoInfo += ' Aviso: ' + this.datosAdvertencias.length + ' campo(s) están en 0 y se guardarán así salvo que los modifiques.';
+        }
+        $('#spanProgressAju').removeClass('progress');
+        $('#spanProgressAju').addClass('progress-end');
+      } else {
+        this.estaEvaluado = false;
+        this.validacionCompleta = false;
+        localStorage.setItem('estaEvaluado', 'true');
+        this.textoInfo = 'Validación completada. Revisa los datos incompletos para continuar.';
+        if (this.datosAdvertencias.length > 0) {
+          this.textoInfo += ' Además, ' + this.datosAdvertencias.length + ' campo(s) están en 0 y se guardarán así salvo que los modifiques.';
+        }
+        $('#spanProgressAju').removeClass('progress-end');
+        $('#spanProgressAju').addClass('progress');
+      }
+    }
+
+    buildAjustadorValidationRecord(){
+      const datosAjustador = this.toValidationRecord(this.datosCompletados);
+
+      return requiredDataAjustador.reduce((record, item) => {
+        // Prefer the raw 'datos-*' value when it was captured for this session.
+        const rawDatosValue = datosAjustador[item.nombre];
+        if (rawDatosValue !== undefined) {
+          record[item.nombre] = rawDatosValue;
+          return record;
+        }
+
+        // Otherwise fall back to the attention-prefixed storage key, applying the
+        // prefix heuristic only here (these values genuinely use the id-prefix scheme).
+        const storageValue = localStorage.getItem(item.storageKey);
+        if (this.valueBelongsToCurrentAttention(storageValue)) {
+          record[item.nombre] = this.cleanStoredValue(storageValue);
         }
 
         return record;
@@ -1607,6 +1674,228 @@ export class AjustadorhnPage implements OnInit {
 
       
     }, 300);
+  }
+
+  ionViewWillEnter(){
+    // Al regresar de segmento-danio (u otro segmento) reconstruimos la lista de
+    // "Daños vehículo afiliado". Si el catálogo aún no está cargado, getDanios()
+    // disparará la reconstrucción al terminar.
+    if (this.danios && this.danios.length > 0) {
+      this.reconstruirSeleccionDanios();
+      this.reconstruirSeleccionDaniosCulpa();
+    } else {
+      this.getDanios();
+    }
+    // Refresca los daños manuales (afiliado y tercero) desde el servidor cada vez
+    // que se vuelve a la pantalla, para reflejar lo agregado/quitado en culpable o
+    // segmento-danio. El merge ocurre en el callback del API (no hay carrera con
+    // la reconstrucción síncrona del catálogo).
+    this.cargarDaniosManualesAju();
+    this.cargarDaniosManualesCulpa();
+  }
+
+  // Navega a segmento-danio para agregar/quitar daños. Usa NavController (no
+  // router.navigate) para evitar el error "Cannot activate an already activated
+  // outlet". Al volver, ionViewWillEnter() reconstruye la lista automáticamente.
+  editarDanios(){
+    this.navCtrl.navigateForward('/segmento-danio');
+  }
+
+  // Navega a la página "Acuerdo de Deuda" (culpable) para agregar/quitar daños
+  // del tercero/contraparte. Usa NavController y pasa el mismo query param que
+  // setSegment() ('pageSource: ./ajustadorhn') para que culpable se comporte
+  // igual que cuando se entra desde el segmento. Al volver, ionViewWillEnter()
+  // reconstruye la lista vía reconstruirSeleccionDaniosCulpa().
+  editarDaniosCulpa(){
+    this.navCtrl.navigateForward('/culpable', { queryParams: { pageSource: './ajustadorhn' } });
+  }
+
+  reconstruirSeleccionDanios(){
+    if (!this.danios || this.danios.length === 0) {
+      return;
+    }
+
+    const reconstruido: any[] = [];
+
+    for (var i = 0; i < localStorage.length; i++){
+      const key = localStorage.key(i);
+      // Prefijo exacto 'daniosSelect-' para no colisionar con
+      // 'daniosSelectAju', 'daniosSelectOtro-' ni 'daniosSelectCulpa-'.
+      if (key && key.indexOf('daniosSelect-') == 0) {
+        let indexSelect = parseInt(localStorage.getItem(key));
+        const elementD = this.danios.find((item) => Number(item.Id) === Number(indexSelect));
+        if (elementD) {
+          let tipo: any;
+          let tipoId = parseInt(localStorage.getItem('TipoReparacion-'+indexSelect));
+          if (tipoId == 1) {tipo = 'Reparación';}else{tipo = 'Cambio';}
+          reconstruido.push({Codigo: elementD.Codigo, Descripcion: elementD.Descripcion, Id: elementD.Id, tipo:tipo, tipoId:tipoId});
+        }
+      }
+
+      // Daños manuales ("Otros") capturados en segmento-danio. Se guardan en
+      // localStorage como 'danioOtro-{codigo}' con el objeto registrado
+      // ({ DescripcionDeDanio, TipoReparacion, CodigoDanioVehiculo, ... }).
+      // Los incluimos para que el ajustador los vea junto a los del catálogo y
+      // no piense que falta un daño.
+      if (key && key.indexOf('danioOtro-') == 0) {
+        const manual = this.mapearDanioManual(localStorage.getItem(key));
+        if (manual) {
+          reconstruido.push(manual);
+        }
+      }
+    }
+
+    // FUENTE DE VERDAD de los daños manuales del afiliado: el servidor
+    // (ObtenerDaniosExtras con TipoEntidad 'Asegurado'), cargado async en
+    // cargarDaniosManualesAju(). Igual que en el tercero, se mezcla lo ya cargado
+    // y el callback del API vuelve a reconstruir para evitar carreras.
+    if (this.daniosManualesAju && this.daniosManualesAju.length) {
+      for (const manual of this.daniosManualesAju) {
+        reconstruido.push(manual);
+      }
+    }
+
+    this.seleccionDeDanios = this.dedupDaniosVisibles(reconstruido);
+  }
+
+  // Reconstruye "Daños tercero/contraparte" (seleccionDeDaniosCulpable) desde
+  // cero usando las llaves PROPIAS del culpable (no las del afiliado):
+  //   - Catálogo: 'daniosSelectCulpa-{Id}'  (valor = Id del daño)
+  //   - Tipo:     'TipoReparacionCulpa-{Id}' / 'TipoReparacionCulpaIndex-{Id}'
+  //   - Manuales: 'danioOtroCulpa-{codigo}'  (objeto con DescripcionDeDanio/TipoReparacion)
+  // Se llama desde ionViewWillEnter() y desde getDanios() para evitar la carrera
+  // de tiempos (catálogo aún no cargado). Reasigna el arreglo (nunca hace push)
+  // para que no se dupliquen las entradas al volver del culpable.
+  reconstruirSeleccionDaniosCulpa(){
+    if (!this.danios || this.danios.length === 0) {
+      return;
+    }
+
+    const reconstruido: any[] = [];
+
+    for (var i = 0; i < localStorage.length; i++){
+      const key = localStorage.key(i);
+      // Prefijo exacto 'daniosSelectCulpa-' para no colisionar con el arreglo
+      // 'daniosSelectCulpa', con 'daniosSelectOtroCulpa-' ni con el afiliado
+      // 'daniosSelect-'.
+      if (key && key.indexOf('daniosSelectCulpa-') == 0) {
+        let indexSelect = parseInt(localStorage.getItem(key));
+        const elementD = this.danios.find((item) => Number(item.Id) === Number(indexSelect));
+        if (elementD) {
+          let tipo: any;
+          let tipoId = parseInt(localStorage.getItem('TipoReparacionCulpa-'+indexSelect));
+          if (tipoId == 1) {tipo = 'Reparación';}else{tipo = 'Cambio';}
+          reconstruido.push({Codigo: elementD.Codigo, Descripcion: elementD.Descripcion, Id: elementD.Id, tipo:tipo, tipoId:tipoId});
+        }
+      }
+
+      // Daños manuales ("Otros") del tercero/culpable agregados EN ESTA SESIÓN.
+      // Se guardan en localStorage como 'danioOtroCulpa-{codigo}' con el objeto
+      // registrado en culpable.page.ts ({ DescripcionDeDanio, TipoReparacion, ... }).
+      // Sirven para mostrarlos al instante antes de que responda el servidor.
+      // El prefijo 'danioOtroCulpa-' NO colisiona con el afiliado 'danioOtro-'.
+      if (key && key.indexOf('danioOtroCulpa-') == 0) {
+        const manual = this.mapearDanioManual(localStorage.getItem(key));
+        if (manual) {
+          reconstruido.push(manual);
+        }
+      }
+    }
+
+    // FUENTE DE VERDAD: los daños manuales del tercero se obtienen del servidor
+    // (api.ObtenerDaniosExtras(idAtencion, 'Tercero')) — exactamente la misma
+    // llamada que usa culpable para llenar 'daniosSelectOtroCulpa' (donde aparece
+    // "COCOL"). 'daniosManualesCulpa' se llena async en cargarDaniosManualesCulpa()
+    // y aquí solo se mezcla lo ya cargado; al terminar el API se vuelve a llamar
+    // esta reconstrucción para que el merge persista sin carreras de tiempo.
+    if (this.daniosManualesCulpa && this.daniosManualesCulpa.length) {
+      for (const manual of this.daniosManualesCulpa) {
+        reconstruido.push(manual);
+      }
+    }
+
+    this.seleccionDeDaniosCulpable = this.dedupDaniosVisibles(reconstruido);
+  }
+
+  // Carga los daños manuales ("Otros") del tercero/culpable desde el servidor,
+  // misma fuente que culpable.page.ts (ObtenerDaniosExtras con TipoEntidad
+  // 'Tercero'). Mapea cada uno al shape de la lista y vuelve a reconstruir para
+  // que el merge sea estable aunque el catálogo se reconstruya luego.
+  cargarDaniosManualesCulpa(){
+    const idAtencion = this.idAtencion || localStorage.getItem('idAtencion');
+    if (!idAtencion) { return; }
+    this.api.ObtenerDaniosExtras(idAtencion, Entidades[1].tipoEntidad).pipe(
+      finalize(async () => {})
+    ).subscribe(
+      async (res) => {
+        const lista = Array.isArray(res) ? res : [];
+        console.log('[ajustadorhn] Daños manuales TERCERO desde ObtenerDaniosExtras:');
+        console.dir(lista);
+        this.daniosManualesCulpa = lista
+          .map((item) => this.mapearDanioManualObjeto(item))
+          .filter((item) => !!item);
+        this.reconstruirSeleccionDaniosCulpa();
+      },
+      async (err) => {
+        console.log('[ajustadorhn] Error ObtenerDaniosExtras TERCERO:', err);
+      }
+    );
+  }
+
+  // Carga los daños manuales ("Otros") del afiliado desde el servidor, misma
+  // fuente que segmento-danio (ObtenerDaniosExtras con TipoEntidad 'Asegurado').
+  cargarDaniosManualesAju(){
+    const idAtencion = this.idAtencion || localStorage.getItem('idAtencion');
+    if (!idAtencion) { return; }
+    this.api.ObtenerDaniosExtras(idAtencion, Entidades[0].tipoEntidad).pipe(
+      finalize(async () => {})
+    ).subscribe(
+      async (res) => {
+        const lista = Array.isArray(res) ? res : [];
+        console.log('[ajustadorhn] Daños manuales AFILIADO desde ObtenerDaniosExtras:');
+        console.dir(lista);
+        this.daniosManualesAju = lista
+          .map((item) => this.mapearDanioManualObjeto(item))
+          .filter((item) => !!item);
+        this.reconstruirSeleccionDanios();
+      },
+      async (err) => {
+        console.log('[ajustadorhn] Error ObtenerDaniosExtras AFILIADO:', err);
+      }
+    );
+  }
+
+  // Convierte un daño manual ("Otros") almacenado por segmento-danio en el mismo
+  // shape que usa la lista "Daños vehículo afiliado". Se deja Id/Codigo vacíos
+  // para que eliminarDuplicadosDanios deduplique por descripción y no choque con
+  // los daños de catálogo (que siempre traen Id y Codigo reales).
+  private mapearDanioManual(valor: string){
+    try {
+      return this.mapearDanioManualObjeto(JSON.parse(valor));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Mapea un objeto de daño manual ya parseado (afiliado u "Otros" del tercero) al
+  // shape de la lista. Id/Codigo vacíos para que eliminarDuplicadosDanios deduplique
+  // por descripción y no choque con los daños de catálogo.
+  private mapearDanioManualObjeto(otro: any){
+    if (!otro) { return null; }
+    const descripcion = otro.DescripcionDeDanio || otro.Descripcion;
+    if (!descripcion) { return null; }
+    let tipo = '';
+    const tipoId = Number(otro.TipoReparacion);
+    if (tipoId == 1) { tipo = 'Reparación'; } else if (tipoId == 2) { tipo = 'Cambio'; }
+    return {
+      Codigo: '',
+      Descripcion: descripcion,
+      DescripcionDeDanio: otro.DescripcionDeDanio,
+      Id: '',
+      tipo: tipo,
+      tipoId: tipoId,
+      esManual: true
+    };
   }
 
   ionViewDidEnter(){
@@ -1814,9 +2103,14 @@ export class AjustadorhnPage implements OnInit {
       },
       async (res) => {
         const alert = await this.alert.create({
+          cssClass: 'ajustador-form-alert',
           header:'HELP',
           message:res.error.Message,
-          buttons:['Ok']
+          buttons:[{
+            text: 'OK',
+            role: 'cancel',
+            cssClass: 'alert-button-ok'
+          }]
         });
         await alert.present();
       }
@@ -1836,6 +2130,10 @@ export class AjustadorhnPage implements OnInit {
         this.results = res;
         this.daniosIndex = this.danios.length;
         this.listarDanios();
+        this.reconstruirSeleccionDanios();
+        this.reconstruirSeleccionDaniosCulpa();
+        this.cargarDaniosManualesAju();
+        this.cargarDaniosManualesCulpa();
         //console.log("Los danios");
         //console.dir(this.danios);
       },
@@ -1866,7 +2164,7 @@ export class AjustadorhnPage implements OnInit {
   }
 
   goFotos() {
-    this.router.navigate(['./fotoshn']);
+    this.router.navigate(['./cargar-archivos']);
   }
 
   goESignature(){
@@ -1962,9 +2260,14 @@ export class AjustadorhnPage implements OnInit {
       },
       async (res) => {
         const alert = await this.alert.create({
+          cssClass: 'ajustador-form-alert',
           header:'HELP',
           message:res.error.Message,
-          buttons:['Ok']
+          buttons:[{
+            text: 'OK',
+            role: 'cancel',
+            cssClass: 'alert-button-ok'
+          }]
         });
         await alert.present();
       }
@@ -1985,9 +2288,14 @@ export class AjustadorhnPage implements OnInit {
       },
       async (res) => {
         const alert = await this.alert.create({
+          cssClass: 'ajustador-form-alert',
           header:'HELP',
           message:res.error.Message,
-          buttons:['Ok']
+          buttons:[{
+            text: 'OK',
+            role: 'cancel',
+            cssClass: 'alert-button-ok'
+          }]
         });
         await alert.present();
       }
@@ -2072,9 +2380,14 @@ export class AjustadorhnPage implements OnInit {
       },
       async (res) => {
         const alert = await this.alert.create({
+          cssClass: 'ajustador-form-alert',
           header:'HELP',
           message:res.error.Message,
-          buttons:['Ok']
+          buttons:[{
+            text: 'OK',
+            role: 'cancel',
+            cssClass: 'alert-button-ok'
+          }]
         });
         await alert.present();
       }
@@ -2128,7 +2441,7 @@ export class AjustadorhnPage implements OnInit {
 
   next(extra){
                 
-    this.router.navigate(['./fotoshn'], extra)
+    this.router.navigate(['./cargar-archivos'], extra)
   }
   
   saveFirma(){
@@ -2142,6 +2455,7 @@ export class AjustadorhnPage implements OnInit {
 
   async alertaSalir() {
     const alert = await this.alert.create({
+      cssClass: 'ajustador-form-alert',
       header:'Salir del formulario?',
       message:'Los datos se perderan sin haber enviado. Salir?',
       buttons:this.alertButtons
@@ -2499,18 +2813,49 @@ export class AjustadorhnPage implements OnInit {
      //console.log(dateFormat+' ... '+timeFormat);
   }
 
+  getFechaInspeccionInicial(): string {
+    const ahora = new Date();
+    this.minFechaInspeccion = this.getStartOfToday().toISOString();
+
+    const fechaGuardada = localStorage.getItem('datos-FechaHora');
+    if (fechaGuardada) {
+      const fecha = new Date(fechaGuardada);
+      if (!Number.isNaN(fecha.getTime()) && fecha >= this.getStartOfToday()) {
+        return fecha.toISOString();
+      }
+    }
+
+    return ahora.toISOString();
+  }
+
+  getStartOfToday(): Date {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    return hoy;
+  }
+
   marcarFechaAjustador(mydateAjustador){
+    let fechaSeleccionada = new Date(mydateAjustador);
+    if (Number.isNaN(fechaSeleccionada.getTime()) || fechaSeleccionada < this.getStartOfToday()) {
+      fechaSeleccionada = new Date();
+    }
+
+    const fechaIso = fechaSeleccionada.toISOString();
+    this.fechaInspeccion = fechaIso;
+    this.minFechaInspeccion = this.getStartOfToday().toISOString();
+    localStorage.setItem('datos-FechaHora', fechaIso);
+
     let brakePoint;
-    if (mydateAjustador.toString().indexOf('T') == -1) {
+    if (fechaIso.toString().indexOf('T') == -1) {
       brakePoint = ', ';
     }else{
       brakePoint = 'T';
     }
 
-    this.fechaInspeccionLocal = new Date(mydateAjustador).toLocaleString(); 
+    this.fechaInspeccionLocal = fechaSeleccionada.toLocaleString(); 
 
-    this.mydateAjustador = mydateAjustador.split(brakePoint)[0];
-    this.laFechaInspeccion = 'Fecha : '+mydateAjustador.split(brakePoint)[0].toString()+', Hora : '+(mydateAjustador.split(brakePoint)[1].toString()).split('-')[0];
+    this.mydateAjustador = fechaIso.split(brakePoint)[0];
+    this.laFechaInspeccion = 'Fecha : '+fechaIso.split(brakePoint)[0].toString()+', Hora : '+(fechaIso.split(brakePoint)[1].toString()).split('.')[0];
 
 
   }
@@ -2566,10 +2911,13 @@ validateEmail(status){
   localStorage.setItem('segmentoTitulo', this.segmentoTitulo);
 
 
+  // Use Ionic's NavController so the ion-router-outlet stack is managed correctly.
+  // Plain router.navigate() to a page already in the stack throws
+  // "Cannot activate an already activated outlet" on the first tap (and only works on the second).
   if (segmentInput == 'culpable') {
-    this.router.navigate(['./'+segmentInput], { queryParams: { pageSource: './ajustadorhn' } });
+    this.navCtrl.navigateForward(['/'+segmentInput], { queryParams: { pageSource: './ajustadorhn' } });
   }else{
-    this.router.navigate(['./'+segmentInput]);
+    this.navCtrl.navigateForward(['/'+segmentInput]);
   }
   
   
@@ -2926,6 +3274,34 @@ validateEmail(status){
         vistos.add(claveCompuesta);
         return true; // Primer vez que se ve este conjunto de campos
     });
+  }
+
+  // Dedup robusto para las listas visibles de daños (afiliado y tercero).
+  // Colapsa por DESCRIPCIÓN normalizada (trim + espacios colapsados + mayúsculas)
+  // para que un daño de catálogo (con Id/Codigo reales y chip de reparación) y una
+  // copia manual/API con el MISMO texto pero Id/Codigo vacíos se muestren UNA sola
+  // vez. La causa de la duplicación era que eliminarDuplicadosDanios usa la clave
+  // compuesta Id|Descripcion|Codigo, por lo que el de catálogo (Id real) y el de
+  // ObtenerDaniosExtras (Id vacío) no coincidían. Prefiere SIEMPRE la entrada con
+  // Id real (catálogo) sobre la manual.
+  private dedupDaniosVisibles(arreglo: any[]) {
+    const porDescripcion = new Map<string, any>();
+    for (const danio of arreglo || []) {
+      const desc = (danio?.DescripcionDeDanio || danio?.Descripcion || '')
+        .toString().trim().replace(/\s+/g, ' ').toUpperCase();
+      if (!desc) { continue; }
+      const existente = porDescripcion.get(desc);
+      if (!existente) {
+        porDescripcion.set(desc, danio);
+        continue;
+      }
+      const existenteTieneId = existente.Id !== '' && existente.Id != null;
+      const actualTieneId = danio.Id !== '' && danio.Id != null;
+      if (!existenteTieneId && actualTieneId) {
+        porDescripcion.set(desc, danio);
+      }
+    }
+    return Array.from(porDescripcion.values());
   }
 
   eliminarDuplicadosDanios(arreglo: any[], origen:any) {

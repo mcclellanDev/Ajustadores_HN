@@ -1,39 +1,57 @@
-<ion-content>
+<ion-header class="end-header">
   <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
   <ion-footer id="spinFooter" *ngIf="isLoading == true"></ion-footer>
-  <br><br><br>
- <ion-grid>
-  <ion-row style="text-align: center;">
-    <ion-col size="12">
-      <ion-item lines="none" >
-        <ion-badge style="height: 120px;width: 100%;text-align: left;font-size: 1.1rem; background: var(--blueGrayColor);">
-          <ion-grid style="width: 100%;">
-            <ion-row style="width: 100%;">
-              <ion-col size="12">Atención {{idAtencion}} finalizada correctamente!</ion-col>
-              <ion-col size="2">Código BPM</ion-col>
-              <ion-col size="8">{{codigoBPMFicohsa}}</ion-col>
-            </ion-row>
-            <ion-row style="width: 100%;">
-              <ion-col size="2">Código Reclamo</ion-col>
-              <ion-col size="8">{{codigoReclamoFicohsa}}</ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-badge>
-      </ion-item>
-    </ion-col>
-    <ion-col size="12">
-      <br><br><br><br><br><br><br>
-     <img style="width: 180px; height:180px" src="../../assets/img/oficina-en-casa.gif" />
-      <!--ion-icon name="eye" style="font-size: 2rem; margin: 15px; color: #f14f23;" id="open-modal-sign-aju" (click)="recargarFirma()"></!--ion-icon -->
-    </ion-col>
-    
-  </ion-row>
-  <ion-row>
-    <ion-col size="4"></ion-col>
-    <ion-col size="4">
-      <ion-button (click)="goHome()" style="float: right;" size="large">Volver a Inicio</ion-button>
-    </ion-col>
-    <ion-col size="4"></ion-col>
-  </ion-row>
- </ion-grid>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button class="end-home-button" fill="clear" (click)="goHome()" aria-label="Volver a inicio">
+        <ion-icon slot="icon-only" name="home-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Proceso finalizado</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="end-content" fullscreen="true">
+  <main class="end-shell">
+    <!-- Hero de éxito: confirma que el reclamo se envió correctamente -->
+    <section class="success-hero">
+      <div class="success-badge">
+        <img src="../../assets/img/aprobar.svg" alt="Proceso completado" />
+      </div>
+      <span class="success-kicker">Reclamo enviado</span>
+      <h1>¡Atención finalizada correctamente!</h1>
+      <p>La atención <strong>#{{idAtencion}}</strong> se procesó y envió a Ficohsa sin inconvenientes.</p>
+      <ion-badge class="success-state">
+        <ion-icon name="checkmark-circle"></ion-icon>
+        Datos enviados
+      </ion-badge>
+    </section>
+
+    <!-- Tiles con los códigos de resultado del envío -->
+    <section class="result-card">
+      <div>
+        <span>Código Reclamo</span>
+        <strong>{{codigoReclamoFicohsa || '—'}}</strong>
+      </div>
+      <div>
+        <span>Código BPM</span>
+        <strong>{{codigoBPMFicohsa || '—'}}</strong>
+      </div>
+      <div class="result-tile-wide">
+        <span>Atención Id</span>
+        <strong>{{idAtencion || '—'}}</strong>
+      </div>
+    </section>
+
+    <section class="success-illustration">
+      <img src="../../assets/img/oficina-en-casa.gif" alt="Proceso completado" />
+    </section>
+
+    <section class="end-actions">
+      <ion-button class="end-primary-action" expand="block" (click)="goHome()">
+        <ion-icon slot="start" name="home-outline"></ion-icon>
+        Volver a inicio
+      </ion-button>
+    </section>
+  </main>
 </ion-content>

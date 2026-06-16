@@ -19,178 +19,138 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="isSearch" class="ion-padding">
+<ion-content *ngIf="isSearch" class="damage-search-content">
+  <div class="damage-search-shell">
+    <div class="damage-search-heading">
+      <div>
+        <span>Catálogo de daños</span>
+        <h1>Daños comunes del vehículo asegurado</h1>
+      </div>
+      <ion-button fill="clear" aria-label="Cerrar búsqueda" (click)="closeDanioSearch()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </div>
 
-  <ion-grid>
-    <ion-row>
-      <ion-col size="10">
-        <ion-badge>
-          Daños Comunes A Vehículos
-        </ion-badge>
-      </ion-col>
-      <ion-col size="2">
-        <ion-button class="close-search" style="float: right ;" (click)="closeDanioSearch()">
-          <ion-icon name="return-up-back"></ion-icon>
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-  
-  <ion-searchbar animated="true" placeholder="Escribe un Daño de Vehículo" show-clear-button="focus" show-cancel-button="focus" cancel-button-text="Cancelar"
-  cancel-button-icon="trash-bin" [debounce]="1000" (ionInput)="handleInput($event)"></ion-searchbar>
+    <ion-searchbar animated="true" placeholder="Buscar tipo de daño" show-clear-button="focus"
+      [debounce]="500" (ionInput)="handleInput($event)"></ion-searchbar>
 
-  <ion-content color="light">
-    <ion-list [inset]="true" style="width: 97%;">
-      <ion-item *ngFor="let result of results; let i = index" (click)="entraDanio(danioId.value, posicion.value)" style="padding-left: 10px;border-radius:9px;"
-      class="danio-item">
-      {{ result.Descripcion }}
+    <ion-list class="damage-results">
+      <ion-item button detail="false" *ngFor="let result of results; let i = index"
+        (click)="entraDanio(danioId.value, posicion.value)" class="danio-item"
+        [class.selected]="isDanioSelected(result.Id)">
+        <ion-icon slot="start" name="construct-outline"></ion-icon>
+        <ion-label>{{result.Descripcion}}</ion-label>
+        <ion-icon slot="end" name="checkmark-circle" class="selected-check"
+          *ngIf="isDanioSelected(result.Id)"></ion-icon>
         <ion-input [hidden]="true" #danioId [value]="result.Id" class="danio-entrada"></ion-input>
         <ion-input [hidden]="true" #posicion [value]="i"></ion-input>
       </ion-item>
-      <ion-item style="color: white;">Ajustadores Ficohsa por Porsalud</ion-item>
-      <br><br><br>
     </ion-list>
-  </ion-content>
+
+    <div class="damage-search-confirm">
+      <div>
+        <strong>{{daniosSelect.length}}</strong>
+        <span>{{daniosSelect.length === 1 ? 'daño seleccionado' : 'daños seleccionados'}}</span>
+      </div>
+      <ion-button (click)="closeDanioSearch()">
+        Confirmar selección
+        <ion-icon slot="end" name="checkmark-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
 </ion-content>
 
-<ion-content *ngIf="!isSearch">
-  <ion-col id="segmentAfiliatedAju" size="12">
-    <ion-item lines="none" class="ion-no-padding  input">
-      <ion-label color="primary" class="text-size-lg" style="padding-left: 5px;">
-        <ion-badge color="primary">
-          {{segmentoTitulo}}
-        </ion-badge>
-      </ion-label>
-    </ion-item>
+<ion-content *ngIf="!isSearch" class="ion-padding segment-form-content">
+  <ion-col class="segmento" id="segmentAfiliatedAju" size="12">
+    <ion-label color="primary" class="text-size-lg" style="padding-left: 5px;">
+      <ion-badge color="primary">
+        {{segmentoTitulo}}
+      </ion-badge>
+    </ion-label>
     <ion-grid>
       <ion-row>
         <ion-col size="12">
           
-          <ion-item class="ion-no-padding  input">
-            <ion-grid style="width: 100%;">
-              <ion-row>
-                <ion-col offset="4" size="8" style="text-align: right;">
-                  <ion-button size="default" (click)="modalDanio.present()">
-                    Agregar Tipo de Daño.
-                  <ion-icon class="icono-buscar" name="add-circle" 
-                  style="position: inherit; font-size: 2rem; color: white; font-weight: bolder;
-                  margin-left: 6px;"></ion-icon>
-                  </ion-button>
-                  <ion-button size="default" (click)="openDanioSearch()">
-                    Buscar Tipos de Daño.
-                  <ion-icon class="icono-buscar" name="search-outline" 
-                  style="position: inherit; font-size: 2rem; color: white; font-weight: bolder;
-                  margin-left: 6px;"></ion-icon>
-                  </ion-button>
-                </ion-col>
-              </ion-row>
+          <section class="form-section damage-section">
+            <div class="section-heading section-heading-actions">
+              <div>
+                <span>Daños del vehículo</span>
+                <h2>Elementos del vehículo asegurado</h2>
+              </div>
+              <div class="damage-actions">
+                <ion-button fill="outline" (click)="modalDanio.present()">
+                  <ion-icon slot="start" name="add-outline"></ion-icon>Otro daño
+                </ion-button>
+                <ion-button (click)="openDanioSearch()">
+                  <ion-icon slot="start" name="search-outline"></ion-icon>Buscar daños
+                </ion-button>
+              </div>
+            </div>
 
-              <ion-accordion-group #accordionGroupX id="accordionGroupX" [multiple]="false" [value]="['first']">
-                <ion-accordion #danioAccordion value="first" (click)="closeOtrosDanios()">
-                  <ion-item slot="header">
-                    <ion-label>Daños Seleccionados Asegurado</ion-label>
-                  </ion-item>
-                  <div class="ion-padding" slot="content">
-                    <ion-row *ngIf="daniosSelect.length > 0"> 
-                      <ion-card style="margin: 0;padding: 0;width: 100%;">
-                        <ion-card-header>
-                          <ion-card-title>Lista de Daños Seleccionados</ion-card-title>
-                        </ion-card-header>
-                      
-                        <ion-card-content>
-                        <ion-grid class="ion-no-padding">
-                          <ion-row>
-                            <ion-col size="3" *ngFor="let dannio of daniosSelect;let i = index">
-                              <ion-card>
-                                <ion-input #selectedId [hidden]="true" [value]="dannio.Id" class="danio-input"></ion-input>
-                                <input #danioInput [value]="dannio.Descripcion" hidden>
-                                  <input #danioIdInput [value]="i" class="input-index" hidden>
-                                  <input #danioId [value]="dannio.Id" class="danio-id" hidden>
-                                  <ion-grid>
-                                    <ion-row>
-                                      <ion-col size="10" style="color: gray;">
-                                        {{dannio.Descripcion}}
-                                      </ion-col>
-                                      <ion-col size="2">
-                                        <ion-icon color="danger" name="trash-bin" style="font-size: 2rem;" (click)="eliminaDanio(danioId.value, i, danioInput.value)"></ion-icon>
-                                      </ion-col>
-                                    </ion-row>
-                                    <br>
-                                    <ion-row style="width: 100%;">
-                                      <ion-col size="2"></ion-col>
-                                      <ion-col size="5">
-                                        <ion-button size="small" fill="outline" class="action-change" style="color: #0058CB;width: 100%;" (click)="setReparacion(dannio.Id, 2, i, 1)">Cambio</ion-button>
-                                      </ion-col>
-                                      <ion-col size="5">
-                                        <ion-button size="small" fill="outline" class="action-repair" style="color: #7da1c4;width: 100%;" (click)="setReparacion(dannio.Id, 1, i, 1)">Repara</ion-button>
-                                      </ion-col>
-                                    </ion-row>
-                                  </ion-grid>
-                              </ion-card>
-                            </ion-col>
-                          </ion-row>
-                        </ion-grid>
-                        </ion-card-content>
-                      </ion-card>
-                    </ion-row>
+            <ion-accordion-group #accordionGroupX id="accordionGroupX" [multiple]="true" [value]="['common', 'other']" class="damage-accordions">
+              <ion-accordion value="common" (click)="closeOtrosDanios()">
+                <ion-item slot="header" lines="none">
+                  <ion-icon slot="start" name="car-sport-outline"></ion-icon>
+                  <ion-label>Daños comunes seleccionados</ion-label>
+                  <ion-badge slot="end">{{daniosSelect.length}}</ion-badge>
+                </ion-item>
+                <div slot="content" class="damage-content">
+                  <p class="empty-damage" *ngIf="daniosSelect.length === 0">Aún no has seleccionado daños comunes.</p>
+                  <div class="damage-grid" *ngIf="daniosSelect.length > 0">
+                    <article class="damage-card" *ngFor="let dannio of daniosSelect; let i = index">
+                      <ion-input #selectedId [hidden]="true" [value]="dannio.Id" class="danio-input"></ion-input>
+                      <input #danioInput [value]="dannio.Descripcion" hidden>
+                      <input #danioId [value]="dannio.Id" hidden>
+                      <div class="damage-card-heading">
+                        <strong>{{dannio.Descripcion}}</strong>
+                        <ion-button fill="clear" color="danger" aria-label="Eliminar daño"
+                          (click)="eliminaDanio(danioId.value, i, danioInput.value)">
+                          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                        </ion-button>
+                      </div>
+                      <div class="repair-actions">
+                        <ion-button size="small" fill="outline" class="action-change"
+                          (click)="setReparacion(dannio.Id, 2, i, 1)">Cambio</ion-button>
+                        <ion-button size="small" fill="outline" class="action-repair"
+                          (click)="setReparacion(dannio.Id, 1, i, 1)">Repara</ion-button>
+                      </div>
+                    </article>
                   </div>
-                </ion-accordion>
-                <ion-accordion #danioAccordionX value="second" (click)="isXOpen = true">
-                  <ion-item slot="header">
-                    <ion-label>Daños Otros Asegurado</ion-label>
-                  </ion-item>
-                  <div class="ion-padding" slot="content">
-                    <ion-row *ngIf="daniosSelectOtro.length > 0"> 
-                      <ion-card style="margin: 0;padding: 0;width: 100%;">
-                        <ion-card-header>
-                          <ion-card-title>Lista de Daños Otros Seleccionados</ion-card-title>
-                        </ion-card-header>
-                      
-                        <ion-card-content>
-                        <ion-grid class="ion-no-padding">
-                          <ion-row>
-                            <ion-col size="3" *ngFor="let dannioX of daniosSelectOtro;let i = index">
-                              <ion-card>
-                                <ion-input #selectedIdX [hidden]="true" [value]="dannioX.Id" class="danio-input-x"></ion-input>
-                                <input #danioInputX [value]="dannioX.DescripcionDeDanio" hidden>
-                                  <input #danioIdInputX [value]="i" class="input-index-x" hidden>
-                                  <input #danioIdX [value]="dannioX.Id" class="danio-id-x" hidden>
-                                  <input #danioCodigo [value]="dannioX.CodigoDanioFicohsa" class="danio-code-x" hidden>
-                                  <input #danioTipo [value]="dannioX.TipoReparacion" class="danio-tipo-x" hidden>
-                                  <ion-grid>
-                                    <ion-row>
-                                      <ion-col size="10" style="color: gray;">
-                                        {{dannioX.DescripcionDeDanio}}
-                                      </ion-col>
-                                      <ion-col size="2">
-                                        <ion-icon color="danger" name="trash-bin" style="font-size: 2rem;" (click)="eliminaDanioX(danioIdX.value, i, danioTipo.value, danioCodigo.value)"></ion-icon>
-                                      </ion-col>
-                                    </ion-row>
-                                    <br>
-                                    <ion-row style="width: 100%;">
-                                      <ion-col size="2"></ion-col>
-                                      <ion-col size="5">
-                                        <ion-button size="small" [fill]="dannioX.TipoReparacion == 1 ? 'outline' : 'solid'" class="action-change-x" color="primary" style="color: #0058CB;width: 100%;" (click)="setReparacionX(danioIdX.value, 2, i, 1)">Cambio</ion-button>
-                                      </ion-col>
-                                      <ion-col size="5">
-                                        <ion-button size="small" [fill]="dannioX.TipoReparacion == 2 ? 'outline' : 'solid'" class="action-repair-x" color="primary" style="color: #7da1c4;width: 100%;" (click)="setReparacionX(danioIdX.value, 1, i, 1)">Repara</ion-button>
-                                      </ion-col>
-                                    </ion-row>
-                                  </ion-grid>
-                              </ion-card>
-                            </ion-col>
-                          </ion-row>
-                        </ion-grid>
-                        </ion-card-content>
-                      </ion-card>
-                    </ion-row>
-                  </div>
-                </ion-accordion>
-              </ion-accordion-group>
+                </div>
+              </ion-accordion>
 
-              
-            </ion-grid>
-          </ion-item>
+              <ion-accordion value="other" (click)="isXOpen = true">
+                <ion-item slot="header" lines="none">
+                  <ion-icon slot="start" name="create-outline"></ion-icon>
+                  <ion-label>Otros daños agregados</ion-label>
+                  <ion-badge slot="end">{{daniosSelectOtro.length}}</ion-badge>
+                </ion-item>
+                <div slot="content" class="damage-content">
+                  <p class="empty-damage" *ngIf="daniosSelectOtro.length === 0">No se han agregado daños personalizados.</p>
+                  <div class="damage-grid" *ngIf="daniosSelectOtro.length > 0">
+                    <article class="damage-card" *ngFor="let dannioX of daniosSelectOtro; let i = index">
+                      <input #danioIdX [value]="dannioX.Id" hidden>
+                      <input #danioCodigo [value]="dannioX.CodigoDanioFicohsa" hidden>
+                      <input #danioTipo [value]="dannioX.TipoReparacion" hidden>
+                      <div class="damage-card-heading">
+                        <strong>{{dannioX.DescripcionDeDanio}}</strong>
+                        <ion-button fill="clear" color="danger" aria-label="Eliminar daño"
+                          (click)="eliminaDanioX(danioIdX.value, i, danioTipo.value, danioCodigo.value)">
+                          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                        </ion-button>
+                      </div>
+                      <div class="repair-actions">
+                        <ion-button size="small" [fill]="dannioX.TipoReparacion == 2 ? 'solid' : 'outline'" class="action-change-x"
+                          (click)="setReparacionX(danioIdX.value, 2, i, 1)">Cambio</ion-button>
+                        <ion-button size="small" [fill]="dannioX.TipoReparacion == 1 ? 'solid' : 'outline'" class="action-repair-x"
+                          (click)="setReparacionX(danioIdX.value, 1, i, 1)">Repara</ion-button>
+                      </div>
+                    </article>
+                  </div>
+                </div>
+              </ion-accordion>
+            </ion-accordion-group>
+          </section>
 
           <br>
               <ion-item class="ion-no-padding  input">
@@ -247,16 +207,16 @@
                 <ion-grid>
                   <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                     Tipo de siniestro
-                    <ion-chip id="caseTypeSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+                    <ion-chip id="caseTypeSelect" [outline]="true" (click)="tipoSiniestroSelect.open()" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
                       color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
                       Seleccionar
                     </ion-chip>
                   </ion-row>
                   <ion-row>
-                    <ion-col id="tipoSiniestrosDisplay" size="9">{{elTipoDeSiniestro}}</ion-col>
+                    <ion-col id="tipoSiniestrosDisplay" size="12">{{elTipoDeSiniestro}}</ion-col>
                     <ion-col size="3">
-                      <ion-select class="text-size-xs" [(ngModel)]="elTipoSiniestro" multiple="false" (ionChange)="getElTipoSiniestro($event)"
-                      style="float: right;">
+                      <ion-select #tipoSiniestroSelect class="text-size-xs native-select-hidden" [(ngModel)]="elTipoSiniestro" multiple="false" (ionChange)="getElTipoSiniestro($event)"
+                      interface="alert" [interfaceOptions]="caseTypeSelectOptions" okText="Seleccionar" cancelText="Cancelar" style="float: right;">
                         <ion-select-option *ngFor="let siniestro of tipoSiniestros" [value]="siniestro.CODIGO">
                           {{siniestro.DESCRIPCION}}
                         </ion-select-option>
@@ -344,32 +304,25 @@
   <ion-icon name="cloud-upload"></ion-icon>
 </ion-button>
 
-<ion-modal trigger="modal-danio" #modalDanio class="danio-otro">
+<ion-modal #modalDanio class="damage-entry-modal">
   <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Agregar otro daño</ion-title>
+        <ion-buttons slot="end">
+          <ion-button aria-label="Cerrar" (click)="modalDanio.dismiss()"><ion-icon slot="icon-only" name="close"></ion-icon></ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
     <ion-content>
-      <ion-grid fixed>
-        <ion-row>
-          <ion-col size="12">
-            <ion-item  lines="none" style="--background: #7da1c4;" class="ion-no-padding  input">
-              <ion-label color="primary" class="text-size-lg" style="color: white; padding-left: 5px;">Agregue Un Daño </ion-label>
-            </ion-item>
-            <ion-item  class="ion-no-padding transparent input">
-              <ion-label color="primary" class="text-size-sm" position="floating">
-                Describa el daño</ion-label>
-              <ion-input #inputDanio type="text"></ion-input>
-            </ion-item>
-          </ion-col>
-
-          <ion-col size="12">
-            <ion-col size="12">
-              <ion-button style="color: white;" (click)="entraDanioOtro(inputDanio.value);modalDanio.dismiss(); openOtrosDanios()" expand="block" shape="round">
-                Agregar
-              </ion-button>
-            </ion-col>
-            
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <div class="damage-entry-form">
+        <ion-label>Descripción del daño</ion-label>
+        <ion-textarea #inputDanio autoGrow="true" rows="4" placeholder="Describe el daño observado"></ion-textarea>
+        <ion-button expand="block" [disabled]="!inputDanio.value?.toString().trim()"
+          (click)="entraDanioOtro(inputDanio.value); modalDanio.dismiss()">
+          <ion-icon slot="start" name="add-outline"></ion-icon>Agregar daño
+        </ion-button>
+      </div>
     </ion-content>
   </ng-template>
 </ion-modal>

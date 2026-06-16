@@ -21,33 +21,30 @@
   </ion-header>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding segment-form-content">
   <ion-grid>
     <ion-row>
-      <ion-col id="segmentVehicleAju" size="12">
-        <ion-item lines="none" class="ion-no-padding  input">
-          <ion-label class="text-size-lg" style="padding-left: 5px;">
-            <ion-badge color="primary">
-              {{segmentoTitulo}}
-            </ion-badge>
-          </ion-label>
-        </ion-item>
+      <ion-col class="segmento" id="segmentVehicleAju" size="12">
+        <ion-label class="text-size-lg" style="padding-left: 5px;">
+          <ion-badge color="primary">
+            {{segmentoTitulo}}
+          </ion-badge>
+        </ion-label>
 
         <ion-item class="ion-no-padding  input">
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Marca
-              <ion-chip id="marcaSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+              <ion-chip id="marcaSelect" *ngIf="!isMarca" [outline]="true" (click)="marcaSelect.open()" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
                 color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
                 Seleccionar
               </ion-chip>
             </ion-row>
             <ion-row>
-              <ion-col *ngIf="isMarca" id="marcaDisplay" size="12">{{laMarcaAsegurado}}</ion-col>
-              <ion-col *ngIf="!isMarca" id="marcaDisplay" size="9">{{laMarcaAsegurado}}</ion-col>
-              <ion-col *ngIf="!isMarca" size="3" style="text-align: rigth;">
-                <ion-select id="marcaId" class="text-size-xs required-data" [(ngModel)]="laMarcaAsegurado" multiple="false" (ionChange)="seleccionarMarca($event)"
-                style="float: right;">
+              <ion-col id="marcaDisplay" size="12">{{laMarcaAsegurado}}</ion-col>
+              <ion-col size="3" style="text-align: rigth;">
+                <ion-select #marcaSelect id="marcaId" class="text-size-xs required-data native-select-hidden" [(ngModel)]="laMarcaAsegurado" multiple="false" (ionChange)="seleccionarMarca($event)"
+                interface="alert" [interfaceOptions]="brandSelectOptions" okText="Seleccionar" cancelText="Cancelar" style="float: right;">
                   <ion-select-option *ngFor="let marca of marcasVehiculos" [value]="marca.Id">
                     {{marca.nombre}}
                   </ion-select-option>
@@ -61,21 +58,16 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Modelo
-              <ion-chip id="modelSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+              <ion-chip id="modelSelect" *ngIf="!isModelo" [outline]="true" (click)="modelSelect.open()" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
                 color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
                 Seleccionar
               </ion-chip>
             </ion-row>
             <ion-row>
-              <ion-col *ngIf="isModelo" id="modeloDisplay" size="12">{{elModeloAsegurado}}</ion-col>
-              <!--ion-col  *ngIf="isModelo" size="1" style="text-align: rigth;" (click)="editarModelo()">
-                <ion-img src="../../assets/img/lapiz.svg" style="width: 25px; float: right;"></ion-img>
-              </!--ion-col -->
-
-              <ion-col *ngIf="!isModelo" id="modeloDisplay" size="9">{{elModeloAsegurado}}</ion-col>
-              <ion-col *ngIf="!isModelo" size="3" style="text-align: rigth;">
-                <ion-select id="marcaId" class="text-size-xs required-data" [(ngModel)]="elModeloAsegurado" multiple="false" (ionChange)="seleccionarModelo($event)"
-                style="float: right; color: white;">
+              <ion-col id="modeloDisplay" size="12">{{elModeloAsegurado}}</ion-col>
+              <ion-col size="3" style="text-align: rigth;">
+                <ion-select #modelSelect id="marcaId" class="text-size-xs required-data native-select-hidden" [(ngModel)]="elModeloAsegurado" multiple="false" (ionChange)="seleccionarModelo($event)"
+                interface="alert" [interfaceOptions]="modelSelectOptions" okText="Seleccionar" cancelText="Cancelar" style="float: right; color: white;">
                   <ion-select-option *ngFor="let modelo of modelosMarca" [value]="modelo">
                     {{modelo}}
                   </ion-select-option>

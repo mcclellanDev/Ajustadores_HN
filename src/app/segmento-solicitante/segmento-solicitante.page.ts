@@ -26,6 +26,12 @@ export class SegmentoSolicitantePage implements OnInit {
   codigoPais: string;  iconIndex: any; disExpediente:any= [];  cacheDeCliente: any = []; solicitanteId:any;
   coberturas: any = [];
 
+  applicantTypeSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de solicitante', subHeader: 'Selecciona una opción' };
+  coverageTypeSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de cobertura', subHeader: 'Selecciona una opción' };
+  licenseTypeSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de licencia', subHeader: 'Selecciona una opción' };
+  genderTypeSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de género', subHeader: 'Selecciona una opción' };
+  relationshipSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de parentesco', subHeader: 'Selecciona una opción' };
+
   constructor(private api: ApiService, public toaster:ToastService, private toast:ToastController, private alert: AlertController, private formateador:FormatosService) { 
     this.ajustador.TipoSolicitante = parseInt(localStorage.getItem('TipoSolicitante'));
     this.solicitanteId = parseInt(localStorage.getItem('tipoSolicitante'));

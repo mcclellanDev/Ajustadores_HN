@@ -375,9 +375,13 @@ export const ItemsData = [
 // required-data
 export const requiredDataAjustador = [
     /*{name:'person', titulo: 'Datos Solicitante', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante'} */
-    //{nombre: 'Parentesco', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante', segmentIndex: 0, requerido: true, etiqueta: 'Parentesco', categoria: 'ajustador', storageKey: 'elParentesco'},
-    //{nombre: 'Cliente', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante', segmentIndex: 0, requerido: true, etiqueta: 'Nombre Del Conductor', categoria: 'ajustador', storageKey: 'elNombreCliente'},
-    //{nombre: 'RefTipoSolicitanteInformeAjusteId', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante', segmentIndex: 0, requerido: true, etiqueta: 'Tipo De Solicitante', categoria: 'ajustador', storageKey: 'tipoSolicitante'},
+    // Datos del solicitante (segmento-solicitante, índice 0 en segments_aju).
+    {nombre: 'RefTipoSolicitanteInformeAjusteId', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante', segmentIndex: 0, requerido: true, etiqueta: 'Tipo de Solicitante', categoria: 'ajustador', storageKey: 'tipoSolicitante'},
+    {nombre: 'TipoAcuerdoFicohsa', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante', segmentIndex: 0, requerido: true, etiqueta: 'Tipo de Cobertura', categoria: 'ajustador', storageKey: 'coberturaId'},
+    {nombre: 'Nombre', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante', segmentIndex: 0, requerido: true, etiqueta: 'Nombre del asegurado', categoria: 'ajustador', storageKey: 'elNombreCliente'},
+    {nombre: 'RefTipoLicenciaId', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante', segmentIndex: 0, requerido: true, etiqueta: 'Tipo de licencia', categoria: 'ajustador', storageKey: 'elTipoLicencia'},
+    {nombre: 'Sexo', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante', segmentIndex: 0, requerido: true, etiqueta: 'Tipo de género', categoria: 'ajustador', storageKey: 'elGenero'},
+    {nombre: 'Parentesco', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante', segmentIndex: 0, requerido: true, etiqueta: 'Tipo de parentesco', categoria: 'ajustador', storageKey: 'elParentesco'},
     //{nombre: 'Kilometraje', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-solicitante', segmentIndex: 1, requerido: true, etiqueta: 'Kilometraje', categoria: 'ajustador', storageKey: 'elKilometraje'},
     {nombre: 'Kilometraje', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-vehiculo', segmentIndex: 1, requerido: true, etiqueta: 'Kilometraje', categoria: 'ajustador', storageKey: 'elKilometraje'},
     {nombre: 'RefTipoCombustibleId', idSegmento: 'segmentRequestAju', pagSegmento: 'segmento-caracteristicas', segmentIndex: 2, requerido: true, etiqueta: 'Tipo de Combustible', categoria: 'ajustador', storageKey: 'elTipoCombustible'},

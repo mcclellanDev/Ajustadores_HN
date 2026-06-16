@@ -80,6 +80,10 @@ const routes: Routes = [
     loadChildren: () => import('./adeuda/adeuda.module').then( m => m.AdeudaPageModule)
   },
   {
+    path: 'adeuda-signature',
+    loadChildren: () => import('./adeuda-signature/adeuda-signature.module').then(m => m.AdeudaSignaturePageModule)
+  },
+  {
     path: 'culpable',
     loadChildren: () => import('./culpable/culpable.module').then( m => m.CulpablePageModule)
   },
@@ -98,6 +102,10 @@ const routes: Routes = [
   {
     path: 'finiquito',
     loadChildren: () => import('./finiquito/finiquito.module').then( m => m.FiniquitoPageModule)
+  },
+  {
+    path: 'finiquito-signature',
+    loadChildren: () => import('./finiquito-signature/finiquito-signature.module').then(m => m.FiniquitoSignaturePageModule)
   },
   {
     path: 'beneficiario',

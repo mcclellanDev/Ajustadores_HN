@@ -62,10 +62,11 @@ export class Tab1Page implements OnInit {
   wait: any;  dataSiniestro: any;  elExpediente: any;  datosDeAtencion: any;  firstSegmentId: any;
   dbVersion: any;  store: string | undefined;  atencionEnProcesoId: string | undefined;  idTabla: any;  ateIndex: string | undefined;
   indexAtencion?: number; isKeyboard: boolean = false; isCacheClear: boolean = false;
+  private sessionRecoveryAlertOpen = false;
 
   emptySignatureWhite = emptySignatureWhite;
   conectividadStat: string | undefined;  estadoConexion: string | undefined;  estadoConexionGPS: string | undefined; 
-  gpsOn: boolean = false;  isTablet: boolean = false;
+  gpsOn: boolean = false;  isTablet: boolean = false; showLocationPrompt: boolean = false;
 
 
   constructor(private router: Router, private loading: LoadingController,private alert: AlertController,private api: ApiService,private toast: ToastController,
@@ -110,8 +111,13 @@ export class Tab1Page implements OnInit {
       this.notificationBadgeTop = '1vh';
     }
 
-    this.tostador.dismissToast();this.isLoading = false;this.user = this.api.currentUser;this.atIndexId = 0;this.inicializarFirma();
-    localStorage.setItem('nombreAjustador', this.user.NombreAgente);
+    this.tostador.dismissToast();this.isLoading = false;this.user = this.api.currentUser;this.atIndexId = 0;
+    if (this.user) {
+      this.inicializarFirma();
+    }
+    if (this.user?.NombreAgente) {
+      localStorage.setItem('nombreAjustador', this.user.NombreAgente);
+    }
     this.firstInterval = setInterval(() => { this.handleFirstSegment() }, 1000);
 
     if (JSON.parse(window.localStorage.getItem('Push'))) {
@@ -130,12 +136,16 @@ export class Tab1Page implements OnInit {
   }
 
   inicializarFirma() {
+    if (!this.user?.Firma) {
+      return;
+    }
+
     this.firmaPrecargadaAjustador = this.user.Firma;
     localStorage.setItem('firmaPrecargadaAjustador', this.firmaPrecargadaAjustador);
   }
 
   next() {
-    if (this.elColorEstado == "green") {this.router.navigate(['./fotoshn']);} else {
+    if (this.elColorEstado == "green") {this.router.navigate(['./cargar-archivos']);} else {
       this.tostador.presentToastSiniestroCerrado("Este informe ya ha sido cerrado y no se puede editar. Para mayor información, contacta a tu administrador de sistema", 'middle', 'firma');
     }
   }
@@ -179,13 +189,45 @@ export class Tab1Page implements OnInit {
         let myContent = document.getElementById('clienteContent');
         if (myContent) {
         }else{
-          this.outletDeactivate();
           window.location.reload();
         }
       }
     }, 3000);
 
     localStorage.setItem('origin', window.location.pathname);
+    void this.bootstrapTabData();
+
+    this.androidVersion = versionAndroid.versionCodigo;
+    this.updateIntent();
+  }
+
+  private async ensureSessionReady(): Promise<boolean> {
+    if (this.api.currentUser?.ProveedorAgenteId) {
+      this.user = this.api.currentUser;
+      if (this.user?.NombreAgente) {
+        localStorage.setItem('nombreAjustador', this.user.NombreAgente);
+      }
+      return true;
+    }
+
+    const hasSession = await this.api.loadToken();
+    if (hasSession && this.api.currentUser?.ProveedorAgenteId) {
+      this.user = this.api.currentUser;
+      if (this.user?.NombreAgente) {
+        localStorage.setItem('nombreAjustador', this.user.NombreAgente);
+      }
+      return true;
+    }
+
+    return false;
+  }
+
+  private async bootstrapTabData() {
+    const ready = await this.ensureSessionReady();
+    if (!ready) {
+      return;
+    }
+
     this.api.MisAtenciones(this.api.currentUser.ProveedorAgenteId).pipe(
       finalize(async () => {
         this.isLoading = false;
@@ -206,7 +248,9 @@ export class Tab1Page implements OnInit {
             console.dir(this.atencionesActivas.sort((a,b) => b.IdAtencion - a.IdAtencion));
             console.dir(this.atencionesActivas);
             this.isLoad = true;
-            this.idAtencion = this.atencionesActivas[0].IdAtencion;
+            if (this.atencionesActivas.length > 0) {
+              this.idAtencion = this.atencionesActivas[0].IdAtencion;
+            }
             let idAtencionEnProceso = localStorage.getItem('atencionEnProceso');
             if (idAtencionEnProceso) {}else{}
           }
@@ -214,20 +258,19 @@ export class Tab1Page implements OnInit {
         
       }
     )
-    
-    this.androidVersion = versionAndroid.versionCodigo;
-    this.updateIntent();
-
-    this.outletDeactivate();
-    
   }
 
   
 
   outletDeactivate(){
+    if (!this.outlet) {
+      return;
+    }
+
     this.router.events.subscribe(e => {
-      if (e instanceof ActivationStart && e.snapshot.outlet === "tab1")
-        this.outlet.deactivate();
+      if (e instanceof ActivationStart && e.snapshot.outlet === "tab1") {
+        this.outlet?.deactivate();
+      }
     });
   }
 
@@ -267,22 +310,28 @@ export class Tab1Page implements OnInit {
     await alert.present();
   }
 
-  ionViewWillEnter(){
-    let gpsOn = localStorage.getItem('conectividad');
+  async ionViewWillEnter(){
+    const gpsOn = localStorage.getItem('conectividad');
 
-    if (gpsOn) {
-      this.gpsOn = gpsOn === 'true' ? true : false;  
+    if (gpsOn !== null) {
+      this.gpsOn = gpsOn === 'true';
+    } else {
+      this.gpsOn = true;
     }
+
+    await this.ensureSessionReady();
 
     for(let i = 0; i < 100; i++){}
 }
 
   ionViewDidEnter() {
     const permissionResult = Geolocation.checkPermissions();
-    let gpsOn = localStorage.getItem('conectividad');
+    const gpsOn = localStorage.getItem('conectividad');
 
-    if (gpsOn) {
-      this.gpsOn = gpsOn === 'true' ? true : false;  
+    if (gpsOn !== null) {
+      this.gpsOn = gpsOn === 'true';
+    } else {
+      this.gpsOn = true;
     }
     
 
@@ -295,6 +344,7 @@ export class Tab1Page implements OnInit {
       if (result.location == 'granted') {
         this.conectividad = true;
         this.gpsOn = true;
+        this.showLocationPrompt = false;
         this.estadoConexion = 'Conectado a Internet';
         this.estadoConexionGPS = 'Permisos GPS activados';
         //$('#gpsCard').css('display', 'none');
@@ -305,14 +355,17 @@ export class Tab1Page implements OnInit {
       }
 
       if(result.location == 'denied'){
-        this.conectividad = false;
-        this.gpsOn = false;
-        this.estadoConexion = 'Sin conexión';
-        this.estadoConexionGPS = 'Permisos GPS denegados';
+        const isInstalledApp = this.platform.is('hybrid') || this.platform.is('capacitor');
+        this.conectividad = !isInstalledApp;
+        this.gpsOn = !isInstalledApp;
+        this.showLocationPrompt = isInstalledApp;
+        this.estadoConexion = isInstalledApp ? 'Sin conexión' : 'Vista web de desarrollo';
+        this.estadoConexionGPS = isInstalledApp ? 'Permisos GPS denegados' : 'Permisos GPS no disponibles en navegador';
         //$('#gpsCard').css('display', 'inherit');
-        $('#saludoInicial').css('display', 'inherit');
-        $('#chipGPS').removeClass('gps-out');
-        $('#chipGPS').addClass('gps-in');
+        if (isInstalledApp) {
+          $('#chipGPS').removeClass('gps-out');
+          $('#chipGPS').addClass('gps-in');
+        }
         
       }
 
@@ -339,16 +392,14 @@ export class Tab1Page implements OnInit {
     localStorage.setItem('coberturas', JSON.stringify([]));
     this.ateIndex =  localStorage.getItem('indexAtencion-0');
 
-    if (this.ateIndex == null || this.ateIndex != undefined || this.ateIndex != '') {
+    if (this.ateIndex == null || this.ateIndex === undefined || this.ateIndex === '') {
       this.setFirstSegment();
-    }else{
-      //alert(this.ateIndex);
     }
 
-    this.enterView();
+    void this.enterView();
   }
 
-  enterView(){
+  async enterView(){
     if (this.firmaPrecargadaAjustador != null && this.firmaPrecargadaAjustador != undefined) {this.isSign = true;} else {this.isSign = false;}
     
     this.isTablet = this.deviceService.isTablet;
@@ -359,25 +410,140 @@ export class Tab1Page implements OnInit {
       this.miPais = 'HN';
     }
 
-    this.getAtencionesActivas();
+    const ready = await this.ensureSessionReady();
+    if (!ready) {
+      if (await this.api.canRecoverSessionSilently()) {
+        await this.promptSessionRecovery('missing');
+      }
+    } else if (await this.shouldPromptSessionRecovery()) {
+      await this.promptSessionRecovery('update');
+    } else {
+      this.getAtencionesActivas();
+    }
     
-    this.sig = new SignaturePad(this.canvas.nativeElement);this.sig.backgroundColor = "rgb(255, 255, 255)";this.sig.minWidth = 1;this.sig.maxWidth = 1.5;
-    this.sig.dotSize = 3;
-    this.sig.fromDataURL(emptySignatureWhite);
+    if (this.canvas?.nativeElement) {
+      this.sig = new SignaturePad(this.canvas.nativeElement);this.sig.backgroundColor = "rgb(255, 255, 255)";this.sig.minWidth = 1;this.sig.maxWidth = 1.5;
+      this.sig.dotSize = 3;
+      this.sig.fromDataURL(emptySignatureWhite);
 
-    setTimeout(() => {
-      this.sig.clear();
-    }, 1000);
+      setTimeout(() => {
+        this.sig.clear();
+      }, 1000);
+    }
 
     this.platform.ready().then(() => {this.tostador.presentToastReload('Tira hacia abajo para actualizar', 'top', 'tab');this.sendTokenPush();
       if (Network) {this.checkConnection();}
     });
-    this.getCanvasWidth();
+
+    if (document.getElementById('cardAsegurado')) {
+      this.getCanvasWidth();
+    }
+  }
+
+  private async shouldPromptSessionRecovery(): Promise<boolean> {
+    if (this.api.isPendingSessionRecovery()) {
+      return true;
+    }
+
+    return this.api.hasAppVersionChanged();
+  }
+
+  private async promptSessionRecovery(reason: 'update' | 'missing'): Promise<void> {
+    if (this.sessionRecoveryAlertOpen) {
+      return;
+    }
+
+    const canRecover = await this.api.canRecoverSessionSilently();
+    if (!canRecover) {
+      return;
+    }
+
+    this.sessionRecoveryAlertOpen = true;
+
+    const message = reason === 'update'
+      ? 'Detectamos una actualización o reinstalación de la app.\n\nPulsa Reconectar para continuar con tu sesión guardada, sin volver a escribir tu correo ni contraseña.'
+      : 'Tu sesión quedó pendiente de reconexión.\n\nPulsa Reconectar para continuar con tus credenciales guardadas, sin volver a iniciar sesión manualmente.';
+
+    const alert = await this.alertController.create({
+      cssClass: 'session-recovery-alert',
+      header: 'Reconectar sesión',
+      subHeader: reason === 'update' ? 'Actualización detectada' : 'Sesión pendiente',
+      message,
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: 'Cerrar sesión',
+          cssClass: 'session-recovery-logout',
+          handler: () => {
+            this.sessionRecoveryAlertOpen = false;
+            this.api.logout();
+          }
+        },
+        {
+          text: 'Reconectar',
+          cssClass: 'session-recovery-primary',
+          handler: () => {
+            void alert.dismiss().then(() => this.reconnectStoredSession());
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private async reconnectStoredSession(): Promise<void> {
+    const loading = await this.loading.create({
+      message: 'Reconectando sesión...',
+      cssClass: 'session-recovery-loading',
+      backdropDismiss: false
+    });
+    await loading.present();
+
+    const recovered = await this.api.refreshSessionSilently();
+    await loading.dismiss();
+
+    if (!recovered) {
+      this.sessionRecoveryAlertOpen = false;
+      const failAlert = await this.alertController.create({
+        cssClass: 'session-recovery-alert session-recovery-alert--failure',
+        header: 'No se pudo reconectar',
+        subHeader: 'Intento fallido',
+        message: 'No fue posible restaurar la sesión automáticamente.\n\nPuedes reintentar o cerrar sesión para iniciar de nuevo.',
+        backdropDismiss: false,
+        buttons: [
+          {
+            text: 'Cerrar sesión',
+            cssClass: 'session-recovery-logout',
+            handler: () => this.api.logout()
+          },
+          {
+            text: 'Reintentar',
+            cssClass: 'session-recovery-retry',
+            handler: () => {
+              void this.promptSessionRecovery('missing');
+            }
+          }
+        ]
+      });
+      await failAlert.present();
+      return;
+    }
+
+    this.sessionRecoveryAlertOpen = false;
+    this.user = this.api.currentUser;
+    this.inicializarFirma();
+    await this.getAtencionesActivas();
+    this.tostador.presentToastNoButtons('Sesión reconectada correctamente.', 'top', 'tab');
   }
 
   getCanvasWidth() {
+    const cardAsegurado = document.getElementById('cardAsegurado');
+    if (!cardAsegurado) {
+      return;
+    }
 
-    this.cardWidth = (document.getElementById('cardAsegurado').clientWidth);
+    this.cardWidth = cardAsegurado.clientWidth;
     if (this.platform.is('android') == true) {
       this.canvasAseguradoWidth = this.cardWidth - 40;
     } else {
@@ -530,6 +696,12 @@ export class Tab1Page implements OnInit {
   }
 
   async getAtencionesActivas() {
+    const ready = await this.ensureSessionReady();
+    if (!ready) {
+      this.isLoading = false;
+      return;
+    }
+
     let atencionesCount = 0;
     localStorage.setItem('atencionesCount', atencionesCount.toString());
 
@@ -571,6 +743,12 @@ export class Tab1Page implements OnInit {
     
         localStorage.setItem('atencionesCount', atencionesCount.toString());
         this.restoreLastActiveAttention();
+      },
+      async () => {
+        this.isLoading = false;
+        if (await this.api.canRecoverSessionSilently()) {
+          await this.promptSessionRecovery('missing');
+        }
       }
     )
   }
@@ -1094,10 +1272,14 @@ permitirGPS(){
       $('#chipGPS').addClass('gps-out');
       //$('#gpsCard').css('display', 'none');
       $('#saludoInicial').css('display', 'none');
+      this.showLocationPrompt = false;
       
         setTimeout(() => {
           window.location.reload();
         }, 600);
+    }else if (!this.platform.is('hybrid') && !this.platform.is('capacitor')) {
+      this.showLocationPrompt = false;
+      this.estadoConexionGPS = 'Permisos GPS no disponibles en navegador';
     }
   });
 }

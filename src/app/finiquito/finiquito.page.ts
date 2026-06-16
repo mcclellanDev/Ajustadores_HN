@@ -1,15 +1,14 @@
 import { beneficiariosTipos } from './../environments/beneficiarios';
-import { emptySignature, emptySignatureWhite, firmaDemoAjustador, anySignature } from '../environments/signatures';
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { tipoBeneficiario } from '../environments/predeterminados';
 import { ToastService } from '../services/toast.service';
 import { ApiService } from '../services/api.service';
 import { finalize } from 'rxjs/operators';
 import { AlertController, Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
-import SignaturePad from 'signature_pad';
 import { logoFicohsa } from '../environments/default-images';
 import { meses } from '../environments/calendario';
+import { bchUsdReference } from '../environments/exchange-rate';
 import * as $ from 'jquery';
 
 @Component({
@@ -17,16 +16,15 @@ import * as $ from 'jquery';
   templateUrl: './finiquito.page.html',
   styleUrls: ['./finiquito.page.scss'],
 })
-export class FiniquitoPage implements OnInit, AfterViewInit {
-  @ViewChild("canvas6", { static: false }) canvas6: ElementRef<HTMLCanvasElement>;
-  sig6: SignaturePad;
-
+export class FiniquitoPage implements OnInit {
   fsLogo:any;  acuerdoFiniquito:any=[];  idAtencion:any;  finiquitoCompleto:boolean=false;  isLoading: boolean;
   fechaParrafo:any;  fechaPie:any;  deviceWidth:any;  isInit:boolean=false;  now:any;  diaPie :any;
   mesPie :any;  anioPie:any;  dia :any;  mes :any;  anio:any;  atencionId: number;  expediente: any;
   moneda: any;  miMoneda: string;  datosAtencion: any = [];  CodigoReclamo: any; 
   tipoDeBeneficiario:any; idBeneficiarioTipo:any;  fechaSiniestro: any;  atencion: any;  TipoCoberturaFicohsa: any;
   isEmptySignature: any;  ya: boolean=false; fechaDesde:any; fechaHasta:any; fecaCheque:any;
+  readonly bchUsdReference = bchUsdReference;
+  beneficiarySignature: string;
 
   constructor(private platform:Platform, private toaster:ToastService, private api:ApiService,
     private alertController: AlertController, private router: Router) { 
@@ -152,62 +150,30 @@ export class FiniquitoPage implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit() {
-    setTimeout(() => this.initializeSignaturePad());
-  }
-
-  ionViewDidEnter() {
-    if (!this.finiquitoCompleto && !this.sig6) {
-      setTimeout(() => this.initializeSignaturePad());
-    }
-  }
-
-  private initializeSignaturePad() {
-    const canvas = this.canvas6?.nativeElement;
-    if (!canvas || this.finiquitoCompleto || this.sig6) {
-      return;
-    }
-
-    const containerWidth = canvas.parentElement?.clientWidth || this.deviceWidth || this.platform.width();
-    const displayHeight = this.platform.width() <= 699 ? 155 : 180;
-    const pixelRatio = Math.max(window.devicePixelRatio || 1, 1);
-
-    canvas.width = Math.floor(containerWidth * pixelRatio);
-    canvas.height = Math.floor(displayHeight * pixelRatio);
-    canvas.style.width = `${containerWidth}px`;
-    canvas.style.height = `${displayHeight}px`;
-    canvas.getContext('2d')?.scale(pixelRatio, pixelRatio);
-
-    this.sig6 = new SignaturePad(canvas, {
-      backgroundColor: 'rgb(255, 255, 255)',
-      minWidth: 1,
-      maxWidth: 1.5,
-      dotSize: 3
-    });
-    this.sig6.clear();
+  ionViewWillEnter() {
+    this.beneficiarySignature = localStorage.getItem(this.signatureStorageKey);
   }
 
   hasNonDigit(str){
     return /\D/g.test(str.toString());
   }
+
+  get isDollarPolicy(): boolean {
+    const currency = (this.moneda || this.miMoneda || '').toString().trim().toUpperCase();
+    return currency.includes('DOLAR') || currency.includes('DÓLAR') || currency.includes('USD') || currency === '$';
+  }
   
-  clear() {
-    this.sig6?.clear();
+  get signatureStorageKey(): string {
+    return `finiquitoSignature-${this.idAtencion}`;
+  }
+
+  goBeneficiarySignature() {
+    this.router.navigate(['./finiquito-signature']);
   }
 
   async confirmarEnvio() {
-    if (!this.sig6) {
-      this.initializeSignaturePad();
-    }
-
-    if (!this.sig6) {
-      this.toaster.presentToastNoButtonsRed("No fue posible activar el área de firma. Intenta abrir nuevamente la pantalla.", "top", "firma");
-      return;
-    }
-
-    this.isEmptySignature = this.sig6.isEmpty();
-    if (this.isEmptySignature) {
-      this.toaster.presentToastNoButtonsRed("Necesitas escribir una firma para guardar el acuerdo.", "top", "firma");
+    if (!this.beneficiarySignature) {
+      this.toaster.presentToastNoButtonsRed("El beneficiario debe firmar antes de enviar el finiquito.", "top", "firma");
       return;
     }
 
@@ -234,12 +200,7 @@ export class FiniquitoPage implements OnInit, AfterViewInit {
 
   testSave(){
     this.isLoading = true;
-    this.sig6.backgroundColor = "rgb(255, 255, 255)";
-    this.sig6.minWidth = 1;
-    this.sig6.maxWidth = 1.5;
-    this.sig6.dotSize = 3;
-    const mySignature = this.sig6.toDataURL("image/jpeg");
-    this.acuerdoFiniquito.FirmaCliente = mySignature.split(',')[1];
+    this.acuerdoFiniquito.FirmaCliente = this.beneficiarySignature.split(',')[1];
     this.guardarFiniquito();
   }
 
@@ -271,7 +232,7 @@ export class FiniquitoPage implements OnInit, AfterViewInit {
               this.ya = true;
               this.finiquitoCompleto = true;
               localStorage.setItem(`finiquitoEnviado-${this.idAtencion}`, 'true');
-              this.sig6.off();
+              localStorage.removeItem(this.signatureStorageKey);
               this.toaster.presentToastNoButtons('Finiquito guardado exitosamente.', 'middle', 'finiquito');
               console.log('Esto viene del finiquito');
               console.dir(res);

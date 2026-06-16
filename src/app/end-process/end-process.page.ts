@@ -2,6 +2,7 @@ import { StorageService } from './../services/storage.service';
 import { Router, RouterOutlet, ActivationStart } from '@angular/router';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-end-process',
@@ -12,7 +13,7 @@ export class EndProcessPage implements OnInit {
   @ViewChild(RouterOutlet) outlet: RouterOutlet;
   idAtencion:any;   codigoReclamoFicohsa: any;  codigoBPMFicohsa: any; dataInterval: any; storageCache:any=[]; isLoading:boolean=false;
   constructor(private routeActive: ActivatedRoute, private storageService:StorageService,
-    private router:Router) { 
+    private router:Router, private navCtrl: NavController) { 
     this.routeActive.queryParams.subscribe(params => {
       this.idAtencion= params.Id; this.codigoReclamoFicohsa = params.CodigoReclamoFicohsa; this.codigoBPMFicohsa = params.CodigoBPMFicohsa;
     })
@@ -67,7 +68,10 @@ export class EndProcessPage implements OnInit {
   }
 
   goHome() {
-    window.location.reload();
+    if (this.dataInterval) {
+      clearInterval(this.dataInterval);
+    }
+    this.navCtrl.navigateRoot('/tabs/tab1');
   }
 
   clearSegmentsStorage() {

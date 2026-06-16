@@ -1,3 +1,5 @@
+@import '../../theme/segment-form.scss';
+
 ion-radio {
     width: 30px;
     height: 30px;
@@ -382,5 +384,75 @@ ion-radio {
   .icon-delete{
     color: white;
   }
-  
+
+/* ===== Ported damage feature (mirrors culpable's damage-card UI) ===== */
+.damage-search-content { --background: #eef3f7; --padding-bottom: 20px; --padding-end: 12px; --padding-start: 12px; --padding-top: 12px; }
+.damage-search-shell { background: #fff; border: 1px solid #d8e3ed; border-radius: 7px; margin: 0 auto; max-width: 1080px; overflow: hidden; padding-bottom: 72px; position: relative; }
+.damage-search-heading { align-items: center; border-bottom: 1px solid #e1e9f0; display: flex; justify-content: space-between; padding: 14px 16px; }
+.damage-search-heading span { color: #617b94; font-size: .68rem; font-weight: 800; text-transform: uppercase; }
+.damage-search-heading h1 { color: #17365d; font-size: 1rem; margin: 2px 0 0; }
+.damage-search-heading ion-button { --color: var(--primaryColor); color: var(--primaryColor); margin: 0; }
+.damage-search-shell ion-searchbar { --background: #f3f7fa; --border-radius: 6px; --box-shadow: none; padding: 10px; }
+.damage-results { background: transparent; padding: 0 10px 12px; }
+.damage-results ion-item { --background: #fff; --color: #315b80; --min-height: 48px; border-bottom: 1px solid #e3eaf0; font-size: .82rem; }
+.damage-results ion-icon { color: #7890a6; }
+.damage-results .selected { --background: #eaf2ff; --color: var(--primaryColor); }
+.damage-results .selected ion-icon { color: var(--primaryColor); }
+.selected-check { font-size: 1.3rem; }
+.damage-search-confirm { align-items: center; background: #fff; border-top: 1px solid #d9e1e8; bottom: 0; box-shadow: 0 -4px 12px rgba(0,33,63,.08); display: flex; gap: 12px; justify-content: space-between; left: 0; padding: 9px 12px; position: absolute; right: 0; }
+.damage-search-confirm > div { display: flex; flex-direction: column; }
+.damage-search-confirm strong { color: var(--primaryColor); font-size: 1rem; }
+.damage-search-confirm span { color: #617b94; font-size: .68rem; font-weight: 700; }
+.damage-search-confirm ion-button { --border-radius: 5px; --color: #fff; color: #fff; font-size: .75rem; font-weight: 800; height: 40px; margin: 0; text-transform: none; }
+
+.damage-section.form-section { background: #fff; border: 1px solid #d8e3ed; border-radius: 7px; margin: 0 0 12px; padding: 14px; }
+.damage-section .section-heading { border-bottom: 1px solid #e4ebf1; margin-bottom: 12px; padding-bottom: 9px; }
+.damage-section .section-heading span { color: #617b94; font-size: .68rem; font-weight: 800; text-transform: uppercase; }
+.damage-section .section-heading h2 { color: #17365d; font-size: 1rem; margin: 2px 0 0; }
+.damage-section .section-heading-actions { align-items: center; display: flex; gap: 12px; justify-content: space-between; }
+.damage-section .damage-actions { display: flex; gap: 7px; }
+.damage-section .damage-actions ion-button { --border-radius: 5px; --color: #fff; color: #fff; font-size: .72rem; font-weight: 800; height: 36px; margin: 0; text-transform: none; }
+.damage-section .damage-actions ion-button[fill="outline"] { --color: var(--primaryColor); color: var(--primaryColor); }
+.damage-section .damage-accordions { background: transparent; display: grid; gap: 8px; }
+.damage-section .damage-accordions ion-accordion { border: 1px solid #dbe5ed; border-radius: 6px; overflow: hidden; }
+.damage-section .damage-accordions ion-item[slot='header'] { --background: #f4f8fb; --color: #17365d; --min-height: 48px; }
+.damage-section .damage-accordions ion-item[slot='header'] ion-icon { color: var(--primaryColor); }
+.damage-section .damage-accordions ion-label { color: #17365d; font-size: .82rem; font-weight: 800; }
+.damage-section .damage-accordions ion-badge { --background: #e4eefb; --color: var(--primaryColor); }
+.damage-section .damage-content { background: #fbfdff; padding: 10px; }
+.damage-section .empty-damage { color: #71869a; font-size: .78rem; margin: 5px; }
+.damage-section .damage-grid { display: grid; gap: 8px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.damage-section .damage-card { background: #fff; border: 1px solid #dbe5ed; border-radius: 6px; padding: 9px; }
+.damage-section .damage-card-heading { align-items: flex-start; display: flex; gap: 6px; justify-content: space-between; min-height: 43px; }
+.damage-section .damage-card-heading strong { color: #315b80; font-size: .76rem; line-height: 1.3; }
+.damage-section .damage-card-heading ion-button { --color: var(--ion-color-danger); --padding-end: 3px; --padding-start: 3px; color: var(--ion-color-danger); height: 28px; margin: -4px -3px 0 0; }
+.damage-section .repair-actions { display: grid; gap: 6px; grid-template-columns: 1fr 1fr; margin-top: 7px; }
+.damage-section .repair-actions ion-button { --border-radius: 4px; --color: var(--primaryColor); color: var(--primaryColor); font-size: .68rem; height: 32px; margin: 0; text-transform: none; }
+
+ion-modal.damage-entry-modal { --backdrop-opacity: .48; --border-radius: 10px; --height: 330px; --max-width: 480px; --width: calc(100% - 20px); }
+.damage-entry-modal ion-toolbar { --background: var(--primaryColor); --color: #fff; }
+.damage-entry-modal ion-title { color: #fff; font-size: 1rem; font-weight: 800; text-align: center; }
+.damage-entry-modal ion-button, .damage-entry-modal ion-icon { --color: #fff; color: #fff; }
+.damage-entry-form { padding: 18px; }
+.damage-entry-form > ion-label { color: #617b94; display: block; font-size: .72rem; font-weight: 800; margin-bottom: 7px; text-transform: uppercase; }
+.damage-entry-form ion-textarea { --background: #f5f8fb; --padding-bottom: 10px; --padding-end: 10px; --padding-start: 10px; --padding-top: 10px; border: 1px solid #d8e3ed; border-radius: 6px; }
+.damage-entry-form > ion-button { --border-radius: 6px; --color: #fff; color: #fff; font-weight: 800; margin: 16px 0 0; }
+
+@media (max-width: 760px) {
+  .damage-section .damage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .segment-form-content .segmento .damage-accordions { background: transparent; border-radius: 0; margin: 0; overflow: visible; }
+  .segment-form-content .segmento .damage-accordions ion-accordion { border: 1px solid #dbe5ed; border-radius: 6px; }
+  .segment-form-content .segmento .damage-accordions ion-item[slot='header'] { --background: #f4f8fb; --color: #17365d; --min-height: 48px; }
+}
+
+@media (max-width: 560px) {
+  .damage-section .section-heading-actions { align-items: stretch; flex-direction: column; }
+  .damage-section .damage-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .damage-section .damage-grid { grid-template-columns: 1fr; }
+  .damage-search-confirm { position: fixed; }
+  .damage-search-confirm ion-button { min-width: 180px; }
+}
  

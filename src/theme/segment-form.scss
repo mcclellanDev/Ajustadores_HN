@@ -1,0 +1,307 @@
+// Shared segment form styling.
+// Source of truth: the segment UI of the clientehn page (clientehn.page.scss).
+// Re-scoped from `.cliente-form-content` to the neutral `.segment-form-content`
+// so the FORMULARIO pages (segmento-solicitante, segmento-vehiculo,
+// segmento-caracteristicas, segmento-danio) share the exact same look-and-feel.
+
+.segment-form-content {
+  .segment-form-body {
+    background: var(--ion-color-light, #f4f5f8);
+    display: block;
+    width: 100%;
+  }
+
+  .segmento ion-label {
+    padding-top: 8px;
+    text-overflow: inherit;
+    max-width: 100%;
+    color: #7da1c4;
+  }
+
+  .segmento ion-badge {
+    background: #7da1c4;
+    font-size: 1rem;
+    padding: 6px;
+  }
+
+  .select-label {
+    text-transform: uppercase;
+  }
+
+  ion-select::part(text) {
+    font-size: 1.1rem;
+  }
+
+  // Native selects that are driven by a "Seleccionar" chip are kept in the DOM
+  // (so chip.open() keeps working and ngModel/ionChange stay bound) but made
+  // visually invisible so the duplicate dropdown arrow no longer shows.
+  ion-select.native-select-hidden {
+    border: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    max-height: 0 !important;
+    min-height: 0 !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    width: 0 !important;
+  }
+
+  // The "Seleccionar" chips now actually trigger the hidden select.
+  ion-chip[id$="Select"],
+  ion-chip[id$="Selecta"] {
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 600px) {
+  .segment-form-content {
+    --background: #eef3f7;
+    --padding-start: 0;
+    --padding-end: 0;
+    --padding-top: 8px;
+    --padding-bottom: calc(120px + env(safe-area-inset-bottom));
+  }
+
+  .segment-form-content > ion-grid,
+  .segment-form-content > ion-grid > ion-row,
+  .segment-form-content .segmento,
+  .segment-form-content .segmento ion-list,
+  .segment-form-content .segmento ion-grid,
+  .segment-form-content .segmento ion-row {
+    margin-left: 0;
+    margin-right: 0;
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+  }
+
+  .segment-form-content .segmento {
+    background: #eef3f7;
+    display: block;
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding-bottom: 32px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .segment-form-content .segmento .segment-form-body {
+    background: transparent;
+    min-height: 0;
+    overflow: visible;
+    padding-bottom: 12px;
+  }
+
+  // Segment title banner (badge).
+  .segment-form-content .segmento > ion-label {
+    display: block;
+    padding: 0 0 8px !important;
+    width: 100%;
+  }
+
+  .segment-form-content .segmento > ion-label ion-badge,
+  .segment-form-content .segmento .text-size-lg ion-badge {
+    align-items: center;
+    background: var(--primaryColor);
+    border-radius: 6px;
+    display: flex;
+    font-size: 0.86rem;
+    font-weight: 800;
+    height: 40px;
+    justify-content: flex-start;
+    letter-spacing: 0;
+    padding: 0 14px;
+    text-transform: none;
+    width: 100%;
+  }
+
+  .segment-form-content .segmento ion-list {
+    background: transparent;
+    padding: 0 10px;
+  }
+
+  .segment-form-content .segmento ion-list[inset] {
+    margin-inline: 0;
+  }
+
+  // Input rows rendered as grouped white cards.
+  .segment-form-content .segmento ion-item.input {
+    --background: #ffffff;
+    --border-color: #dce5ed;
+    --inner-border-width: 0 0 1px 0;
+    --inner-padding-end: 12px;
+    --min-height: 72px;
+    --padding-start: 12px;
+    --padding-end: 0;
+    margin: 0;
+    width: 100%;
+  }
+
+  .segment-form-content .segmento ion-item.input:first-of-type {
+    border-radius: 7px 7px 0 0;
+  }
+
+  .segment-form-content .segmento ion-item.input:last-of-type {
+    border-radius: 0 0 7px 7px;
+  }
+
+  // Field label (first row of the inner grid).
+  .segment-form-content .segmento ion-item.input ion-grid > ion-row:first-child {
+    color: #617b94 !important;
+    font-size: 0.74rem !important;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.2;
+    padding: 8px 0 5px;
+    text-transform: uppercase;
+  }
+
+  .segment-form-content .segmento ion-item.input ion-grid > ion-row:not(:first-child) {
+    padding-bottom: 8px;
+  }
+
+  // Inputs, selects and textareas as bordered boxes.
+  .segment-form-content .segmento ion-input,
+  .segment-form-content .segmento ion-select,
+  .segment-form-content .segmento ion-textarea {
+    --background: #f5f8fb;
+    --color: #17365d;
+    --highlight-color-focused: var(--primaryColor);
+    --padding-bottom: 8px;
+    --padding-end: 10px;
+    --padding-start: 10px;
+    --padding-top: 8px;
+    border: 1px solid #d8e3ed;
+    border-radius: 5px;
+    font-size: 0.92rem;
+    min-height: 42px;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .segment-form-content .segmento ion-input[readonly] {
+    --background: #edf2f6;
+    --color: #526b84;
+  }
+
+  .segment-form-content .segmento ion-select {
+    float: none !important;
+    color: #17365d !important;
+  }
+
+  .segment-form-content .segmento ion-select::part(text) {
+    color: #17365d;
+  }
+
+  // "Seleccionar" helper chips overlap the new boxed selects; tuck them inline.
+  .segment-form-content .segmento ion-chip {
+    border-color: #cbd9e5;
+    color: #315b80;
+    font-size: 0.74rem;
+    min-height: 32px;
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    width: auto !important;
+    padding-left: 10px !important;
+  }
+
+  // Yes/No (and similar) radio groups laid out as a tidy card grid.
+  .segment-form-content .segmento ion-radio-group {
+    align-items: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    float: none !important;
+    gap: 6px;
+    justify-content: flex-start;
+    padding: 3px 0 8px;
+    width: 100%;
+  }
+
+  .segment-form-content .segmento ion-radio-group ion-item {
+    --background: #f5f8fb;
+    --inner-padding-end: 6px;
+    --min-height: 78px;
+    --padding-start: 6px;
+    border: 1px solid #d8e3ed;
+    border-radius: 5px;
+    display: inline-flex !important;
+    flex: 1 1 calc(50% - 3px);
+    margin: 0;
+    min-width: 0;
+    max-width: calc(50% - 3px);
+    width: calc(50% - 3px);
+  }
+
+  .segment-form-content .segmento ion-radio-group:has(ion-item:nth-child(3)) ion-item {
+    flex-basis: calc(33.333% - 4px);
+    max-width: calc(33.333% - 4px);
+    width: calc(33.333% - 4px);
+  }
+
+  // Stack the label above the radio (clientehn aesthetic) so the full label
+  // text always has the whole card width to wrap into instead of being squeezed
+  // next to the control and clipped by ion-label's default overflow:hidden.
+  .segment-form-content .segmento ion-radio-group ion-item::part(native) {
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 78px;
+    overflow: visible;
+    padding-bottom: 7px;
+    padding-top: 7px;
+  }
+
+  .segment-form-content .segmento ion-radio-group ion-label {
+    color: #315b80 !important;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0 0 6px !important;
+    overflow: visible;
+    padding: 0;
+    text-align: center;
+    text-overflow: clip;
+    white-space: normal;
+    width: 100%;
+  }
+
+  .segment-form-content .segmento ion-radio {
+    flex: 0 0 30px;
+    height: 30px;
+    margin: 0 !important;
+    min-height: 30px;
+    min-width: 30px;
+    overflow: visible;
+    width: 30px;
+  }
+
+  // Accordions (used by segmento-danio) kept within the viewport.
+  .segment-form-content .segmento ion-accordion,
+  .segment-form-content .segmento ion-accordion.accordion-expanding,
+  .segment-form-content .segmento ion-accordion.accordion-expanded {
+    margin: 0;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .segment-form-content .segmento ion-accordion-group {
+    background: #ffffff;
+    border-radius: 7px;
+    margin: 0;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .segment-form-content .segmento ion-accordion ion-item[slot="header"] {
+    --background: #ffffff;
+    --color: #17365d;
+    --min-height: 52px;
+    font-size: 0.88rem;
+    font-weight: 800;
+  }
+}

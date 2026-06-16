@@ -1,7 +1,7 @@
 import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
+import { Observable, throwError, of, from } from 'rxjs';
 import { ApiService } from '../services/api.service';
 import {
   catchError,
@@ -31,7 +31,7 @@ export class JwtInterceptor implements HttpInterceptor {
              // case 400:
             //    return this.handle400Error(err);
                case 401:
-                 return this.handle401Error();
+                 return this.handle401Error(request, next);
 
                 case 0: 
                   return this.handle401Error();
@@ -87,9 +87,20 @@ private async handle400Error(err) {
   //   this.apiService.logout();
   //   return of(null);
   // }
-  private handle401Error(){
-    this.apiService.logout();
-    return of(null)
+  private handle401Error(request?: HttpRequest<any>, next?: HttpHandler): Observable<HttpEvent<any>> {
+    if (!request || !next) {
+      return of(null);
+    }
+
+    return from(this.apiService.refreshSessionSilently()).pipe(
+      switchMap((sessionRefreshed) => {
+        if (sessionRefreshed) {
+          return next.handle(this.addToken(request));
+        }
+
+        return of(null);
+      })
+    );
   }
 // private handle401Error(request: HttpRequest < any >, next: HttpHandler): Observable < any > {
 //    // Check if another call is already using the refresh logic

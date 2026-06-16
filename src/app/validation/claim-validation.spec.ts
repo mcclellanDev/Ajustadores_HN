@@ -1,5 +1,6 @@
-import { validateClaimStage } from './claim-validation';
+import { isMissingValue, validateClaimStage } from './claim-validation';
 import {
+  ajustadorScreenValidationRules,
   clienteCacheValidationRules,
   clienteScreenValidationRules,
   ficohsaBpmConfirmationRules,
@@ -7,6 +8,29 @@ import {
 } from './claim-validation.rules';
 
 describe('claim validation', () => {
+  it('treats stringified NaN / object / empty arrays as missing', () => {
+    expect(isMissingValue('NaN')).toBeTrue();
+    expect(isMissingValue('  nan ')).toBeTrue();
+    expect(isMissingValue('[object Object]')).toBeTrue();
+    expect(isMissingValue([])).toBeTrue();
+    expect(isMissingValue(NaN)).toBeTrue();
+
+    expect(isMissingValue('0')).toBeFalse();
+    expect(isMissingValue(0)).toBeFalse();
+    expect(isMissingValue('Toyota')).toBeFalse();
+  });
+
+  it('advises about zero-valued ajustador fields without flagging them as missing', () => {
+    const kilometrajeRule = ajustadorScreenValidationRules.filter((rule) => rule.field === 'Kilometraje');
+
+    const result = validateClaimStage({ Kilometraje: 0 }, kilometrajeRule);
+
+    expect(result.complete).toBeTrue();
+    expect(result.missing.length).toBe(0);
+    expect(result.advisories.map((advisory) => advisory.field)).toEqual(['Kilometraje']);
+    expect(result.advisories[0].value).toBe(0);
+  });
+
   it('treats null-like strings as missing but keeps valid falsey values', () => {
     const result = validateClaimStage(
       {

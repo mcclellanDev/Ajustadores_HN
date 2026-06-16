@@ -19,31 +19,29 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding segment-form-content">
   <ion-grid>
     <ion-row>
-      <ion-col id="segmentRequestAju" size="12">
-        <ion-item lines="none" class="ion-no-padding  input">
-          <ion-label class="text-size-lg" style="padding-left: 5px;">
-            <ion-badge color="primary">
-              {{segmentoTitulo}}
-            </ion-badge>
-          </ion-label>
-        </ion-item>
+      <ion-col class="segmento" id="segmentRequestAju" size="12">
+        <ion-label class="text-size-lg" style="padding-left: 5px;">
+          <ion-badge color="primary">
+            {{segmentoTitulo}}
+          </ion-badge>
+        </ion-label>
         <ion-item class="ion-no-padding  input">
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Tipo de solicitante
-              <ion-chip id="driverTypeSelecta" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+              <ion-chip id="driverTypeSelecta" [outline]="true" (click)="tipoSolicitanteSelect.open()" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
                 color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
                 Seleccionar
               </ion-chip>
             </ion-row>
 
             <ion-row>
-              <ion-col #TipoSolicitanteDisplay id="TipoSolicitanteDisplay" size="8" class="select-label">{{solicitanteDisplayName}}</ion-col>
+              <ion-col #TipoSolicitanteDisplay id="TipoSolicitanteDisplay" size="12" class="select-label">{{solicitanteDisplayName}}</ion-col>
               <ion-col size="4" style="text-align: left;">
-                <ion-select id="tipoSolicitante" class="text-size-xs" [(ngModel)]="ajustador.TipoSolicitante" multiple="false" (ionChange)="setTipoSolicitante($event)" style="float: right;">
+                <ion-select #tipoSolicitanteSelect id="tipoSolicitante" class="text-size-xs native-select-hidden" [(ngModel)]="ajustador.TipoSolicitante" multiple="false" (ionChange)="setTipoSolicitante($event)" interface="alert" [interfaceOptions]="applicantTypeSelectOptions" okText="Seleccionar" cancelText="Cancelar" style="float: right;">
                   <ion-select-option *ngFor="let tipo of tipoSolicitante"  [value]="tipo.Id">{{tipo.TipoSolicitante}} 
                   </ion-select-option>
                 </ion-select>
@@ -55,16 +53,16 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Tipo de Cobertura
-              <ion-chip id="coverTypeSelecta" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+              <ion-chip id="coverTypeSelecta" [outline]="true" (click)="tipoCoberturaSelect.open()" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
                 color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
                 Seleccionar
               </ion-chip>
             </ion-row>
             <ion-row>
-              <ion-col #TipoAcuerdoDisplay id="TipoAcuerdoDisplay" size="8">{{coberturaDisplayName}}</ion-col>
+              <ion-col #TipoAcuerdoDisplay id="TipoAcuerdoDisplay" size="12">{{coberturaDisplayName}}</ion-col>
               <ion-col size="4" style="text-align: rigth;">
-                <ion-select class="text-size-xs" (ionChange)="seleccionarTipoCobertura($event)" [(ngModel)]="datos.TipoAcuerdoFicohsa" multiple="false" 
-                style="float: right;">
+                <ion-select #tipoCoberturaSelect class="text-size-xs native-select-hidden" (ionChange)="seleccionarTipoCobertura($event)" [(ngModel)]="datos.TipoAcuerdoFicohsa" multiple="false" 
+                interface="alert" [interfaceOptions]="coverageTypeSelectOptions" okText="Seleccionar" cancelText="Cancelar" style="float: right;">
                   <ion-select-option *ngFor="let tipoC of coberturas;let i = index"  [value]="tipoC.cOBERTURAField"
                   style="color: white;">{{tipoC.dESCRIPCIONField}}
                   <input hidden style="display: none;" value=tipoC>
@@ -112,16 +110,16 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Tipo de licencia
-              <ion-chip id="licenceTypeSelecta" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+              <ion-chip id="licenceTypeSelecta" [outline]="true" (click)="tipoLicenciaSelect.open()" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
                 color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
                 Seleccionar
               </ion-chip>
             </ion-row>
             <ion-row>
-              <ion-col id="tipoLicenciaDisplay" size="9">{{elTipoDeLicencia}}</ion-col>
+              <ion-col id="tipoLicenciaDisplay" size="12">{{elTipoDeLicencia}}</ion-col>
               <ion-col size="3" style="text-align: rigth;">
-                <ion-select id="tipoLicenciaId" class="text-size-xs required-data" [(ngModel)]="elTipoLicencia" multiple="false" (ionChange)="getElTipoLicencia($event)"
-                style="float: right;">
+                <ion-select #tipoLicenciaSelect id="tipoLicenciaId" class="text-size-xs required-data native-select-hidden" [(ngModel)]="elTipoLicencia" multiple="false" (ionChange)="getElTipoLicencia($event)"
+                interface="alert" [interfaceOptions]="licenseTypeSelectOptions" okText="Seleccionar" cancelText="Cancelar" style="float: right;">
                   <ion-select-option *ngFor="let licencia of tipoLicencia" [value]="licencia.Id">
                     {{licencia.TipoLicencia}}
                   </ion-select-option>
@@ -134,16 +132,16 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Tipo de género
-              <ion-chip id="genderTypeSelecta" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+              <ion-chip id="genderTypeSelecta" [outline]="true" (click)="tipoGeneroSelect.open()" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
                 color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
                 Seleccionar
               </ion-chip>
             </ion-row>
             <ion-row>
-              <ion-col id="tipoDeGeneroDisplay" size="9" class="select-label">{{elGenero}}</ion-col>
+              <ion-col id="tipoDeGeneroDisplay" size="12" class="select-label">{{elGenero}}</ion-col>
               <ion-col size="3" style="text-align: rigth;">
-                <ion-select id="tipoGeneroId" class="text-size-xs required-data" [(ngModel)]="elTipoGenero" multiple="false" (ionChange)="getElTipoGenero($event)"
-                style="float: right;">
+                <ion-select #tipoGeneroSelect id="tipoGeneroId" class="text-size-xs required-data native-select-hidden" [(ngModel)]="elTipoGenero" multiple="false" (ionChange)="getElTipoGenero($event)"
+                interface="alert" [interfaceOptions]="genderTypeSelectOptions" okText="Seleccionar" cancelText="Cancelar" style="float: right;">
                   <ion-select-option *ngFor="let genero of tipoGeneros" [value]="genero.Id">
                     {{genero.Genero}}
                   </ion-select-option>
@@ -156,16 +154,16 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Tipo de parentesco
-              <ion-chip id="parentalTypeSelecta" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+              <ion-chip id="parentalTypeSelecta" [outline]="true" (click)="tipoParentescoSelect.open()" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
                 color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
                 Seleccionar
               </ion-chip>
             </ion-row>
             <ion-row>
-              <ion-col id="parentescoDisplay" size="9">{{elParentesco}}</ion-col>
+              <ion-col id="parentescoDisplay" size="12">{{elParentesco}}</ion-col>
               <ion-col size="3" style="text-align: rigth;">
-                <ion-select class="text-size-xs required-data" [(ngModel)]="elTipoParentesco" multiple="false" (ionChange)="getElTipoParentesco($event)"
-                style="float: right;">
+                <ion-select #tipoParentescoSelect class="text-size-xs required-data native-select-hidden" [(ngModel)]="elTipoParentesco" multiple="false" (ionChange)="getElTipoParentesco($event)"
+                interface="alert" [interfaceOptions]="relationshipSelectOptions" okText="Seleccionar" cancelText="Cancelar" style="float: right;">
                   <ion-select-option *ngFor="let parentesco of tipoParentescos" [value]="parentesco.CODIGO">
                     {{parentesco.DESCRIPCION}}
                   </ion-select-option>

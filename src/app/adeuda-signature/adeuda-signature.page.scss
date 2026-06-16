@@ -1,0 +1,22 @@
+ion-toolbar { --background: var(--primaryColor); --color: #ffffff; }
+ion-toolbar ion-button, ion-toolbar ion-icon { --color: #ffffff; color: #ffffff; }
+ion-toolbar ion-title { font-size: 1rem; font-weight: 800; letter-spacing: 0; padding-inline: 52px; text-align: center; }
+.debtor-signature-page { --background: #eef3f7; }
+.signature-workspace { box-sizing: border-box; display: grid; gap: 10px; grid-template-rows: auto minmax(0, 1fr) auto; height: 100%; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); }
+.signature-context { align-items: center; background: #ffffff; border: 1px solid #d8e3ed; border-radius: 7px; display: flex; gap: 14px; min-height: 88px; padding: 10px 14px; }
+.signature-context img { flex: 0 0 auto; height: auto; max-width: 190px; object-fit: contain; width: 25%; }
+.signature-context span { color: #0764d8; font-size: .68rem; font-weight: 800; text-transform: uppercase; }
+.signature-context h1 { color: #17365d; font-size: 1rem; margin: 2px 0; }
+.signature-context p { color: #607792; font-size: .76rem; line-height: 1.35; margin: 0; }
+.signature-pad-shell { background: #ffffff; border: 2px dashed #aebfd0; border-radius: 7px; min-height: 0; overflow: hidden; position: relative; touch-action: none; }
+.signature-pad-shell canvas { display: block; touch-action: none; }
+.signature-controls { display: grid; gap: 10px; grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr); }
+.signature-controls ion-button { --border-radius: 6px; font-size: .82rem; font-weight: 800; height: 46px; margin: 0; }
+@media (max-width: 699px) {
+  .signature-workspace { padding-left: 8px; padding-right: 8px; }
+  .signature-context { gap: 9px; min-height: 78px; padding: 8px 10px; }
+  .signature-context img { max-width: 115px; width: 34%; }
+  .signature-context h1 { font-size: .88rem; }
+  .signature-context p { font-size: .68rem; }
+  .signature-controls ion-button { font-size: .75rem; height: 44px; }
+}

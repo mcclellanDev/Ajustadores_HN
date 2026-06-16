@@ -24,43 +24,43 @@ export const printerIcons = [
     },
     { 
         name: 'document-attach', 
-        descripcion: "Convenio de Reparacion", 
+        descripcion: "Convenio de Reparación", 
         urlPreview: "https://portal.porsalud.net/Applications/HELP/help_FicohsaSeguros/VerPdfConvenioDeReparacion", 
         urlPrint: "https://portal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadDownloadVerPdfConvenioDeReparacion" 
     },
     { 
         name: 'camera-reverse', 
-        descripcion: "Reporte Fotografico", 
+        descripcion: "Reporte Fotográfico", 
         urlPreview: "https://portal.porsalud.net/Applications/HELP/help_FicohsaSeguros/VerPdfReporteDeFotograficoAjustador", 
         urlPrint: "https://portal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadDownloadVerPdfReporteDeFotograficoAjustador" 
     },
     { 
         name: 'receipt', 
-        descripcion: "Cotizacion AB", 
+        descripcion: "Cotización AB", 
         urlPreview: "https://portal.porsalud.net/Applications/HELP/help_FicohsaSeguros/VerPdfTallerAB", 
         urlPrint: "https://portal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadVerPdfTallerAB" 
     },
     { 
         name: 'receipt', 
-        descripcion: "Cotizacion CatC", 
+        descripcion: "Cotización CatC", 
         urlPreview: "https://portal.porsalud.net/Applications/HELP/help_FicohsaSeguros/VerPdfTallerC", 
         urlPrint: "https://portal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadVerPdfTallerC" 
     },
     { 
         name: 'receipt', 
-        descripcion: "Cotizacion Taller Pesado", 
+        descripcion: "Cotización Taller Pesado", 
         urlPreview: "https://portal.porsalud.net/Applications/HELP/help_FicohsaSeguros/VerPdfTallerEquipoPesado", 
         urlPrint: "https://portal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadAcuerdoContizacionTallerEquipoPesado" 
     },
     { 
         name: 'thumbs-up', 
-        descripcion: "Acuerdo De Responsabilidad", 
+        descripcion: "Acuerdo de Responsabilidad", 
         urlPreview: "https://portal.porsalud.net/Applications/HELP/help_FicohsaSeguros/VerPdfAcuerdoResponsabilidad", 
         urlPrint: "https://portal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadVerPdfAcuerdoResponsabilidad" 
     },
     { 
         name: 'checkmark-done', 
-        descripcion: "Inspeccion Ajustador", 
+        descripcion: "Inspección del Ajustador", 
         urlPreview: "https://portal.porsalud.net/Applications/HELP/help_FicohsaSeguros/VerPdfInspecciondeDanioAjustador", 
         urlPrint: "https://portal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadVerPdfInspecciondeDanioAjustador" 
     },
@@ -99,43 +99,43 @@ export const printerIcons_test = [
     },
     { 
         name: 'document-attach', 
-        descripcion: "Convenio de Reparacion", 
+        descripcion: "Convenio de Reparación", 
         urlPreview: "https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/VerPdfConvenioDeReparacion/", 
         urlPrint: "https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadDownloadVerPdfConvenioDeReparacion/" 
     },
     { 
         name: 'camera-reverse', 
-        descripcion: "Reporte Fotografico", 
+        descripcion: "Reporte Fotográfico", 
         urlPreview: "https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/VerPdfReporteDeFotograficoAjustador/", 
         urlPrint: "https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadDownloadVerPdfReporteDeFotograficoAjustador/" 
     },
     { 
         name: 'receipt', 
-        descripcion: "Cotizacion AB", 
+        descripcion: "Cotización AB", 
         urlPreview: "https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/VerPdfTallerAB/", 
         urlPrint: "https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadVerPdfTallerAB/" 
     },
     { 
         name: 'receipt', 
-        descripcion: "Cotizacion CatC", 
+        descripcion: "Cotización CatC", 
         urlPreview: "https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/VerPdfTallerC/", 
         urlPrint: "https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadVerPdfTallerC/" 
     },
     { 
         name: 'receipt', 
-        descripcion: "Cotizacion Taller Pesado", 
+        descripcion: "Cotización Taller Pesado", 
         urlPreview: "https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/AcuerdoContizacionTallerEquipoPesado/", 
         urlPrint: "https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadAcuerdoContizacionTallerEquipoPesado/" 
     },
     { 
         name: 'thumbs-up', 
-        descripcion: "Acuerdo De Responsabilidad", 
+        descripcion: "Acuerdo de Responsabilidad", 
         urlPreview: "https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/VerPdfAcuerdoResponsabilidad/", 
         urlPrint: "https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadVerPdfAcuerdoResponsabilidad/" 
     },
     { 
         name: 'checkmark-done', 
-        descripcion: "Inspeccion Ajustador", 
+        descripcion: "Inspección del Ajustador", 
         urlPreview: "https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/VerPdfInspecciondeDanioAjustador/", 
         urlPrint: "https://testportal.porsalud.net/Applications/HELP/help_FicohsaSeguros/DownloadVerPdfInspecciondeDanioAjustador/" 
     },

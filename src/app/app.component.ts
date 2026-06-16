@@ -132,13 +132,36 @@ export class AppComponent {
     this.plt.ready().then(async ()=>{
       console.log('Initialize here');
       this.applyOrientationPolicy();
-      this.api.loadToken();
+      await this.restoreSession();
       //Debug:temporal
       this.geolocation();
       this.OneSignalInit();
 
     })
 
+  }
+
+  async restoreSession() {
+    const hasSession = await this.api.loadToken();
+    const currentPath = window.location.pathname || this.router.url || '/';
+    const publicRoutes = ['/login', '/recovery', '/new-password'];
+    const isPublicRoute = publicRoutes.some(route => currentPath.startsWith(route));
+
+    if (hasSession) {
+      const versionChanged = await this.api.hasAppVersionChanged();
+      if (versionChanged) {
+        this.api.setPendingSessionRecovery();
+      }
+    }
+
+    if (hasSession && (currentPath === '/' || isPublicRoute)) {
+      this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
+      return;
+    }
+
+    if (!hasSession && !isPublicRoute) {
+      this.router.navigateByUrl('/login', { replaceUrl: true });
+    }
   }
 
   applyOrientationPolicy() {
@@ -224,13 +247,6 @@ export class AppComponent {
     //alert('ngOnInit hay red '+Network.getStatus());
     
     this.connectionService.startMonitoring();
-
-    this.router.events.subscribe(e => {
-      if (e instanceof ActivationStart && e.snapshot.outlet === "root")
-        this.outlet?.deactivate();
-    });
-
-    this.outletDeactivate();
     
     setTimeout(() => {
       
@@ -253,13 +269,6 @@ export class AppComponent {
     this.platform.ready().then(() => {
       //document.getElementById('avatarPerfil').setAttribute('style', 'filter:none');
      });
-  }
-
-  outletDeactivate(){
-    this.router.events.subscribe(e => {
-      if (e instanceof ActivationStart && e.snapshot.outlet === "tab1")
-        this.outlet?.deactivate();
-    });
   }
 
   ionViewDidEnter(){

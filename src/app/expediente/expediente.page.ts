@@ -2273,7 +2273,7 @@ export class ExpedientePage implements OnInit {
 
   goFotos(){
     this.Torval();
-    this.router.navigate(['./fotoshn']);
+    this.router.navigate(['./cargar-archivos']);
   }
 
   displayDirectionInit(directionsService, directionsDisplay, latI, lngI, latF, lngF) {

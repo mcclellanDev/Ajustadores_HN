@@ -37,12 +37,18 @@
           <strong>{{fechaDesde}} al {{fechaHasta}}</strong>
         </div>
         <div>
-          <span>Moneda</span>
+          <span>Moneda de la póliza</span>
           <strong>{{miMoneda || 'LEMPIRAS'}}</strong>
         </div>
       </div>
 
       <article class="document-copy">
+        <p class="exchange-reference" *ngIf="isDollarPolicy">
+          <strong>Referencia informativa BCH:</strong> US$1.00 = L {{bchUsdReference.rate | number:'1.4-4'}},
+          vigente al {{bchUsdReference.effectiveDate}}. El valor del cheque fue registrado manualmente
+          en lempiras.
+        </p>
+
         <p>
           Yo, <strong>{{acuerdoFiniquito.NombreQuienRecibe}}</strong>, en mi condición de
           <strong>{{tipoDeBeneficiario}}</strong>, hago constar que en esta fecha he recibido de
@@ -74,7 +80,7 @@
         <div><span>Identidad</span><strong>{{acuerdoFiniquito.IdentidadQuienRecibe}}</strong></div>
         <div><span>Cheque No.</span><strong>{{acuerdoFiniquito.NumeroCheque}}</strong></div>
         <div><span>Fecha del cheque</span><strong>{{acuerdoFiniquito.FechaDelCheque}}</strong></div>
-        <div><span>Valor del cheque</span><strong>{{miMoneda || 'L.'}} {{acuerdoFiniquito.ValorDelCheque}}</strong></div>
+        <div><span>Valor del cheque (HNL)</span><strong>L. {{acuerdoFiniquito.ValorDelCheque}}</strong></div>
         <div><span>A favor de</span><strong>{{acuerdoFiniquito.NombreAFavor}}</strong></div>
       </div>
     </section>
@@ -82,26 +88,30 @@
     <section class="finiquito-signature" [class.is-complete]="finiquitoCompleto">
       <div class="signature-heading">
         <div>
-          <span>{{finiquitoCompleto ? 'Envío completado' : 'Firma del receptor'}}</span>
-          <h2>{{finiquitoCompleto ? 'Finiquito enviado correctamente' : 'Firmar para confirmar'}}</h2>
+          <span>{{finiquitoCompleto ? 'Envío completado' : 'Firma del beneficiario'}}</span>
+          <h2>{{finiquitoCompleto ? 'Finiquito enviado correctamente' : (beneficiarySignature ? 'Firma registrada' : 'Firma pendiente')}}</h2>
         </div>
         <ion-icon [name]="finiquitoCompleto ? 'checkmark-circle' : 'create-outline'"></ion-icon>
       </div>
 
-      <div class="signature-canvas-wrap" *ngIf="!finiquitoCompleto">
-        <canvas id="canvasFiniquito" #canvas6 class="signature-canvas"></canvas>
+      <div class="signature-preview" *ngIf="!finiquitoCompleto">
+        <img *ngIf="beneficiarySignature" [src]="beneficiarySignature" alt="Firma del beneficiario" />
+        <div *ngIf="!beneficiarySignature" class="signature-empty">
+          <ion-icon name="create-outline"></ion-icon>
+          <span>Aún no se ha registrado la firma del beneficiario.</span>
+        </div>
       </div>
 
       <p class="signature-note" *ngIf="!finiquitoCompleto">
-        La firma confirma que el documento fue leído y que los datos mostrados son correctos.
+        La firma se captura en una pantalla independiente para mantener el área completamente libre.
       </p>
 
       <div class="signature-actions" *ngIf="!finiquitoCompleto">
-        <ion-button fill="outline" (click)="clear()">
-          <ion-icon slot="start" name="trash-outline"></ion-icon>
-          Limpiar
+        <ion-button fill="outline" (click)="goBeneficiarySignature()">
+          <ion-icon slot="start" name="create-outline"></ion-icon>
+          {{beneficiarySignature ? 'Editar firma' : 'Firmar'}}
         </ion-button>
-        <ion-button (click)="confirmarEnvio()" [disabled]="isLoading">
+        <ion-button (click)="confirmarEnvio()" [disabled]="isLoading || !beneficiarySignature">
           <ion-icon slot="start" name="send-outline"></ion-icon>
           Enviar finiquito
         </ion-button>

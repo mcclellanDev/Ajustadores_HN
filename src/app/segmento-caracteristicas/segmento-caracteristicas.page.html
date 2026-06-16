@@ -19,18 +19,16 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding segment-form-content">
   <ion-grid>
     <ion-row>
-      <ion-col id="segmentInfoAju" size="12">
+      <ion-col class="segmento" id="segmentInfoAju" size="12">
 
-        <ion-item lines="none" class="ion-no-padding  input">
-          <ion-label class="text-size-lg" style="padding-left: 5px;">
-            <ion-badge color="primary">
-              {{segmentoTitulo}}
-            </ion-badge> 
-          </ion-label>
-        </ion-item>
+        <ion-label class="text-size-lg" style="padding-left: 5px;">
+          <ion-badge color="primary">
+            {{segmentoTitulo}}
+          </ion-badge>
+        </ion-label>
 
         <ion-item class="ion-no-padding  input">
           <ion-grid>
@@ -103,16 +101,16 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Si el vehículo se encuentra en un taller, seleccione uno.
-              <ion-chip id="tallerSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+              <ion-chip id="tallerSelect" [outline]="true" (click)="tallerSelect.open()" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
                 color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
                 Seleccionar
               </ion-chip>
             </ion-row>
             <ion-row>
-              <ion-col id="tallerDisplay" size="9" class="select-label">{{tallerNombreDisplay}}</ion-col>
+              <ion-col id="tallerDisplay" size="12" class="select-label">{{tallerNombreDisplay}}</ion-col>
               <ion-col size="3">
-                <ion-select #tallerSelect class="text-size-xs" [(ngModel)]="datos.TallerMecanicoId" multiple="false" 
-                style="float: right;color: white;" (ionChange)="entraTaller($event)">
+                <ion-select #tallerSelect class="text-size-xs native-select-hidden" [(ngModel)]="datos.TallerMecanicoId" multiple="false" 
+                interface="alert" [interfaceOptions]="workshopSelectOptions" okText="Seleccionar" cancelText="Cancelar" style="float: right;color: white;" (ionChange)="entraTaller($event)">
                   <ion-select-option *ngFor="let taller of talleresFiltrados" [value]="taller.Id">
                     <strong> {{taller.NombreTaller}} </strong>, Categoría {{taller.Categoria}}
                   </ion-select-option>
@@ -126,7 +124,7 @@
               
           <ion-grid style="width: 100%;">
             <ion-row>
-              <ion-col size="6">
+              <ion-col size="12">
                 <ion-grid>
                   <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                     Taller/Agencia no registrado o Lugar donde se trasladó el vehículo.
@@ -138,7 +136,9 @@
                   </ion-row>
                 </ion-grid>
               </ion-col>
-              <ion-col size="6">
+            </ion-row>
+            <ion-row>
+              <ion-col size="12">
                 <ion-grid>
                   <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                     Ubicación del taller.
@@ -171,16 +171,16 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Tipo de combustible
-              <ion-chip id="fuelTypeSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+              <ion-chip id="fuelTypeSelect" [outline]="true" (click)="tipoCombustibleSelect.open()" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
                 color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
                 Seleccionar
               </ion-chip>
             </ion-row>
             <ion-row>
-              <ion-col id="tipoCombustibleDisplay" size="9" class="select-label">{{tipoDeCombustible}}</ion-col>
+              <ion-col id="tipoCombustibleDisplay" size="12" class="select-label">{{tipoDeCombustible}}</ion-col>
               <ion-col size="3">
-                <ion-select class="text-size-xs required-data" [(ngModel)]="ajustador.TipoCombustible" multiple="false" (ionChange)="entraTipoCombustible($event)"
-                style="float: right;color: white;">
+                <ion-select #tipoCombustibleSelect class="text-size-xs required-data native-select-hidden" [(ngModel)]="ajustador.TipoCombustible" multiple="false" (ionChange)="entraTipoCombustible($event)"
+                interface="alert" [interfaceOptions]="fuelTypeSelectOptions" okText="Seleccionar" cancelText="Cancelar" style="float: right;color: white;">
                   <ion-select-option *ngFor="let tipo of tipoCombustible"  [value]="tipo.Id" style="color: white;">{{tipo.TipoCombustible}}
                   </ion-select-option>
                 </ion-select>
@@ -257,16 +257,17 @@
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Tipo de transmisión
-              <ion-chip id="misionTypeSelect" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
+              <ion-chip id="misionTypeSelect" [outline]="true" (click)="tipoTransmisionSelect.open()" style="position: absolute;right: 0; width: 15%; padding-left: 4%; font-size: 1rem;
                 color: var(--blueGrayColor); border-color: var(--blueGrayColor); right: 15px; top: 22%;">
                 Seleccionar
               </ion-chip>
             </ion-row>
             <ion-row>
-              <ion-col id="tiposTransmisionDisplay" size="9" class="select-label">{{tipotransmision}}</ion-col>
+              <ion-col id="tiposTransmisionDisplay" size="12" class="select-label">{{tipotransmision}}</ion-col>
               <ion-col size="3">
-                <ion-select class="text-size-xs" [(ngModel)]="ajustador.Transmicion" multiple="false" (ionChange)="entraMecanico($event)"
-                class="required-data" style="float: right;color: white;">
+                <ion-select #tipoTransmisionSelect [(ngModel)]="ajustador.Transmicion" multiple="false" (ionChange)="entraMecanico($event)"
+                interface="alert" [interfaceOptions]="transmissionTypeSelectOptions" okText="Seleccionar" cancelText="Cancelar"
+                class="text-size-xs required-data native-select-hidden" style="float: right;color: white;">
                   <ion-select-option *ngFor="let transmision of tiposTransmision" [value]="transmision.id">{{transmision.nombre}}</ion-select-option>
                   
                 </ion-select>

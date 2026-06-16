@@ -37,12 +37,42 @@ export const clienteScreenValidationRules: ValidationRule[] = requiredDataClient
   when: conditionalClienteRule(item.nombre)
 }));
 
+// Fields where a value of 0 is acceptable (so it must NOT be flagged as missing),
+// but the agent should be advised that it stays 0 unless manually changed.
+const ajustadorAdviseOnZeroFields = new Set<string>([
+  'Kilometraje',
+  'ValorReserva',
+  'AC',
+  'Rines',
+  'BolsaAire',
+  'CierreCentralizado',
+  'RetrovisorElectronico',
+  'Overfenders',
+  'ColaPato',
+  'CintaDecorativa',
+  'Mecanico'
+]);
+
+const isZeroValue = (value: any): boolean => {
+  if (value === 0) {
+    return true;
+  }
+  if (typeof value === 'string') {
+    return value.trim() === '0';
+  }
+  return false;
+};
+
 export const ajustadorScreenValidationRules: ValidationRule[] = requiredDataAjustador.map((item) => ({
   field: item.nombre,
   label: item.etiqueta,
   stage: 'ajustadorhn',
   segment: item.pagSegmento,
-  severity: item.requerido ? 'required' : 'recommended'
+  severity: item.requerido ? 'required' : 'recommended',
+  adviseWhen: ajustadorAdviseOnZeroFields.has(item.nombre) ? isZeroValue : undefined,
+  advisoryMessage: ajustadorAdviseOnZeroFields.has(item.nombre)
+    ? `${item.etiqueta} está en 0 y se guardará así salvo que lo modifiques manualmente.`
+    : undefined
 }));
 
 export const ficohsaBpmValidationRules: ValidationRule[] = [
