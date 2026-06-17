@@ -105,7 +105,7 @@
       <ion-row id="greenStat" class="home-workspace">
         <ion-col size="12">
           <div class="home-dashboard">
-            <section class="appointments-panel">
+            <section class="appointments-panel" [style.--visible-appointments-count]="visibleAppointmentsCount">
               <div class="panel-heading">
                 <div>
                   <span class="panel-kicker">Bandeja</span>
@@ -121,6 +121,10 @@
                   <p>Cuando tu proveedor asigne una atencion a tu nombre, aparecera en esta bandeja.</p>
                 </ion-card-content>
               </ion-card>
+
+              <p class="appointments-scroll-hint" *ngIf="filtroAtenciones.length > visibleAppointmentsCount">
+                Mostrando {{ visibleAppointmentsCount }} en pantalla. Desliza para ver {{ filtroAtenciones.length - visibleAppointmentsCount }} mas.
+              </p>
 
               <ion-list class="appointments-list" [inset]="true" *ngIf="filtroAtenciones.length > 0">
                 <ion-item *ngFor="let item of filtroAtenciones; let i = index; let first = first; let last = last" (click)="seleccionarAtencion(item.IdAtencion, i)"

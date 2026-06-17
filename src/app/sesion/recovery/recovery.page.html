@@ -1,73 +1,155 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Recuperar contraseña</ion-title>
-  </ion-toolbar>
-</ion-header>
-<!-- Content -->
-<ion-content>
-  <ion-grid class=" ion-padding" *ngIf="!isOtp">
-    <ion-row class="ion-align-items-center">
-      <ion-col class="ion-padding" size="12" size-md="10" push-md="1">
-        <!---Logo-->
-        <!-- <ion-img class="ion-float-end" src="../../../assets/logos/help.png"></ion-img> -->
-        <div class="clearfix"></div>
-        <h1 class="text-size-xl ion-text-wrap ion-text-capitalize">
-         Ingresa tu correo</h1>
-        <div class="clearfix"></div>
-        <h2 class="text-size-xs ion-text-wrap ion-padding-end">
-         Enviaremos a tu correo un código OTP para que recupere su contraseña</h2>
-        <div class="clearfix"></div>
-        <ion-item class="ion-no-padding transparent input">
-          <!---Input field email-->
-          <ion-label class="text-size-sm" position="floating">
-          Correo</ion-label>
-          <ion-input required type="email"
-            pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}"
-            required [(ngModel)]="item.email"
-            [ngModelOptions]="{standalone: true}"></ion-input>
-          <ion-icon *ngIf="!isEmailValid" class="icon-small"
-          name="remove-circle"></ion-icon>
-        </ion-item>
-        <!---Send button-->
-        <ion-button class="ion-margin-top button-round ion-float-end"
-        shape="round" fill="outline" (click)="onSendFunc()" [disabled]="load">
-          Enviar
+<ion-content class="auth-page" [fullscreen]="true">
+  <ion-spinner color="primary" name="lines" class="auth-spinner" *ngIf="load"></ion-spinner>
+  <div class="auth-loading-overlay" *ngIf="load"></div>
+
+  <img class="auth-wave auth-wave-top" src="../../../assets/materiales/ola_arriba.svg" alt="" />
+  <img class="auth-wave auth-wave-bottom" src="../../../assets/materiales/ola_abajo.svg" alt="" />
+
+  <main class="auth-shell">
+    <section class="auth-brand" aria-label="HELP Ajustadores">
+      <img class="auth-logo" src="../../../assets/logos/help.png" alt="HELP" />
+      <div class="auth-brand-copy">
+        <p>HELP Ajustadores</p>
+        <h1>{{ fromApp ? 'Cambiar contraseña' : 'Recuperar acceso' }}</h1>
+      </div>
+    </section>
+
+    <section class="auth-panel">
+      <div class="auth-form" *ngIf="!isOtp">
+        <header class="auth-form-header">
+          <p>Paso 1 de 3</p>
+          <h2>Confirma tu correo</h2>
+        </header>
+
+        <p class="auth-form-copy">
+          Enviaremos un código OTP de 4 dígitos a tu correo para validar tu identidad.
+        </p>
+
+        <label class="auth-field-label" for="recovery-email">Correo electrónico</label>
+        <ion-input
+          id="recovery-email"
+          class="auth-input"
+          [class.is-invalid]="!isEmailValid && item.email"
+          type="email"
+          inputmode="email"
+          autocomplete="email"
+          [(ngModel)]="item.email"
+          [readonly]="fromApp && !!item.email"
+          placeholder="correo@dominio.com">
+        </ion-input>
+
+        <p class="auth-inline-note" *ngIf="!isEmailValid && item.email">
+          Ingresa un correo válido para continuar.
+        </p>
+
+        <ion-button
+          class="auth-primary-button ion-text-capitalize"
+          expand="block"
+          shape="round"
+          type="button"
+          (click)="onSendFunc()"
+          [disabled]="load || !item.email">
+          Enviar código OTP
         </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-  <ion-grid class=" ion-padding" *ngIf="isOtp">
-    <ion-row class="ion-align-items-center">
-      <ion-col class="ion-padding" size="12" size-md="10" push-md="1">
-        <!---Logo-->
-        <!-- <ion-img class="ion-float-end" src="../../../assets/logos/help.png"></ion-img> -->
-        <div class="clearfix"></div>
-        <h1 class="text-size-xl ion-text-wrap ion-text-capitalize">
-         Ingresa el código OTP</h1>
-        <div class="clearfix"></div>
-        <h2 class="text-size-xs ion-text-wrap ion-padding-end">
-         Enviamos a tu correo un código OTP para que recupere su contraseña</h2>
-        <div class="clearfix"></div>
-        <ion-item class="ion-no-padding transparent input" style="text-align:center;">
-          <ion-input class="x" #otp1 required="true" maxLength="1" [(ngModel)] ="oTP.first" (keyup)="otpController($event,otp2,'', 1)">
-          </ion-input>
-          <ion-input class="x" #otp2 required="true" maxLength="1" [(ngModel)]="oTP.second" (keyup)="otpController($event,otp3,otp1, 2)">
-          </ion-input>
-          <ion-input class="x" #otp3 required="true" maxLength="1" [(ngModel)]="oTP.third"  (keyup)="otpController($event,otp4,otp2, 3)">
-          </ion-input>
-     
-          <ion-input class="x" #otp4 required="true" maxLength="1" [(ngModel)]="oTP.forth"  (keyup)="otpController($event,'',otp3,4)">
-         </ion-input>
-        </ion-item>
-        <!---Send button-->
-        <ion-button class="ion-margin-top button-round ion-float-start"
-        shape="round" fill="outline" (click)="onSendFunc()">
+
+        <ion-button
+          class="auth-secondary-button ion-text-capitalize"
+          expand="block"
+          fill="clear"
+          shape="round"
+          type="button"
+          [routerLink]="fromApp ? '/tabs/tab3' : '/login'">
+          {{ fromApp ? 'Volver al perfil' : 'Volver al inicio de sesión' }}
+        </ion-button>
+      </div>
+
+      <div class="auth-form" *ngIf="isOtp">
+        <header class="auth-form-header">
+          <p>Paso 2 de 3</p>
+          <h2>Valida el código OTP</h2>
+        </header>
+
+        <p class="auth-form-copy">
+          Escribe el código de 4 dígitos que enviamos a tu correo.
+        </p>
+
+        <div class="auth-email-chip" *ngIf="item.email">
+          <ion-icon name="mail-outline"></ion-icon>
+          <span>{{ item.email }}</span>
+        </div>
+
+        <div class="otp-row" role="group" aria-label="Código OTP de 4 dígitos">
+          <input
+            #otp1
+            class="otp-native"
+            [class.has-value]="oTP.first"
+            type="tel"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            maxlength="1"
+            [(ngModel)]="oTP.first"
+            (input)="onOtpInput($event, 0)"
+            (keydown)="onOtpKeydown($event, 0)"
+            (paste)="onOtpPaste($event)" />
+          <input
+            #otp2
+            class="otp-native"
+            [class.has-value]="oTP.second"
+            type="tel"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            maxlength="1"
+            [(ngModel)]="oTP.second"
+            (input)="onOtpInput($event, 1)"
+            (keydown)="onOtpKeydown($event, 1)"
+            (paste)="onOtpPaste($event)" />
+          <input
+            #otp3
+            class="otp-native"
+            [class.has-value]="oTP.third"
+            type="tel"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            maxlength="1"
+            [(ngModel)]="oTP.third"
+            (input)="onOtpInput($event, 2)"
+            (keydown)="onOtpKeydown($event, 2)"
+            (paste)="onOtpPaste($event)" />
+          <input
+            #otp4
+            class="otp-native"
+            [class.has-value]="oTP.forth"
+            type="tel"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            maxlength="1"
+            [(ngModel)]="oTP.forth"
+            (input)="onOtpInput($event, 3)"
+            (keydown)="onOtpKeydown($event, 3)"
+            (paste)="onOtpPaste($event)" />
+        </div>
+
+        <ion-button
+          class="auth-primary-button ion-text-capitalize"
+          expand="block"
+          shape="round"
+          type="button"
+          (click)="validateOtp()"
+          [disabled]="load || !isOtpComplete()">
+          Validar código
+        </ion-button>
+
+        <ion-button
+          class="auth-secondary-button ion-text-capitalize"
+          expand="block"
+          fill="clear"
+          shape="round"
+          type="button"
+          (click)="resendOtp()"
+          [disabled]="load">
           Reenviar código OTP
         </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+      </div>
+    </section>
+  </main>
 </ion-content>

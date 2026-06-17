@@ -109,7 +109,7 @@ ion-searchbar.custom {
   --background: #ffffff;
   --border-color: transparent;
   --inner-padding-end: 10px;
-  --min-height: 78px;
+  --min-height: 92px;
   border: 1px solid #e0e8f1;
   border-radius: 10px;
   margin-bottom: 10px;
@@ -134,11 +134,73 @@ ion-searchbar.custom {
   align-items: center;
 }
 
+.result-heading {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .result-item strong {
   color: #193a5e;
-  display: block;
+  display: inline;
   font-size: 0.94rem;
   line-height: 1.2;
+}
+
+.status-badge {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  padding: 5px 8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status-badge--active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status-badge--voided {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.status-badge--finished {
+  background: #ccfbf1;
+  color: #0f766e;
+}
+
+.status-badge--closed {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-badge--unknown {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.result-claim,
+.result-status-detail {
+  display: block;
+  font-size: 0.74rem;
+  line-height: 1.25;
+  margin-top: 6px;
+}
+
+.result-claim {
+  color: #0f766e;
+  font-weight: 700;
+}
+
+.result-status-detail {
+  color: var(--muted-text);
+  font-weight: 600;
 }
 
 .result-service {
@@ -162,6 +224,11 @@ ion-searchbar.custom {
   color: var(--muted-text);
   font-size: 0.8rem;
   text-align: right;
+}
+
+.result-id {
+  color: var(--status-color, var(--muted-text));
+  font-weight: 800;
 }
 
 .result-date {

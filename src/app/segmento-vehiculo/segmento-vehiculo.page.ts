@@ -7,6 +7,12 @@ import { MaskitoElementPredicateAsync, MaskitoOptions } from '@maskito/core';
 import { Talleres, rangoAnios } from '../environments/talleres';
 import * as $ from 'jquery';
 import { ToastService } from '../services/toast.service';
+import {
+  buildInterAutoValidationInput,
+  evaluateInterAutoChassisValidation,
+  InterAutoChassisValidationState,
+  normalizeVehicleIdentifier
+} from '../validation/inter-auto-chassis.validation';
 
 @Component({
   selector: 'app-segmento-vehiculo',
@@ -42,6 +48,7 @@ export class SegmentoVehiculoPage implements OnInit {
   laPolizaExternaAsegurado: any;contadorSegmentos:number=0; marcasVehiculos:any=marcasVehiculos; modelosMarca:any=[]; elExpediente:any;
   isMarca:boolean=false; isModelo:boolean=false; talleresFiltrados:any=[];  esPesado: any; elExpedienteKilometraje:any; ajustador: ajustadorHn={};
   datos:any=[]; esKilometraje:boolean=false;  elExpedienteSerie: any; segmentoTitulo:any; isLoading:boolean = false;
+  chassisValidation: InterAutoChassisValidationState | null = null;
 
   brandSelectOptions = { cssClass: 'form-choice-alert', header: 'Marca del vehículo', subHeader: 'Selecciona una opción' };
   modelSelectOptions = { cssClass: 'form-choice-alert', header: 'Modelo del vehículo', subHeader: 'Selecciona una opción' };
@@ -108,6 +115,8 @@ export class SegmentoVehiculoPage implements OnInit {
           localStorage.setItem('datos-Poliza', this.laPolizaExternaAsegurado);
 
           this.elMotorAsegurado = this.elExpediente[0].Motor;
+
+          this.applyInterAutoChassisValidation();
 
           if (this.laMarcaAsegurado) {
 
@@ -288,5 +297,92 @@ export class SegmentoVehiculoPage implements OnInit {
     }else{
       localStorage.setItem('atencionEnProceso', this.idAtencion);
     }
+  }
+
+  allowManualChasisInput(): boolean {
+    if (this.chassisValidation?.applies) {
+      return this.chassisValidation.enableManualChasis;
+    }
+
+    const chasis = normalizeVehicleIdentifier(this.elChasisAsegurado);
+    return !chasis;
+  }
+
+  allowManualMotorInput(): boolean {
+    if (this.chassisValidation?.applies) {
+      return this.chassisValidation.enableManualMotor;
+    }
+
+    return !normalizeVehicleIdentifier(this.elMotorAsegurado);
+  }
+
+  allowManualPolizaInput(): boolean {
+    if (this.chassisValidation?.applies) {
+      return this.chassisValidation.enableManualPoliza;
+    }
+
+    return !normalizeVehicleIdentifier(this.laPolizaExternaAsegurado);
+  }
+
+  onVehicleIdentifierChange() {
+    this.syncVehicleIdentifiersToExpediente();
+    this.applyInterAutoChassisValidation(true);
+  }
+
+  private applyInterAutoChassisValidation(preserveManualEntry = false) {
+    const expediente = this.elExpediente?.[0];
+    if (!expediente) {
+      return;
+    }
+
+    const previousManualChasis = preserveManualEntry && this.chassisValidation?.enableManualChasis;
+    const previousManualMotor = preserveManualEntry && this.chassisValidation?.enableManualMotor;
+    const previousManualPoliza = preserveManualEntry && this.chassisValidation?.enableManualPoliza;
+
+    const validation = evaluateInterAutoChassisValidation(
+      buildInterAutoValidationInput({
+        ...expediente,
+        Chasis: this.elChasisAsegurado,
+        Motor: this.elMotorAsegurado,
+        PolizaExterna: this.laPolizaExternaAsegurado
+      })
+    );
+
+    if (!validation.applies) {
+      this.chassisValidation = null;
+      return;
+    }
+
+    if (validation.swappedValues || !preserveManualEntry) {
+      this.elChasisAsegurado = validation.chasis;
+      this.elMotorAsegurado = validation.motor;
+      this.elExpedienteSerie = validation.chasis;
+    }
+
+    if (!preserveManualEntry || validation.enableManualPoliza === false) {
+      this.laPolizaExternaAsegurado = validation.poliza;
+    }
+
+    if (preserveManualEntry) {
+      validation.enableManualChasis = previousManualChasis || validation.enableManualChasis;
+      validation.enableManualMotor = previousManualMotor || validation.enableManualMotor;
+      validation.enableManualPoliza = previousManualPoliza || validation.enableManualPoliza;
+    }
+
+    this.chassisValidation = validation;
+    this.syncVehicleIdentifiersToExpediente();
+  }
+
+  private syncVehicleIdentifiersToExpediente() {
+    const expediente = this.elExpediente?.[0];
+    if (!expediente) {
+      return;
+    }
+
+    expediente.Chasis = this.elChasisAsegurado;
+    expediente.Motor = this.elMotorAsegurado;
+    expediente.PolizaExterna = this.laPolizaExternaAsegurado;
+    localStorage.setItem('datos-ChasisVehiculo', this.elChasisAsegurado || '');
+    localStorage.setItem('disExpediente', JSON.stringify(this.elExpediente));
   }
 }

@@ -5,11 +5,11 @@ import { LocateService } from './../services/locate.service';
 import { ApiService } from './../services/api.service';
 import { ActionSheetController, AlertController, LoadingController, ToastController, ModalController, Platform} from '@ionic/angular';
 import { Atenciones } from './../interfaces/atenciones';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
 import { StorageService } from '../services/storage.service';
 import { iconWorlds } from '../environments/mapas';
-import { BehaviorSubject} from 'rxjs';
+import { BehaviorSubject, Subscription} from 'rxjs';
 import { Router, RouterOutlet, ActivationStart } from '@angular/router';
 import { FilterPipe } from '../filter.pipe';
 import { finalize } from 'rxjs/operators';
@@ -38,7 +38,13 @@ import { NetworkInfo } from '../environments/network';
   providers: [FilterPipe],
 })
 
-export class Tab1Page implements OnInit {
+export class Tab1Page implements OnInit, OnDestroy {
+  readonly visibleAppointmentsCount = 3;
+  private readonly activeAttentionsRefreshMs = 30000;
+  private activeAttentionsRefreshTimer: ReturnType<typeof setInterval> | null = null;
+  private activeAttentionsRequestInFlight = false;
+  private platformPauseSub?: Subscription;
+  private platformResumeSub?: Subscription;
   isAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
 
   atenciones?: Atenciones[];public results = [];
@@ -397,6 +403,15 @@ export class Tab1Page implements OnInit {
     }
 
     void this.enterView();
+    this.startActiveAttentionsRefresh();
+  }
+
+  ionViewWillLeave() {
+    this.stopActiveAttentionsRefresh();
+  }
+
+  ngOnDestroy() {
+    this.stopActiveAttentionsRefresh();
   }
 
   async enterView(){
@@ -416,7 +431,14 @@ export class Tab1Page implements OnInit {
         await this.promptSessionRecovery('missing');
       }
     } else if (await this.shouldPromptSessionRecovery()) {
-      await this.promptSessionRecovery('update');
+      const recovered = await this.api.refreshSessionSilently();
+      if (recovered) {
+        this.user = this.api.currentUser;
+        this.inicializarFirma();
+        this.getAtencionesActivas();
+      } else {
+        await this.promptSessionRecovery('update');
+      }
     } else {
       this.getAtencionesActivas();
     }
@@ -509,7 +531,7 @@ export class Tab1Page implements OnInit {
         cssClass: 'session-recovery-alert session-recovery-alert--failure',
         header: 'No se pudo reconectar',
         subHeader: 'Intento fallido',
-        message: 'No fue posible restaurar la sesión automáticamente.\n\nPuedes reintentar o cerrar sesión para iniciar de nuevo.',
+        message: 'No fue posible restaurar la sesión automáticamente.\n\nSi cambiaste tu contraseña recientemente, cierra sesión e inicia con la nueva clave.\n\nTambién puedes reintentar o cerrar sesión para volver al login.',
         backdropDismiss: false,
         buttons: [
           {
@@ -695,62 +717,129 @@ export class Tab1Page implements OnInit {
      return fechaArray;
   }
 
-  async getAtencionesActivas() {
-    const ready = await this.ensureSessionReady();
-    if (!ready) {
-      this.isLoading = false;
+  async getAtencionesActivas(options: { silent?: boolean } = {}) {
+    const silent = options.silent === true;
+
+    if (this.activeAttentionsRequestInFlight) {
       return;
     }
 
-    let atencionesCount = 0;
-    localStorage.setItem('atencionesCount', atencionesCount.toString());
+    const ready = await this.ensureSessionReady();
+    if (!ready) {
+      if (!silent) {
+        this.isLoading = false;
+      }
+      return;
+    }
 
-    this.isLoading = true;
+    this.activeAttentionsRequestInFlight = true;
+
+    if (!silent) {
+      localStorage.setItem('atencionesCount', '0');
+      this.isLoading = true;
+    }
+
     this.api.MisAtencionesActivas(this.api.currentUser.ProveedorAgenteId).pipe(
       finalize(async () => {
-        if (this.isCacheClear == false) {
+        this.activeAttentionsRequestInFlight = false;
+        if (!silent && this.isCacheClear == false) {
           this.isLoading = false;
         }
         
       })
     ).subscribe(
       (res) => {
-        // DEBUG FECHA -- FechaInicio : "2024-06-19T08:39:38.01"
-        this.filtroAtenciones = res; 
-        this.filtroAtenciones.sort((a,b)=> b.IdAtencion-a.IdAtencion);
-        atencionesCount = this.filtroAtenciones.length;
-
-        for (let indexFilter = 0; indexFilter < this.filtroAtenciones.length; indexFilter++) {
-          const element = this.filtroAtenciones[indexFilter];
-          let fechaFormateada = this.formatearFecha(element.Fecha);
-          this.filtroAtenciones[indexFilter].Fecha = fechaFormateada.fechaF;
-          this.filtroAtenciones[indexFilter].Hora = fechaFormateada.horaF;
-          if (indexFilter == 0) {
-            this.firstSegmentId = element.IdAtencion;
-            
-          }
-
-          if (indexFilter==(this.filtroAtenciones.length-1)) {
-            console.log('Las posiciones de los estados son ');
-            console.dir(this.readStatusArray)
-
-          }
-        }
-    
-        setTimeout(() => {
-          $('#segmentId').text(this.firstSegmentId);
-        }, 1000);
-    
-        localStorage.setItem('atencionesCount', atencionesCount.toString());
-        this.restoreLastActiveAttention();
+        this.processActiveAttentionsResponse(res, { preserveSelection: silent });
       },
-      async () => {
-        this.isLoading = false;
-        if (await this.api.canRecoverSessionSilently()) {
+      async (error) => {
+        if (!silent) {
+          this.isLoading = false;
+        }
+
+        if (error?.status === 400) {
+          this.applyEmptyActiveAttentionsState();
+          return;
+        }
+
+        if (error?.status === 401 && await this.api.canRecoverSessionSilently()) {
           await this.promptSessionRecovery('missing');
         }
       }
     )
+  }
+
+  private processActiveAttentionsResponse(
+    res: any[],
+    options: { preserveSelection?: boolean } = {}
+  ) {
+    this.filtroAtenciones = Array.isArray(res) ? res : [];
+    if (!this.filtroAtenciones.length) {
+      this.applyEmptyActiveAttentionsState();
+      return;
+    }
+
+    this.filtroAtenciones.sort((a,b)=> b.IdAtencion-a.IdAtencion);
+
+    for (let indexFilter = 0; indexFilter < this.filtroAtenciones.length; indexFilter++) {
+      const element = this.filtroAtenciones[indexFilter];
+      let fechaFormateada = this.formatearFecha(element.Fecha);
+      this.filtroAtenciones[indexFilter].Fecha = fechaFormateada.fechaF;
+      this.filtroAtenciones[indexFilter].Hora = fechaFormateada.horaF;
+      if (indexFilter == 0) {
+        this.firstSegmentId = element.IdAtencion;
+      }
+
+      if (indexFilter==(this.filtroAtenciones.length-1)) {
+        console.log('Las posiciones de los estados son ');
+        console.dir(this.readStatusArray)
+      }
+    }
+
+    setTimeout(() => {
+      $('#segmentId').text(this.firstSegmentId);
+    }, 1000);
+
+    localStorage.setItem('atencionesCount', this.filtroAtenciones.length.toString());
+
+    if (options.preserveSelection) {
+      this.syncSelectedAttentionFromList();
+      return;
+    }
+
+    this.restoreLastActiveAttention();
+  }
+
+  private syncSelectedAttentionFromList() {
+    if (!this.idAtencion || !this.filtroAtenciones.length) {
+      this.restoreLastActiveAttention();
+      return;
+    }
+
+    const currentIndex = this.filtroAtenciones.findIndex(
+      (item) => item.IdAtencion?.toString() === this.idAtencion?.toString()
+    );
+
+    if (currentIndex < 0) {
+      this.restoreLastActiveAttention();
+      return;
+    }
+
+    const selected = this.filtroAtenciones[currentIndex];
+    this.atIndex = selected.IdAtencion;
+    this.atIndexId = currentIndex;
+    this.elCliente = selected.Cliente;
+    this.elServicio = selected.Servicio;
+    this.elColorEstado = selected.ColorEstado;
+    this.laFecha = selected.Fecha;
+  }
+
+  private applyEmptyActiveAttentionsState(): void {
+    this.filtroAtenciones = [];
+    this.atIndex = null;
+    this.idAtencion = null;
+    this.firstSegmentId = null;
+    localStorage.setItem('atencionesCount', '0');
+    void this.api.markCurrentAppVersion();
   }
 
   private restoreLastActiveAttention() {
@@ -936,10 +1025,42 @@ export class Tab1Page implements OnInit {
 
   handleRefresh(event) {
     setTimeout(() => {
-      this.getAtencionesActivas();
+      void this.getAtencionesActivas();
       event.target.complete();
     }, 500);
   };
+
+  private startActiveAttentionsRefresh() {
+    this.stopActiveAttentionsRefresh(false);
+
+    this.activeAttentionsRefreshTimer = setInterval(() => {
+      void this.getAtencionesActivas({ silent: true });
+    }, this.activeAttentionsRefreshMs);
+
+    if (!this.platformPauseSub) {
+      this.platformPauseSub = this.platform.pause.subscribe(() => {
+        this.stopActiveAttentionsRefresh(false);
+      });
+      this.platformResumeSub = this.platform.resume.subscribe(() => {
+        void this.getAtencionesActivas({ silent: true });
+        this.startActiveAttentionsRefresh();
+      });
+    }
+  }
+
+  private stopActiveAttentionsRefresh(clearPlatformListeners = true) {
+    if (this.activeAttentionsRefreshTimer) {
+      clearInterval(this.activeAttentionsRefreshTimer);
+      this.activeAttentionsRefreshTimer = null;
+    }
+
+    if (clearPlatformListeners) {
+      this.platformPauseSub?.unsubscribe();
+      this.platformResumeSub?.unsubscribe();
+      this.platformPauseSub = undefined;
+      this.platformResumeSub = undefined;
+    }
+  }
   async presentActionSheet() {
     const actionSheet = await this.actionSheetCtrl.create({
       header: 'HELP',

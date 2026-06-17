@@ -13,6 +13,7 @@ describe('ConnectionService', () => {
     });
     service = TestBed.inject(ConnectionService);
     httpMock = TestBed.inject(HttpTestingController);
+    service.forceHttpProbe = true;
   });
 
   afterEach(() => {
@@ -63,5 +64,13 @@ describe('ConnectionService', () => {
     request.flush('', { status: 200, statusText: 'OK' });
     expect(latestStatus?.quality).toBe('offline');
     subscription.unsubscribe();
+  });
+
+  it('should not call the backend probe in browser dev mode', () => {
+    service.forceHttpProbe = false;
+
+    (service as any).evaluateStatus({ connected: true, connectionType: 'wifi' });
+
+    httpMock.expectNone(req => req.urlWithParams.includes('connectivityCheck='));
   });
 });

@@ -139,8 +139,8 @@
             </ion-row>
             <ion-row>
               <ion-col size="12">
-                <ion-input *ngIf="elExpedienteSerie" readonly [value]="elChasisAsegurado"></ion-input>
-                <ion-input *ngIf="!elExpedienteSerie" type="text" [(ngModel)]="elChasisAsegurado"></ion-input>
+                <ion-input *ngIf="!allowManualChasisInput()" readonly [value]="elChasisAsegurado"></ion-input>
+                <ion-input *ngIf="allowManualChasisInput()" type="text" [(ngModel)]="elChasisAsegurado" (ionInput)="onVehicleIdentifierChange()" class="required-data"></ion-input>
               </ion-col>
             </ion-row>
           </ion-grid>
@@ -167,8 +167,8 @@
             </ion-row>
             <ion-row>
               <ion-col size="12">
-                <ion-input *ngIf="elMotorAsegurado" readonly [value]="elMotorAsegurado"></ion-input>
-                <ion-input *ngIf="!elMotorAsegurado" type="text" [(ngModel)]="elMotorAsegurado"></ion-input>
+                <ion-input *ngIf="!allowManualMotorInput()" readonly [value]="elMotorAsegurado"></ion-input>
+                <ion-input *ngIf="allowManualMotorInput()" type="text" [(ngModel)]="elMotorAsegurado" (ionInput)="onVehicleIdentifierChange()" class="required-data"></ion-input>
               </ion-col>
             </ion-row>
           </ion-grid>
@@ -181,12 +181,23 @@
             </ion-row>
             <ion-row>
               <ion-col size="12">
-                <ion-input *ngIf="elChasisAsegurado != null" readonly [value]="elChasisAsegurado"></ion-input>
-                <ion-input *ngIf="elChasisAsegurado == null || elChasisAsegurado == '' || elChasisAsegurado == 'N/D'" type="text" [(ngModel)]="elChasisAsegurado"></ion-input>
+                <ion-input *ngIf="!allowManualChasisInput()" readonly [value]="elChasisAsegurado"></ion-input>
+                <ion-input *ngIf="allowManualChasisInput()" type="text" [(ngModel)]="elChasisAsegurado" (ionInput)="onVehicleIdentifierChange()" class="required-data"></ion-input>
               </ion-col>
             </ion-row>
           </ion-grid>
         </ion-item>
+
+        <div
+          class="form-match-feedback"
+          [class.is-warning]="chassisValidation?.mode !== 'valid'"
+          [class.is-success]="chassisValidation?.mode === 'valid' && chassisValidation?.message"
+          *ngIf="chassisValidation?.message"
+          role="status"
+          aria-live="polite">
+          <ion-icon [name]="chassisValidation?.mode === 'valid' ? 'checkmark-circle-outline' : 'warning-outline'"></ion-icon>
+          <span>{{ chassisValidation?.message }}</span>
+        </div>
 
         <ion-item class="ion-no-padding  input">
           <ion-grid>
@@ -195,8 +206,8 @@
             </ion-row>
             <ion-row>
               <ion-col size="12">
-                <ion-input *ngIf="laPolizaExternaAsegurado != null" readonly [value]="laPolizaExternaAsegurado"></ion-input>
-                <ion-input *ngIf="laPolizaExternaAsegurado == null || laPolizaExternaAsegurado == '' || laPolizaExternaAsegurado == 'N/D'" type="text" [(ngModel)]="laPolizaExternaAsegurado" class="required-data"></ion-input>
+                <ion-input *ngIf="!allowManualPolizaInput()" readonly [value]="laPolizaExternaAsegurado"></ion-input>
+                <ion-input *ngIf="allowManualPolizaInput()" type="text" [(ngModel)]="laPolizaExternaAsegurado" (ionInput)="onVehicleIdentifierChange()" class="required-data"></ion-input>
               </ion-col>
             </ion-row>
           </ion-grid>

@@ -22,6 +22,12 @@ import { FormatosService } from '../services/formatos.service';
 import { CountrydataService } from '../services/countrydata.service';
 import { validateClaimStage } from '../validation/claim-validation';
 import { clienteScreenValidationRules } from '../validation/claim-validation.rules';
+import {
+  buildInterAutoValidationInput,
+  evaluateInterAutoChassisValidation,
+  InterAutoChassisValidationState,
+  normalizeVehicleIdentifier
+} from '../validation/inter-auto-chassis.validation';
 import { Keyboard } from '@capacitor/keyboard';
 import * as $ from 'jquery';
 import { WebElement } from 'protractor';
@@ -119,6 +125,7 @@ export class ClientehnPage implements OnInit {
   validacionCompleta: boolean = false;
   identidadDelCliente: any;  progInterval: any;  indexFront: any; firmaIcono:any = editarFirmaIcono;
   esAudiencia: boolean | undefined;
+  chassisValidation: InterAutoChassisValidationState | null = null;
 
   // INICIALIZACION
   constructor(private router: Router,    private route: ActivatedRoute,    private loading: LoadingController,    private alert: AlertController,
@@ -1322,6 +1329,8 @@ export class ClientehnPage implements OnInit {
 
 
     if (Network) { this.checkConnection(); }
+
+    this.applyInterAutoChassisValidation();
   }
 
 
@@ -2068,14 +2077,12 @@ export class ClientehnPage implements OnInit {
     this.laExpediente[0].Year = event.target.value;
   }
 
-  entrarMotor(event:any) {
-    this.elExpediente.Motor = event.target.value;
-    this.laExpediente[0].Motor = event.target.value;
+  entrarMotor(_event:any) {
+    this.onVehicleIdentifierChange();
   }
 
-  entrarChasis(event:any) {
-    this.elExpediente.Chasis = event.target.value;
-    this.laExpediente[0].Chasis = event.target.value;
+  entrarChasis(_event:any) {
+    this.onVehicleIdentifierChange();
   }
 
   entrarPlaca(event:any) {
@@ -3673,6 +3680,79 @@ export class ClientehnPage implements OnInit {
       ]
     });
     alert.present();
+  }
+
+  allowManualChasisInput(): boolean {
+    if (this.chassisValidation?.applies) {
+      return this.chassisValidation.enableManualChasis;
+    }
+
+    const chasis = normalizeVehicleIdentifier(this.laExpediente?.[0]?.Chasis);
+    return !chasis;
+  }
+
+  allowManualMotorInput(): boolean {
+    if (this.chassisValidation?.applies) {
+      return this.chassisValidation.enableManualMotor;
+    }
+
+    return !normalizeVehicleIdentifier(this.laExpediente?.[0]?.Motor);
+  }
+
+  onVehicleIdentifierChange() {
+    this.syncVehicleIdentifiersToExpediente();
+    this.applyInterAutoChassisValidation(true);
+  }
+
+  private applyInterAutoChassisValidation(preserveManualEntry = false) {
+    const expediente = this.laExpediente?.[0];
+    if (!expediente) {
+      return;
+    }
+
+    const previousManualChasis = preserveManualEntry && this.chassisValidation?.enableManualChasis;
+    const previousManualMotor = preserveManualEntry && this.chassisValidation?.enableManualMotor;
+
+    const validation = evaluateInterAutoChassisValidation(
+      buildInterAutoValidationInput(expediente)
+    );
+
+    if (!validation.applies) {
+      this.chassisValidation = null;
+      return;
+    }
+
+    if (validation.swappedValues || !preserveManualEntry) {
+      expediente.Chasis = validation.chasis;
+      expediente.Motor = validation.motor;
+      this.elExpediente.Chasis = validation.chasis;
+      this.elExpediente.Motor = validation.motor;
+    }
+
+    if (preserveManualEntry) {
+      validation.enableManualChasis = previousManualChasis || validation.enableManualChasis;
+      validation.enableManualMotor = previousManualMotor || validation.enableManualMotor;
+    }
+
+    this.chassisValidation = validation;
+    this.syncVehicleIdentifiersToExpediente();
+  }
+
+  private syncVehicleIdentifiersToExpediente() {
+    const expediente = this.laExpediente?.[0];
+    if (!expediente) {
+      return;
+    }
+
+    if (this.elExpediente?.[0]) {
+      this.elExpediente[0].Chasis = expediente.Chasis;
+      this.elExpediente[0].Motor = expediente.Motor;
+    }
+
+    this.dataProcess['ChasisVehiculo'] = expediente.Chasis;
+    this.dataProcess['Motor'] = expediente.Motor;
+    localStorage.setItem('dataProcess-ChasisVehiculo', expediente.Chasis || '');
+    localStorage.setItem('elExpediente', JSON.stringify(this.laExpediente));
   }
 
 }

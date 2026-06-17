@@ -7,9 +7,15 @@ import { Atenciones } from '../interfaces/atenciones';
 import { ApiService } from '../services/api.service';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { ToastService } from '../services/toast.service';
-import { finalize } from 'rxjs/operators';
+import { finalize, switchMap, map, catchError } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
 import { printerIcons } from '../environments/printer-center';
 import { TabsPage } from '../tabs/tabs.page';
+import {
+  AttentionStatusView,
+  attentionNeedsClaimLookup,
+  resolveAttentionStatus
+} from '../utils/attention-status.util';
 import * as $ from 'jquery';
 
 @Component({
@@ -19,9 +25,9 @@ import * as $ from 'jquery';
 })
 
 export class Tab2Page implements OnInit{
-  atenciones:Atenciones[] | undefined;  imagenes:any=[];  public results = [];  public iconos = printerIcons;  dateAt:number= Date.now();
+  atenciones:Atenciones[] | undefined;  imagenes:any=[];  public results: Atenciones[] = [];  public resultsView: Array<{ atencion: Atenciones; status: AttentionStatusView; index: number }> = [];
   idAtencion:any;  elColorEstado:any;  isKeyboard: boolean | undefined;  esClienteCompleto:boolean | undefined;  isLoading: boolean | undefined;  searchInterval:any;
-  timer:number=0;  busca:string="";  laImg: any;  printUrl:any; isPrint:boolean=true;
+  timer:number=0;  busca:string="";  laImg: any;  printUrl:any; isPrint:boolean=true;  public iconos = printerIcons;  dateAt:number= Date.now();
 
   @ViewChild("searchCase", { static: true }) inputS: any;
   datosDeAtencion: any;
@@ -107,85 +113,21 @@ export class Tab2Page implements OnInit{
 
   async getAtenciones(){
     this.isLoading = true;
-    this.api.MisAtenciones(this.api.currentUser.ProveedorAgenteId).pipe( 
+    this.api.MisAtenciones(this.api.currentUser.ProveedorAgenteId).pipe(
+      switchMap((res) => this.enrichAttentionsWithClaimCodes(res)),
       finalize(async ()=>{console.log('fin')})
     ).subscribe(
       async (res) =>{
         console.log(res);
         this.results = res;
-        this.atenciones= res;
+        this.atenciones = res;
         this.isLoading = false;
 
         localStorage.setItem('atenciones-ajustador', JSON.stringify(this.atenciones));
 
         this.atenciones?.sort((a,b)=> b.IdAtencion-a.IdAtencion);
-        
-        setTimeout(() => {
-            const atencionesIds = document.getElementsByClassName('result-id');
-            const clientesNombres = document.getElementsByClassName('cliente-nombre');
-            //alert(atencionesIds.length)  
-            if (this.atenciones) {
-              for (let index = 0; index < this.atenciones.length; index++) {
-              const element = this.atenciones[index];
-              atencionesIds[index].setAttribute('style', 'color:'+element.ColorEstado);
-              clientesNombres[index].setAttribute('style', 'color: black');
-            }
-            }
-            
-          }, 1000);
-/*
-        for (let index = 0; index < this.atenciones.length; index++) {
-          const element = this.atenciones[index];
-          
-
-          
-          this.api.obtenerFotoPorAtencion(element.IdAtencion, 1).pipe( 
-            finalize(async ()=>{console.log('fin')})
-          ).subscribe(
-             async (res) =>{
-              this.imagenes.push({
-                id : element.IdAtencion,
-                url : imagePrefix+res[0].FotoFirma
-              })
-              //console.log(element.IdAtencion, imagePrefix+res[0].FotoFirma)
-            },
-            async (res) => {
-              //console.log(element.IdAtencion, fondos[Math.floor(Math.random() * fondos.length)])
-
-              this.imagenes.push({
-                id : element.IdAtencion,
-                url : fondos[Math.floor(Math.random() * fondos.length)]
-              })
-            }
-          )
-            //console.log(index == (this.atenciones.length-1));
-          if (index == (this.atenciones.length-1)) {
-            let imagesContainer = document.getElementsByClassName('crop_img');
-            
-            setTimeout(() => {
-              this.inputS.setFocus();
-              $('#search-case').click();
-              console.dir(this.imagenes);
-              console.log(imagesContainer.length)
-              for (let i = 0; i < imagesContainer.length ; i++){
-                const elementImg = imagesContainer[i];
-                let laImagen = this.imagenes[i].url;
-
-                //this.results[i].Img = laImagen;
-                //elementImg.setAttribute('src', laImagen);
-
-                if (i == (this.imagenes.length-1)) {
-                  this.isLoading = false;
-                }
-                
-              }
-
-              
-            },this.timer);
-          }
-        }
-        */
-        
+        this.results = [...(this.atenciones || [])];
+        this.rebuildResultsView();
       },
       async (res) => {
         this.isLoading = false;
@@ -199,6 +141,63 @@ export class Tab2Page implements OnInit{
         await alert.present();
       }
     )
+  }
+
+  getAttentionStatus(atencion: Atenciones): AttentionStatusView {
+    return resolveAttentionStatus(atencion);
+  }
+
+  formatAttentionDate(fecha: Date | string): string {
+    const value = this.normalizeAttentionDateValue(fecha);
+    return value.split('T')[0] || '';
+  }
+
+  formatAttentionTime(fecha: Date | string): string {
+    const value = this.normalizeAttentionDateValue(fecha);
+    return (value.split('T')[1] || '').substring(0, 5);
+  }
+
+  private normalizeAttentionDateValue(fecha: Date | string): string {
+    if (typeof fecha === 'string') {
+      return fecha;
+    }
+
+    return fecha?.toISOString?.() || '';
+  }
+
+  private rebuildResultsView(source: Atenciones[] = this.results) {
+    this.resultsView = (source || []).map((atencion, index) => ({
+      atencion,
+      status: resolveAttentionStatus(atencion),
+      index
+    }));
+  }
+
+  private enrichAttentionsWithClaimCodes(atenciones: Atenciones[]) {
+    const normalized = (atenciones || []).map((item) => ({ ...item }));
+    const pendingLookup = normalized.filter((item) => attentionNeedsClaimLookup(item));
+
+    if (!pendingLookup.length) {
+      return of(normalized);
+    }
+
+    return forkJoin(
+      pendingLookup.map((item) =>
+        this.api.DatosDeAtencion(item.IdAtencion).pipe(
+          map((detailResponse) => {
+            const detail = Array.isArray(detailResponse) ? detailResponse[0] : detailResponse;
+            item.CodigoReclamoFicohsa = detail?.CodigoReclamoFicohsa?.toString().trim() || '';
+            item.CodigoBPMFicohsa = detail?.CodigoBPMFicohsa?.toString().trim() || item.CodigoBPMFicohsa;
+            item.LbEstado = detail?.LbEstado?.toString().trim() || item.LbEstado;
+            return item;
+          }),
+          catchError(() => {
+            item.CodigoReclamoFicohsa = item.CodigoReclamoFicohsa || '';
+            return of(item);
+          })
+        )
+      )
+    ).pipe(map(() => normalized));
   }
 
   abreAtencion(atencionId:any, atencionEstadoColor:any){
@@ -312,18 +311,11 @@ export class Tab2Page implements OnInit{
     this.results = this.atenciones?.filter((d) => 
       d.Cliente.toLowerCase().indexOf(query) > -1 ||
       d.Fecha.toString().toLowerCase().indexOf(query) > -1 ||
-      d.IdAtencion.toString().toLowerCase().indexOf(query) > -1
-    );
-
-    setTimeout(() => {
-      const atencionesIds = document.getElementsByClassName('atencion-id');
-      if (this.results.length == this.atenciones?.length) {
-        for (let index = 0; index < this.atenciones?.length; index++) {
-          const element = this.atenciones[index];
-          atencionesIds[index].setAttribute('style', 'color:'+element.ColorEstado);
-        }  
-      }
-    }, 400);
+      d.IdAtencion.toString().toLowerCase().indexOf(query) > -1 ||
+      this.getAttentionStatus(d).label.toLowerCase().indexOf(query) > -1 ||
+      (this.getAttentionStatus(d).claimCode || '').toLowerCase().indexOf(query) > -1
+    ) || [];
+    this.rebuildResultsView();
   }
 
   imprimirPDF(tipo:any, indexPrinter:any){

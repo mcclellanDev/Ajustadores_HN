@@ -332,8 +332,8 @@
                     </ion-row>
                   <ion-row>
                     <ion-col size="12">
-                      <ion-input *ngIf="laExpediente[0].Motor != null" readonly [value]="laExpediente[0].Motor"></ion-input>
-                      <ion-input *ngIf="laExpediente[0].Motor == null" type="text" [(ngModel)]="laExpediente[0].Motor" (ionChange)="entrarMotor($event)"
+                      <ion-input *ngIf="!allowManualMotorInput()" readonly [value]="laExpediente[0].Motor"></ion-input>
+                      <ion-input *ngIf="allowManualMotorInput()" type="text" [(ngModel)]="laExpediente[0].Motor" (ionInput)="entrarMotor($event)"
                       class="required-data"></ion-input>
                     </ion-col>
                   </ion-row>
@@ -346,14 +346,24 @@
                     </ion-row>
                   <ion-row>
                     <ion-col size="12">
-                      <ion-input *ngIf="laExpediente[0].Chasis != null" readonly [value]="laExpediente[0].Chasis"></ion-input>
-                      <ion-input *ngIf="laExpediente[0].Chasis == null || laExpediente[0].Chasis == '' || laExpediente[0].Chasis == 'N/D'" type="text" [(ngModel)]="laExpediente[0].Chasis"
-                      (ionChange)="entrarChasis($event)" class="required-data"></ion-input>
+                      <ion-input *ngIf="!allowManualChasisInput()" readonly [value]="laExpediente[0].Chasis"></ion-input>
+                      <ion-input *ngIf="allowManualChasisInput()" type="text" [(ngModel)]="laExpediente[0].Chasis"
+                      (ionInput)="entrarChasis($event)" class="required-data"></ion-input>
                       <input class="required-index" value="14">
                     </ion-col>
                   </ion-row>
                 </ion-grid>
               </ion-item>
+
+              <div
+                class="form-match-feedback"
+                [class.is-warning]="chassisValidation?.mode !== 'valid'"
+                *ngIf="chassisValidation?.message"
+                role="status"
+                aria-live="polite">
+                <ion-icon name="warning-outline"></ion-icon>
+                <span>{{ chassisValidation?.message }}</span>
+              </div>
               <ion-item class="ion-no-padding  input">
                 <ion-grid>
                   <ion-row size="12" style="color: #7da1c4;font-size:1rem;">

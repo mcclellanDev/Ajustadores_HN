@@ -16,6 +16,9 @@ export interface Atenciones {
     Fecha: Date;
     Estado: string;
     ColorEstado: string;
+    LbEstado?: string;
+    CodigoReclamoFicohsa?: string;
+    CodigoBPMFicohsa?: string;
     Img: string;
     
 }

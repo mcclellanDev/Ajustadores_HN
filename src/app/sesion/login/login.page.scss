@@ -207,6 +207,115 @@ ion-input.sesion-dato.ion-focused {
   margin-top: 2px;
 }
 
+.saved-sessions {
+  background: linear-gradient(180deg, #f7fbff 0%, #ffffff 100%);
+  border: 1px solid rgba(0, 88, 203, 0.12);
+  border-radius: 12px;
+  display: grid;
+  gap: 12px;
+  margin-bottom: 4px;
+  padding: 14px;
+}
+
+.saved-sessions-heading p {
+  color: #0058cb;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+}
+
+.saved-sessions-heading h3 {
+  color: #123662;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.saved-sessions-list {
+  display: grid;
+  gap: 10px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.saved-session-card {
+  align-items: center;
+  background: #ffffff;
+  border: 1.5px solid #d8e4f0;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(18, 54, 98, 0.06);
+  display: grid;
+  gap: 12px;
+  grid-template-columns: auto 1fr auto;
+  padding: 12px 10px 12px 12px;
+  text-align: left;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  width: 100%;
+}
+
+.saved-session-card.is-selected {
+  border-color: #0058cb;
+  box-shadow: 0 10px 24px rgba(0, 88, 203, 0.14);
+  transform: translateY(-1px);
+}
+
+.saved-session-avatar {
+  align-items: center;
+  background: linear-gradient(135deg, #0058cb 0%, #00c0e8 100%);
+  border-radius: 14px;
+  color: #ffffff;
+  display: grid;
+  font-size: 0.82rem;
+  font-weight: 800;
+  height: 44px;
+  place-items: center;
+  width: 44px;
+}
+
+.saved-session-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.saved-session-copy strong {
+  color: #123662;
+  font-size: 0.92rem;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-session-copy small {
+  color: #667085;
+  font-size: 0.78rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-session-meta {
+  color: #315b80 !important;
+  font-size: 0.72rem !important;
+  font-weight: 700;
+}
+
+.saved-session-remove {
+  --background-hover: rgba(239, 90, 34, 0.08);
+  --color: #ef5a22;
+  height: 38px;
+  margin: 0;
+  width: 38px;
+}
+
+.saved-session-remove ion-icon {
+  font-size: 1.15rem;
+}
+
 ion-spinner {
   height: 20%;
   left: 40%;
@@ -566,6 +675,20 @@ ion-spinner {
     margin: 0 auto;
     max-width: 420px;
     padding: 22px;
+  }
+
+  .saved-sessions-list {
+    max-height: 180px;
+  }
+
+  .saved-session-card {
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .saved-session-avatar {
+    height: 40px;
+    width: 40px;
   }
 }
 

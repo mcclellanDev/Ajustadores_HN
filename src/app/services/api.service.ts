@@ -5,9 +5,9 @@ import { helpFilesUrl } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { tap, switchMap, finalize } from 'rxjs/operators';
-import { BehaviorSubject, from, Observable, of } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { tap, switchMap, finalize, catchError } from 'rxjs/operators';
+import { BehaviorSubject, from, Observable, of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { CapacitorHttp, HttpResponse } from '@capacitor/core';
 import { firmaDemoAjustador, emptySignature, emptySignatureWhite } from '../environments/signatures';
@@ -18,6 +18,7 @@ import * as $ from 'jquery';
 import { ToastService } from './toast.service';
 import { error } from 'console';
 import { versionAndroid } from '../interfaces/variables';
+import { SavedLoginSessionsService } from './saved-login-sessions.service';
 //Constantes
 const ACCESS_TOKEN_KEY = 'MY_ACCESS_CODE' //this change maybe later
 const USER_DATA = 'MY_USER_DATA' // CHANGE LATER TOO
@@ -53,7 +54,12 @@ export class ApiService {
   siniestroData: any = [];
   coberturas: any = [];
   private silentLoginPromise: Promise<boolean> | null = null;
-  constructor(private http: HttpClient, private router: Router, private toaster:ToastService){ 
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private toaster: ToastService,
+    private savedSessions: SavedLoginSessionsService
+  ) {
     localStorage.setItem('apiUrl', this.apiUrl);
   }
    async request(urlRequest:string, data:any){
@@ -110,6 +116,23 @@ export class ApiService {
     const credentials = await this.getStoredLoginCredentials();
     return !!(credentials.User && credentials.Password);
   }
+
+  async persistPasswordChange(
+    email: string,
+    password: string,
+    options?: { fromActiveSession?: boolean }
+  ): Promise<void> {
+    await this.savedSessions.saveSession(
+      email,
+      password,
+      this.currentUser?.NombreAgente
+    );
+    this.clearPendingSessionRecovery();
+
+    if (options?.fromActiveSession) {
+      await this.markCurrentAppVersion();
+    }
+  }
   MisAtenciones(credentials:any): Observable<any> {
     console.log(credentials);
 
@@ -127,16 +150,23 @@ export class ApiService {
   MisAtencionesActivas(credentials:any): Observable<any> {
     console.log(credentials);
 
-    // 3912
-   return this.http.get(`${this.apiUrl}/Proveedor/ObtenerMisAtencionesActivas?IdProveedorAgente=${credentials}`).pipe(
-    //switchMap((tokens: {accessToken, refreshToken }) => {
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-  )
+    return this.http.get(`${this.apiUrl}/Proveedor/ObtenerMisAtencionesActivas?IdProveedorAgente=${credentials}`).pipe(
+      switchMap((res: any) => {
+        if (!Array.isArray(res)) {
+          return of([]);
+        }
+        return from(Promise.all(res));
+      }),
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 400) {
+          return of([]);
+        }
+        return throwError(() => error);
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    );
   }
 
   // get /api/Proveedor/ContarOtrosDanios
@@ -1002,13 +1032,28 @@ export class ApiService {
   }
 
   private async getStoredLoginCredentials(): Promise<{ User: string, Password: string }> {
-    const secureUser = await this.readSecureValue('User');
-    const securePassword = await this.readSecureValue('Password');
+    let user = await this.readSecureValue('User');
+    if (!user) {
+      user = localStorage.getItem('correoActual') || '';
+    }
 
-    return {
-      User: secureUser || localStorage.getItem('correoActual') || '',
-      Password: securePassword || localStorage.getItem('passwordActual') || ''
-    };
+    let password = await this.readSecureValue('Password');
+    if (!password) {
+      password = localStorage.getItem('passwordActual') || '';
+    }
+
+    if (user) {
+      const savedPassword = await this.savedSessions.getPassword(user);
+      if (savedPassword && savedPassword !== password) {
+        password = savedPassword;
+        await this.savedSessions.syncPrimaryCredentials(user, password);
+      } else if (savedPassword && !password) {
+        password = savedPassword;
+        await this.savedSessions.syncPrimaryCredentials(user, password);
+      }
+    }
+
+    return { User: user, Password: password };
   }
 
   private async readSecureValue(key: string): Promise<string> {

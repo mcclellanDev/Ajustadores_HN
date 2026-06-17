@@ -21,6 +21,39 @@
           <h2>Bienvenido</h2>
         </header>
 
+        <section class="saved-sessions" *ngIf="recentSessions.length > 0">
+          <div class="saved-sessions-heading">
+            <p>Sesiones guardadas</p>
+            <h3>Selecciona una cuenta reciente</h3>
+          </div>
+
+          <div class="saved-sessions-list">
+            <button
+              type="button"
+              class="saved-session-card"
+              *ngFor="let session of recentSessions"
+              [class.is-selected]="selectedSessionEmail === session.email"
+              (click)="selectSavedSession(session)">
+              <span class="saved-session-avatar">{{ getSessionInitials(session) }}</span>
+
+              <span class="saved-session-copy">
+                <strong>{{ session.displayName || session.email }}</strong>
+                <small>{{ session.email }}</small>
+                <small class="saved-session-meta">Último acceso: {{ formatSessionDate(session.lastUsed) }}</small>
+              </span>
+
+              <ion-button
+                class="saved-session-remove"
+                fill="clear"
+                type="button"
+                aria-label="Eliminar sesión guardada"
+                (click)="removeSavedSession(session, $event)">
+                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+              </ion-button>
+            </button>
+          </div>
+        </section>
+
         <label class="login-field-label" for="login-email">Correo electrónico</label>
         <ion-input
           id="login-email"

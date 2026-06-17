@@ -849,6 +849,8 @@ ion-avatar {
   display: flex;
   flex-direction: column;
   padding: 16px;
+  --appointment-item-height: 74px;
+  --appointment-item-gap: 10px;
 }
 
 .case-panel {
@@ -939,11 +941,22 @@ ion-avatar {
 }
 
 .appointments-list {
-  flex: 1;
+  flex: 0 1 auto;
   margin: 14px 0 0;
+  max-height: calc(var(--visible-appointments-count, 3) * (var(--appointment-item-height) + var(--appointment-item-gap)));
   min-height: 0;
-  overflow: auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.appointments-scroll-hint {
+  color: #637389;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 12px 0 0;
 }
 
 .appointment-item {
@@ -1451,10 +1464,12 @@ ion-modal.update-modal {
     border-radius: 10px;
     min-height: auto;
     padding: 12px;
+    --appointment-item-height: 58px;
+    --appointment-item-gap: 7px;
   }
 
   .appointments-list {
-    max-height: 30vh;
+    max-height: calc(var(--visible-appointments-count, 3) * (var(--appointment-item-height) + var(--appointment-item-gap)));
   }
 
   .case-panel {

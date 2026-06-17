@@ -288,7 +288,16 @@ async abrirCamara(){
 }
 
 goPasswordChange(){
-  this.router.navigate(['./recovery']);
+  const email = this.api.currentUser?.Correo
+    || localStorage.getItem('correoActual')
+    || '';
+
+  this.router.navigate(['./recovery'], {
+    state: {
+      email,
+      fromApp: true
+    }
+  });
 }
 
 async firmarInspector(){

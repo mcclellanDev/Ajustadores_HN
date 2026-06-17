@@ -305,3 +305,34 @@
     font-weight: 800;
   }
 }
+
+.form-match-feedback {
+  align-items: flex-start;
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+  display: flex;
+  font-size: 0.86rem;
+  font-weight: 700;
+  gap: 8px;
+  line-height: 1.45;
+  margin: 10px 0 0;
+  padding: 10px 12px;
+}
+
+.form-match-feedback ion-icon {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  margin-top: 1px;
+}
+
+.form-match-feedback.is-warning {
+  background: #fffbeb;
+  border-color: #f59e0b;
+  color: #b45309;
+}
+
+.form-match-feedback.is-success {
+  background: #f0fdf4;
+  border-color: #16a34a;
+  color: #15803d;
+}

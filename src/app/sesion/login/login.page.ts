@@ -16,6 +16,7 @@ import { environment } from 'src/environments/environment';
 import { emailDomains } from 'src/app/environments/domains';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import { ClearWatchOptions, Geolocation, GeolocationPluginPermissions } from '@capacitor/geolocation';
+import { SavedLoginSession, SavedLoginSessionsService } from 'src/app/services/saved-login-sessions.service';
 import * as $ from 'jquery';
 
 @Component({
@@ -47,6 +48,8 @@ export class LoginPage implements OnInit {
   dataDeEnvio: any = [];
   usuarioCache: string | undefined;
   passwordCache: string | undefined;
+  recentSessions: SavedLoginSession[] = [];
+  selectedSessionEmail: string | null = null;
 
    conectividadStat?: boolean;  estadoConexionGPS: string | undefined; 
 
@@ -59,7 +62,8 @@ export class LoginPage implements OnInit {
         private httpService: HttpService,
         private platform:Platform,
         private so: ScreenOrientation,
-        private toaster:ToastService
+        private toaster:ToastService,
+        private savedSessions: SavedLoginSessionsService
   ) 
   { 
     this.valorMarca = this.marcasArray;
@@ -74,16 +78,19 @@ export class LoginPage implements OnInit {
     SecureStoragePlugin.get({ key: 'User' }).then((result) => {
       this.item.user = result.value;
       this.usuarioCache = this.item.user;
-      console.log('User retrieved from secure storage:', this.item.user);
+      this.credenciales?.patchValue({ user: result.value });
     }).catch(() => {});
     SecureStoragePlugin.get({ key: 'Password' }).then((result) => {
       this.item.password = result.value;
       this.passwordCache = this.item.password;
-      console.log('Password retrieved from secure storage:', this.item.password);
+      this.credenciales?.patchValue({ password: result.value });
+      this.credenciales?.updateValueAndValidity();
     }).catch(() => {});
   }
 
   ionViewDidEnter(){
+    void this.loadRecentSessions();
+
     const permissionResult = Geolocation.checkPermissions();
 
     console.log('ionViewDidEnter checando los permisos de gelocacion ');
@@ -115,12 +122,6 @@ export class LoginPage implements OnInit {
 
   ngOnInit() {
     this.platform.ready().then(() => {
-      this.obtenerCacheUsuario();
-
-      setTimeout(() => {
-        //alert('Estas credenciales ... usuario'+this.usuarioCache+' ... contraseña'+this.passwordCache)
-        
-      }, 900);
       if (this.platform.is('hybrid')) {
         Keyboard.addListener('keyboardDidHide', () => {
           this.showRegister();
@@ -130,9 +131,108 @@ export class LoginPage implements OnInit {
     });
 
     this.credenciales = new FormGroup({
-      user: new FormControl([''],[ Validators.required, Validators.email]),
-      password: new FormControl([], Validators.required)
+      user: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', Validators.required)
     });
+  }
+
+  async loadRecentSessions() {
+    this.recentSessions = await this.savedSessions.loadSessions();
+
+    if (this.recentSessions.length > 0) {
+      await this.selectSavedSession(this.recentSessions[0]);
+      return;
+    }
+
+    this.obtenerCacheUsuario();
+  }
+
+  async selectSavedSession(session: SavedLoginSession) {
+    this.selectedSessionEmail = session.email;
+    const password = await this.savedSessions.getPassword(session.email);
+
+    this.item.user = session.email;
+    this.item.password = password;
+    this.usuarioCache = session.email;
+    this.passwordCache = password;
+
+    this.credenciales?.patchValue({
+      user: session.email,
+      password
+    });
+    this.credenciales?.markAllAsTouched();
+    this.credenciales?.updateValueAndValidity();
+  }
+
+  async removeSavedSession(session: SavedLoginSession, event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const alert = await this.alert.create({
+      cssClass: 'login-menu-alert',
+      header: 'Eliminar sesión guardada',
+      subHeader: 'Cuenta guardada',
+      message: `¿Deseas quitar ${session.displayName || session.email} de la lista de sesiones recientes?`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'logout-menu-button logout-menu-cancel'
+        },
+        {
+          text: 'Eliminar',
+          cssClass: 'logout-menu-button logout-menu-danger',
+          handler: () => {
+            void this.confirmRemoveSavedSession(session);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private async confirmRemoveSavedSession(session: SavedLoginSession) {
+    await this.savedSessions.removeSession(session.email);
+    this.recentSessions = await this.savedSessions.loadSessions();
+
+    if (this.selectedSessionEmail?.toLowerCase() === session.email.toLowerCase()) {
+      this.selectedSessionEmail = null;
+      this.item.user = '';
+      this.item.password = '';
+      this.credenciales?.reset({
+        user: '',
+        password: ''
+      });
+    }
+
+    if (this.recentSessions.length > 0) {
+      await this.selectSavedSession(this.recentSessions[0]);
+    }
+
+    this.toaster.presentToastNoButtons('Sesión eliminada de la lista.', 'top', 'login');
+  }
+
+  formatSessionDate(value: string): string {
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+      return 'Reciente';
+    }
+
+    return parsed.toLocaleString('es-HN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  getSessionInitials(session: SavedLoginSession): string {
+    const source = session.displayName || session.email;
+    const parts = source.split(/[\s@._-]+/).filter(Boolean);
+    const initials = parts.slice(0, 2).map((part) => part.charAt(0).toUpperCase()).join('');
+    return initials || 'H';
   }
 
   permitirGPS(conectividadStat:any){
@@ -169,31 +269,34 @@ export class LoginPage implements OnInit {
     }else{console.log('nada aun')}
   }
   async login(){
-    this.isLoading =true;
-    console.log(this.credenciales.value)
-    let data = this.credenciales.value;
-    this.dataDeEnvio.push({ key: 'User', value: data.user });
-    this.dataDeEnvio.push({ key: 'Password', value: data.password });
-    let sendData = {
+    this.isLoading = true;
+    const data = this.credenciales.value;
+    this.dataDeEnvio = [
+      { key: 'User', value: data.user },
+      { key: 'Password', value: data.password }
+    ];
+    const sendData = {
       User: data.user,
       Password: data.password
-    }
-    console.log(sendData);
+    };
 
-    console.log('Success');
     for (let indexD = 0; indexD < this.dataDeEnvio.length; indexD++) {
       const element = this.dataDeEnvio[indexD];
-      SecureStoragePlugin.set({ key: element.key, value: element.value }).then((success) => 
+      SecureStoragePlugin.set({ key: element.key, value: element.value }).then((success) =>
         console.dir(success)
       );
     }
-  
+
+    await this.savedSessions.syncPrimaryCredentials(data.user, data.password);
+
     this.api.login(sendData).subscribe(
-      async (res) =>{
-       // alert('lo logré')
+      async () => {
         this.isLoading = false;
-        console.log("la respuesta del login");
-        console.dir(res)
+        await this.savedSessions.saveSession(
+          data.user,
+          data.password,
+          this.api.currentUser?.NombreAgente
+        );
         this.router.navigate(['./tabs/tab1']);
       },
       async (res) => {
@@ -257,6 +360,7 @@ export class LoginPage implements OnInit {
   }
 
   walkEmail(event){
+    this.selectedSessionEmail = null;
     let daEmail = event.target.value;
     for (let index = 0; index < this.dominios.length; index++) {
       const element = this.dominios[index];
