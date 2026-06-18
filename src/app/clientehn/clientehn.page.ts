@@ -21,7 +21,7 @@ import { responsableTipos } from '../environments/responsable';
 import { Predeterminados, ItemsExpediente, requiredData, requiredDataLabels, requiredData_Less, requiredDataAjustador, requiredDataCliente } from '../environments/predeterminados';
 import { FormatosService } from '../services/formatos.service';
 import { CountrydataService } from '../services/countrydata.service';
-import { validateClaimStage } from '../validation/claim-validation';
+import { validateClaimStage, normalizeLicenseExpirationDate } from '../validation/claim-validation';
 import { clienteScreenValidationRules } from '../validation/claim-validation.rules';
 import {
   buildInterAutoValidationInput,
@@ -88,7 +88,7 @@ export class ClientehnPage implements OnInit {
   culpableTrabajo: any;  culpableContacto: any;  culpableContactoNumero: any;  culpableIdentidad: any;  culpableEsPropiertario: boolean = true;
   elTipoParentesco: any;  edadConductor: any;  daSegment: any = "location"; firstInterval: any; imageHeight: any; atencionId: number | undefined; licenciaTipos: any = [];
   elTipoLicenciaId: any; elTipoGenero: any;  inicialGenero: any;  fechaNacimiento:any;  mydate: any;  laLatitud: any;  laLongitud: any;  licenciaTipo: any;
-  formateada: any;  formateadaVigencia:any;  conexion: ConnectionStatus | undefined;  esMarca: boolean = false;  openModal: boolean = false;  conectividad: boolean | undefined;
+  formateada: any;  formateadaVigencia:any;  formateadaVigenciaPicker: string | null = null;  conexion: ConnectionStatus | undefined;  esMarca: boolean = false;  openModal: boolean = false;  conectividad: boolean | undefined;
   isEditSig: boolean = false;  idAtencion: any;  isLoading: boolean = false;  isTablet: boolean = false;  isComplete: boolean = false;  isCompleteAcuerdo: boolean = false;
   isSignature: boolean = false;  plataforma: any;  dispositivo: any;  firmaPrecargada: any;  nombreCliente: any;  elTipoSolicitante: any;  idTablaAjustador: any;
   laFechaSiniestro: any;  formateadaSiniestro: any;  formateadaNacimiento: any;  taller: any;  tallerId: any;  tallerOtro: any = '';  tallerOtroDireccion: any = '';
@@ -98,7 +98,8 @@ export class ClientehnPage implements OnInit {
   guardar = true;  editar = false;  indexPersona: any;  showPropiedad = false;  indexPropiedad: any; ancho = window.innerWidth;  laLocalidad: any;  miLocalidad: any;
   miPais: any;  miPaisNombre: any;  miPaisLocalidad: any;  miPaisLocalidadSub: any;  miPaisBandera: any;  paisId: number | undefined;  datoIndex: number = 0;  paisIdentidad: any;
   nombreDelConductor: any;  generoConductor: any;  audienciaId: any;  tipoVehiculo: any;  tipoDeVehiculo: any;  vigencia: boolean = false; identidadAsegurado:any;clientCompleteArray:any=[]
-  moneda: any;  expediente: any;  miMoneda: string | undefined; isFormSaved:boolean=false; indexUpdate:number | undefined; isVence:boolean=false; uPoli:any; datosAtencion:any=[];
+  moneda: any;  expediente: any;  miMoneda: string | undefined; isFormSaved:boolean=false; indexUpdate:number | undefined; isVence:boolean=false;
+  vigenciaErrorMessage = 'La fecha de vencimiento es obligatoria. Selecciona una fecha válida desde el calendario (hoy o posterior).'; uPoli:any; datosAtencion:any=[];
   edad: number | undefined; esCacheCliente:boolean=false;  nombreAtribuye: string | undefined; esMenor:boolean=false; elTipoDeConductor:any; elTipoDeParentesco:any;
   elTipoDeLicencia: any;  daType: any;  conductorEsAfiliado: boolean = false;
   nombreConductor: any;  daTipoConductor: any;  daNombreConductor: any;  daIdentidadConductor: any;  identidad: any; daTelefonoFijoConductor:any;
@@ -107,6 +108,8 @@ export class ClientehnPage implements OnInit {
   segmentoTitulo: string = 'Formulario del cliente';
   readonly birthDateMin = '1900-01-01';
   readonly birthDateMax = new Date().toISOString().split('T')[0];
+  readonly licenseExpirationMin = new Date().toISOString().split('T')[0];
+  readonly licenseExpirationMax = `${new Date().getFullYear() + 20}-12-31`;
   driverTypeSelectOptions = {
     cssClass: 'form-choice-alert',
     header: 'Tipo de conductor',
@@ -283,10 +286,13 @@ export class ClientehnPage implements OnInit {
 
             if (fechaVigencia) {
               console.log('Hay una fecha: '+fechaVigencia)
-              this.setVencimiento(fechaVigencia);
-              this.isVence = true;
-            }else{
-              this.isVence = false;
+              if (this.applyVigenciaFromRaw(fechaVigencia)) {
+                this.isVence = true;
+              } else {
+                this.clearVigenciaValue();
+              }
+            } else {
+              this.clearVigenciaValue();
             }
 
             if (usoPoliza) {
@@ -755,10 +761,13 @@ export class ClientehnPage implements OnInit {
 
             if (fechaVigencia) {
               console.log('Hay una fecha: '+fechaVigencia)
-              this.setVencimiento(fechaVigencia);
-              this.isVence = true;
-            }else{
-              this.isVence = false;
+              if (this.applyVigenciaFromRaw(fechaVigencia)) {
+                this.isVence = true;
+              } else {
+                this.clearVigenciaValue();
+              }
+            } else {
+              this.clearVigenciaValue();
             }
 
             if (usoPoliza) {
@@ -2157,82 +2166,70 @@ export class ClientehnPage implements OnInit {
   }
 }
 
-  entraVencimiento(event:any) {
-    let vigenciaLength = event.target.value.length;
-    if (vigenciaLength < 10) {}else{
-      var dateFormat = event.target.value.split('T')[0]; 
-      //console.log('dateFormat '+ dateFormat)
-      let dia = dateFormat.toString().substring(0,2);
-      let mes = dateFormat.toString().substring(3, 5);
-      let anio = dateFormat.toString().substring(6);
+  private clearVigenciaValue(): void {
+    this.formateadaVigencia = null;
+    this.formateadaVigenciaPicker = null;
+    this.isVence = false;
+    this.vigenciaErrorMessage = 'La fecha de vencimiento es obligatoria. Selecciona una fecha válida desde el calendario (hoy o posterior).';
+    delete this.dataProcess?.Vigencia;
+    if (this.dataProcess) {
+      delete this.dataProcess['Vigencia'];
+    }
+    if (this.laExpediente?.[0]) {
+      this.laExpediente[0].Vigencia = null;
+    }
+    localStorage.removeItem('dataProcess-Vigencia');
+  }
 
-      let laFormateada = anio+'-'+mes+'-'+dia;
-      localStorage.setItem('dataProcess-Vigencia', laFormateada);
-      this.formateadaVigencia = dateFormat;
-      this.isVence = true;
-      
-      let now = new Date().toISOString();
-      let nowDate = now.split('T')[0];
-      let vigente:boolean;
-      console.log(new Date(nowDate)+', '+new Date(laFormateada));
-      if(new Date(nowDate) > new Date(laFormateada)){
-        vigente = false;
-      }else{
-        vigente = true;
-      }
+  private applyVigenciaFromRaw(rawValue: any): boolean {
+    const normalized = normalizeLicenseExpirationDate(rawValue);
+    if (!normalized) {
+      this.vigenciaErrorMessage = 'La fecha de vencimiento es obligatoria. Selecciona una fecha válida desde el calendario (hoy o posterior).';
+      return false;
+    }
 
-      console.log('Licencia está vigente? ');
-      console.log(this.vigencia);
-      if (vigente == false) {
-        this.entraLicenciaEstadoCalculado(2);
-      }else{
-        this.entraLicenciaEstadoCalculado(1);
+    if (normalized.storageValue < this.licenseExpirationMin) {
+      this.vigenciaErrorMessage = 'La fecha de vencimiento no puede ser anterior a hoy.';
+      return false;
+    }
+
+    this.formateadaVigencia = normalized.displayValue;
+    this.formateadaVigenciaPicker = normalized.storageValue;
+    this.dataProcess.Vigencia = normalized.isoValue;
+    this.dataProcess['Vigencia'] = normalized.isoValue;
+    this.laExpediente[0].Vigencia = normalized.isoValue;
+    localStorage.setItem('dataProcess-Vigencia', normalized.storageValue);
+    this.isVence = true;
+    this.entraLicenciaEstadoCalculado(1);
+    return true;
+  }
+
+  marcarFechaVencimiento(event: any) {
+    const rawValue = event?.detail?.value ?? event?.target?.value ?? event;
+    if (!this.applyVigenciaFromRaw(rawValue)) {
+      this.isVence = false;
+      this.formateadaVigencia = null;
+      this.formateadaVigenciaPicker = null;
+      delete this.dataProcess?.Vigencia;
+      if (this.dataProcess) {
+        delete this.dataProcess['Vigencia'];
       }
-      console.log(this.formateadaVigencia)
-      let fechaVigencia = new Date(this.formateadaVigencia).toISOString();
-      console.log(fechaVigencia)
-      this.dataProcess.Vigencia = fechaVigencia;
-      this.dataProcess['Vigencia'] = fechaVigencia;
-      console.log('Finalmente la vigencia es '+fechaVigencia)
+      if (this.laExpediente?.[0]) {
+        this.laExpediente[0].Vigencia = null;
+      }
+      localStorage.removeItem('dataProcess-Vigencia');
+      this.toaster.presentToastNoButtonsRed(this.vigenciaErrorMessage, 'top', 'danger');
     }
   }
 
+  entraVencimiento(event:any) {
+    this.marcarFechaVencimiento(event);
+  }
+
   setVencimiento(fecha:any) {
-    //alert(fecha)
-    let vigenciaLength = fecha.length;
-    if (vigenciaLength < 10) {}else{
-      var dateFormat = fecha.split('T')[0]; 
-      
-      let dia = dateFormat.toString().substring(0,2);
-      let mes = dateFormat.toString().substring(3, 5);
-      let anio = dateFormat.toString().substring(6);
-
-      let laFormateada = anio+'-'+mes+'-'+dia;
-      this.formateadaVigencia = dateFormat;
-      this.isVence = true;
-      console.log('la Fecha : '+fecha+', dateFormat '+ dateFormat)
-
-      let now = new Date().toISOString();
-      let nowDate = now.split('T')[0];
-      let vigente:boolean;
-      console.log(new Date(nowDate)+', '+new Date(laFormateada));
-      if(new Date(nowDate) > new Date(laFormateada)){
-        vigente = false;
-      }else{
-        vigente = true;
-      }
-      if (vigente == false) {
-        this.entraLicenciaEstadoCalculado(2);
-      }else{
-        this.entraLicenciaEstadoCalculado(1);
-      }
-
-      this.laExpediente[0].Vigencia = fecha;
-      this.dataProcess['Vigencia'] = fecha;
-      localStorage.setItem('dataProcess-Vigencia', fecha);
+    if (!this.applyVigenciaFromRaw(fecha)) {
+      this.clearVigenciaValue();
     }
-    
-    
   }
 
   entraLicenciaEstado(event:any){
@@ -2880,6 +2877,21 @@ export class ClientehnPage implements OnInit {
       CelularConductor: this.dataProcess['CelularConductor'] || this.daCelularConductor,
       TelefonoConductor: this.daTelefonoFijoConductor
     };
+
+    const vigenciaNormalizada = normalizeLicenseExpirationDate(
+      clienteValidationData.Vigencia || localStorage.getItem('dataProcess-Vigencia')
+    );
+    if (vigenciaNormalizada && vigenciaNormalizada.storageValue >= this.licenseExpirationMin) {
+      clienteValidationData.Vigencia = vigenciaNormalizada.isoValue;
+      this.applyVigenciaFromRaw(vigenciaNormalizada.storageValue);
+    } else {
+      delete clienteValidationData.Vigencia;
+      this.isVence = false;
+      this.vigenciaErrorMessage = vigenciaNormalizada
+        ? 'La fecha de vencimiento no puede ser anterior a hoy.'
+        : 'La fecha de vencimiento es obligatoria. Selecciona una fecha válida desde el calendario (hoy o posterior).';
+    }
+
     const validationResult = validateClaimStage(clienteValidationData, clienteScreenValidationRules);
     const missingFields = new Set(validationResult.missing.map((item) => item.field));
 

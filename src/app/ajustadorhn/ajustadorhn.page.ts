@@ -31,6 +31,10 @@ import {
   ficohsaBpmConfirmationRules,
   ficohsaBpmValidationRules
 } from '../validation/claim-validation.rules';
+import {
+  AttentionBulkAttempt,
+  AttentionBulkAttemptService
+} from '../services/attention-bulk-attempt.service';
 
 import * as $ from 'jquery';
 import { parse } from 'path';
@@ -116,6 +120,7 @@ export class AjustadorhnPage implements OnInit {
   AjustadorFiltro: any[]; requiredD = requiredDataAjustador;  requiredDLabels = requiredDataLabels;  cantidadNulos: number;  fechaValida: boolean=true; // Debug : fechaValida
   validacionCompleta: boolean = false; // true sólo cuando la última validación dejó 0 datos incompletos
   atencionId: number; expediente: any; moneda: any;  miMoneda: string; isBPMcomplete:boolean=false;
+  bulkAttemptInfo: AttentionBulkAttempt | null = null;
   daDate: Date;  identidadCliente: any;  nombreCliente: any;  elTelefonoOrigen: any; elCorreoElectronico:any; laMarcaAsegurado:any;  elModeloAsegurado: any;
   elAnioAsegurado:any; elChasisAsegurado:any; elNumeroPlacaAsegurado:any; elMotorAsegurado:any; isFirstTime:boolean=true; clickCount:number=0;
   laPolizaExternaAsegurado: any;contadorSegmentos:number=0; segmentoTitulo:any;  storageKeys: any=[]; countTrue:number=0; fechaInspeccion:any; minFechaInspeccion:string;
@@ -148,7 +153,7 @@ export class AjustadorhnPage implements OnInit {
     private api: ApiService, private toast: ToastController, private platform:Platform, private so: ScreenOrientation,
     private geo:NativeGeocoder, public toaster:ToastService, private popControl:PopoverController, private sanitizer: DomSanitizer,
     private formateador:FormatosService, private animationCtrl: AnimationController, private thisModal:ModalController,
-    private navCtrl: NavController) { 
+    private navCtrl: NavController, public bulkAttemptService: AttentionBulkAttemptService) { 
 
       
 
@@ -233,6 +238,7 @@ export class AjustadorhnPage implements OnInit {
       this.idAtencion = localStorage.getItem('idAtencion');
       console.log('La atencion es '+this.idAtencion)
       this.atencionId = parseInt(this.idAtencion);
+      this.refreshBulkAttemptInfo();
       let dIdAtencion = parseInt(this.idAtencion);
 
       /*
@@ -648,6 +654,11 @@ export class AjustadorhnPage implements OnInit {
     }
 
     analizaNulo(pagSegmento, segmentIndex){
+      if (pagSegmento === 'esignature') {
+        this.goESignature();
+        return;
+      }
+
       this.setSegment(pagSegmento, segmentIndex);
       /*
       let segmentKey = requiredDataAjustador[indexFront].segmentKey;
@@ -657,11 +668,103 @@ export class AjustadorhnPage implements OnInit {
       */
     }
 
+    private refreshBulkAttemptInfo(): void {
+      if (!this.atencionId) {
+        this.bulkAttemptInfo = null;
+        return;
+      }
+
+      void this.bulkAttemptService.getAttempt(this.atencionId).then((record) => {
+        this.bulkAttemptInfo = record;
+      });
+    }
+
+    private markBulkAttemptStarted(): void {
+      if (!this.atencionId) {
+        return;
+      }
+
+      void this.bulkAttemptService.recordAttemptStart(this.atencionId).then((record) => {
+        this.bulkAttemptInfo = record;
+      });
+    }
+
+    private markBulkAttemptFailed(message?: string): void {
+      if (!this.atencionId) {
+        return;
+      }
+
+      void this.bulkAttemptService.recordFailure(this.atencionId, message).then((record) => {
+        this.bulkAttemptInfo = record;
+      });
+    }
+
+    private markBulkAttemptSucceeded(): void {
+      if (!this.atencionId) {
+        return;
+      }
+
+      void this.bulkAttemptService.recordSuccess(this.atencionId).then((record) => {
+        this.bulkAttemptInfo = record;
+      });
+    }
+
+    private extractBulkErrorMessage(error: any, fallback = 'Error al enviar datos'): string {
+      return error?.error?.Message || error?.message || fallback;
+    }
+
+    private hasValidClientSignature(): boolean {
+      const signature = this.firmaPrecargada || localStorage.getItem('dSignatureAsegurado');
+      return !!signature &&
+        signature !== emptySignature &&
+        signature !== emptySignatureWhite &&
+        signature !== 'null' &&
+        signature !== 'undefined';
+    }
+
+    private refreshValidationFromLocalData(): void {
+      this.firmaPrecargada = localStorage.getItem('dSignatureAsegurado');
+      this.datosCompletados = this.collectAjustadorLocalData();
+      this.completeAjustadorValidationReview();
+    }
+
+    private resolveStoredFieldValue(item: { nombre: string; storageKey?: string }, datosAjustador: Record<string, any>): any {
+      const rawDatosValue = datosAjustador[item.nombre];
+      if (rawDatosValue !== undefined && rawDatosValue !== null && rawDatosValue !== '') {
+        return rawDatosValue;
+      }
+
+      if (item.nombre === 'RefTipoSolicitanteInformeAjusteId') {
+        const solicitanteValue = [
+          localStorage.getItem('datos-RefTipoSolicitanteInformeAjusteId'),
+          localStorage.getItem('tipoSolicitante'),
+          localStorage.getItem('TipoSolicitante')
+        ].find((value) => value !== null && value !== undefined && value !== '' && value !== 'NaN');
+
+        return solicitanteValue ?? undefined;
+      }
+
+      if (item.nombre === 'ValorReserva') {
+        const reserva = localStorage.getItem('bpmArray-ValorReserva');
+        return reserva ?? '0';
+      }
+
+      if (item.storageKey) {
+        const storageValue = localStorage.getItem(item.storageKey);
+        if (this.valueBelongsToCurrentAttention(storageValue)) {
+          return this.cleanStoredValue(storageValue);
+        }
+      }
+
+      return undefined;
+    }
+
     GuardarDatos(){
       $('#camButtonAju').fadeOut();
       this.switchButtonsAll(1);
 
       this.isLoading = true;
+      this.markBulkAttemptStarted();
       this.datosDeEnvio = [];
       console.log('Datos en cacheCliente');
       console.dir(this.cacheClienteFix);
@@ -1100,6 +1203,7 @@ export class AjustadorhnPage implements OnInit {
                                   this.isLoading = false;
                                   this.estaCompleto = false;
                                   const missingBpm = bpmValidation.missing.map((item) => item.label).join(', ');
+                                  this.markBulkAttemptFailed('Faltan datos para enviar BPM Ficohsa: '+missingBpm);
                                   this.toaster.presentToastDataMissing('Faltan datos para enviar BPM Ficohsa: '+missingBpm, 'top', 'bpm');
                                   return;
                                 }
@@ -1134,6 +1238,7 @@ export class AjustadorhnPage implements OnInit {
                                         if (!bpmConfirmation.complete) {
                                           this.isLoading = false;
                                           const missingConfirmation = bpmConfirmation.missing.map((item) => item.label).join(', ');
+                                          this.markBulkAttemptFailed('Faltan datos de confirmación BPM Ficohsa: '+missingConfirmation);
                                           this.toaster.presentToastDataMissing('Faltan datos de confirmación BPM Ficohsa: '+missingConfirmation, 'top', 'bpm');
                                           return;
                                         }
@@ -1166,6 +1271,7 @@ export class AjustadorhnPage implements OnInit {
                                           async (res) =>{
                                             console.log('Eeeeeeexitooooo! ');
                                             this.isEeexittoooo = true;
+                                            this.markBulkAttemptSucceeded();
                                             this.miLogRespuesta = res;
                                             console.dir(res);
                                             setTimeout(() => {
@@ -1174,6 +1280,7 @@ export class AjustadorhnPage implements OnInit {
                                           },
                                           async (error) => {
                                             this.isLoading = false;
+                                            this.markBulkAttemptFailed(this.extractBulkErrorMessage(error));
                                             let errorKey = 'acsel';
                                             let elError = error.error.Message;
 
@@ -1199,6 +1306,7 @@ export class AjustadorhnPage implements OnInit {
                                                 this.switchButtons(2);
                                               }, 6000);
                                         this.isLoading = false;
+                                        this.markBulkAttemptFailed("Código :  "+resAtencion[0].codigo+', error :'+resAtencion[0].descripcion);
                                         this.toaster.presentToastDataMissing("Código :  "+resAtencion[0].codigo+', error :'+resAtencion[0].descripcion, 'top', 'bpm');  
                                       }
                                       
@@ -1207,11 +1315,13 @@ export class AjustadorhnPage implements OnInit {
                                                 this.switchButtons(2);
                                               }, 6000);
                                       this.isLoading = false;
+                                      this.markBulkAttemptFailed(this.extractBulkErrorMessage(resAtencion));
                                       this.toaster.presentToast(resAtencion.error.Message, 'top', 'solicitante');
                                     }
                                 },
                                 async (error) => {
                                   this.isLoading = false;
+                                  this.markBulkAttemptFailed(this.extractBulkErrorMessage(error));
                                   this.toaster.presentToast(error.error.Message, 'top', 'solicitante');
                                 }
                           
@@ -1220,7 +1330,9 @@ export class AjustadorhnPage implements OnInit {
                     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                   },
                   async (error) => {
-                    
+                    this.isLoading = false;
+                    this.markBulkAttemptFailed(this.extractBulkErrorMessage(error));
+                    this.toaster.presentToast(this.extractBulkErrorMessage(error), 'top', 'solicitante');
                   }
                 )
                   /**/
@@ -1540,6 +1652,15 @@ export class AjustadorhnPage implements OnInit {
         };
       });
 
+      if (!this.hasValidClientSignature()) {
+        this.datosIncompletos.unshift({
+          nombre: 'Firma del asegurado o conductor',
+          valor: 'null',
+          elementSegmento: 'esignature',
+          indexSegmento: null
+        });
+      }
+
       this.datosComunes = ajustadorScreenValidationRules
         .filter((rule) => !validationResult.missing.some((issue) => issue.field === rule.field))
         .map((rule) => ({ nombre: rule.field, valor: datosAjustador[rule.field] }));
@@ -1584,18 +1705,9 @@ export class AjustadorhnPage implements OnInit {
       const datosAjustador = this.toValidationRecord(this.datosCompletados);
 
       return requiredDataAjustador.reduce((record, item) => {
-        // Prefer the raw 'datos-*' value when it was captured for this session.
-        const rawDatosValue = datosAjustador[item.nombre];
-        if (rawDatosValue !== undefined) {
-          record[item.nombre] = rawDatosValue;
-          return record;
-        }
-
-        // Otherwise fall back to the attention-prefixed storage key, applying the
-        // prefix heuristic only here (these values genuinely use the id-prefix scheme).
-        const storageValue = localStorage.getItem(item.storageKey);
-        if (this.valueBelongsToCurrentAttention(storageValue)) {
-          record[item.nombre] = this.cleanStoredValue(storageValue);
+        const resolvedValue = this.resolveStoredFieldValue(item, datosAjustador);
+        if (resolvedValue !== undefined) {
+          record[item.nombre] = resolvedValue;
         }
 
         return record;
@@ -1692,6 +1804,14 @@ export class AjustadorhnPage implements OnInit {
     // la reconstrucción síncrona del catálogo).
     this.cargarDaniosManualesAju();
     this.cargarDaniosManualesCulpa();
+    this.refreshBulkAttemptInfo();
+    this.isLoading = false;
+    this.firmaPrecargada = localStorage.getItem('dSignatureAsegurado');
+    this.refreshValidationFromLocalData();
+
+    setTimeout(() => {
+      this.ajustadorContent?.scrollToTop(300);
+    }, 100);
   }
 
   // Navega a segmento-danio para agregar/quitar daños. Usa NavController (no
@@ -1935,19 +2055,12 @@ export class AjustadorhnPage implements OnInit {
 
       
         let evaluado:any = localStorage.getItem('estaEvaluado');
-        this.estaEvaluado = true;//(evaluado === 'true');
+        this.estaEvaluado = evaluado === 'true';
         console.log('El estado de evaluación es : '+this.estaEvaluado);
 
         if (this.estaEvaluado == true) {
-          //$('#validateButtona').fadeOut();
-            //$('#saveDataButtona').fadeIn();
-            //$('#validateAgainButtona').fadeIn();
-            //$('#cancelaButtona').fadeIn();
-          this.validarDatos(2);
           this.listarDanios();
         }
-        //this.validarDatos();
-        //this.setFirstSegment()
       }, 1000);
 
       

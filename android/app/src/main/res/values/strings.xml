@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">helpAjustadores</string>
-    <string name="title_activity_main">helpAjustadores</string>
+    <string name="app_name">Ajustador HN</string>
+    <string name="title_activity_main">Ajustador HN</string>
     <string name="package_name">net.ajustadores.help</string>
     <string name="custom_url_scheme">net.ajustadores.help</string>
 </resources>

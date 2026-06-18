@@ -50,6 +50,7 @@ export class ExpedientePage implements OnInit {
   leafletTravelLine: L.Polyline;
   leafletTravelPoints: L.LatLng[] = [];
   leafletAutoFollow = true;
+  leafletFullRouteLocked = false;
   leafletIdleTimer: ReturnType<typeof setTimeout>;
   readonly leafletFollowZoom = 17;
   bounds: google.maps.LatLngBounds;  marcadorAju: any; routeString:any; ajustadorId:any; watcher:any;  geoloc: Geolocation;  distanciaConvert: string;  distanciaString: string;
@@ -1057,10 +1058,6 @@ export class ExpedientePage implements OnInit {
         maxZoom: 19
       }).addTo(this.leafletMap);
 
-      L.control.zoom({
-        position: 'topright'
-      }).addTo(this.leafletMap);
-
       this.bindLeafletCameraControls();
     } else {
       this.leafletMap.setView(center, zoom);
@@ -1108,6 +1105,10 @@ export class ExpedientePage implements OnInit {
   }
 
   private scheduleLeafletAutoFollow() {
+    if (this.leafletFullRouteLocked) {
+      return;
+    }
+
     if (this.leafletIdleTimer) {
       clearTimeout(this.leafletIdleTimer);
     }
@@ -1118,6 +1119,10 @@ export class ExpedientePage implements OnInit {
   }
 
   private resumeLeafletAutoFollow() {
+    if (this.leafletFullRouteLocked) {
+      return;
+    }
+
     this.leafletAutoFollow = true;
 
     if (this.leafletMap && this.leafletAjuMarker) {
@@ -1125,6 +1130,69 @@ export class ExpedientePage implements OnInit {
         animate: true,
         duration: 0.8
       });
+    }
+  }
+
+  manualZoom(delta: number) {
+    if (!this.leafletMap) {
+      return;
+    }
+
+    this.activateLeafletManualMode();
+    const currentZoom = this.leafletMap.getZoom();
+    this.leafletMap.setZoom(Math.max(3, Math.min(19, currentZoom + delta)));
+  }
+
+  resumeAgentFollowFromControl() {
+    this.leafletFullRouteLocked = false;
+
+    if (this.leafletIdleTimer) {
+      clearTimeout(this.leafletIdleTimer);
+    }
+
+    this.resumeLeafletAutoFollow();
+  }
+
+  showFullRouteFromControl() {
+    if (!this.leafletMap) {
+      return;
+    }
+
+    this.leafletFullRouteLocked = true;
+    this.leafletAutoFollow = false;
+
+    if (this.leafletIdleTimer) {
+      clearTimeout(this.leafletIdleTimer);
+    }
+
+    this.fitFullRouteMap();
+  }
+
+  private fitFullRouteMap() {
+    if (!this.leafletMap) {
+      return;
+    }
+
+    const bounds = L.latLngBounds([]);
+
+    if (this.leafletCrashMarker) {
+      bounds.extend(this.leafletCrashMarker.getLatLng());
+    }
+
+    if (this.leafletAjuMarker) {
+      bounds.extend(this.leafletAjuMarker.getLatLng());
+    }
+
+    if (this.leafletRouteLine) {
+      bounds.extend(this.leafletRouteLine.getBounds());
+    }
+
+    if (this.leafletTravelPoints.length > 0) {
+      bounds.extend(L.latLngBounds(this.leafletTravelPoints));
+    }
+
+    if (bounds.isValid()) {
+      this.leafletMap.fitBounds(bounds, { padding: [36, 36] });
     }
   }
 

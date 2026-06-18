@@ -1,6 +1,5 @@
 <ion-header class="ajustador-header">
   <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
-  <ion-footer *ngIf="isLoading == true"></ion-footer>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button id="button-back" fill="clear" (click)="goBack()">
@@ -314,6 +313,12 @@
     </div>
 
     <div class="ajustador-state-actions">
+      <div class="bulk-attempt-indicator" *ngIf="bulkAttemptService.hasVisibleIssue(bulkAttemptInfo)">
+        <ion-icon [name]="bulkAttemptInfo?.pendingFailure ? 'alert-circle-outline' : 'repeat-outline'"></ion-icon>
+        <span>{{ bulkAttemptService.getAttemptLabel(bulkAttemptInfo) }}</span>
+        <small *ngIf="bulkAttemptInfo?.pendingFailure">Reintento pendiente</small>
+      </div>
+
       <ion-button id="validateButtona" class="ajustador-primary-action" (click)="handleSave();isPressed=true"
         [style.display]="cantidadNulos > 0 ? 'block' : 'none'">
         <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>

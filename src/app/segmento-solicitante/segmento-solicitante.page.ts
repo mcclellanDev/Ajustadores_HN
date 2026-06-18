@@ -28,6 +28,7 @@ export class SegmentoSolicitantePage implements OnInit {
   segmentoTitulo:any;  isFirst: boolean; fechaValida: boolean;  miPais: string;  banderaPais: string;
   codigoPais: string;  iconIndex: any; disExpediente:any= [];  cacheDeCliente: any = []; solicitanteId:any;
   coberturas: any = [];
+  private pendingLoads = 0;
 
   applicantTypeSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de solicitante', subHeader: 'Selecciona una opción' };
   coverageTypeSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de cobertura', subHeader: 'Selecciona una opción' };
@@ -270,7 +271,59 @@ export class SegmentoSolicitantePage implements OnInit {
     void returnToAjustadorhnParent(this.navCtrl, this.router);
   }
 
+  private beginLoading(): void {
+    this.pendingLoads++;
+    this.isLoading = true;
+  }
+
+  private endLoading(): void {
+    this.pendingLoads = Math.max(0, this.pendingLoads - 1);
+    this.isLoading = this.pendingLoads > 0;
+  }
+
+  private syncDefaultSolicitanteSelection(): void {
+    if (!this.tipoSolicitante?.length) {
+      return;
+    }
+
+    const storedValue = [
+      localStorage.getItem('datos-RefTipoSolicitanteInformeAjusteId'),
+      localStorage.getItem('tipoSolicitante'),
+      localStorage.getItem('TipoSolicitante')
+    ].find((value) => value !== null && value !== undefined && value !== '' && value !== 'NaN');
+
+    if (storedValue) {
+      this.setSolicitante(parseInt(storedValue, 10));
+      return;
+    }
+
+    this.setSolicitante(this.tipoSolicitante[0].Id);
+  }
+
+  private loadClienteCache(): void {
+    if (!this.idAtencion) {
+      return;
+    }
+
+    this.beginLoading();
+    this.api.ObtenercacheCliente(this.idAtencion).pipe(
+      finalize(async () => {
+        this.endLoading();
+      })
+    ).subscribe(
+      async (res) => {
+        this.cacheDeCliente = res && res.length > 0 ? res[0] : {};
+        localStorage.setItem('cacheCliente', JSON.stringify(res));
+      },
+      async () => {
+        this.cacheDeCliente = [];
+      }
+    );
+  }
+
   ionViewDidEnter(){
+    this.loadClienteCache();
+
     setTimeout(() => {
 
       this.api.Expediente(parseInt(this.idAtencion)).pipe(
@@ -470,16 +523,17 @@ export class SegmentoSolicitantePage implements OnInit {
   }
 
   async getTipoSolicitante(){
-  this.isLoading = true;
+  this.beginLoading();
   this.api.ListTipoDeSolicitanteInformeAjuste().pipe( 
     finalize(async ()=>{
-      this.isLoading = false;
+      this.endLoading();
     })
   ).subscribe(
       async (res) =>{
         this.tipoSolicitante = res;
         console.log('TipoSolicitante');
         console.dir(this.tipoSolicitante)
+        this.syncDefaultSolicitanteSelection();
     },
     async (res) => {
       this.toaster.presentToast(res.error.Message, 'top', 'solicitante');

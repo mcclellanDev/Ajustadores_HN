@@ -598,17 +598,20 @@
 
             <ion-item class="ion-no-padding  input">
               <ion-grid>
-                <ion-row class="licence-expiration-row">
-                  <ion-col size="12" class="licence-expiration-display">
-                    <ion-text style="color: var(--blueGrayColor);">Fecha de Vencimiento : </ion-text><br>
-                    <span class="licence-expiration-value-text">{{formateadaVigencia}}</span>
-                  </ion-col>
-                  <ion-col size="12" class="licence-expiration-input-column">
-                    <ion-input type="text" [maskito]="idMaskFechaVencimiento" [maskitoElement]="predicateCliente"
-                    autocomplete="off"
-                    placeholder="DD/MM/AAAA" [(ngModel)]="formateadaVigencia" (ionChange)="entraVencimiento($event)" class="required-data licence-expiration-input"
-                    style="text-align: right;"></ion-input>
+                <ion-row size="12" style="color: #7da1c4;font-size:1rem;">Fecha de Vencimiento</ion-row>
+                <ion-row style="padding-top: 6px;" class="birth-date-row licence-expiration-row">
+                  <ion-col size="12" class="birth-date-displays">
+                    <div class="birth-date-value">
+                      <ion-icon name="calendar" class="birth-date-value-icon"></ion-icon>
+                      <span class="birth-date-value-text">{{formateadaVigencia || 'Sin seleccionar'}}</span>
+                    </div>
+                    <ion-text color="danger" class="licence-expiration-error" *ngIf="!isVence">
+                      {{ vigenciaErrorMessage }}
+                    </ion-text>
                     <input class="required-index" value="25">
+                  </ion-col>
+                  <ion-col size="12" class="birth-date-button-column">
+                    <ion-button id="open-modal-fecha-vencimiento" expand="block" (click)="modalFechaVencimiento.present()">Seleccionar Fecha</ion-button>
                   </ion-col>
                 </ion-row>
               </ion-grid> 
@@ -1548,15 +1551,27 @@
   </ng-template>
 </ion-modal>
 
-<ion-modal #modalFechaVencimiento trigger="open-modal-fecha-vencimiento" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.25, 0.5, 0.75]">
+<ion-modal #modalFechaVencimiento class="birth-date-modal">
   <ng-template>
-    <ion-content>
-      <ion-datetime style="margin-left:120px" [showDefaultButtons]="true" doneText="Guardar" cancelText="Cancelar"
-      [(ngModel)]="dataProcess.Vigencia" (ionChange)="entraVencimiento($event)"
-      class="required-data"></ion-datetime>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Fecha de vencimiento</ion-title>
+        <ion-buttons slot="end">
+          <ion-button aria-label="Cerrar" (click)="modalFechaVencimiento.dismiss()">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="birth-date-modal-content">
+      <div class="birth-date-guidance">
+        Selecciona día, mes y año. La fecha debe ser hoy o posterior.
+      </div>
+      <ion-datetime presentation="date" [preferWheel]="true" locale="es-HN" [firstDayOfWeek]="1"
+      [min]="licenseExpirationMin" [max]="licenseExpirationMax" [showDefaultButtons]="true"
+      doneText="Guardar" cancelText="Cancelar" [(ngModel)]="formateadaVigenciaPicker"
+      (ionChange)="marcarFechaVencimiento($event)" class="required-data birth-date-picker"></ion-datetime>
       <input class="required-index" value="39">
-      <!--span color="danger" style="padding: 6px;height: 23px;width: 23px;">*</!--span -->
     </ion-content>
-    <!--ion-button>Guardar Fecha</!--ion-button -->
   </ng-template>
 </ion-modal>

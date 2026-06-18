@@ -40,6 +40,21 @@
 
 <ion-content id="expedienteContent"  style="--background:transparent" #page>
   <div id="mapExpediente" class="leaflet-expediente-map" #mapExpediente></div>
+
+  <div class="map-zoom-controls" *ngIf="leafletMap">
+    <ion-button class="map-control-button" fill="clear" (click)="manualZoom(1)">
+      <ion-icon name="add"></ion-icon>
+    </ion-button>
+    <ion-button class="map-control-button" fill="clear" (click)="manualZoom(-1)">
+      <ion-icon name="remove"></ion-icon>
+    </ion-button>
+    <ion-button class="map-control-button" fill="clear" (click)="resumeAgentFollowFromControl()">
+      <ion-icon name="navigate"></ion-icon>
+    </ion-button>
+    <ion-button class="map-control-button" fill="clear" (click)="showFullRouteFromControl()">
+      <ion-icon name="git-compare"></ion-icon>
+    </ion-button>
+  </div>
 </ion-content>
 <ion-content id="mapaContent" style="--background: transparent;display: none;">
   <ion-grid fixed style="overflow: hidden;">

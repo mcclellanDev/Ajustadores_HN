@@ -1025,6 +1025,64 @@ ion-avatar {
   padding: 0 9px;
 }
 
+.bulk-retry-badge {
+  --background: #fff4eb;
+  --color: #b45309;
+  border: 1px solid #f5c7a5;
+  border-radius: 999px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  height: 22px;
+  margin-left: 6px;
+  padding: 0 9px;
+  vertical-align: middle;
+}
+
+.bulk-retry-badge ion-icon {
+  font-size: 0.82rem;
+  margin-right: 4px;
+  vertical-align: -2px;
+}
+
+.bulk-retry-badge--pending {
+  --background: #ffe8e8;
+  --color: #b42318;
+  border-color: #f3b4b4;
+}
+
+.bulk-attempt-summary {
+  align-items: flex-start;
+  background: #fff8f1;
+  border: 1px solid #f5c7a5;
+  border-radius: 12px;
+  color: #9a3412;
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px 14px;
+}
+
+.bulk-attempt-summary ion-icon {
+  color: #ea580c;
+  flex: 0 0 auto;
+  font-size: 1.2rem;
+  margin-top: 2px;
+}
+
+.bulk-attempt-summary strong {
+  color: #9a3412;
+  display: block;
+  font-size: 0.82rem;
+  margin-bottom: 4px;
+}
+
+.bulk-attempt-summary span {
+  color: #7c2d12;
+  display: block;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
 .empty-state-card {
   border: 1px dashed #cdd9e8;
   border-radius: 12px;

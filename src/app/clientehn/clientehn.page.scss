@@ -383,6 +383,13 @@ ion-modal.birth-date-modal::part(content) {
   white-space: nowrap;
 }
 
+.licence-expiration-error {
+  display: block;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  margin-top: 8px;
+}
+
 .cliente-form-content .segmento .licence-expiration-input,
 .cliente-form-content .segmento .licence-expiration-input::part(native),
 .cliente-form-content .segmento .licence-expiration-input input {

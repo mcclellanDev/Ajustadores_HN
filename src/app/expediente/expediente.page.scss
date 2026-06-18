@@ -214,6 +214,37 @@ capacitor-google-map{
 
 }
 
+.map-zoom-controls {
+  position: fixed;
+  right: 14px;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  transform: translateY(-50%);
+  z-index: 10000;
+  pointer-events: auto;
+}
+
+.map-control-button {
+  width: 46px;
+  height: 46px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --border-radius: 50%;
+  --background: #ffffff;
+  --background-activated: #eef4ff;
+  --background-hover: #eef4ff;
+  --box-shadow: 0 10px 24px rgba(0, 88, 203, 0.22);
+  --color: #0058cb;
+  border: 1px solid rgba(0, 88, 203, 0.12);
+  border-radius: 50%;
+
+  ion-icon {
+    font-size: 1.35rem;
+  }
+}
+
 ion-button.option-button{
     --background: transparent;
     --background-hover: transparent;

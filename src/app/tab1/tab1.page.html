@@ -144,6 +144,12 @@
                     <ion-row>
                       <ion-col size="12">
                         <ion-badge class="new-badge" [hidden]="item.LogEstado==2">Nueva</ion-badge>
+                        <ion-badge class="bulk-retry-badge"
+                          *ngIf="bulkAttemptService.hasVisibleIssue(getBulkAttemptFor(item.IdAtencion))"
+                          [class.bulk-retry-badge--pending]="getBulkAttemptFor(item.IdAtencion)?.pendingFailure">
+                          <ion-icon [name]="getBulkAttemptFor(item.IdAtencion)?.pendingFailure ? 'alert-circle-outline' : 'repeat-outline'"></ion-icon>
+                          {{ bulkAttemptService.getAttemptLabel(getBulkAttemptFor(item.IdAtencion)) }}
+                        </ion-badge>
                       </ion-col>
                     </ion-row>
                   </ion-grid>
@@ -182,6 +188,16 @@
                 <div>
                   <span>Servicio</span>
                   <strong>{{elServicio}}</strong>
+                </div>
+              </div>
+
+              <div class="bulk-attempt-summary"
+                *ngIf="bulkAttemptService.hasVisibleIssue(getBulkAttemptFor(atIndex))">
+                <ion-icon [name]="getBulkAttemptFor(atIndex)?.pendingFailure ? 'alert-circle-outline' : 'repeat-outline'"></ion-icon>
+                <div>
+                  <strong>{{ bulkAttemptService.getAttemptLabel(getBulkAttemptFor(atIndex)) }}</strong>
+                  <span *ngIf="getBulkAttemptFor(atIndex)?.pendingFailure">Esta atención tuvo un fallo en el envío masivo y puede requerir reintento.</span>
+                  <span *ngIf="!getBulkAttemptFor(atIndex)?.pendingFailure">Esta atención ya fue enviada después de uno o más reintentos.</span>
                 </div>
               </div>
 

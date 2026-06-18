@@ -10,6 +10,10 @@ import { emptySignatureWhite, imagePrefix, errorImage, editarFirmaIcono } from '
 import { AnimationController, IonAccordionGroup, Platform, ToastController } from '@ionic/angular';
 import { valoresPredeterminados } from '../environments/predeterminados';
 import { abogadosAudiencias } from '../interfaces/arrays';
+import {
+  AttentionBulkAttempt,
+  AttentionBulkAttemptService
+} from '../services/attention-bulk-attempt.service';
 
 @Component({
   selector: 'app-prepare-send',
@@ -31,6 +35,7 @@ export class PrepareSendPage implements OnInit {
   isBPMcomplete: boolean = false;  codigoBPMFicohsa: any;  codigoReclamoFicohsa: any; atencionId: number;
   dataSiniestro: any;  identidadCliente: any;  elTipoLicencia: any;  nulosAtencion: any = [];  isEeexittoooo: boolean;
   miLogRespuesta: any; sucessIcon:any; disData: any = []; AutoridadInvolucrada:any; firmaIcono:any = editarFirmaIcono;
+  bulkAttemptInfo: AttentionBulkAttempt | null = null;
   emptySignatureWhite = emptySignatureWhite; emptySignature = emptySignatureWhite; errorImage = errorImage;
   validationAttempted = false;
   invalidCoverage = false;
@@ -54,7 +59,8 @@ export class PrepareSendPage implements OnInit {
   
 
   constructor(private platform:Platform, private api: ApiService,
-    private routeActive: ActivatedRoute, private router: Router, private toaster: ToastService, private animationCtrl: AnimationController) { 
+    private routeActive: ActivatedRoute, private router: Router, private toaster: ToastService,
+    private animationCtrl: AnimationController, public bulkAttemptService: AttentionBulkAttemptService) { 
     this.firmaPrecargada = localStorage.getItem("dSignatureAsegurado");
     this.sucessIcon = '../../assets/img/guardado.gif';
     if (this.firmaPrecargada) {
@@ -123,6 +129,7 @@ export class PrepareSendPage implements OnInit {
 
       console.log('La atencion es '+this.idAtencion)
       this.atencionId = parseInt(this.idAtencion);
+      this.refreshBulkAttemptInfo();
       let dIdAtencion = parseInt(this.idAtencion);
       this.api.DatosDeAtencion(dIdAtencion).pipe( 
         finalize(async ()=>{
@@ -183,6 +190,52 @@ export class PrepareSendPage implements OnInit {
       this.firmaPrecargada !== this.emptySignatureWhite &&
       this.firmaPrecargada !== this.emptySignature;
     this.invalidSignature = this.validationAttempted && !this.isSignature;
+    this.refreshBulkAttemptInfo();
+  }
+
+  private refreshBulkAttemptInfo(): void {
+    if (!this.atencionId) {
+      this.bulkAttemptInfo = null;
+      return;
+    }
+
+    void this.bulkAttemptService.getAttempt(this.atencionId).then((record) => {
+      this.bulkAttemptInfo = record;
+    });
+  }
+
+  private markBulkAttemptStarted(): void {
+    if (!this.atencionId) {
+      return;
+    }
+
+    void this.bulkAttemptService.recordAttemptStart(this.atencionId).then((record) => {
+      this.bulkAttemptInfo = record;
+    });
+  }
+
+  private markBulkAttemptFailed(message?: string): void {
+    if (!this.atencionId) {
+      return;
+    }
+
+    void this.bulkAttemptService.recordFailure(this.atencionId, message).then((record) => {
+      this.bulkAttemptInfo = record;
+    });
+  }
+
+  private markBulkAttemptSucceeded(): void {
+    if (!this.atencionId) {
+      return;
+    }
+
+    void this.bulkAttemptService.recordSuccess(this.atencionId).then((record) => {
+      this.bulkAttemptInfo = record;
+    });
+  }
+
+  private extractBulkErrorMessage(error: any, fallback = 'Error al enviar datos'): string {
+    return error?.error?.Message || error?.message || fallback;
   }
 
   updateValidationState() {
@@ -660,7 +713,8 @@ export class PrepareSendPage implements OnInit {
         this.openAccordionData();
       }else{
         this.toaster.dismissToast();
-        
+        this.markBulkAttemptStarted();
+
         this.datos = {
           RefAtencionId: this.idAtencion,
           RefProveedorAgenteId: 0,
@@ -876,12 +930,14 @@ export class PrepareSendPage implements OnInit {
                                 async (res) =>{
                                   console.log('Eeeeeeexitooooo! ');
                                   this.isEeexittoooo = true;
+                                  this.markBulkAttemptSucceeded();
                                   this.miLogRespuesta = res;
                                   console.dir(res);
                                   
                                 },
                                 async (res) => {
                                   this.isLoading = false;
+                                  this.markBulkAttemptFailed(this.extractBulkErrorMessage(res));
                                   let errorKey = 'acsel';
                                   let elError = res.error.Message;
   
@@ -899,22 +955,30 @@ export class PrepareSendPage implements OnInit {
                               )
                             }else{
                               this.isLoading = false;
+                              this.markBulkAttemptFailed("Código :  "+resAtencion[0].codigo+', error :'+resAtencion[0].descripcion);
                               this.toaster.presentToastDataMissing("Código :  "+resAtencion[0].codigo+', error :'+resAtencion[0].descripcion, 'top', 'bpm');  
                             }
                             
                           }else{
                             this.isLoading = false;
+                            this.markBulkAttemptFailed(this.extractBulkErrorMessage(resAtencion));
                             this.toaster.presentToast(resAtencion.error.Message, 'top', 'solicitante');
                           }
                       },
                       async (res) => {
                         this.isLoading = false;
+                        this.markBulkAttemptFailed(this.extractBulkErrorMessage(res));
                         this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
                       }
                 
                     )
                    /* */
             }, 6000);
+          },
+          async (error) => {
+            this.isLoading = false;
+            this.markBulkAttemptFailed(this.extractBulkErrorMessage(error));
+            this.toaster.presentToast(this.extractBulkErrorMessage(error), 'top', 'solicitante');
           }
         )
  

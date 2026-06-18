@@ -144,6 +144,11 @@
 
 <ion-footer class="prepare-send-footer">
   <ion-toolbar>
+    <div class="bulk-attempt-indicator" *ngIf="bulkAttemptService.hasVisibleIssue(bulkAttemptInfo)">
+      <ion-icon [name]="bulkAttemptInfo?.pendingFailure ? 'alert-circle-outline' : 'repeat-outline'"></ion-icon>
+      <span>{{ bulkAttemptService.getAttemptLabel(bulkAttemptInfo) }}</span>
+      <small *ngIf="bulkAttemptInfo?.pendingFailure">Reintento pendiente</small>
+    </div>
     <ion-button id="submitClaim" expand="block" (click)="guardarCacheCliente();">
       Continuar
       <ion-icon slot="end" name="chevron-forward"></ion-icon>

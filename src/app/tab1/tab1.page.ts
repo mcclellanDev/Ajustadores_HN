@@ -25,6 +25,10 @@ import { tipofotos } from './../interfaces/formulario';
 import { CountrydataService } from '../services/countrydata.service';
 import { versionAndroid } from '../interfaces/variables';
 import { DeviceService } from '../services/device.service';
+import {
+  AttentionBulkAttempt,
+  AttentionBulkAttemptService
+} from '../services/attention-bulk-attempt.service';
 
 import * as $ from 'jquery';
 import { datosAtencionKeys } from '../environments/predeterminados';
@@ -73,12 +77,14 @@ export class Tab1Page implements OnInit, OnDestroy {
   emptySignatureWhite = emptySignatureWhite;
   conectividadStat: string | undefined;  estadoConexion: string | undefined;  estadoConexionGPS: string | undefined; 
   gpsOn: boolean = false;  isTablet: boolean = false; showLocationPrompt: boolean = false;
+  bulkAttemptsById: Record<number, AttentionBulkAttempt> = {};
 
 
   constructor(private router: Router, private loading: LoadingController,private alert: AlertController,private api: ApiService,private toast: ToastController,
     private tostador: ToastService,private actionSheetCtrl: ActionSheetController,private platform: Platform,private toaster: ToastController,private so: ScreenOrientation,
     private geo: NativeGeocoder,private locateIt: LocateService,private alertController: AlertController,private call: CallNumber, private myModal: ModalController, 
-    private countryService:CountrydataService, private storageService:StorageService, private deviceService: DeviceService) {
+    private countryService:CountrydataService, private storageService:StorageService, private deviceService: DeviceService,
+    public bulkAttemptService: AttentionBulkAttemptService) {
       
       // console.log(window.location.pathname);
       
@@ -800,6 +806,7 @@ export class Tab1Page implements OnInit, OnDestroy {
     }, 1000);
 
     localStorage.setItem('atencionesCount', this.filtroAtenciones.length.toString());
+    void this.refreshBulkAttemptMarkers();
 
     if (options.preserveSelection) {
       this.syncSelectedAttentionFromList();
@@ -807,6 +814,24 @@ export class Tab1Page implements OnInit, OnDestroy {
     }
 
     this.restoreLastActiveAttention();
+  }
+
+  private async refreshBulkAttemptMarkers(): Promise<void> {
+    const records = await this.bulkAttemptService.getAllAttempts();
+    const nextMap: Record<number, AttentionBulkAttempt> = {};
+
+    for (const item of this.filtroAtenciones) {
+      const record = records[item.IdAtencion?.toString()];
+      if (record) {
+        nextMap[item.IdAtencion] = record;
+      }
+    }
+
+    this.bulkAttemptsById = nextMap;
+  }
+
+  getBulkAttemptFor(idAtencion: number): AttentionBulkAttempt | null {
+    return this.bulkAttemptsById[idAtencion] ?? null;
   }
 
   private syncSelectedAttentionFromList() {
@@ -835,6 +860,7 @@ export class Tab1Page implements OnInit, OnDestroy {
 
   private applyEmptyActiveAttentionsState(): void {
     this.filtroAtenciones = [];
+    this.bulkAttemptsById = {};
     this.atIndex = null;
     this.idAtencion = null;
     this.firstSegmentId = null;
