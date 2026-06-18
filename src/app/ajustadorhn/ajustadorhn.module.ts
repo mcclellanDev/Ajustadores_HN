@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
+import { SharedPipesModule } from '../pipes/shared-pipes.module';
 import { NativeGeocoder, NativeGeocoderOptions, NativeGeocoderResult } from '@ionic-native/native-geocoder/ngx';
 import { AjustadorhnPageRoutingModule } from './ajustadorhn-routing.module';
 
@@ -15,7 +16,8 @@ import { MaskitoModule } from '@maskito/angular';
     FormsModule,
     IonicModule,
     AjustadorhnPageRoutingModule,
-    MaskitoModule
+    MaskitoModule,
+    SharedPipesModule
   ],
   declarations: [AjustadorhnPage],
   providers: [

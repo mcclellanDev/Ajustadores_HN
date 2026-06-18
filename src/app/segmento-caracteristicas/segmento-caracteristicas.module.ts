@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
+import { SharedPipesModule } from '../pipes/shared-pipes.module';
 
 import { SegmentoCaracteristicasPageRoutingModule } from './segmento-caracteristicas-routing.module';
 
@@ -13,7 +14,8 @@ import { SegmentoCaracteristicasPage } from './segmento-caracteristicas.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    SegmentoCaracteristicasPageRoutingModule
+    SegmentoCaracteristicasPageRoutingModule,
+    SharedPipesModule
   ],
   declarations: [SegmentoCaracteristicasPage]
 })

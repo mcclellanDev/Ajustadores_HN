@@ -1134,7 +1134,7 @@ export class AjustadorhnPage implements OnInit {
                                         if (!bpmConfirmation.complete) {
                                           this.isLoading = false;
                                           const missingConfirmation = bpmConfirmation.missing.map((item) => item.label).join(', ');
-                                          this.toaster.presentToastDataMissing('Faltan datos de confirmaciÃ³n BPM Ficohsa: '+missingConfirmation, 'top', 'bpm');
+                                          this.toaster.presentToastDataMissing('Faltan datos de confirmación BPM Ficohsa: '+missingConfirmation, 'top', 'bpm');
                                           return;
                                         }
 

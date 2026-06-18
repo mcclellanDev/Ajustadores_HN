@@ -1,0 +1,112 @@
+.attention-toolbar-title {
+  align-items: center;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  max-width: 100%;
+}
+
+.attention-toolbar-title--stacked {
+  align-items: center;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.attention-toolbar-title__id {
+  color: inherit;
+  display: inline-block;
+  font-size: 1em;
+  font-weight: inherit;
+  line-height: 1.2;
+}
+
+.segment-toolbar-title {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+  min-height: 100%;
+  text-align: center;
+  width: 100%;
+}
+
+.segment-toolbar-title__main {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.attention-currency-detail-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.attention-currency-detail-row__label {
+  color: var(--blueGrayColor, #315b80);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+ion-title .attention-toolbar-title,
+ion-title .attention-toolbar-title--stacked {
+  color: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  padding-inline: 4px;
+}
+
+ion-toolbar ion-title .attention-currency-badge--toolbar {
+  color: #ffffff;
+}
+
+.cliente-page-title .attention-toolbar-title--stacked {
+  gap: 8px;
+}
+
+.cliente-page-title .attention-currency-badge--toolbar {
+  background: var(--primaryColor, #0058cb);
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+}
+
+.segment-form-header ion-toolbar {
+  --background: var(--primaryColor, #0058cb);
+  --color: #ffffff;
+  --min-height: 58px;
+}
+
+.segment-form-header ion-title {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  padding-inline: 56px;
+  text-align: center;
+}
+
+.segment-form-header ion-back-button,
+.segment-form-header ion-button {
+  --color: #ffffff;
+  color: #ffffff;
+}
+
+.prepare-send-currency dd,
+.expediente-currency-value {
+  margin: 0;
+}
+
+.prepare-send-currency {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}

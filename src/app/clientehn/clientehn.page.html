@@ -5,7 +5,12 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title class="cliente-page-title">Atención # {{idAtencion}} <br>- {{miMoneda}}</ion-title>
+    <ion-title class="cliente-page-title">
+      <span class="attention-toolbar-title attention-toolbar-title--stacked">
+        <span class="attention-toolbar-title__id">Atención # {{idAtencion}}</span>
+        <app-attention-currency-badge [currency]="miMoneda" variant="toolbar"></app-attention-currency-badge>
+      </span>
+    </ion-title>
     <input class="required-index" value="40">
   </ion-toolbar>
 </ion-header>
@@ -325,7 +330,10 @@
                   </ion-row>
                 </ion-grid>
               </ion-item>
-              <ion-item class="ion-no-padding  input">
+              <ion-item
+                class="ion-no-padding  input"
+                [class.inter-auto-field-highlight--warning]="chassisValidation?.message && chassisValidation?.mode !== 'valid'"
+                [class.inter-auto-field-highlight--success]="chassisValidation?.message && chassisValidation?.mode === 'valid'">
                 <ion-grid>
                   <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                     Motor No.
@@ -339,7 +347,10 @@
                   </ion-row>
                 </ion-grid>
               </ion-item>
-              <ion-item class="ion-no-padding  input">
+              <ion-item
+                class="ion-no-padding  input"
+                [class.inter-auto-field-highlight--warning]="chassisValidation?.message && chassisValidation?.mode !== 'valid'"
+                [class.inter-auto-field-highlight--success]="chassisValidation?.message && chassisValidation?.mode === 'valid'">
                 <ion-grid>
                   <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                     Chasis
@@ -364,6 +375,13 @@
                 <ion-icon name="warning-outline"></ion-icon>
                 <span>{{ chassisValidation?.message }}</span>
               </div>
+
+              <app-inter-auto-registration-certificate
+                [idAtencion]="idAtencion"
+                [chassisValidation]="chassisValidation"
+                [chasis]="laExpediente[0].Chasis"
+                [manualEntryActive]="interAutoManualChasisEntryActive || allowManualChasisInput()">
+              </app-inter-auto-registration-certificate>
               <ion-item class="ion-no-padding  input">
                 <ion-grid>
                   <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
@@ -583,10 +601,11 @@
                 <ion-row class="licence-expiration-row">
                   <ion-col size="12" class="licence-expiration-display">
                     <ion-text style="color: var(--blueGrayColor);">Fecha de Vencimiento : </ion-text><br>
-                    {{formateadaVigencia}}
+                    <span class="licence-expiration-value-text">{{formateadaVigencia}}</span>
                   </ion-col>
                   <ion-col size="12" class="licence-expiration-input-column">
-                    <ion-input [maskito]="idMaskFechaVencimiento" [maskitoElement]="predicateCliente"
+                    <ion-input type="text" [maskito]="idMaskFechaVencimiento" [maskitoElement]="predicateCliente"
+                    autocomplete="off"
                     placeholder="DD/MM/AAAA" [(ngModel)]="formateadaVigencia" (ionChange)="entraVencimiento($event)" class="required-data licence-expiration-input"
                     style="text-align: right;"></ion-input>
                     <input class="required-index" value="25">
@@ -1100,9 +1119,8 @@
             </div>
           </ion-col>
 
-          <ion-row id="dataNull" style="display: none;">
-            <ion-col size="12">
-              <ion-card>
+          <ion-col id="dataNull" class="validation-nulls-panel" size="12" style="display: none;">
+              <ion-card class="validation-nulls-card">
                 <ion-card-header>
                   <ion-card-subtitle>
                     <div class="meter">
@@ -1115,28 +1133,22 @@
                   </ion-card-subtitle>
                 </ion-card-header>
                 <ion-card-content>
-                  
                   <br>
                     <ion-icon name="flag" color="danger"></ion-icon> Elementos Incompletos<br>
                     <ion-icon name="flag" color="medium"></ion-icon> Elementos Completos
-                  <ion-list>
+                  <ion-list class="validation-nulls-list">
                     <ion-item class="nulo-item" *ngFor="let nulo of validaNulos; let i = index" style="color: gray;" (click)="analizaNulo(i, nulo.valor, nulo.inputIndex);scrollToElement();">
-                      <ion-label>{{i+1}}. {{nulo.etiqueta}} : <strong *ngIf="nulo.valor != 'undefined' && nulo.valor != undefined">{{nulo.valor}}</strong></ion-label>
-                      <div class="meter">
-                          <span style="width:100%;"><span class="progress"></span></span>
-                      </div>
+                      <ion-label class="ion-text-wrap">{{i+1}}. {{nulo.etiqueta}} : <strong *ngIf="nulo.valor != 'undefined' && nulo.valor != undefined">{{nulo.valor}}</strong></ion-label>
                       <input class="index-input" style="display: none;" [value]=nulo.inputIndex />
                       <input class="value-input" style="display: none;" [value]=nulo.valor />
-                      <ion-chip *ngIf="nulo.valor == 'undefined' || nulo.valor == undefined" [outline]="true" style="position: absolute;right: 0; width: 15%; padding-left: 7%; font-size: 1rem;
-                      color: red; border-color: red;">Ir</ion-chip>
+                      <ion-chip *ngIf="nulo.valor == 'undefined' || nulo.valor == undefined" slot="end" [outline]="true" class="nulo-go-chip">Ir</ion-chip>
                     </ion-item>
                     <br>
                     <ion-item style="color: white;">Ajustadores HELP Porsalud Ficohsa</ion-item>
                   </ion-list>
                 </ion-card-content>
               </ion-card>
-            </ion-col>
-          </ion-row>
+          </ion-col>
 
           <ion-col class="segmento" id="segmentSignature" size="12">
             <ion-grid class="signature-stack">
@@ -1540,7 +1552,7 @@
   <ng-template>
     <ion-content>
       <ion-datetime style="margin-left:120px" [showDefaultButtons]="true" doneText="Guardar" cancelText="Cancelar"
-      [(ngModel)]="dataProcess.Vigencia" [maskito]="idMaskFechaVencimiento" [predicate]="predicateCliente" (ionChange)="entraVencimiento($event)"
+      [(ngModel)]="dataProcess.Vigencia" (ionChange)="entraVencimiento($event)"
       class="required-data"></ion-datetime>
       <input class="required-index" value="39">
       <!--span color="danger" style="padding: 6px;height: 23px;width: 23px;">*</!--span -->

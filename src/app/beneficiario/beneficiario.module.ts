@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
+import { SharedPipesModule } from '../pipes/shared-pipes.module';
 
 import { BeneficiarioPageRoutingModule } from './beneficiario-routing.module';
 
@@ -13,7 +14,8 @@ import { BeneficiarioPage } from './beneficiario.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    BeneficiarioPageRoutingModule
+    BeneficiarioPageRoutingModule,
+    SharedPipesModule
   ],
   declarations: [BeneficiarioPage]
 })

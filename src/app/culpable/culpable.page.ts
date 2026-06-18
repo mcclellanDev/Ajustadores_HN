@@ -1,5 +1,6 @@
 import { culpable, personaHn, propiedaPrivadaHn} from './../interfaces/formulario';
 import { MaskitoElementPredicateAsync, MaskitoOptions } from '@maskito/core';
+import { resolveAttentionCurrency } from '../utils/currency-display.util';
 import { Router, ActivatedRoute, ActivationStart, RouterOutlet } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { ApiService } from '../services/api.service';
@@ -50,6 +51,7 @@ export class CulpablePage implements OnInit {
   miMoneda: string;  DireccionPropietarioCulpable: any;  EdadCulpable: any;  formateadaVigencia: string;  vigenciaIcon: string;
   isVisible: boolean=false; marcasVehiculosFicohsa:any=[];  vigente: any; nulos:any=[]; DireccionCulpable:any; NombreCulpable:any;
   CulpableNombre: any;  CulpableDireccion: any; isDataMissing:boolean=true; colorVigente:boolean = true; esCompromiso:boolean=false;
+  invalidAdeudaFields = new Set<string>();
   pageSource: any;  TipoDeLicencia: string;  NombrePropietario: any;  DireccionPropietario: any;  deudaSent: any;
   danios: any = [];  danioSearchable: any;  resultsCulpable: any = [];  daniosIndex: any;  daniosOtros: any = [];  daniosSelectCulpa: any = [];  selectedIndex: any = [];
   contador: any;  isSearchCulpable: boolean;   danioResults: any = [];  danioMessage: any;  danioPosition: string;
@@ -253,11 +255,7 @@ export class CulpablePage implements OnInit {
           this.moneda = this.expediente[0].Moneda;
 
           //alert(this.moneda)
-          if (this.moneda == null) {
-            this.miMoneda = "LEMPIRAS";
-          }else{ 
-            this.miMoneda = this.moneda;
-          }
+          this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
           
          }
       )
@@ -725,6 +723,12 @@ export class CulpablePage implements OnInit {
       this.isLoading = false;
       if (this.pageSource == './expediente') {
         this.router.navigate([this.pageSource], { queryParams: { Id: this.idAtencion, Source:1 } });    
+      } else if (this.pageSource === './ajustadorhn') {
+        void this.navegador.navigateBack('/ajustadorhn').then((didNav) => {
+          if (!didNav) {
+            this.router.navigate(['/ajustadorhn'], { replaceUrl: true });
+          }
+        });
       } else {
         this.router.navigate([this.pageSource]);  
       }
@@ -1081,195 +1085,212 @@ export class CulpablePage implements OnInit {
 
   goAdeuda(){
     this.isLoading = true;
+    this.invalidAdeudaFields = new Set<string>();
     this.idAtencion = localStorage.getItem('idAtencion');
     if (this.hasNonDigit(this.idAtencion) == false) {
-      this.atencionId = parseInt(this.idAtencion);
+      this.atencionId = parseInt(this.idAtencion, 10);
     }
 
-      let dater = new Date();
-      let time = 'T'+dater.getHours()+':'+dater.getMinutes()+':'+dater.getSeconds();
-      let vDate = this.culpable.FechaVencimientoLicenciaCulpable;
-      if(vDate == undefined|| vDate==null){
-        this.isLoading = false;
-        this.presentToastNoButtonsYellow('Fecha vacía!', 'top', 'warning');
-        $('#vigenciaInput').attr('style', 'border-bottom: 1px solid red');
-        $('#vigenciaLabel').attr('style', 'color: red');
-        this.colorVigente = false;
-      }else{
-        
-        $('#vigenciaInput').attr('style', 'border-bottom: 1px solid lightgray');
-        $('#vigenciaLabel').attr('style', 'color: lightgray');
-        this.colorVigente = true;
-        console.log('Arreglando lo de la fecha :'+this.culpable.FechaVencimientoLicenciaCulpable);
-        let dias = vDate.toString().substring(0,2);
-        let mes = vDate.toString().substring(3,5);
-        let anio = vDate.toString().substring(6,vDate.toString().length);
-        console.log('dias : '+dias+', mes : '+mes+', Año : '+anio);
-      
-        let vigenteDate:any;
+    this.syncPropietarioFields();
 
-        if (parseInt(mes) > 12) {
-          this.presentToastNoButtonsYellow('Fecha no válida!', 'top', 'warning');
-          this.isLoading = false;
-          this.colorVigente = false;
-        }else{
-          this.colorVigente = true;
-          vigenteDate = anio+'-'+mes+'-'+dias+time;
-          let culpableCelular:any; let culpableContactoNumero:any; let culpableTelefono:any; let culpableLicenciaTipo:any;
-          let inputValue:any; let evaluar:any; let contenedor:any;
-          // data-input data-input-prop data-input-text
-          let inputDataContainer = document.getElementsByClassName('data-input');
-          let inputDataSelectContainer = document.getElementsByClassName('data-input-select');
-
-         //alert(this.culpable.CompromisoPago)
-
-         setTimeout(() => {
-            if (this.culpable.CompromisoPago == undefined) {
-              this.isDataMissing = true;
-              this.esCompromiso = false;
-            } else {
-              this.isDataMissing = false;
-              this.esCompromiso = true;
-            }
-          }, 600);
-
-
-          setTimeout(() => {
-            this.nulos = [];
-            for (let index = 0; index < inputDataContainer.length; index++) {
-              const element = inputDataContainer[index];
-              inputValue = $('.data-input').eq(index).val();
-              
-              if(inputValue == '') {
-                $('.data-input').eq(index).attr('style', 'border-bottom: 1px solid red');
-                this.nulos.push({indexNull:index});
-              }else{
-                $('.data-input').eq(index).attr('style', 'border-bottom: 1px solid lightgray');
-              }
-    
-              if (index==(inputDataContainer.length-1)) {
-                if (this.nulos.length > 0) {
-                  this.isDataMissing = true;
-                }else{
-                  this.isDataMissing = false;
-                }
-              }
-            }
-          }, 1000);
-
-
-          setTimeout(() => {
-            this.nulos = [];
-            for (let index = 0; index < inputDataSelectContainer.length; index++) {
-              const element = inputDataSelectContainer[index];
-              inputValue = $('.data-input-select').eq(index).val();
-              //alert(inputValue)
-              if(inputValue == undefined || inputValue == '') {
-                $('.data-input-select').eq(index).attr('style', 'border-bottom: 1px solid red');
-                this.nulos.push({indexNull:index});
-              }else{
-                $('.data-input-select').eq(index).attr('style', 'border-bottom: 1px solid lightgray');
-              }
-    
-              if (index==(inputDataSelectContainer.length-1)) {
-                if (this.nulos.length > 0) {
-                  this.isDataMissing = true;
-                }else{
-                  this.isDataMissing = false;
-                }
-              }
-            }
-          }, 1800);
-
-          
-          
-          setTimeout(() => {
-          if (this.isDataMissing == false) {
-            this.toaster.dismissToast();
-            const expedienteActual = this.expediente?.[0] || {};
-            const tipoLicenciaSeleccionada = this.tipoLicencia.find(
-              (licencia) => Number(licencia.Id) === Number(this.culpable.LicenciaTipoCulpable)
-            );
-            this.reconocimientoDeuda = {
-              Id: 0,
-              NombreDeudor: this.culpable.NombreCulpable,
-              IdentidadDeudor: this.culpableIdentidad,
-              Edad: parseInt(this.EdadCulpable),
-              Celular: this.culpable.CelularCulpable.toString(),
-              Domicilio: this.culpable.DireccionCulpable,
-              CorreoElectronico: this.culpableCorreo, // pendiente, agregar a formulario
-              LugarDeTrabajo: this.culpableTrabajo, // pendiente, agregar a formulario
-              NombreContacto: this.culpableContacto, // pendiente, agregar a formulario
-              CelularContacto: this.culpableContactoNumero.toString(), // pendiente, agregar a formulario
-              FechaRegistroDocumento: this.fechaFirma,
-              Marca: expedienteActual.Marca,
-              Modelo: expedienteActual.Modelo,
-              Anio: expedienteActual.Year,
-              Placa: expedienteActual.NumeroPlaca,
-              NombreAsegurado: expedienteActual.Cliente,
-              MarcaImplicado: this.culpable.MarcaCulpable,
-              ModeloImplicado: this.culpable.ModeloCulpable,
-              AnioImplicado: this.culpable.AnioCulpable,
-              PlacaImplicado: this.culpable.NoPlacaCulpable,
-              MotorImplicado: this.culpable.MotorNoCulpable,
-              ChasisImplicado: this.culpable.Chasis,
-              NombrePersonaPropiedadImplicada: this.CulpableNombre,
-              DanioCausadoObservacion: this.culpable.ObservacionesCulpable,
-              RefAtencionId: this.atencionId,
-              FechaRegistro: this.fechaFirma,
-              FirmaDeudor: "string",
-              Ciudad: expedienteActual.Ciudad,
-              TelefonoCulpable: this.culpable.TelefonoFijoCulpable.toString(),
-              LicenciaCulpable: this.culpable.NumeroLicenciaCulpable,
-              TipoLicencia: this.culpable.LicenciaTipoCulpable.toString(),
-              FechaVencimientoLicencia: vigenteDate,
-              NombreDireccionPropietarioVehiculoImplicado: this.CulpableDireccion,
-              RefTipoFotografiaIdAdeudado: 0,
-              RefTipoFotografiaIdBeneficiario: 0,
-              CompromisoDePago: parseInt(this.culpable.CompromisoPago),
-              Observaciones: this.culpable.ObservacionesCulpable,
-              PolizaExterna: expedienteActual.PolizaExterna,
-              TipoLicenciaDescripcion: tipoLicenciaSeleccionada?.TipoLicencia || this.TipoDeLicencia,
-              DaniosComunes: this.daniosSelectCulpa,
-              DaniosManuales: this.daniosSelectOtroCulpa
-            }
-
-
-
-            // NombrePersonaPropiedadImplicada  // NombreDireccionPropietarioVehiculoImplicado
-        
-            //this.reconocimientoDeuda.NombrePersonaPropiedadImplicada = $('.data-input').eq(14).val();
-            setTimeout(() => {
-              console.log('Los daños');
-              console.dir(this.daniosSelectCulpa);
-
-              console.dir(this.reconocimientoDeuda);
-              localStorage.setItem('deuda', JSON.stringify(this.reconocimientoDeuda));
-              localStorage.setItem('daniosSelectCulpa', JSON.stringify(this.daniosSelectCulpa));
-              localStorage.setItem('daniosSelectOtroCulpaDetalle', JSON.stringify(this.daniosSelectOtroCulpa));
-              localStorage.setItem('poliza', expedienteActual.PolizaExterna || this.poliza || '');
-              localStorage.setItem('datos-Poliza', expedienteActual.PolizaExterna || this.poliza || '');
-              localStorage.setItem('telFijo', this.telFijo);
-              localStorage.setItem('fechaFirma', this.fechaFirma);
-              this.isLoading = false;
-              //alert(this.reconocimientoDeuda.length)
-              // Usa NavController (no router.navigate) para evitar el error
-              // "Cannot activate an already activated outlet" cuando /adeuda ya
-              // está en el stack del ion-router-outlet. adeuda lee toda su data
-              // desde localStorage (deuda, daniosSelectCulpa, datos-Poliza...),
-              // que ya se persistió arriba, así que no requiere queryParams.
-              this.navegador.navigateForward('/adeuda');
-            }, 4000);
-              
-            
-          }else{
-            this.presentToastNoButtonsYellow('Faltan datos, porfavor revise!', 'top', 'warning');
-            this.isLoading = false;
-          }
-        }, 3000);
-        }
-     
+    const vigenteDate = this.parseFechaVencimientoLicencia();
+    if (!vigenteDate) {
+      this.isLoading = false;
+      return;
     }
+
+    const missingLabels = this.collectMissingAdeudaFields();
+    if (missingLabels.length > 0) {
+      this.isDataMissing = true;
+      this.esCompromiso = !this.invalidAdeudaFields.has('compromisoPago');
+      this.presentToastNoButtonsYellow('Faltan datos, por favor revise!', 'top', 'warning');
+      this.isLoading = false;
+      return;
+    }
+
+    this.isDataMissing = false;
+    this.esCompromiso = true;
+    this.toaster.dismissToast();
+
+    const expedienteActual = this.expediente?.[0] || {};
+    const tipoLicenciaSeleccionada = this.tipoLicencia.find(
+      (licencia) => Number(licencia.Id) === Number(this.culpable.LicenciaTipoCulpable)
+    );
+
+    this.reconocimientoDeuda = {
+      Id: 0,
+      NombreDeudor: this.culpable.NombreCulpable,
+      IdentidadDeudor: this.culpableIdentidad,
+      Edad: parseInt(String(this.EdadCulpable), 10),
+      Celular: this.culpable.CelularCulpable.toString(),
+      Domicilio: this.culpable.DireccionCulpable,
+      CorreoElectronico: this.culpableCorreo,
+      LugarDeTrabajo: this.culpableTrabajo,
+      NombreContacto: this.culpableContacto,
+      CelularContacto: this.culpableContactoNumero.toString(),
+      FechaRegistroDocumento: this.fechaFirma,
+      Marca: expedienteActual.Marca,
+      Modelo: expedienteActual.Modelo,
+      Anio: expedienteActual.Year,
+      Placa: expedienteActual.NumeroPlaca,
+      NombreAsegurado: expedienteActual.Cliente,
+      MarcaImplicado: this.culpable.MarcaCulpable,
+      ModeloImplicado: this.culpable.ModeloCulpable,
+      AnioImplicado: this.culpable.AnioCulpable,
+      PlacaImplicado: this.culpable.NoPlacaCulpable,
+      MotorImplicado: this.culpable.MotorNoCulpable,
+      ChasisImplicado: this.culpable.Chasis,
+      NombrePersonaPropiedadImplicada: this.CulpableNombre,
+      DanioCausadoObservacion: this.culpable.ObservacionesCulpable,
+      RefAtencionId: this.atencionId,
+      FechaRegistro: this.fechaFirma,
+      FirmaDeudor: 'string',
+      Ciudad: expedienteActual.Ciudad,
+      TelefonoCulpable: this.culpable.TelefonoFijoCulpable.toString(),
+      LicenciaCulpable: this.culpable.NumeroLicenciaCulpable,
+      TipoLicencia: this.culpable.LicenciaTipoCulpable.toString(),
+      FechaVencimientoLicencia: vigenteDate,
+      NombreDireccionPropietarioVehiculoImplicado: this.CulpableDireccion,
+      RefTipoFotografiaIdAdeudado: 0,
+      RefTipoFotografiaIdBeneficiario: 0,
+      CompromisoDePago: parseInt(String(this.culpable.CompromisoPago), 10),
+      Observaciones: this.culpable.ObservacionesCulpable,
+      PolizaExterna: expedienteActual.PolizaExterna,
+      TipoLicenciaDescripcion: tipoLicenciaSeleccionada?.TipoLicencia || this.TipoDeLicencia,
+      DaniosComunes: this.mapCommonDamagesForDeuda(this.daniosSelectCulpa),
+      DaniosManuales: this.mapManualDamagesForDeuda(this.daniosSelectOtroCulpa)
+    };
+
+    try {
+      localStorage.setItem('deuda', JSON.stringify(this.reconocimientoDeuda));
+      localStorage.setItem('daniosSelectCulpa', JSON.stringify(this.mapCommonDamagesForDeuda(this.daniosSelectCulpa)));
+      localStorage.setItem('daniosSelectOtroCulpaDetalle', JSON.stringify(this.mapManualDamagesForDeuda(this.daniosSelectOtroCulpa)));
+      localStorage.setItem('poliza', expedienteActual.PolizaExterna || this.poliza || '');
+      localStorage.setItem('datos-Poliza', expedienteActual.PolizaExterna || this.poliza || '');
+      localStorage.setItem('telFijo', this.telFijo);
+      localStorage.setItem('fechaFirma', this.fechaFirma);
+    } catch {
+      this.presentToastNoButtonsYellow('No se pudo guardar el borrador del acuerdo. Revise los daños seleccionados.', 'top', 'warning');
+      this.isLoading = false;
+      return;
+    }
+
+    this.isLoading = false;
+    this.navegador.navigateForward('/adeuda');
+  }
+
+  private mapCommonDamagesForDeuda(damages: any[] = []): Array<{ Id: unknown; Codigo: unknown; Descripcion: string }> {
+    return (damages || []).map((damage) => ({
+      Id: damage?.Id,
+      Codigo: damage?.Codigo ?? damage?.Id,
+      Descripcion: damage?.Descripcion || damage?.DescripcionDeDanio || ''
+    }));
+  }
+
+  private mapManualDamagesForDeuda(damages: any[] = []): Array<{ Id: unknown; DescripcionDeDanio: string; Descripcion: string }> {
+    return (damages || []).map((damage) => ({
+      Id: damage?.Id,
+      DescripcionDeDanio: damage?.DescripcionDeDanio || damage?.Descripcion || '',
+      Descripcion: damage?.Descripcion || damage?.DescripcionDeDanio || ''
+    }));
+  }
+
+  private syncPropietarioFields(): void {
+    if (this.culpableEsPropietario) {
+      this.CulpableNombre = this.culpable.NombreCulpable;
+      this.CulpableDireccion = this.culpable.DireccionCulpable;
+      return;
+    }
+
+    this.CulpableNombre = this.NombrePropietario;
+    this.CulpableDireccion = this.DireccionPropietario;
+  }
+
+  private parseFechaVencimientoLicencia(): string | null {
+    const vDate = this.culpable.FechaVencimientoLicenciaCulpable;
+    if (vDate == undefined || vDate == null || String(vDate).trim() === '') {
+      this.presentToastNoButtonsYellow('Fecha vacía!', 'top', 'warning');
+      this.invalidAdeudaFields = new Set(['vigenciaLicencia']);
+      this.colorVigente = false;
+      return null;
+    }
+
+    this.colorVigente = true;
+    const dater = new Date();
+    const time = 'T' + dater.getHours() + ':' + dater.getMinutes() + ':' + dater.getSeconds();
+    const dias = vDate.toString().substring(0, 2);
+    const mes = vDate.toString().substring(3, 5);
+    const anio = vDate.toString().substring(6, vDate.toString().length);
+
+    if (parseInt(mes, 10) > 12) {
+      this.presentToastNoButtonsYellow('Fecha no válida!', 'top', 'warning');
+      this.invalidAdeudaFields = new Set(['vigenciaLicencia']);
+      this.colorVigente = false;
+      return null;
+    }
+
+    return anio + '-' + mes + '-' + dias + time;
+  }
+
+  private collectMissingAdeudaFields(): string[] {
+    const missing: string[] = [];
+    const invalid = new Set<string>();
+
+    this.flagIfMissing(invalid, 'nombreCulpable', this.culpable?.NombreCulpable, 'Nombre del conductor', missing);
+    this.flagIfMissing(invalid, 'identidadCulpable', this.culpableIdentidad, 'Número de identidad', missing);
+    this.flagIfMissing(invalid, 'edadCulpable', this.EdadCulpable, 'Edad', missing);
+    this.flagIfMissing(invalid, 'direccionCulpable', this.culpable?.DireccionCulpable, 'Dirección', missing);
+    this.flagIfMissing(invalid, 'telefonoCulpable', this.culpable?.TelefonoFijoCulpable, 'Teléfono', missing);
+    this.flagIfMissing(invalid, 'celularCulpable', this.culpable?.CelularCulpable, 'Celular', missing);
+    this.flagIfMissing(invalid, 'correoCulpable', this.culpableCorreo, 'Correo electrónico', missing);
+    this.flagIfMissing(invalid, 'trabajoCulpable', this.culpableTrabajo, 'Lugar de trabajo', missing);
+    this.flagIfMissing(invalid, 'licenciaTipo', this.culpable?.LicenciaTipoCulpable, 'Tipo de licencia', missing);
+    this.flagIfMissing(invalid, 'numeroLicencia', this.culpable?.NumeroLicenciaCulpable, 'Número de licencia', missing);
+    this.flagIfMissing(invalid, 'marcaCulpable', this.culpable?.MarcaCulpable, 'Marca', missing);
+    this.flagIfMissing(invalid, 'modeloCulpable', this.culpable?.ModeloCulpable, 'Modelo', missing);
+    this.flagIfMissing(invalid, 'anioCulpable', this.culpable?.AnioCulpable, 'Año', missing);
+    this.flagIfMissing(invalid, 'motorCulpable', this.culpable?.MotorNoCulpable, 'Motor', missing);
+    this.flagIfMissing(invalid, 'chasisCulpable', this.culpable?.Chasis, 'Chasis', missing);
+    this.flagIfMissing(invalid, 'placaCulpable', this.culpable?.NoPlacaCulpable, 'Número de placa', missing);
+    this.flagIfMissing(invalid, 'propietarioNombre', this.CulpableNombre, 'Nombre del propietario', missing);
+    this.flagIfMissing(invalid, 'propietarioDireccion', this.CulpableDireccion, 'Dirección del propietario', missing);
+    this.flagIfMissing(invalid, 'compromisoPago', this.culpable?.CompromisoPago, 'Compromiso de pago', missing);
+    this.flagIfMissing(invalid, 'contactoNombre', this.culpableContacto, 'Nombre del contacto', missing);
+    this.flagIfMissing(invalid, 'contactoNumero', this.culpableContactoNumero, 'Número de contacto', missing);
+    this.flagIfMissing(invalid, 'observacionesCulpable', this.culpable?.ObservacionesCulpable, 'Descripción de los daños', missing);
+
+    this.invalidAdeudaFields = invalid;
+    return missing;
+  }
+
+  private flagIfMissing(
+    invalid: Set<string>,
+    fieldKey: string,
+    value: unknown,
+    label: string,
+    missing: string[]
+  ): void {
+    if (this.isBlankAdeudaValue(value)) {
+      invalid.add(fieldKey);
+      missing.push(label);
+    }
+  }
+
+  private isBlankAdeudaValue(value: unknown): boolean {
+    if (value === null || value === undefined) {
+      return true;
+    }
+
+    if (typeof value === 'number') {
+      return Number.isNaN(value);
+    }
+
+    if (typeof value === 'string') {
+      const normalized = value.trim().toLowerCase();
+      return normalized === '' || normalized === 'undefined' || normalized === 'null';
+    }
+
+    return false;
   }
 
   isValidDate(d) {

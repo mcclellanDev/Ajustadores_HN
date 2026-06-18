@@ -123,7 +123,7 @@ export function evaluateInterAutoChassisValidation(
       chasis,
       motor,
       poliza,
-      enableManualChasis: false,
+      enableManualChasis: true,
       enableManualMotor: true,
       enableManualPoliza: !poliza,
       swappedValues: false
@@ -191,6 +191,37 @@ export function evaluateInterAutoChassisValidation(
     enableManualPoliza: !poliza,
     swappedValues: false
   };
+}
+
+export function isInterAutoManualEntryMode(
+  validation: InterAutoChassisValidationState | null | undefined,
+  manualChasisEntryActive = false
+): boolean {
+  if (!validation?.applies) {
+    return false;
+  }
+
+  if (validation.mode === 'crossed_swap') {
+    return false;
+  }
+
+  return (
+    manualChasisEntryActive ||
+    validation.enableManualChasis ||
+    validation.enableManualMotor
+  );
+}
+
+export function requiresInterAutoRegistrationCertificate(
+  validation: InterAutoChassisValidationState | null | undefined,
+  chasis: unknown,
+  manualChasisEntryActive = false
+): boolean {
+  if (!isInterAutoManualEntryMode(validation, manualChasisEntryActive)) {
+    return false;
+  }
+
+  return hasValidVehicleIdentifier(chasis);
 }
 
 export function buildInterAutoValidationInput(source: {

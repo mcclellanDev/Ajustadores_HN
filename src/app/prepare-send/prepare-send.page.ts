@@ -4,6 +4,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { ApiService } from '../services/api.service';
+import { resolveAttentionCurrency } from '../utils/currency-display.util';
 import * as $ from 'jquery';
 import { emptySignatureWhite, imagePrefix, errorImage, editarFirmaIcono } from '../environments/default-images';
 import { AnimationController, IonAccordionGroup, Platform, ToastController } from '@ionic/angular';
@@ -165,11 +166,7 @@ export class PrepareSendPage implements OnInit {
       console.log(this.formateadaSiniestro)
 
       //alert(this.moneda)
-      if (this.moneda == null) {
-            this.miMoneda = "LEMPIRAS";
-          }else{ 
-            this.miMoneda = this.moneda;
-          }
+      this.miMoneda = resolveAttentionCurrency(this.cliente[0]);
 
       this.identidadAsegurado = localStorage.getItem('identidadAsegurado');
   }

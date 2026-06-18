@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
+import { SharedPipesModule } from '../pipes/shared-pipes.module';
 
 import { AdeudaPageRoutingModule } from './adeuda-routing.module';
 
@@ -13,7 +14,8 @@ import { AdeudaPage } from './adeuda.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    AdeudaPageRoutingModule
+    AdeudaPageRoutingModule,
+    SharedPipesModule
   ],
   declarations: [AdeudaPage]
 })

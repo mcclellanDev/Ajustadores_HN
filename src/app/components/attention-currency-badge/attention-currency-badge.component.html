@@ -1,0 +1,15 @@
+<span
+  class="attention-currency-badge"
+  [class.attention-currency-badge--dollar]="isDollar"
+  [class.attention-currency-badge--lempira]="!isDollar"
+  [class.attention-currency-badge--toolbar]="variant === 'toolbar'"
+  [class.attention-currency-badge--segment]="variant === 'segment'"
+  [class.attention-currency-badge--detail]="variant === 'detail'"
+  [attr.aria-label]="'Moneda: ' + (currency | attentionCurrency)"
+>
+  <ion-icon class="attention-currency-badge__icon" [name]="iconName" aria-hidden="true"></ion-icon>
+  <span class="attention-currency-badge__code">{{ currency | attentionCurrency:'short' }}</span>
+  <span class="attention-currency-badge__label" *ngIf="showLabel || variant === 'detail'">
+    {{ currency | attentionCurrency:'label' }}
+  </span>
+</span>

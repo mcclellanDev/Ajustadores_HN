@@ -38,7 +38,7 @@
         </div>
         <div>
           <span>Moneda de la póliza</span>
-          <strong>{{miMoneda || 'LEMPIRAS'}}</strong>
+          <app-attention-currency-badge [currency]="miMoneda" variant="detail" [showLabel]="true"></app-attention-currency-badge>
         </div>
       </div>
 

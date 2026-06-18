@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
+import { SharedPipesModule } from '../pipes/shared-pipes.module';
 
 import { SegmentoDanioPageRoutingModule } from './segmento-danio-routing.module';
 
@@ -15,7 +16,8 @@ import { SegmentoDanioPage } from './segmento-danio.page';
     FormsModule,
     IonicModule,
     SegmentoDanioPageRoutingModule,
-    DirectivesModule
+    DirectivesModule,
+    SharedPipesModule
   ],
   declarations: [SegmentoDanioPage]
 })

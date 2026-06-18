@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { emptySignature } from '../environments/signatures';
 import { logoFicohsa } from '../environments/default-images';
 import { ApiService } from '../services/api.service';
+import { resolveAttentionCurrency } from '../utils/currency-display.util';
 import { ToastService } from '../services/toast.service';
 import { AlertController, ToastController } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
@@ -33,68 +34,82 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
 
   constructor(private api:ApiService, private toaster: ToastService, private toast:ToastController,
     private alertController: AlertController, private router: Router) {
-    this.deudaSent = localStorage.getItem('deudaSent'); //=== 'true';
+    this.idAtencion = localStorage.getItem('idAtencion');
+    this.deudaSent = localStorage.getItem('deudaSent');
 
-      if (this.deudaSent) {
-        this.isDeudaSent = this.deudaSent.toString().split('-')[0] === 'true';
-      let deudaSentId = this.deudaSent.toString().split('-')[1];
-      if (this.isDeudaSent == true && (this.idAtencion=== deudaSentId)) {
-        console.log('Deuda enviada')
-        console.log(this.isDeudaSent)
-      }else{
+    if (this.deudaSent) {
+      this.isDeudaSent = this.deudaSent.toString().split('-')[0] === 'true';
+      const deudaSentId = this.deudaSent.toString().split('-')[1];
+      if (!(this.isDeudaSent === true && this.idAtencion === deudaSentId)) {
         this.isDeudaSent = false;
       }
-      }
-      
-    this.isLoading = true; 
+    }
+
+    this.isLoading = true;
+    this.loadAdeudaDraftFromStorage(true);
+    this.getDanios();
+    this.fsLogo = logoFicohsa;
+  }
+
+  private loadAdeudaDraftFromStorage(initializeDates: boolean): void {
     this.idAtencion = localStorage.getItem('idAtencion');
     this.telFijo = localStorage.getItem('telFijo');
-    this.acuerdoDeuda = JSON.parse(localStorage.getItem('deuda') || '{}') || {};
-    this.daniosSelectCulpable = JSON.parse(localStorage.getItem('daniosSelectCulpa') || '[]') || [];
-    this.commonDamages = this.acuerdoDeuda.DaniosComunes || this.daniosSelectCulpable;
-    this.manualDamages = this.acuerdoDeuda.DaniosManuales ||
-      JSON.parse(localStorage.getItem('daniosSelectOtroCulpaDetalle') || '[]') || [];
-    this.laPoliza = this.acuerdoDeuda.PolizaExterna || localStorage.getItem('datos-Poliza') || localStorage.getItem('poliza');
-    this.getDanios();
-    console.log('Los danios seleccionados');
-    console.dir(this.daniosSelectCulpable);
+    this.acuerdoDeuda = this.readJson('deuda', {});
+    this.daniosSelectCulpable = this.normalizeDamageList(this.readJson('daniosSelectCulpa', []));
+    this.commonDamages = this.normalizeDamageList(
+      this.acuerdoDeuda?.DaniosComunes ?? this.daniosSelectCulpable
+    );
+    this.manualDamages = this.normalizeDamageList(
+      this.acuerdoDeuda?.DaniosManuales ?? this.readJson('daniosSelectOtroCulpaDetalle', [])
+    );
+    this.laPoliza =
+      this.acuerdoDeuda?.PolizaExterna ||
+      localStorage.getItem('datos-Poliza') ||
+      localStorage.getItem('poliza');
     this.isSigned = localStorage.getItem('adeudaCompleta');
-    this.adeudaCompleta = this.isSigned === 'true' || localStorage.getItem(`acuerdoDeudaEnviado-${this.idAtencion}`) === 'true';
+    this.adeudaCompleta =
+      this.isSigned === 'true' || localStorage.getItem(`acuerdoDeudaEnviado-${this.idAtencion}`) === 'true';
     this.ya = this.adeudaCompleta;
 
-    
-
-    /*
-    if (this.isSigned) {
-      this.ya = this.isSigned;
+    if (!initializeDates) {
+      return;
     }
-    */
 
-    
-    console.table(this.acuerdoDeuda);
-
-    //alert(this.acuerdoDeuda['NombreDeudor']);
-/*
-    for (let index = 0; index < this.acuerdoDeuda.length; index++) {
-      const element = this.acuerdoDeuda[index];
-      alert(element)
-    }
-    */
-    
     this.now = new Date();
     this.diaPie = this.now.getDate();
     this.mesPie = this.now.getMonth();
     this.anioPie = this.now.getFullYear();
 
-    let daDate = localStorage.getItem('FechaRegistro') || new Date().toISOString();
-    this.dia = daDate.split('T')[0].substring(8,10);
-    this.mes = daDate.split('T')[0].substring(5,7);
-    this.anio = daDate.split('T')[0].substring(0,4);
-    this.fechaParrafo = this.dia+' de '+ this.meses[this.mes-1].mes+' de '+this.anio;
-    this.fechaPie = (this.diaPie)+ ' días'+' del mes de '+ this.meses[this.mesPie].mes+' de '+this.anioPie;
-    console.log((this.diaPie)+ ' días'+' del mes de '+ this.meses[this.mesPie].mes+' de '+this.anioPie,'fecha siniestro');
+    const daDate = localStorage.getItem('FechaRegistro') || new Date().toISOString();
+    const datePart = daDate.split('T')[0];
+    this.dia = datePart.substring(8, 10);
+    this.mes = datePart.substring(5, 7);
+    this.anio = datePart.substring(0, 4);
+    const mesIndex = Math.max(0, Math.min(11, parseInt(this.mes, 10) - 1));
+    this.fechaParrafo = `${this.dia} de ${this.meses[mesIndex]?.mes || ''} de ${this.anio}`;
+    this.fechaPie = `${this.diaPie} días del mes de ${this.meses[this.mesPie]?.mes || ''} de ${this.anioPie}`;
+  }
 
-    this.fsLogo = logoFicohsa
+  private readJson<T>(key: string, fallback: T): T {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) {
+        return fallback;
+      }
+
+      return JSON.parse(raw) as T;
+    } catch {
+      return fallback;
+    }
+  }
+
+  private normalizeDamageList(value: unknown): any[] {
+    return Array.isArray(value) ? value : [];
+  }
+
+  private resolveDamageKey(damage: { Id?: unknown; Codigo?: unknown }): string {
+    const damageId = damage?.Id ?? damage?.Codigo;
+    return damageId === null || damageId === undefined ? '' : String(damageId);
   }
 
   async getDanios(){
@@ -146,15 +161,10 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
   }
 
   ngOnInit() {
-    setTimeout(() => {
-      this.guardarConvenioReparacionTest();
-    }, 1000);
-
     this.idAtencion = localStorage.getItem('idAtencion');
     if (this.hasNonDigit(this.idAtencion) == false) {
       
-      this.atencionId = parseInt(this.idAtencion);
-      //alert(parseInt(this.idAtencion)+1)
+      this.atencionId = parseInt(this.idAtencion, 10);
 
       this.api.Expediente(this.atencionId).pipe( 
         finalize(async ()=>{
@@ -166,41 +176,34 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
           this.expediente= res;
           this.moneda = this.expediente[0].Moneda;
 
-
-          setTimeout(() => {
-            console.log('Asi está armado el acuerdo');
-            console.dir(this.expediente[0])
-            this.acuerdoDeuda.Anio = this.expediente[0].Year;
-            this.acuerdoDeuda.Ciudad = this.expediente[0].Ciudad;
-            this.acuerdoDeuda.FechaRegistro = this.expediente[0].FechaRegistro;
-            this.acuerdoDeuda.Marca = this.expediente[0].Marca;
-            this.acuerdoDeuda.Modelo = this.expediente[0].Modelo;
-            this.acuerdoDeuda.NombreAsegurado = this.expediente[0].Cliente;
-            this.acuerdoDeuda.Placa = this.expediente[0].NumeroPlaca;
-            this.acuerdoDeuda.PolizaExterna = this.expediente[0].PolizaExterna;
-            this.laPoliza = this.expediente[0].PolizaExterna || this.laPoliza;
-            this.acuerdoDeuda.FechaRegistroDocumento = new Date().toISOString();
-            this.acuerdoDeuda.DanioCausadoObservacion = this.acuerdoDeuda.Observaciones;
-            //this.acuerdoDeuda.MotorImplicado = this.expediente[0].Motor;
-            //this.acuerdoDeuda.ChasisImplicado = this.expediente[0].Chasis;
-
-            console.dir(this.acuerdoDeuda);
-            this.isLoading = false;
-          }, 1000);
-
-          //alert(this.moneda)
-          if (this.moneda == null) {
-            this.miMoneda = "LEMPIRAS";
-          }else{ 
-            this.miMoneda = this.moneda;
-          }
-          
+          console.log('Asi está armado el acuerdo');
+          console.dir(this.expediente[0])
+          this.acuerdoDeuda.Anio = this.expediente[0].Year;
+          this.acuerdoDeuda.Ciudad = this.expediente[0].Ciudad;
+          this.acuerdoDeuda.FechaRegistro = this.expediente[0].FechaRegistro;
+          this.acuerdoDeuda.Marca = this.expediente[0].Marca;
+          this.acuerdoDeuda.Modelo = this.expediente[0].Modelo;
+          this.acuerdoDeuda.NombreAsegurado = this.expediente[0].Cliente;
+          this.acuerdoDeuda.Placa = this.expediente[0].NumeroPlaca;
+          this.acuerdoDeuda.PolizaExterna = this.expediente[0].PolizaExterna;
+          this.laPoliza = this.expediente[0].PolizaExterna || this.laPoliza;
+          this.acuerdoDeuda.FechaRegistroDocumento = new Date().toISOString();
+          this.acuerdoDeuda.DanioCausadoObservacion = this.acuerdoDeuda.Observaciones;
+          console.dir(this.acuerdoDeuda);
+          this.isLoading = false;
+          this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
+         },
+         () => {
+          this.isLoading = false;
          }
       )
+    } else {
+      this.isLoading = false;
     }
   }
 
   ionViewWillEnter() {
+    this.loadAdeudaDraftFromStorage(false);
     this.debtorSignature = localStorage.getItem(this.signatureStorageKey);
   }
 
@@ -218,6 +221,23 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
 
   get licenseTypeLabel(): string {
     return this.acuerdoDeuda.TipoLicenciaDescripcion || this.acuerdoDeuda.TipoLicencia || 'Sin información';
+  }
+
+  get licenseExpiryLabel(): string {
+    const rawValue = this.acuerdoDeuda?.FechaVencimientoLicencia;
+    if (!rawValue) {
+      return 'Sin información';
+    }
+
+    const parsed = new Date(rawValue);
+    if (Number.isNaN(parsed.getTime())) {
+      return String(rawValue);
+    }
+
+    const day = String(parsed.getDate()).padStart(2, '0');
+    const month = String(parsed.getMonth() + 1).padStart(2, '0');
+    const year = parsed.getFullYear();
+    return `${day}/${month}/${year}`;
   }
 
   get totalDamages(): number {
@@ -284,10 +304,11 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
               if (this.daniosSelectCulpable.length > 0) {
                 for (let index = 0; index < this.daniosSelectCulpable.length; index++) {
                   const element = this.daniosSelectCulpable[index];
+                  const damageKey = this.resolveDamageKey(element);
 
-                  let elTipoReparacion = localStorage.getItem('TipoReparacionCulpa-'+element.Codigo);
+                  let elTipoReparacion = localStorage.getItem('TipoReparacionCulpa-'+damageKey);
                   let reparaArray = {
-                    codigoDanio : element.Codigo,
+                    codigoDanio : element.Codigo ?? element.Id,
                     descripcionDanio : element.Descripcion,
                     fotografia : emptySignature.split(',')[1],
                     idAtencion : this.idAtencion,
@@ -361,44 +382,60 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
   }
 
   guardarConvenioReparacionTest(){
-    if (this.daniosSelectCulpable.length > 0) {
-      for (let index = 0; index < this.daniosSelectCulpable.length; index++) {
-        const element = this.daniosSelectCulpable[index];
+    if (!Array.isArray(this.daniosSelectCulpable) || this.daniosSelectCulpable.length === 0) {
+      return;
+    }
 
-        let elTipoReparacion = localStorage.getItem('TipoReparacionCulpa-'+element.Codigo);
-        
-        let reparaArray = {
-          codigoDanio : element.Codigo,
-          descripcionDanio : element.Descripcion,
-          fotografia : emptySignature.split(',')[1],
-          idAtencion : this.idAtencion,
-          refTipofotoId : element.Id,
-          TipoEntidad : Entidades[1].tipoEntidad,
-          TipoReparacion: elTipoReparacion
+    for (let index = 0; index < this.daniosSelectCulpable.length; index++) {
+      const element = this.daniosSelectCulpable[index];
+      const damageKey = this.resolveDamageKey(element);
+      if (!damageKey) {
+        continue;
+      }
+
+      const elTipoReparacion = localStorage.getItem('TipoReparacionCulpa-'+damageKey);
+      const reparaArray = {
+        codigoDanio : element.Codigo ?? element.Id,
+        descripcionDanio : element.Descripcion,
+        fotografia : emptySignature.split(',')[1],
+        idAtencion : this.idAtencion,
+        refTipofotoId : element.Id,
+        TipoEntidad : Entidades[1].tipoEntidad,
+        TipoReparacion: elTipoReparacion
+      };
+
+      const storedManualDamage = this.readOptionalJson(`danioOtroCulpa-${damageKey}`);
+      if (storedManualDamage) {
+        const tipoReparacionCulpa = localStorage.getItem('TipoReparacionCulpa-'+damageKey);
+        const reparaArrayOtro = {
+          RefAtencionId: this.idAtencion,
+          DescripcionDeDanio: element.Descripcion,
+          FechaRegistro: new Date().toISOString(),
+          UsuarioId: this.api.currentUser.ProveedorAgenteId,
+          TipoEntidad: Entidades[1].tipoEntidad,
+          TipoReparacion: tipoReparacionCulpa,
+          CodigoDanioVehiculo: storedManualDamage.Id
         };
 
-        let DanioOtro = JSON.parse(localStorage.getItem('danioOtroCulpa-'+element.Codigo));
-        if (DanioOtro) {
-          let TipoReparacionCulpa = localStorage.getItem('TipoReparacionCulpa-'+element.Codigo);
-
-          let reparaArrayOtro = {
-            RefAtencionId: this.idAtencion,
-            DescripcionDeDanio: element.Descripcion,
-            FechaRegistro: new Date().toISOString(),
-            UsuarioId: this.api.currentUser.ProveedorAgenteId,
-            TipoEntidad: Entidades[1].tipoEntidad,
-            TipoReparacion: TipoReparacionCulpa,
-            CodigoDanioVehiculo: DanioOtro.Id
-          }
-
-          console.log('Esta es la data desde ajustador danio otro')
-          console.dir(reparaArrayOtro);
-        }
-        
-
-          console.log('Esta es la data desde ajustador')
-          console.dir(reparaArray)
+        console.log('Esta es la data desde ajustador danio otro');
+        console.dir(reparaArrayOtro);
       }
+
+      console.log('Esta es la data desde ajustador');
+      console.dir(reparaArray);
+    }
+  }
+
+  private readOptionalJson(key: string): any | null {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) {
+        return null;
+      }
+
+      return JSON.parse(raw);
+    } catch {
+      return null;
     }
   }
 

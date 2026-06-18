@@ -2,7 +2,9 @@ import {
   evaluateInterAutoChassisValidation,
   hasValidVehicleIdentifier,
   isInterAutoAgreement,
-  normalizeVehicleIdentifier
+  isInterAutoManualEntryMode,
+  normalizeVehicleIdentifier,
+  requiresInterAutoRegistrationCertificate
 } from './inter-auto-chassis.validation';
 
 describe('inter-auto-chassis.validation', () => {
@@ -37,6 +39,19 @@ describe('inter-auto-chassis.validation', () => {
     expect(result.swappedValues).toBeTrue();
   });
 
+  it('keeps chasis editable after reaching minimum length while motor is missing', () => {
+    const result = evaluateInterAutoChassisValidation({
+      plan: 'Inter Auto',
+      chasis: '5XYPG4A3XGG0760',
+      motor: '',
+      poliza: 'POL-123456'
+    });
+
+    expect(result.mode).toBe('missing_motor');
+    expect(result.enableManualChasis).toBeTrue();
+    expect(result.enableManualMotor).toBeTrue();
+  });
+
   it('requires manual entry when both identifiers are invalid', () => {
     const result = evaluateInterAutoChassisValidation({
       plan: 'Inter Auto',
@@ -58,5 +73,39 @@ describe('inter-auto-chassis.validation', () => {
     });
 
     expect(result.applies).toBeFalse();
+  });
+
+  it('requires registration certificate only for manual entry with valid chasis', () => {
+    const manualEntry = evaluateInterAutoChassisValidation({
+      plan: 'Inter Auto',
+      chasis: '5XYPG4A3XGG076002',
+      motor: '',
+      poliza: 'POL-123456'
+    });
+
+    expect(
+      requiresInterAutoRegistrationCertificate(manualEntry, '5XYPG4A3XGG076002', true)
+    ).toBeTrue();
+    expect(
+      requiresInterAutoRegistrationCertificate(manualEntry, '123', true)
+    ).toBeFalse();
+  });
+
+  it('does not require registration certificate for automatic crossed swap', () => {
+    const crossedSwap = evaluateInterAutoChassisValidation({
+      plan: 'Inter Auto',
+      chasis: '123456',
+      motor: '5XYPG4A3XGG076002',
+      poliza: 'POL-123456'
+    });
+
+    expect(isInterAutoManualEntryMode(crossedSwap, false)).toBeFalse();
+    expect(
+      requiresInterAutoRegistrationCertificate(
+        crossedSwap,
+        crossedSwap.chasis,
+        false
+      )
+    ).toBeFalse();
   });
 });

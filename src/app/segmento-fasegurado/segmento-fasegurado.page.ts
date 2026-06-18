@@ -3,6 +3,7 @@ import { AlertController } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
 import { emptySignatureWhite, imagePrefix } from '../environments/default-images';
 import { ApiService } from '../services/api.service';
+import { readStoredAttentionCurrency } from '../utils/currency-display.util';
 import { ToastService } from '../services/toast.service';
 import * as $ from 'jquery';
 
@@ -18,7 +19,7 @@ export class SegmentoFaseguradoPage implements OnInit {
   constructor(private api: ApiService, private alert: AlertController, public toaster:ToastService) { 
     this.idAtencion = localStorage.getItem('idAtencion');
     let dIdAtencion = parseInt(this.idAtencion);
-    this.miMoneda = localStorage.getItem('miMoneda');
+    this.miMoneda = readStoredAttentionCurrency();
     this.segmentoTitulo = localStorage.getItem('segmentoTitulo');
     this.firmaPrecargada = localStorage.getItem("dSignatureAsegurado");
     this.imageHeight = 200;

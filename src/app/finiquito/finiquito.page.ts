@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { logoFicohsa } from '../environments/default-images';
 import { meses } from '../environments/calendario';
 import { bchUsdReference } from '../environments/exchange-rate';
+import { isDollarAttentionCurrency, resolveAttentionCurrency } from '../utils/currency-display.util';
 import * as $ from 'jquery';
 
 @Component({
@@ -118,11 +119,7 @@ export class FiniquitoPage implements OnInit {
           this.fechaParrafo = this.dia+' de '+ meses[this.mes].mes+' de '+this.anio;
 
           //alert(this.moneda)
-          if (this.moneda == null) {
-            this.miMoneda = "LEMPIRAS";
-          }else{ 
-            this.miMoneda = this.moneda;
-          }
+          this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
           
          }
       )
@@ -139,11 +136,7 @@ export class FiniquitoPage implements OnInit {
           this.TipoCoberturaFicohsa = this.datosAtencion[0].TipoAcuerdoFicohsa;
 
           //alert(this.moneda)
-          if (this.moneda == null) {
-            this.miMoneda = "LEMPIRAS";
-          }else{ 
-            this.miMoneda = this.moneda;
-          }
+          this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
           
          }
       )
@@ -159,8 +152,7 @@ export class FiniquitoPage implements OnInit {
   }
 
   get isDollarPolicy(): boolean {
-    const currency = (this.moneda || this.miMoneda || '').toString().trim().toUpperCase();
-    return currency.includes('DOLAR') || currency.includes('DÓLAR') || currency.includes('USD') || currency === '$';
+    return isDollarAttentionCurrency(this.moneda || this.miMoneda);
   }
   
   get signatureStorageKey(): string {

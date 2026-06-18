@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
+import { SharedPipesModule } from '../pipes/shared-pipes.module';
 
 import { SegmentoSolicitantePageRoutingModule } from './segmento-solicitante-routing.module';
 
@@ -13,7 +14,8 @@ import { SegmentoSolicitantePage } from './segmento-solicitante.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    SegmentoSolicitantePageRoutingModule
+    SegmentoSolicitantePageRoutingModule,
+    SharedPipesModule
   ],
   declarations: [SegmentoSolicitantePage]
 })

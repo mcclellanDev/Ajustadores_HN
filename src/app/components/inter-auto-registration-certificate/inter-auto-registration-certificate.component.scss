@@ -1,0 +1,66 @@
+.inter-auto-cert-capture {
+  background: #fffbeb;
+  border: 1.5px solid #f59e0b;
+  border-radius: 10px;
+  margin: 10px 0 0;
+  padding: 12px;
+}
+
+.inter-auto-cert-capture__message {
+  color: #b45309;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.45;
+  margin: 0 0 10px;
+}
+
+.inter-auto-cert-capture__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.inter-auto-cert-capture__replace-hint {
+  display: block;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.inter-auto-cert-capture__chip {
+  margin: 0;
+}
+
+.inter-auto-cert-capture__preview {
+  align-items: center;
+  border-top: 1px solid rgba(245, 158, 11, 0.35);
+  color: #15803d;
+  display: flex;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.inter-auto-cert-capture__preview ion-icon {
+  flex-shrink: 0;
+  font-size: 1.35rem;
+}
+
+.inter-auto-cert-capture__preview ion-thumbnail {
+  --border-radius: 8px;
+  --size: 56px;
+  flex-shrink: 0;
+}
+
+.inter-auto-cert-capture__preview-copy {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.84rem;
+  gap: 2px;
+  line-height: 1.35;
+}
+
+.inter-auto-cert-capture__preview-copy span {
+  color: #166534;
+  font-weight: 600;
+  word-break: break-word;
+}

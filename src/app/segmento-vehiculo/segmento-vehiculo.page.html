@@ -1,24 +1,20 @@
-<ion-header>
-  <ion-header>
-    <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
-    <ion-footer *ngIf="isLoading == true"></ion-footer>
-    
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-back-button></ion-back-button>
-        
-      </ion-buttons>
-      <ion-title>
-        <ion-grid>
-          <ion-row>
-            <ion-col size="3"></ion-col>
-            <ion-col size="6">{{segmentoTitulo}} - Atención # {{idAtencion}} - {{miMoneda}}</ion-col>
-            <ion-col size="3" style="float: right;color:blue;"></ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-header class="segment-form-header">
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
+  <ion-footer *ngIf="isLoading == true"></ion-footer>
+  
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button aria-label="Regresar al formulario" fill="clear" (click)="handleSegmentBack()">
+        <ion-icon slot="icon-only" name="chevron-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      <span class="attention-toolbar-title attention-toolbar-title--stacked">
+        <span class="attention-toolbar-title__id">{{segmentoTitulo}} · #{{idAtencion}}</span>
+        <app-attention-currency-badge [currency]="miMoneda" variant="toolbar"></app-attention-currency-badge>
+      </span>
+    </ion-title>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding segment-form-content">
@@ -160,7 +156,10 @@
           </ion-grid>
         </ion-item>
 
-        <ion-item class="ion-no-padding  input">
+        <ion-item
+          class="ion-no-padding  input"
+          [class.inter-auto-field-highlight--warning]="chassisValidation?.message && chassisValidation?.mode !== 'valid'"
+          [class.inter-auto-field-highlight--success]="chassisValidation?.message && chassisValidation?.mode === 'valid'">
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               No. del motor
@@ -174,7 +173,10 @@
           </ion-grid>
         </ion-item>
 
-        <ion-item class="ion-no-padding  input">
+        <ion-item
+          class="ion-no-padding  input"
+          [class.inter-auto-field-highlight--warning]="chassisValidation?.message && chassisValidation?.mode !== 'valid'"
+          [class.inter-auto-field-highlight--success]="chassisValidation?.message && chassisValidation?.mode === 'valid'">
           <ion-grid>
             <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
               Chasis
@@ -198,6 +200,13 @@
           <ion-icon [name]="chassisValidation?.mode === 'valid' ? 'checkmark-circle-outline' : 'warning-outline'"></ion-icon>
           <span>{{ chassisValidation?.message }}</span>
         </div>
+
+        <app-inter-auto-registration-certificate
+          [idAtencion]="idAtencion"
+          [chassisValidation]="chassisValidation"
+          [chasis]="elChasisAsegurado"
+          [manualEntryActive]="interAutoManualChasisEntryActive || allowManualChasisInput()">
+        </app-inter-auto-registration-certificate>
 
         <ion-item class="ion-no-padding  input">
           <ion-grid>

@@ -9,6 +9,7 @@ import * as $ from 'jquery';
 import { AlertController, AnimationController, ModalController } from '@ionic/angular';
 import { ModalGuardarPage } from '../Modales/modal-guardar/modal-guardar.page';
 import { bchUsdReference } from '../environments/exchange-rate';
+import { isDollarAttentionCurrency, resolveAttentionCurrency } from '../utils/currency-display.util';
 
 @Component({
   selector: 'app-beneficiario',
@@ -140,11 +141,7 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
           this.moneda = this.expediente[0].Moneda;
 
           //alert(this.moneda)
-          if (this.moneda == null) {
-            this.miMoneda = "LEMPIRAS";
-          }else{ 
-            this.miMoneda = this.moneda;
-          }
+          this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
           
          }
       )
@@ -208,8 +205,7 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
   }
 
   get isDollarPolicy(): boolean {
-    const currency = (this.moneda || this.miMoneda || '').toString().trim().toUpperCase();
-    return currency.includes('DOLAR') || currency.includes('DÓLAR') || currency.includes('USD') || currency === '$';
+    return isDollarAttentionCurrency(this.moneda || this.miMoneda);
   }
 
   openBchExchangeRate() {

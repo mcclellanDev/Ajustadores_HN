@@ -3,9 +3,12 @@ import { tipoSolicitante, tipoLicencia, tipoFirma, tipoCombustible, Formulario, 
 import { Talleres, rangoAnios, TalleresNoFiltrados, TalleresCategorias } from '../environments/talleres';
 import { tiposTransmision } from '../environments/vehicles';
 import { ApiService } from '../services/api.service';
+import { readStoredAttentionCurrency, resolveAttentionCurrency } from '../utils/currency-display.util';
+import { returnToAjustadorhnParent } from '../utils/ajustador-segment-navigation.util';
 import { Component, OnInit } from '@angular/core';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, ToastController, NavController } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import * as $ from 'jquery';
 
 @Component({
@@ -26,9 +29,10 @@ export class SegmentoCaracteristicasPage implements OnInit {
   fuelTypeSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de combustible', subHeader: 'Selecciona una opción' };
   transmissionTypeSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de transmisión', subHeader: 'Selecciona una opción' };
 
-  constructor(private api: ApiService, private alert: AlertController, private toaster:ToastService) { 
+  constructor(private api: ApiService, private alert: AlertController, private toaster:ToastService, private navCtrl: NavController, private router: Router) {
     this.talleresCategorias = TalleresCategorias
     this.idAtencion = localStorage.getItem('idAtencion');
+    this.miMoneda = readStoredAttentionCurrency();
     let dIdAtencion = parseInt(this.idAtencion);
     this.anioAsegurado = parseInt(localStorage.getItem('anioAsegurado'));
     this.esPesado = localStorage.getItem('elTipoPesado');
@@ -190,6 +194,10 @@ export class SegmentoCaracteristicasPage implements OnInit {
     
   }
 
+  handleSegmentBack() {
+    void returnToAjustadorhnParent(this.navCtrl, this.router);
+  }
+
   ngOnInit() {
     setTimeout(() => {
       this.getTipoCombustible();
@@ -213,11 +221,7 @@ export class SegmentoCaracteristicasPage implements OnInit {
           this.ciudad = this.elExpediente[0].Ciudad;
           localStorage.setItem('ciudadAtencion', this.ciudad ? this.ciudad.toString() : '');
           
-          if (this.moneda == null) {
-            this.miMoneda = "LEMPIRAS";
-          }else{ 
-            this.miMoneda = this.moneda;
-          }
+          this.miMoneda = resolveAttentionCurrency(this.elExpediente[0]);
 
           this.getTalleres();
         }

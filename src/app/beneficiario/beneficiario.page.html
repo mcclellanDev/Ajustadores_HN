@@ -7,7 +7,12 @@
         <ion-icon slot="icon-only" name="chevron-back"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Atención # {{idAtencion}} - {{miMoneda}}</ion-title>
+    <ion-title>
+      <span class="attention-toolbar-title">
+        <span class="attention-toolbar-title__id">Atención # {{idAtencion}}</span>
+        <app-attention-currency-badge [currency]="miMoneda" variant="toolbar"></app-attention-currency-badge>
+      </span>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 

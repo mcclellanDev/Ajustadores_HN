@@ -81,7 +81,12 @@
               <div><dt>Nombre</dt><dd>{{item.Cliente | titlecase}}</dd></div>
               <div><dt>Teléfono</dt><dd>{{item.TelefonoOrigen || 'N/D'}}</dd></div>
               <div><dt>Póliza</dt><dd>{{item.PolizaExterna || 'N/D'}}</dd></div>
-              <div><dt>Moneda</dt><dd>{{miMoneda}}</dd></div>
+              <div class="prepare-send-currency">
+                <dt>Moneda</dt>
+                <dd>
+                  <app-attention-currency-badge [currency]="miMoneda" variant="detail" [showLabel]="true"></app-attention-currency-badge>
+                </dd>
+              </div>
               <div><dt>Identidad</dt><dd>{{identidadAsegurado || 'N/D'}}</dd></div>
               <div><dt>Conductor</dt><dd>{{nombreConductor || 'N/D'}}</dd></div>
               <div><dt>Fecha</dt><dd>{{formateadaSiniestro}}</dd></div>

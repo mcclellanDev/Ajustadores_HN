@@ -336,3 +336,15 @@
   border-color: #16a34a;
   color: #15803d;
 }
+
+.segment-form-content .segmento ion-item.input.inter-auto-field-highlight--warning {
+  --inner-border-width: 0;
+  border: 1.5px solid #f59e0b;
+  border-radius: 7px;
+}
+
+.segment-form-content .segmento ion-item.input.inter-auto-field-highlight--success {
+  --inner-border-width: 0;
+  border: 1.5px solid #16a34a;
+  border-radius: 7px;
+}

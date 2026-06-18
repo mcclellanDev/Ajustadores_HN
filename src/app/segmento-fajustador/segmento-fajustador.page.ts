@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { readStoredAttentionCurrency } from '../utils/currency-display.util';
 
 @Component({
   selector: 'app-segmento-fajustador',
@@ -11,7 +12,7 @@ export class SegmentoFajustadorPage implements OnInit {
   constructor() { 
     this.idAtencion = localStorage.getItem('idAtencion');
     let dIdAtencion = parseInt(this.idAtencion);
-    this.miMoneda = localStorage.getItem('miMoneda');
+    this.miMoneda = readStoredAttentionCurrency();
     
   }
 

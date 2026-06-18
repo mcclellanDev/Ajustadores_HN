@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
+import { SharedPipesModule } from '../pipes/shared-pipes.module';
 
 import { ExpedientePageRoutingModule } from './expediente-routing.module';
 
@@ -14,7 +15,8 @@ import { ExpedienteInfoModalComponent } from './expediente-info-modal.component'
     CommonModule,
     FormsModule,
     IonicModule,
-    ExpedientePageRoutingModule
+    ExpedientePageRoutingModule,
+    SharedPipesModule
   ],
   schemas:[CUSTOM_ELEMENTS_SCHEMA],
   declarations: [ExpedientePage, ExpedienteInfoModalComponent]

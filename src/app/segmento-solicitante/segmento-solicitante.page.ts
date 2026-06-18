@@ -1,10 +1,13 @@
 import { ajustadorHn, tipoSolicitante } from '../interfaces/formulario';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, ToastController, NavController } from '@ionic/angular';
 import { FormatosService } from '../services/formatos.service';
 import { ItemsData } from '../environments/predeterminados';
 import { ToastService } from '../services/toast.service';
 import { ApiService } from '../services/api.service';
+import { readStoredAttentionCurrency, resolveAttentionCurrency } from '../utils/currency-display.util';
+import { returnToAjustadorhnParent } from '../utils/ajustador-segment-navigation.util';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import * as $ from 'jquery';
 import { iconWorlds } from '../environments/mapas';
@@ -32,7 +35,7 @@ export class SegmentoSolicitantePage implements OnInit {
   genderTypeSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de género', subHeader: 'Selecciona una opción' };
   relationshipSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de parentesco', subHeader: 'Selecciona una opción' };
 
-  constructor(private api: ApiService, public toaster:ToastService, private toast:ToastController, private alert: AlertController, private formateador:FormatosService) { 
+  constructor(private api: ApiService, public toaster:ToastService, private toast:ToastController, private alert: AlertController, private formateador:FormatosService, private navCtrl: NavController, private router: Router) {
     this.ajustador.TipoSolicitante = parseInt(localStorage.getItem('TipoSolicitante'));
     this.solicitanteId = parseInt(localStorage.getItem('tipoSolicitante'));
     let coberId:any = localStorage.getItem('coberturaId');
@@ -45,6 +48,7 @@ export class SegmentoSolicitantePage implements OnInit {
 
 
     this.idAtencion = localStorage.getItem('idAtencion');
+    this.miMoneda = readStoredAttentionCurrency();
     let dIdAtencion = parseInt(this.idAtencion);
 
     let idAtencionActual = localStorage.getItem('atencionEnProceso');
@@ -202,11 +206,7 @@ export class SegmentoSolicitantePage implements OnInit {
 
           this.nombreCliente = this.elExpediente[0].Cliente;
           this.moneda = this.elExpediente[0].Moneda;
-          if (this.moneda == null) {
-            this.miMoneda = "LEMPIRAS";
-          }else{ 
-            this.miMoneda = this.moneda;
-          }
+          this.miMoneda = resolveAttentionCurrency(this.elExpediente[0]);
 
           localStorage.setItem('datos-Nombre', this.nombreCliente);
           localStorage.setItem('datos-NombreConductor', this.nombreCliente);
@@ -266,10 +266,14 @@ export class SegmentoSolicitantePage implements OnInit {
     }
   }
 
+  handleSegmentBack() {
+    void returnToAjustadorhnParent(this.navCtrl, this.router);
+  }
+
   ionViewDidEnter(){
     setTimeout(() => {
 
-      this.api.Expediente(parseInt(this.idAtencion)).pipe( 
+      this.api.Expediente(parseInt(this.idAtencion)).pipe(
       finalize(async ()=>{
         console.log('So far so good as you should know my friend what we can do....')
       })
@@ -280,11 +284,7 @@ export class SegmentoSolicitantePage implements OnInit {
 
           this.nombreCliente = this.elExpediente[0].Cliente;
           this.moneda = this.elExpediente[0].Moneda;
-          if (this.moneda == null) {
-            this.miMoneda = "LEMPIRAS";
-          }else{ 
-            this.miMoneda = this.moneda;
-          }
+          this.miMoneda = resolveAttentionCurrency(this.elExpediente[0]);
         }
       )
 

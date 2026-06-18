@@ -6,6 +6,7 @@ import {  ActionSheetController, AlertController, LoadingController, ToastContro
 import { finalize } from 'rxjs/operators';
 import { Expedientes } from '../interfaces/expedientes';
 import { ApiService } from '../services/api.service';
+import { resolveAttentionCurrency } from '../utils/currency-display.util';
 import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
 import { ModalController } from '@ionic/angular';
 import { ToastService } from '../services/toast.service';
@@ -519,11 +520,7 @@ export class ExpedientePage implements OnInit {
         this.moneda = this.expediente[0].Moneda;
 
 //alert(this.moneda)
-        if (this.moneda == null) {
-            this.miMoneda = "LEMPIRAS";
-          }else{ 
-            this.miMoneda = this.moneda;
-          }
+        this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
         
         this.latitud = this.expediente[0].LatitudCliente;
         this.longitud = this.expediente[0].LongitudCliente;

@@ -1,12 +1,15 @@
 import { ToastService } from '../services/toast.service';
 import { ajustadorHn, Formulario } from '../interfaces/formulario';
 import { ApiService } from '../services/api.service';
+import { readStoredAttentionCurrency, resolveAttentionCurrency } from '../utils/currency-display.util';
 import { Entidades } from '../interfaces/extras';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AlertController, AnimationController, IonAccordionGroup, ToastController } from '@ionic/angular';
+import { AlertController, AnimationController, IonAccordionGroup, ToastController, NavController } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import * as $ from 'jquery';
 import { emptySignature } from '../environments/signatures';
+import { returnToAjustadorhnParent } from '../utils/ajustador-segment-navigation.util';
 
 @Component({
   selector: 'app-segmento-danio',
@@ -35,11 +38,11 @@ export class SegmentoDanioPage implements OnInit {
   
   
   constructor(private api: ApiService, private alert: AlertController, public toaster:ToastService, 
-    private toast: ToastController, private animationCtrl: AnimationController) { 
+    private toast: ToastController, private animationCtrl: AnimationController, private navCtrl: NavController, private router: Router) {
       this.ssucessIconRecycle = '../../assets/img/papel.gif';
     this.idAtencion = localStorage.getItem('idAtencion');
     let dIdAtencion = parseInt(this.idAtencion);
-    this.miMoneda = localStorage.getItem('miMoneda');
+    this.miMoneda = readStoredAttentionCurrency();
     this.segmentoTitulo = localStorage.getItem('segmentoTitulo');
     let elCompromiso = localStorage.getItem('elCompromisoPago');
     let oPago = localStorage.getItem('elCompromisoPagoObservacion');
@@ -86,6 +89,10 @@ export class SegmentoDanioPage implements OnInit {
     
   }
 
+  handleSegmentBack() {
+    void returnToAjustadorhnParent(this.navCtrl, this.router);
+  }
+
   ionViewDidEnter(){
 
     setTimeout(() => {
@@ -115,11 +122,7 @@ export class SegmentoDanioPage implements OnInit {
         )
 
         setTimeout(() => {
-          if (this.moneda == null) {
-            this.miMoneda = "LEMPIRAS";
-          }else{ 
-            this.miMoneda = this.moneda;
-          }
+          this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
         }, 900);
   }
 

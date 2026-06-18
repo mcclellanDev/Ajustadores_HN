@@ -1,0 +1,54 @@
+<div
+  class="inter-auto-cert-capture"
+  *ngIf="visible"
+  role="region"
+  aria-label="Verificación de tarjeta de circulación">
+  <p class="inter-auto-cert-capture__message">
+    Para verificar que el chasis fue capturado correctamente, adjunte una foto legible de la
+    tarjeta de circulación (JPG, JPEG o PNG).
+    <span *ngIf="state.registrationCertificateUploaded" class="inter-auto-cert-capture__replace-hint">
+      Si la imagen no es correcta, puede volver a capturarla o seleccionar otra desde galería.
+    </span>
+  </p>
+
+  <div class="inter-auto-cert-capture__actions">
+    <ion-chip
+      class="chip-imagenes-camara inter-auto-cert-capture__chip"
+      size="small"
+      [outline]="true"
+      [disabled]="isCapturing"
+      (click)="openCamera()">
+      <ion-icon name="camera" size="small" class="icono-camara"></ion-icon>
+      <ion-label class="chip-label">Cámara</ion-label>
+    </ion-chip>
+
+    <ion-chip
+      class="chip-imagenes inter-auto-cert-capture__chip"
+      size="small"
+      color="primary"
+      [outline]="true"
+      [disabled]="isCapturing"
+      (click)="openGalleryPicker()">
+      <ion-icon name="image" size="small" color="primary"></ion-icon>
+      <ion-label class="chip-label">Galería</ion-label>
+    </ion-chip>
+  </div>
+
+  <div class="inter-auto-cert-capture__preview" *ngIf="state.registrationCertificateUploaded">
+    <ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon>
+    <ion-thumbnail>
+      <img [src]="state.previewDataUrl" alt="Tarjeta de circulación cargada" />
+    </ion-thumbnail>
+    <div class="inter-auto-cert-capture__preview-copy">
+      <strong>Tarjeta de circulación cargada</strong>
+      <span *ngIf="state.fileName">{{ state.fileName }}</span>
+    </div>
+  </div>
+
+  <input
+    #galleryInput
+    type="file"
+    hidden
+    accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+    (change)="onGallerySelected($event)" />
+</div>

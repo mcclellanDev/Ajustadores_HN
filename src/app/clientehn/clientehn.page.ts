@@ -11,6 +11,7 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { MaskitoElementPredicateAsync, MaskitoOptions } from '@maskito/core';
 import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 import { ToastService } from '../services/toast.service';
+import { InterAutoVehicleCacheService } from '../services/inter-auto-vehicle-cache.service';
 import { marcasVehiculos } from '../environments/vehicles';
 import { segments } from '../environments/segments';
 import { editarFirmaIcono, imagePrefix } from '../environments/default-images';
@@ -29,6 +30,7 @@ import {
   normalizeVehicleIdentifier
 } from '../validation/inter-auto-chassis.validation';
 import { Keyboard } from '@capacitor/keyboard';
+import { resolveAttentionCurrency } from '../utils/currency-display.util';
 import * as $ from 'jquery';
 import { WebElement } from 'protractor';
 
@@ -126,12 +128,13 @@ export class ClientehnPage implements OnInit {
   identidadDelCliente: any;  progInterval: any;  indexFront: any; firmaIcono:any = editarFirmaIcono;
   esAudiencia: boolean | undefined;
   chassisValidation: InterAutoChassisValidationState | null = null;
+  interAutoManualChasisEntryActive = false;
 
   // INICIALIZACION
   constructor(private router: Router,    private route: ActivatedRoute,    private loading: LoadingController,    private alert: AlertController,
     private api: ApiService,    private toast: ToastController,    private location: Location,    private platform: Platform,    private so: ScreenOrientation,
     private geo: NativeGeocoder,    private toaster: ToastService,    private formateador:FormatosService, private countryService:CountrydataService,
-    private menuController: MenuController) {
+    private menuController: MenuController, private interAutoVehicleCache: InterAutoVehicleCacheService) {
 
     let datAtencion:any = localStorage.getItem('datosDeAtencion');
     this.DatosDeAtencion = JSON.parse(datAtencion);
@@ -1262,12 +1265,10 @@ export class ClientehnPage implements OnInit {
           this.expediente= res;
           this.moneda = this.expediente[0].Moneda;
 
+          void this.initializeInterAutoVehicleFields(this.expediente[0]);
+
           //alert(this.moneda)
-          if (this.moneda == null) {
-            this.miMoneda = "LEMPIRAS";
-          }else{ 
-            this.miMoneda = this.moneda;
-          }
+          this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
           
          }
       )
@@ -1330,7 +1331,7 @@ export class ClientehnPage implements OnInit {
 
     if (Network) { this.checkConnection(); }
 
-    this.applyInterAutoChassisValidation();
+    void this.initializeInterAutoVehicleFields();
   }
 
 
@@ -2167,7 +2168,7 @@ export class ClientehnPage implements OnInit {
 
       let laFormateada = anio+'-'+mes+'-'+dia;
       localStorage.setItem('dataProcess-Vigencia', laFormateada);
-      this.formateadaVigencia = laFormateada;
+      this.formateadaVigencia = dateFormat;
       this.isVence = true;
       
       let now = new Date().toISOString();
@@ -3683,6 +3684,10 @@ export class ClientehnPage implements OnInit {
   }
 
   allowManualChasisInput(): boolean {
+    if (this.interAutoManualChasisEntryActive) {
+      return true;
+    }
+
     if (this.chassisValidation?.applies) {
       return this.chassisValidation.enableManualChasis;
     }
@@ -3702,6 +3707,56 @@ export class ClientehnPage implements OnInit {
   onVehicleIdentifierChange() {
     this.syncVehicleIdentifiersToExpediente();
     this.applyInterAutoChassisValidation(true);
+    void this.persistInterAutoDraftIfNeeded();
+  }
+
+  private async initializeInterAutoVehicleFields(serverSource?: { Chasis?: unknown; Motor?: unknown; PolizaExterna?: unknown }) {
+    const idAtencion = parseInt(this.idAtencion, 10);
+    const expediente = this.laExpediente?.[0];
+    if (!idAtencion || !expediente) {
+      this.applyInterAutoChassisValidation();
+      return;
+    }
+
+    if (serverSource) {
+      await this.interAutoVehicleCache.captureServerSnapshot(idAtencion, serverSource);
+    }
+
+    const snapshot = await this.interAutoVehicleCache.loadServerSnapshot(idAtencion);
+    const serverChasis = serverSource?.Chasis ?? snapshot?.chasis;
+    this.interAutoManualChasisEntryActive = this.interAutoVehicleCache.shouldRecoverDraft(serverChasis);
+
+    if (this.interAutoManualChasisEntryActive) {
+      const draft = await this.interAutoVehicleCache.loadDraft(idAtencion);
+      if (draft) {
+        this.interAutoVehicleCache.applyDraftToExpediente(expediente, draft);
+        if (this.elExpediente?.[0]) {
+          this.interAutoVehicleCache.applyDraftToExpediente(this.elExpediente[0], draft);
+        }
+      }
+    }
+
+    this.applyInterAutoChassisValidation();
+    void this.persistInterAutoDraftIfNeeded();
+  }
+
+  private async persistInterAutoDraftIfNeeded() {
+    const idAtencion = parseInt(this.idAtencion, 10);
+    const expediente = this.laExpediente?.[0];
+    if (!idAtencion || !expediente || !this.chassisValidation?.applies) {
+      return;
+    }
+
+    const snapshot = await this.interAutoVehicleCache.loadServerSnapshot(idAtencion);
+    if (!this.interAutoVehicleCache.shouldRecoverDraft(snapshot?.chasis)) {
+      return;
+    }
+
+    await this.interAutoVehicleCache.saveDraft(idAtencion, {
+      chasis: expediente.Chasis,
+      motor: expediente.Motor,
+      poliza: expediente.PolizaExterna
+    });
   }
 
   private applyInterAutoChassisValidation(preserveManualEntry = false) {
@@ -3717,25 +3772,53 @@ export class ClientehnPage implements OnInit {
       buildInterAutoValidationInput(expediente)
     );
 
+    if (validation.swappedValues || !preserveManualEntry) {
+      expediente.Chasis = validation.chasis;
+      expediente.Motor = validation.motor;
+      if (this.elExpediente?.[0]) {
+        this.elExpediente[0].Chasis = validation.chasis;
+        this.elExpediente[0].Motor = validation.motor;
+      }
+    }
+
+    if (validation.enableManualChasis) {
+      this.interAutoManualChasisEntryActive = true;
+    }
+
+    if (preserveManualEntry || this.interAutoManualChasisEntryActive) {
+      validation.enableManualChasis =
+        this.interAutoManualChasisEntryActive ||
+        previousManualChasis ||
+        validation.enableManualChasis;
+      validation.enableManualMotor = previousManualMotor || validation.enableManualMotor;
+    }
+
+    if (!validation.applies && this.interAutoManualChasisEntryActive) {
+      this.chassisValidation = {
+        applies: true,
+        mode: 'valid',
+        message: '',
+        chasis: normalizeVehicleIdentifier(expediente.Chasis),
+        motor: normalizeVehicleIdentifier(expediente.Motor),
+        poliza: normalizeVehicleIdentifier(expediente.PolizaExterna),
+        enableManualChasis: true,
+        enableManualMotor: validation.enableManualMotor,
+        enableManualPoliza: validation.enableManualPoliza,
+        swappedValues: false
+      };
+      this.syncVehicleIdentifiersToExpediente();
+      void this.persistInterAutoDraftIfNeeded();
+      return;
+    }
+
     if (!validation.applies) {
       this.chassisValidation = null;
       return;
     }
 
-    if (validation.swappedValues || !preserveManualEntry) {
-      expediente.Chasis = validation.chasis;
-      expediente.Motor = validation.motor;
-      this.elExpediente.Chasis = validation.chasis;
-      this.elExpediente.Motor = validation.motor;
-    }
-
-    if (preserveManualEntry) {
-      validation.enableManualChasis = previousManualChasis || validation.enableManualChasis;
-      validation.enableManualMotor = previousManualMotor || validation.enableManualMotor;
-    }
-
     this.chassisValidation = validation;
     this.syncVehicleIdentifiersToExpediente();
+    void this.persistInterAutoDraftIfNeeded();
   }
 
   private syncVehicleIdentifiersToExpediente() {
@@ -3751,7 +3834,10 @@ export class ClientehnPage implements OnInit {
 
     this.dataProcess['ChasisVehiculo'] = expediente.Chasis;
     this.dataProcess['Motor'] = expediente.Motor;
+    localStorage.setItem('datos-ChasisVehiculo', expediente.Chasis || '');
+    localStorage.setItem('datos-Poliza', expediente.PolizaExterna || '');
     localStorage.setItem('dataProcess-ChasisVehiculo', expediente.Chasis || '');
+    localStorage.setItem('dataProcess-Motor', expediente.Motor || '');
     localStorage.setItem('elExpediente', JSON.stringify(this.laExpediente));
   }
 

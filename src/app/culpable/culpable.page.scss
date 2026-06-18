@@ -30,6 +30,10 @@ ion-spinner { height: 20%; left: 40%; position: fixed; top: 28%; width: 20%; z-i
 .form-field-wide { grid-column: 1 / -1; }
 .form-field > span { display: block; margin-bottom: 6px; }
 .form-field ion-input, .form-field ion-select, .form-field ion-textarea { --background: #f5f8fb; --color: #17365d; --highlight-color-focused: var(--primaryColor); --padding-bottom: 9px; --padding-end: 10px; --padding-start: 10px; --padding-top: 9px; border: 1px solid #d8e3ed; border-radius: 5px; box-sizing: border-box; font-size: .88rem; min-height: 42px; text-transform: uppercase; width: 100%; }
+.form-field--invalid { border-color: #ef4444; }
+.form-field--invalid > span { color: #b91c1c; }
+.form-field--invalid ion-input, .form-field--invalid ion-select, .form-field--invalid ion-textarea { --highlight-color-focused: #ef4444; border-color: #ef4444; }
+.commitment-field.form-field--invalid ion-item { border-color: #ef4444; }
 .form-field ion-input[readonly] { opacity: .72; }
 .form-field ion-select::part(icon) { color: var(--primaryColor); opacity: 1; }
 .date-field { position: relative; }

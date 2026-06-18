@@ -23,7 +23,10 @@
             <strong>Nombre: {{item.Cliente | titlecase}}</strong><br><br>
             Telefono: {{item.TelefonoOrigen}}<br>
             Poliza: {{item.PolizaExterna?.split('-')[1] | titlecase}}<br>
-            Moneda: {{miMoneda}}
+            <span class="attention-currency-detail-row expediente-currency-value">
+              <span class="attention-currency-detail-row__label">Moneda</span>
+              <app-attention-currency-badge [currency]="miMoneda" variant="detail" [showLabel]="true"></app-attention-currency-badge>
+            </span>
           </div>
         </ion-accordion>
 

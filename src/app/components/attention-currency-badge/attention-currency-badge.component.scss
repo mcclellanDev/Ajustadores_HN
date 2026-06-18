@@ -1,0 +1,103 @@
+:host {
+  display: inline-flex;
+  max-width: 100%;
+}
+
+.attention-currency-badge {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  display: inline-flex;
+  font-weight: 800;
+  gap: 4px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.attention-currency-badge__icon {
+  flex: 0 0 auto;
+  font-size: 0.95em;
+}
+
+.attention-currency-badge__code {
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.attention-currency-badge__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  opacity: 0.92;
+  text-transform: none;
+}
+
+.attention-currency-badge--lempira {
+  background: rgba(49, 91, 128, 0.1);
+  border-color: rgba(49, 91, 128, 0.22);
+  color: #24405a;
+}
+
+.attention-currency-badge--dollar {
+  background: rgba(15, 118, 110, 0.12);
+  border-color: rgba(15, 118, 110, 0.24);
+  color: #0f5c56;
+}
+
+.attention-currency-badge--toolbar {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.38);
+  color: #ffffff;
+  font-size: 1em;
+  gap: 6px;
+  padding: 5px 12px;
+  vertical-align: middle;
+
+  &.attention-currency-badge--lempira,
+  &.attention-currency-badge--dollar {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.38);
+    color: #ffffff;
+  }
+
+  .attention-currency-badge__icon,
+  .attention-currency-badge__code,
+  .attention-currency-badge__label {
+    color: #ffffff;
+    font-size: 1em;
+    opacity: 1;
+  }
+
+  .attention-currency-badge__icon {
+    font-size: 1.05em;
+  }
+}
+
+.attention-currency-badge--segment {
+  font-size: 1rem;
+  margin-top: 4px;
+  padding: 6px 12px;
+
+  .attention-currency-badge__code,
+  .attention-currency-badge__label {
+    font-size: 1em;
+  }
+
+  .attention-currency-badge__icon {
+    font-size: 1.05em;
+  }
+}
+
+.attention-currency-badge--detail {
+  padding: 6px 12px;
+
+  .attention-currency-badge__code {
+    font-size: 0.78rem;
+  }
+
+  .attention-currency-badge__label {
+    font-size: 0.76rem;
+  }
+}
