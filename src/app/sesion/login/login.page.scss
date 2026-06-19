@@ -305,15 +305,23 @@ ion-input.sesion-dato.ion-focused {
 }
 
 .saved-session-remove {
-  --background-hover: rgba(239, 90, 34, 0.08);
-  --color: #ef5a22;
-  height: 38px;
+  --background: rgba(239, 90, 34, 0.12);
+  --background-activated: rgba(239, 90, 34, 0.22);
+  --background-hover: rgba(239, 90, 34, 0.18);
+  --border-radius: 10px;
+  --color: #d9480f;
+  --padding-end: 0;
+  --padding-start: 0;
+  flex-shrink: 0;
+  height: 44px;
   margin: 0;
-  width: 38px;
+  min-height: 44px;
+  min-width: 44px;
+  width: 44px;
 }
 
 .saved-session-remove ion-icon {
-  font-size: 1.15rem;
+  font-size: 1.38rem;
 }
 
 ion-spinner {
@@ -452,22 +460,29 @@ ion-spinner {
     }
 
     .logout-menu-danger {
-      border-color: white;
-      color: white;
+      border-color: #ef5a22;
+      color: #ef5a22;
     }
 
     .logout-menu-cache {
-      border-color: white;
-      color: white;
+      border-color: #0058cb;
+      color: #0058cb;
     }
 
     .logout-menu-cancel {
-      border-color: white;
-      color: white;
+      border-color: #b9c8d8;
+      color: #15305f;
     }
+
     .logout-menu-accept {
-      border-color: var(--blueGrayColor);
-      color: var(--blueGrayColor);
+      border-color: var(--blueGrayColor, #0058cb);
+      color: var(--blueGrayColor, #0058cb);
+    }
+  }
+
+  .login-menu-alert.login-session-delete-alert {
+    .alert-button-group {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 

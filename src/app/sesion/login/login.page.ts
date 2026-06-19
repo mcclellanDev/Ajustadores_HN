@@ -169,7 +169,7 @@ export class LoginPage implements OnInit {
     event.stopPropagation();
 
     const alert = await this.alert.create({
-      cssClass: 'login-menu-alert',
+      cssClass: 'login-menu-alert login-session-delete-alert',
       header: 'Eliminar sesión guardada',
       subHeader: 'Cuenta guardada',
       message: `¿Deseas quitar ${session.displayName || session.email} de la lista de sesiones recientes?`,

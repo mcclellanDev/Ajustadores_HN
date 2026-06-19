@@ -11,6 +11,7 @@ import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
 import { ModalController } from '@ionic/angular';
 import { ToastService } from '../services/toast.service';
 import { ConnectionStatus } from '@capacitor/network';
+import { Geolocation } from '@capacitor/geolocation';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { NativeGeocoder} from '@ionic-native/native-geocoder/ngx';
 import { GoogleMap } from '@capacitor/google-maps';
@@ -54,6 +55,11 @@ export class ExpedientePage implements OnInit {
   leafletIdleTimer: ReturnType<typeof setTimeout>;
   readonly leafletFollowZoom = 17;
   bounds: google.maps.LatLngBounds;  marcadorAju: any; routeString:any; ajustadorId:any; watcher:any;  geoloc: Geolocation;  distanciaConvert: string;  distanciaString: string;
+  private liveTrackingWatchId: string | null = null;
+  private lastSyncedPosition: { lat: number; lng: number } | null = null;
+  private lastRouteUpdateAt = 0;
+  private readonly LIVE_TRACKING_SYNC_MS = 15000;
+  private readonly LIVE_ROUTE_UPDATE_MS = 12000;
   mapInfoText: any; anyInterval:any; isArrived:boolean = false; isTracking:boolean=false;  arrayString: string;  elCliente: any;  atenciones: any;  bpmFicohsa: any;breakpoint:number = 1;
   newMarkers:any=[]; coordsLat:any; coordsLon:any; cacheCount:number=0; cacheCliente:any=[]; forwardUrl:any; lugar:any;
   source: any;  proveedorLatitud: number;  proveedorLongitud: number; coordenadasDeCorreccion:any=[]; coordenadasAju:any;
@@ -1545,54 +1551,202 @@ export class ExpedientePage implements OnInit {
       $('#botonCerrarModal').click();
     }
 
-    this.geoloc = navigator.geolocation;
-    this.geoloc.getCurrentPosition(async pos => {
-      this.proveedorLatitud = pos.coords.latitude;
-      this.proveedorLongitud = pos.coords.longitude;
+    void this.resolveCurrentPosition()
+      .then(async (coords) => {
+        this.proveedorLatitud = coords.latitude;
+        this.proveedorLongitud = coords.longitude;
 
-      const coordenadasAju = {
-        lat: this.proveedorLatitud,
-        lng: this.proveedorLongitud
-      };
-      const coordenadas = await this.getCrashRouteDestination();
+        const coordenadasAju = {
+          lat: this.proveedorLatitud,
+          lng: this.proveedorLongitud
+        };
+        const coordenadas = await this.getCrashRouteDestination();
 
-      this.setAdjusterRouteMarker(coordenadasAju);
-      this.setClientCrashOverlay(coordenadas);
+        this.setAdjusterRouteMarker(coordenadasAju);
+        this.setClientCrashOverlay(coordenadas);
 
-      directionsService.route({
-        origin: coordenadasAju,
-        destination: coordenadas,
-        travelMode: 'DRIVING',
-      }, (response, status) => {
+        directionsService.route({
+          origin: coordenadasAju,
+          destination: coordenadas,
+          travelMode: 'DRIVING',
+        }, (response, status) => {
+          this.isLoading = false;
+          this.isLoadingData = false;
+
+          if (status !== 'OK') {
+            return;
+          }
+
+          this.renderRoute(response, directionsDisplay);
+          this.rutaInicial = response.routes[0];
+          this.pointsArray = response.routes[0].legs[0];
+          this.routeString = JSON.stringify(response);
+
+          const dist = response.routes[0].legs[0].distance.text;
+          const distM = response.routes[0].legs[0].distance.value;
+          localStorage.setItem('dist', dist);
+          localStorage.setItem('distM', distM.toString());
+          localStorage.setItem('rutaInicial', JSON.stringify(this.rutaInicial));
+          localStorage.setItem('routeString', JSON.stringify(this.routeString));
+          this.puntos = JSON.stringify(this.rutaInicial);
+
+          this.saveInitialAdjusterPosition(coordenadasAju);
+          void this.startLiveTracking(true);
+        });
+      })
+      .catch(() => {
         this.isLoading = false;
         this.isLoadingData = false;
+        this.setClientCrashOverlay({lat: this.latitud, lng: this.longitud});
+      });
+  }
 
-        if (status !== 'OK') {
+  private async resolveCurrentPosition(): Promise<GeolocationPosition['coords']> {
+    await Geolocation.requestPermissions();
+    const position = await Geolocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: 15000
+    });
+    return position.coords;
+  }
+
+  private async stopLiveTracking(): Promise<void> {
+    if (this.liveTrackingWatchId) {
+      try {
+        await Geolocation.clearWatch({ id: this.liveTrackingWatchId });
+      } catch (_) {
+        // Ignore stale watcher cleanup errors.
+      }
+      this.liveTrackingWatchId = null;
+    }
+
+    if (this.watcher && this.geoloc) {
+      this.geoloc.clearWatch(this.watcher);
+      this.watcher = null;
+    }
+  }
+
+  private handleLivePosition(lat: number, lng: number, refreshRoute = true): void {
+    const coordsAju = { lat, lng };
+
+    localStorage.setItem('moveCoords', JSON.stringify(coordsAju));
+    localStorage.setItem('moveLatitide', lat.toString());
+    localStorage.setItem('moveLongitude', lng.toString());
+    this.moveLatitud = lat;
+    this.moveLongitud = lng;
+    this.lastSyncedPosition = { lat, lng };
+
+    this.moveMarker(coordsAju, lat, lng);
+
+    const clientLat = Number(localStorage.getItem('clienteLatitud') || this.latitud);
+    const clientLng = Number(localStorage.getItem('clienteLongitud') || this.longitud);
+    const now = Date.now();
+    const shouldRefreshRoute = refreshRoute &&
+      clientLat &&
+      clientLng &&
+      this.directionsService &&
+      (now - this.lastRouteUpdateAt >= this.LIVE_ROUTE_UPDATE_MS);
+
+    if (shouldRefreshRoute) {
+      this.lastRouteUpdateAt = now;
+      this.displayDirection(this.directionsService, this.directionsDisplay, clientLat, clientLng, lat, lng);
+    }
+
+    this.updateArrivalStateFromTracking();
+  }
+
+  private updateArrivalStateFromTracking(): void {
+    this.moveCoords = JSON.parse(localStorage.getItem('moveCoords') || 'null');
+    this.moverCoordenadas = localStorage.getItem('moveCoords');
+    this.distanciaFinal = localStorage.getItem('dist');
+    this.distanciaMetros = parseFloat(localStorage.getItem('distM') || '0');
+
+    if (Number.isFinite(this.distanciaMetros) && this.distanciaMetros < 6) {
+      this.mapInfoText = 'Has llegado al lugar del siniestro.';
+      this.isArrived = true;
+    } else {
+      this.isArrived = false;
+      this.mapInfoText = 'Coordenadas: ' + this.moverCoordenadas + ' | Distancia: ' + this.distanciaFinal;
+    }
+
+    if (this.distanciaFinal) {
+      this.distanciaConvert = parseFloat(this.distanciaFinal).toFixed(2);
+      this.distanciaString = this.distanciaConvert.toString();
+    }
+  }
+
+  private syncLivePositionToServer(): void {
+    const lat = this.lastSyncedPosition?.lat ?? Number(localStorage.getItem('moveLatitide'));
+    const lng = this.lastSyncedPosition?.lng ?? Number(localStorage.getItem('moveLongitude'));
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || !this.idAtencion) {
+      return;
+    }
+
+    const jsonPosition = {
+      Latitud: lat,
+      Longitud: lng,
+      RefAtencionId: this.idAtencion,
+      RefUsuarioId: this.api.currentUser.ProveedorAgenteId,
+      Tipo: 'AJU_MOV',
+      Contador: 0
+    };
+
+    this.api.setPositionNRoute(jsonPosition).pipe(
+      finalize(async () => {
+        console.log('Live tracking position synced');
+      })
+    ).subscribe(
+      () => {},
+      async (res) => {
+        const alert = await this.alert.create({
+          header: 'HELP',
+          message: res.error?.Message || 'No fue posible sincronizar la posición en vivo.',
+          buttons: ['Ok']
+        });
+        await alert.present();
+      }
+    );
+  }
+
+  async startLiveTracking(force = false): Promise<void> {
+    if (!this.isTracking && !force) {
+      return;
+    }
+
+    await this.stopLiveTracking();
+
+    try {
+      await Geolocation.requestPermissions();
+    } catch (_) {
+      // Continue and let watchPosition surface the permission error.
+    }
+
+    this.liveTrackingWatchId = await Geolocation.watchPosition(
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 15000
+      },
+      (position, err) => {
+        if (err || !position) {
+          console.error('Live tracking error', err);
           return;
         }
 
-        this.renderRoute(response, directionsDisplay);
-        this.rutaInicial = response.routes[0];
-        this.pointsArray = response.routes[0].legs[0];
-        this.routeString = JSON.stringify(response);
+        this.handleLivePosition(position.coords.latitude, position.coords.longitude);
+      }
+    );
 
-        const dist = response.routes[0].legs[0].distance.text;
-        const distM = response.routes[0].legs[0].distance.value;
-        localStorage.setItem('dist', dist);
-        localStorage.setItem('distM', distM.toString());
-        localStorage.setItem('rutaInicial', JSON.stringify(this.rutaInicial));
-        localStorage.setItem('routeString', JSON.stringify(this.routeString));
-        this.puntos = JSON.stringify(this.rutaInicial);
+    if (this.trackInterval) {
+      clearInterval(this.trackInterval);
+    }
 
-        this.saveInitialAdjusterPosition(coordenadasAju);
-      });
-    }, () => {
-      this.isLoading = false;
-      this.isLoadingData = false;
-      this.setClientCrashOverlay({lat: this.latitud, lng: this.longitud});
-    }, {
-      enableHighAccuracy: true
-    });
+    this.syncLivePositionToServer();
+    this.trackInterval = setInterval(() => {
+      this.syncLivePositionToServer();
+    }, this.LIVE_TRACKING_SYNC_MS);
   }
 
   retraceRoute() {
@@ -1787,79 +1941,13 @@ export class ExpedientePage implements OnInit {
   }
 
   trackRoute(){
-    this.geoloc = navigator.geolocation;
-    
-    this.watcher = this.geoloc.watchPosition(this.savePositionNow, this.positionError, {enableHighAccuracy:true});
-
-    if (this.ajuMarker) {
-      this.ajuMarker.setMap(null);
-    }
-    this.trackInterval = setInterval(()=>{
-      let latMovi = localStorage.getItem('moveLatitide');
-      let lonMovi = localStorage.getItem('moveLongitude');
-      if (latMovi) {
-        console.log(latMovi)
-        let coordsAju = {lat: parseFloat(latMovi), lng: parseFloat(lonMovi)};
-        localStorage.setItem('moveCoords', JSON.stringify(coordsAju));
-
-
-        const ajuIconUrl = '../../assets/iconos/ajustador-legal-halo-preview.svg';
-        const ajuIcon = {
-          url: ajuIconUrl,
-          color: 'orange',
-          scaledSize: new google.maps.Size(45,45),
-          origin: new google.maps.Point(0, 0),
-          anchor: new google.maps.Point(0, 0)
-        }
-
-        if (this.marcadorAju) {
-          this.marcadorAju.setMap(null);
-        }
-        this.marcadorAju = new google.maps.Marker({
-            position: coordsAju,
-            map: this.mapa,
-            icon: ajuIcon,
-        });
-        this.marcadorAju.setPosition(coordsAju);
-
-        if (coordsAju) {
-        
-          const jsonPosition = {
-            Latitud: latMovi,
-            Longitud: lonMovi,
-            RefAtencionId: this.idAtencion,
-            RefUsuarioId: this.api.currentUser.ProveedorAgenteId,
-            Tipo: 'AJU_MOV',
-            Contador: 0
-          }
-  
-          this.api.setPositionNRoute(jsonPosition).pipe( 
-            finalize(async ()=>{
-              console.log('fin');
-            })
-          ).subscribe(
-             (res) =>{
-            },
-            async (res) => {
-              const alert = await this.alert.create({
-                header:'HELP',
-                message:res.error.Message,
-                buttons:['Ok']
-                
-              });
-              await alert.present();
-            }
-          )
-        }
-      }
-    } , 60000);
+    void this.startLiveTracking(true);
   }
 
   savePositionNow(pos){
     console.log('Las nuevas coordenadas en tracking');
-    console.dir(pos)
-    localStorage.setItem('moveLatitide', pos.coords.latitude);
-    localStorage.setItem('moveLongitude', pos.coords.longitude);
+    console.dir(pos);
+    this.handleLivePosition(pos.coords.latitude, pos.coords.longitude, false);
   }
   
 
@@ -2043,89 +2131,7 @@ export class ExpedientePage implements OnInit {
     
     
 
-    this.geoloc = navigator.geolocation;
-    
-    this.watcher = this.geoloc.watchPosition(this.savePosition, this.positionError, {enableHighAccuracy:true});
-    //this.mapa.watchPosition(this.savePosition, this.positionError, {enableHighAccuracy:true});
-
-
-    
-    this.anyInterval = this.trackInterval;
-    this.trackInterval = setInterval(()=>{
-      this.moveCoords = JSON.parse(localStorage.getItem('moveCoords'));
-      this.moverCoordenadas = localStorage.getItem('moveCoords');
-      this.moveLatitud = localStorage.getItem('moveLatitide');
-      this.moveLongitud = localStorage.getItem('moveLongitude');
-      this.diferencia = localStorage.getItem('diferencia');
-      //this.distanciaFinal = localStorage.getItem('distancia');
-      this.distanciaFinal = localStorage.getItem('dist');
-      this.distanciaInicialMetros = this.distancia * 1000;
-      this.distanciaMetros = parseFloat(localStorage.getItem('distM'));//parseFloat(this.distanciaFinal) * 1000;
-
-      let calculo = this.distanciaMetros+5;
-      //alert('distancia en metros es '+calculo)
-
-      if (this.distanciaMetros < 6) {
-        
-        this.mapInfoText = 'Has llegado al lugar del siniestro.';
-        this.isArrived = true;
-        // Coordenadas: {{moverCoordenadas}} <br> Distancia: {{distanciaFinal}}
-        // Has llegado al lugar del siniestro
-        //this.toastr.presentToastArrival('Has llegado a tu destino', 'top', 'tracking');
-      }else{
-        this.isArrived = false;
-        this.mapInfoText = 'Coordenadas: '+this.moverCoordenadas+' | '+ 'Distancia: '+this.distanciaFinal;
-      }
-
-      this.distanciaConvert = parseFloat(this.distanciaFinal).toFixed(2);
-      this.distanciaString = this.distanciaConvert.toString();
-       
-      this.diferenciaMetros = Math.round(this.distanciaInicialMetros - this.distanciaMetros);
-      this.rutaInicial = JSON.parse(localStorage.getItem('rutaInicial'));
-      this.mediaLatitud = localStorage.getItem('mediaLatitud');
-      this.mediaLongitud = localStorage.getItem('mediaLongitud');
-
-      this.moveMarker(this.moveCoords, this.moveLatitud, this.moveLongitud);
-      
-      this.counter = 1;
-
-      if (this.moveCoords) {
-
-        console.log("Eeeeeeeexitoooooo"+', '+this.moveLatitud+', '+this.moveLongitud+', '+this.counter)
-        
-        const jsonPosition = {
-          Latitud: parseFloat(this.moveLatitud),
-          Longitud: parseFloat(this.moveLongitud),
-          RefAtencionId: this.idAtencion,
-          RefUsuarioId: this.api.currentUser.ProveedorAgenteId,
-          Tipo: 'AJU_MOV',
-          Contador: 0
-        }
-
-        this.api.setPositionNRoute(jsonPosition).pipe( 
-          finalize(async ()=>{
-            console.log('fin');
-          })
-        ).subscribe(
-           (res) =>{
-          },
-          async (res) => {
-            const alert = await this.alert.create({
-              header:'HELP',
-              message:res.error.Message,
-              buttons:['Ok']
-              
-            });
-            await alert.present();
-          }
-        )
-      }
-    } , 10000);
-
-  
-    
-    /**/
-
+    void this.startLiveTracking(true);
   }
 
 
@@ -2255,85 +2261,7 @@ export class ExpedientePage implements OnInit {
 
   }
 
-    this.geoloc = navigator.geolocation;
-    
-    this.watcher = this.geoloc.watchPosition(this.savePosition, this.positionError, {enableHighAccuracy:true});
-    //this.mapa.watchPosition(this.savePosition, this.positionError, {enableHighAccuracy:true});
-
-
-
-    this.anyInterval = this.trackInterval;
-    this.trackInterval = setInterval(()=>{
-      this.moveCoords = JSON.parse(localStorage.getItem('moveCoords'));
-      this.moverCoordenadas = localStorage.getItem('moveCoords');
-      this.moveLatitud = localStorage.getItem('moveLatitide');
-      this.moveLongitud = localStorage.getItem('moveLongitude');
-      this.diferencia = localStorage.getItem('diferencia');
-      //this.distanciaFinal = localStorage.getItem('distancia');
-      this.distanciaFinal = localStorage.getItem('dist');
-      this.distanciaInicialMetros = this.distancia * 1000;
-      this.distanciaMetros = parseFloat(localStorage.getItem('distM'));//parseFloat(this.distanciaFinal) * 1000;
-
-      let calculo = this.distanciaMetros+5;
-      //alert('distancia en metros es '+calculo)
-
-      if (this.distanciaMetros < 6) {
-        
-        this.mapInfoText = 'Has llegado al lugar del siniestro.';
-        this.isArrived = true;
-        // Coordenadas: {{moverCoordenadas}} <br> Distancia: {{distanciaFinal}}
-        // Has llegado al lugar del siniestro
-        //this.toastr.presentToastArrival('Has llegado a tu destino', 'top', 'tracking');
-      }else{
-        this.isArrived = false;
-        this.mapInfoText = 'Coordenadas: '+this.moverCoordenadas+' | '+ 'Distancia: '+this.distanciaFinal;
-      }
-
-      this.distanciaConvert = parseFloat(this.distanciaFinal).toFixed(2);
-      this.distanciaString = this.distanciaConvert.toString();
-       
-      this.diferenciaMetros = Math.round(this.distanciaInicialMetros - this.distanciaMetros);
-      this.rutaInicial = JSON.parse(localStorage.getItem('rutaInicial'));
-      this.mediaLatitud = localStorage.getItem('mediaLatitud');
-      this.mediaLongitud = localStorage.getItem('mediaLongitud');
-
-      this.moveMarker(this.moveCoords, this.moveLatitud, this.moveLongitud);
-      this.counter = 1;
-
-      if (this.moveCoords) {
-
-        console.log("Eeeeeeeexitoooooo"+', '+this.moveLatitud+', '+this.moveLongitud+', '+this.counter)
-        
-        const jsonPosition = {
-          Latitud: parseFloat(this.moveLatitud),
-          Longitud: parseFloat(this.moveLongitud),
-          RefAtencionId: this.idAtencion,
-          RefUsuarioId: this.api.currentUser.ProveedorAgenteId,
-          Tipo: 'AJU_MOV',
-          Contador: 0
-        }
-
-        this.api.setPositionNRoute(jsonPosition).pipe( 
-          finalize(async ()=>{
-            console.log('fin');
-          })
-        ).subscribe(
-           (res) =>{
-          },
-          async (res) => {
-            const alert = await this.alert.create({
-              header:'HELP',
-              message:res.error.Message,
-              buttons:['Ok']
-              
-            });
-            await alert.present();
-          }
-        )
-      }
-    } , 10000);
-
-
+    void this.startLiveTracking(true);
   }
 
   goFotos(){
@@ -2509,14 +2437,17 @@ export class ExpedientePage implements OnInit {
        this.renderRoute(response, directionsDisplay);
        this.rutaInicial = response.routes[0];
        this.pointsArray = response.routes[0].legs[0];
-       this.routeString = JSON.stringify(response)
+       this.routeString = JSON.stringify(response);
 
-       
-//alert(this.pointsArray.length)
+       const dist = response.routes[0].legs[0].distance.text;
+       const distM = response.routes[0].legs[0].distance.value;
+       localStorage.setItem('dist', dist);
+       localStorage.setItem('distM', distM.toString());
+
        localStorage.setItem('rutaInicial', JSON.stringify(this.rutaInicial));
        localStorage.setItem('routeString', JSON.stringify(this.routeString));
        this.puntos = JSON.stringify(this.rutaInicial);
-       //this.mapa.setZoom(10);
+       this.updateArrivalStateFromTracking();
      }
    });
   }
@@ -2884,10 +2815,7 @@ export class ExpedientePage implements OnInit {
       const putin = this.newMaP.destroy();
     }
 
-    if (this.watcher) {
-      this.geoloc.clearWatch(this.watcher);
-    }
-
+    await this.stopLiveTracking();
     this.clearIntervals();
 
     if(this.mapa !== undefined){
