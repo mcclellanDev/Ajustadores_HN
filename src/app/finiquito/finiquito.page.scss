@@ -24,6 +24,7 @@ ion-back-button {
 
 .finiquito-page {
   --background: #eef3f7;
+  --padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 
 .finiquito-loading {

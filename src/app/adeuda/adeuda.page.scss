@@ -2,7 +2,7 @@
 ion-toolbar { --background: var(--adeuda-blue); --color: #fff; }
 ion-toolbar ion-title { font-size: 1rem; font-weight: 700; letter-spacing: 0; text-align: center; }
 ion-back-button { --color: #fff; }
-.adeuda-page { --background: #eef3f7; }
+.adeuda-page { --background: #eef3f7; --padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
 .adeuda-loading { align-items: center; background: rgba(255,255,255,.78); display: flex; inset: 0; justify-content: center; position: fixed; z-index: 1000; }
 .adeuda-loading ion-spinner { height: 54px; width: 54px; }
 .adeuda-layout { display: grid; gap: 14px; margin: 0 auto; max-width: 1180px; min-height: 100%; padding: 14px; }

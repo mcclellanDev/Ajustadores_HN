@@ -1,0 +1,78 @@
+// Shared iOS layout fixes for Ionic/Capacitor on iPhone.
+// Ionic adds `.ios` on <html>; viewport-fit=cover is set in index.html.
+
+:root {
+  --app-viewport-height: 100vh;
+  --app-viewport-height: 100dvh;
+  --form-footer-scroll-gap: 96px;
+}
+
+@supports (-webkit-touch-callout: none) {
+  :root {
+    --app-viewport-height: -webkit-fill-available;
+  }
+}
+
+html.ios {
+  ion-content.prepare-audience-content,
+  ion-content.prepare-send-content,
+  ion-content.beneficiary-content,
+  ion-content.adeuda-page,
+  ion-content.finiquito-page {
+    --padding-bottom: calc(var(--form-footer-scroll-gap) + env(safe-area-inset-bottom));
+  }
+
+  ion-content.segment-form-content {
+    --padding-bottom: calc(132px + env(safe-area-inset-bottom));
+  }
+
+  ion-content.cliente-form-content {
+    --padding-bottom: calc(168px + env(safe-area-inset-bottom));
+  }
+
+  ion-modal.expediente-info-modal:not(.expediente-info-modal--tablet) {
+    --height: min(90dvh, calc(100% - env(safe-area-inset-top)));
+    --max-height: min(90dvh, calc(100% - env(safe-area-inset-top)));
+  }
+
+  ion-modal.expediente-info-modal::part(content) {
+    max-height: min(90dvh, calc(100% - env(safe-area-inset-top)));
+  }
+
+  ion-modal.beneficiary-date-modal {
+    --height: min(590px, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px));
+  }
+
+  ion-modal.birth-date-modal {
+    --height: min(620px, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 32px));
+    --max-height: min(92dvh, calc(100dvh - env(safe-area-inset-top) - 16px));
+  }
+
+  #spinFooter,
+  .fullscreen-blocking-overlay {
+    height: var(--app-viewport-height);
+    min-height: -webkit-fill-available;
+  }
+
+  .lawyer-search-panel {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+
+  ion-datetime {
+    --width: 100%;
+    max-width: 100%;
+  }
+
+  ion-footer.signature-footer {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .signature-back-button {
+    top: calc(env(safe-area-inset-top) + 8px);
+  }
+
+  ion-action-sheet.expediente-actions-sheet .action-sheet-wrapper,
+  ion-action-sheet .action-sheet-wrapper {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

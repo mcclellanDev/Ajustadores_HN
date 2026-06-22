@@ -38,7 +38,7 @@ ion-header ion-icon {
 
 .beneficiary-content {
   --background: #eef3f7;
-  --padding-bottom: 22px;
+  --padding-bottom: calc(96px + env(safe-area-inset-bottom));
   --padding-end: 12px;
   --padding-start: 12px;
   --padding-top: 12px;
@@ -387,7 +387,7 @@ ion-header ion-icon {
 ion-modal.beneficiary-date-modal {
   --backdrop-opacity: 0.48;
   --border-radius: 12px;
-  --height: min(590px, calc(100vh - 28px));
+  --height: min(590px, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px));
   --max-width: 430px;
   --width: calc(100% - 12px);
 }

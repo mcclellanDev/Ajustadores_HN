@@ -236,8 +236,8 @@ ion-datetime {
 ion-modal.birth-date-modal {
   --backdrop-opacity: 0.48;
   --border-radius: 12px;
-  --height: min(620px, calc(100vh - 32px));
-  --max-height: 92vh;
+  --height: min(620px, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 32px));
+  --max-height: min(92dvh, calc(100dvh - env(safe-area-inset-top) - 16px));
   --max-width: 430px;
   --width: calc(100% - 12px);
 }

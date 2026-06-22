@@ -41,6 +41,9 @@ export class EsignaturePage implements OnInit {
     if (isPhonePortrait) {
       this.deviceWidth = Math.max(platformWidth - 28, 280);
       this.canvasHeight = 178;
+    } else if (this.platform.is('ios')) {
+      this.deviceWidth = Math.max(platformWidth - 32, 280);
+      this.canvasHeight = 165;
     } else if (this.platform.is('android')) {
       this.deviceWidth = platformWidth - 90;
     } else {
