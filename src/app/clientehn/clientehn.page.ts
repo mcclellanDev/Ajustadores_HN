@@ -3492,7 +3492,11 @@ export class ClientehnPage implements OnInit {
       state:{
         data: [
           {'forma': this.expediente},
-          {'idAtencion': idAtencion}
+          {
+            idAtencion,
+            idTablaAjustador: localStorage.getItem('IdTablaAjustador'),
+            idAjusteAudiencia: this.expediente?.[0]?.IdAjusteAudiencia
+          }
         ]
       }
     }

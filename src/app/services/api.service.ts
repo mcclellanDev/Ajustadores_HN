@@ -284,9 +284,39 @@ export class ApiService {
    )
    }
 
+  private normalizeImageUploadPayload(credentials: any): any[] {
+    const items = Array.isArray(credentials)
+      ? credentials
+      : credentials
+        ? [credentials]
+        : [];
+
+    return items.map((item) => {
+      if (!item || typeof item !== 'object') {
+        return item;
+      }
+
+      const normalized = { ...item };
+
+      if (typeof normalized.Foto === 'string' && normalized.Foto.includes(',')) {
+        normalized.Foto = normalized.Foto.split(',')[1];
+      }
+
+      if (normalized.IdAtencion != null && normalized.IdAtencion !== '') {
+        const parsedId = parseInt(String(normalized.IdAtencion), 10);
+        if (!Number.isNaN(parsedId)) {
+          normalized.IdAtencion = parsedId;
+        }
+      }
+
+      return normalized;
+    });
+  }
+
   //Guardar Firmas
   GuardarFirmaAsegurado(credentials:any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Proveedor/SubirFirmas`,credentials).pipe(
+    const body = this.normalizeImageUploadPayload(credentials);
+    return this.http.post(`${this.apiUrl}/Proveedor/SubirFirmas`, body).pipe(
      //switchMap((tokens: {accessToken, refreshToken }) => {
        switchMap(( res: any  ) => {
        return from(Promise.all(res));
@@ -361,7 +391,8 @@ export class ApiService {
 
   //Guardar fotos
   GuardarFotos(credentials:any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Proveedor/SubirFotosSiniestro`,credentials).pipe(
+    const body = this.normalizeImageUploadPayload(credentials);
+    return this.http.post(`${this.apiUrl}/Proveedor/SubirFotosSiniestro`, body).pipe(
      //switchMap((tokens: {accessToken, refreshToken }) => {
        switchMap(( res: any  ) => {
        return from(Promise.all(res));
@@ -873,10 +904,15 @@ export class ApiService {
    }
 
    ObtenerIdTablaAjustador(IdAtencion:any): Observable<any> {
-    let jssonIdTabla = {
-      IdAtencion: IdAtencion
-    }
-   return this.http.post(`${this.apiUrl}/Proveedor/ObtenerIdTablaAjustador?IdAtencion=${IdAtencion}`,{}).pipe(
+    const atencionId = Number(IdAtencion);
+    const payload = {
+      IdAtencion: atencionId,
+      RefAtencionId: atencionId
+    };
+   return this.http.post(
+    `${this.apiUrl}/Proveedor/ObtenerIdTablaAjustador?RefAtencionId=${atencionId}&IdAtencion=${atencionId}`,
+    payload
+   ).pipe(
        switchMap(( res: any  ) => {
        return from(Promise.all(res));
     }),

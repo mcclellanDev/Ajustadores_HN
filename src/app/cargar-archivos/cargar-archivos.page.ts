@@ -9,7 +9,7 @@ import { imagePrefix, pdfIconUrl } from 'src/app/environments/arrays';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import * as $ from 'jquery';
 //import { ModalImagenPage } from 'src/app/Modales/modal-imagen/modal-imagen.page';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize } from 'rxjs';
 import { ModalImagenPage } from '../Modales/modal-imagen/modal-imagen.page';
 import { tipofotos } from '../interfaces/formulario';
 
@@ -33,6 +33,9 @@ export class CargarArchivosPage implements OnInit {
   sizes: any = [];  gratestSize: number | undefined; sizesVids: any = [];
   sizesPdfs: any = [];  archivoTipoId: number | undefined;  items: any;
   canDismiss: boolean=false; idAtencion: any | undefined; esSolicitud:boolean=false;
+  private uploadAlertOpen = false;
+  private readonly defaultUploadErrorMessage =
+    'No ha sido posible subir el material de evidencia en este momento. Por favor vuelve e inténtalo.';
 
   fotoData:any=[];  Expediente: any = []; fotoIdTipo:any;  tipo: number = 0; videoFile: File;
   videosData: any = [];
@@ -70,8 +73,54 @@ export class CargarArchivosPage implements OnInit {
   }
 
   goBack() {
+    this.isLoading = false;
+    this.isLoadingItem = false;
     localStorage.setItem('homeOrigen', 'false');
     this.navCtrl.back();
+  }
+
+  private resolveUploadErrorMessage(error: any): string {
+    const backendMessage = error?.error?.Message ||
+      error?.error?.message ||
+      error?.message;
+
+    if (typeof backendMessage === 'string' && backendMessage.trim()) {
+      return backendMessage.trim();
+    }
+
+    if (error?.status) {
+      return `${this.defaultUploadErrorMessage} (HTTP ${error.status})`;
+    }
+
+    return this.defaultUploadErrorMessage;
+  }
+
+  private async presentUploadErrorAlert(error?: any): Promise<void> {
+    if (this.uploadAlertOpen) {
+      return;
+    }
+
+    this.uploadAlertOpen = true;
+    const alert = await this.alert.create({
+      cssClass: 'form-choice-alert',
+      header: 'No se pudo subir la evidencia',
+      message: this.resolveUploadErrorMessage(error),
+      buttons: [
+        {
+          text: 'Entendido',
+          cssClass: 'alert-button-confirm',
+          handler: () => {
+            this.goBack();
+          }
+        }
+      ]
+    });
+
+    alert.onDidDismiss().then(() => {
+      this.uploadAlertOpen = false;
+    });
+
+    await alert.present();
   }
 
   handleFileModal(tipo:any, file: any, index:number){
@@ -191,22 +240,24 @@ export class CargarArchivosPage implements OnInit {
       let thisThing = "https://testportal.porsalud.net/Applications/HELP/help_CargaDeArchivos/UploadArchive";
       let thisLocal = "http://localhost:18951/help_CargaDeArchivos/UploadArchive";
       
-      this.api.GuardarVideo(this.videoFile, this.idAtencion).subscribe(
+      this.api.GuardarVideo(this.videoFile, this.idAtencion).pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      ).subscribe(
         (e) => {
           let estado = e.estado;
           if (estado == true) {
             this.toaster.presentToastAlert("Video cargado exitosamente!", 'middle', 'primary', 3000);
-            this.isLoading = false;
-          }else{
-            this.toaster.presentToastNoButtonsRed("No es posible enviar el video, intenta nuevamente!", "top", "video-upload");
+          } else {
+            void this.presentUploadErrorAlert({ message: e?.mensaje });
           }
           console.log(e.estado);
           console.log(e.mensaje);
-          return e
         },
-        (e) => {
-          console.log("Error", e);
-          return e;
+        (error) => {
+          console.error('[cargar-archivos] Video upload failed', error);
+          void this.presentUploadErrorAlert(error);
         }
       )
 
@@ -394,42 +445,50 @@ export class CargarArchivosPage implements OnInit {
     const atencionId = idAtencion || this.idAtencion || localStorage.getItem('idAtencion');
 
     if (!atencionId) {
+      this.isLoading = false;
       this.toaster.presentToastNoButtons('No se encontró el número de atención.', 'top', 'fotos');
       return;
     }
 
     if (!this.fotos.length) {
+      this.isLoading = false;
       this.toaster.presentToastNoButtons('Necesitas cargar una imagen o más para guardarlas.', 'top', 'fotos');
       return;
     }
 
     console.log('Mis fotos son '); console.dir(this.fotos);
 
-    
-    const requests = this.fotos.map((element) => {
-      const fotoData = [{
-        Foto: element.Foto?.split(',')[1],
-        IdAtencion: atencionId,
-        RefTipoFotoId: element.IdTipo,
-        NombreFirmante: element.NombreFirmante,
-        Descripcion: element.Descripcion,
-        FechaFirma: element.Fecha
-      }];
+    this.fotoData = this.fotos.map((element) => ({
+      Foto: this.extractPhotoBase64(element.Foto),
+      IdAtencion: parseInt(atencionId, 10),
+      RefTipoFotoId: element.IdTipo,
+      NombreFirmante: element.NombreFirmante,
+      Descripcion: element.Descripcion,
+      FechaFirma: element.Fecha
+    }));
 
-      return this.api.GuardarFotos(fotoData);
-    });
-
-    forkJoin(requests).subscribe(
-      async () => {
+    this.api.GuardarFotos(this.fotoData).pipe(
+      finalize(() => {
         this.isLoading = false;
+        this.isLoadingItem = false;
+      })
+    ).subscribe(
+      () => {
         this.toaster.presentToastNoButtons('Fotos subidas con éxito!', 'top', 'fotos');
       },
       async (error) => {
-        const codigo = error?.status || 'No se pudieron subir las fotos.';
-        this.toaster.presentToastNoButtons(codigo, 'top', 'fotos');
+        console.error('[cargar-archivos] Photo upload failed', error);
+        await this.presentUploadErrorAlert(error);
       }
     );
-    /**/
+  }
+
+  private extractPhotoBase64(foto?: string): string | undefined {
+    if (!foto) {
+      return undefined;
+    }
+
+    return foto.includes(',') ? foto.split(',')[1] : foto;
   }
 
   async confirmDeleteFoto(index: number, event?: Event){

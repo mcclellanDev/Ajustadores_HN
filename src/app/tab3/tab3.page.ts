@@ -176,13 +176,13 @@ export class Tab3Page {
 
   saveSignatureAjustadorBackup(){
     this.isLoading = true;
-    this.firma.push({
+    const firmaPayload = [{
       IdAtencion: this.atencionId,
       RefTipoFotoId:3,
       Foto: this.firmaPrecargadaAjustador.split(',')[1]
-    });
+    }];
 
-    this.api.GuardarFirmaAsegurado(this.firma).pipe( 
+    this.api.GuardarFirmaAsegurado(firmaPayload).pipe( 
       finalize(async ()=>{
         this.isLoading = false;
       })

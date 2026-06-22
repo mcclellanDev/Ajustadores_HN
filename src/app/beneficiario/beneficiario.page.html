@@ -1,6 +1,4 @@
 <ion-header>
-  <ion-spinner color="primary" name="lines" *ngIf="isLoading"></ion-spinner>
-  <ion-footer id="spinFooter" *ngIf="isLoading"></ion-footer>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button aria-label="Regresar" (click)="goBack()">
@@ -17,6 +15,9 @@
 </ion-header>
 
 <ion-content class="beneficiary-content">
+  <div class="beneficiary-loading" *ngIf="isLoading">
+    <ion-spinner color="primary" name="lines"></ion-spinner>
+  </div>
   <section class="claim-blocked-state" *ngIf="claimEligibilityChecked && !canGenerateSettlement">
     <div class="claim-blocked-icon">
       <ion-icon [name]="claimValidationError ? 'cloud-offline-outline' : 'document-lock-outline'"></ion-icon>

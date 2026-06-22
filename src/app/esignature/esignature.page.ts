@@ -22,7 +22,6 @@ export class EsignaturePage implements OnInit {
   isLoading:boolean=false;
   firmaPrecargada:any;
   elCliente:string="";
-  firma: any = [];
   atIndex:any;
   deviceWidth:any;
   canvasHeight = 150;
@@ -74,15 +73,15 @@ export class EsignaturePage implements OnInit {
         this.firmaPrecargada = this.sig.toDataURL("image/jpeg");
         //console.dir(this.firmasAsegurados);
 
-        this.firma.push({
+        const firmaPayload = [{
           IdAtencion: idAtencion,
           RefTipoFotoId: 3,
           Foto: this.firmaPrecargada.split(',')[1],
           NombreFirmante: this.elCliente,
           FechaFirma: this.hoy
-        });
+        }];
 
-        this.api.GuardarFirmaAsegurado(this.firma).pipe(
+        this.api.GuardarFirmaAsegurado(firmaPayload).pipe(
           finalize(async () => {this.isLoading = false;})
         ).subscribe(
           (res) => {

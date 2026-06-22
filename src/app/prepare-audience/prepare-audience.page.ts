@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { abogadosAudiencias } from '../interfaces/arrays';
-import * as $ from 'jquery';
 import { ApiService } from '../services/api.service';
 import { finalize } from 'rxjs';
 import { ToastService } from '../services/toast.service';
@@ -13,170 +11,273 @@ import { ToastService } from '../services/toast.service';
   styleUrls: ['./prepare-audience.page.scss'],
 })
 export class PrepareAudiencePage implements OnInit {
-  idAtencion: any; isLoading:boolean = false; results = []; abogadoNombre:string; lugarAudiencia:string;
-  fechaAudiencia:any; formateadaAudiencia:any; idTablaDeAjustador:any;
-  abogadosAudiencias = []; idAbogado: any;  laFecha: any;  formattedDate: any;
-  dateFormat: any;  timeFormat: any;  idAgente: any;
-  
-  
-  constructor(private router: Router, private alert: AlertController, private api:ApiService, private toaster:ToastService) { 
-    const state = this.router.getCurrentNavigation().extras.state;
-    console.log(state.data);
-    console.log(state.data[1])
-    this.idAtencion = state.data[1].idAtencion;
+  idAtencion: any;
+  isLoading = false;
+  results = [];
+  abogadoNombre = 'Seleccionar Abogado';
+  lugarAudiencia = '';
+  fechaAudiencia: any;
+  formateadaAudiencia: any;
+  idTablaDeAjustador: any;
+  abogadosAudiencias = [];
+  idAbogado: any;
+  laFecha: any;
+  formattedDate: any;
+  dateFormat: any;
+  timeFormat: any;
+  idAgente: any;
+  lawyerSearchOpen = false;
+  private expedienteFromState: any;
 
-    console.log('La atencion es '+this.idAtencion);
-    
+  constructor(
+    private router: Router,
+    private alert: AlertController,
+    private api: ApiService,
+    private toaster: ToastService
+  ) {
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation?.extras?.state as { data?: any[] } | undefined;
 
+    this.idAtencion = state?.data?.[1]?.idAtencion || localStorage.getItem('idAtencion');
+    this.expedienteFromState = state?.data?.[0]?.forma;
+
+    const navigationAudienceId = state?.data?.[1]?.idTablaAjustador ||
+      state?.data?.[1]?.idAjusteAudiencia;
+    if (navigationAudienceId) {
+      localStorage.setItem('IdTablaAjustador', navigationAudienceId.toString());
+    }
   }
 
   ngOnInit() {
-    console.log('La atencion es '+this.idAtencion);
-    console.log('EL agente actual es '); console.dir(this.api.currentUser);
-    this.idAgente = this.api.currentUser.ProveedorAgenteId;
+    this.idAgente = this.api.currentUser?.ProveedorAgenteId;
+    this.loadAbogados();
+    this.loadAudienceTableId();
+  }
 
-    setTimeout(() => {
-      this.api.Abogados(3).pipe( 
-        finalize(async ()=>{
-          console.log('fin');
-        })
-      ).subscribe(
-         (res) =>{
-          if (res) {
-            this.abogadosAudiencias = res;
-            this.results = res;
-            console.log('LOs abogados son ')
-            console.dir(this.abogadosAudiencias)
-          }
-          
-        },
-        async (res) => {
-          
-          const alert = await this.alert.create({
-            header:'HELP',
-            message:res.error.Message,
-            buttons:['Ok']
-            
-          });
-          await alert.present();
+  goBack() {
+    const atencionId = Number(this.idAtencion || localStorage.getItem('idAtencion'));
+    this.router.navigate(['./expediente'], {
+      queryParams: {
+        Id: Number.isFinite(atencionId) ? atencionId : undefined,
+        Source: 1
+      }
+    });
+  }
+
+  private loadAbogados() {
+    this.api.Abogados(3).pipe(
+      finalize(() => {
+        console.log('Abogados loaded');
+      })
+    ).subscribe(
+      (res) => {
+        if (res) {
+          this.abogadosAudiencias = res;
+          this.results = res;
         }
-      )
-
-      this.api.ObtenerIdTablaAjustador(this.idAtencion).pipe( 
-        finalize(async ()=>{
-          console.log('fin');
-        })
-      ).subscribe(
-         (res) =>{
-
-          //alert('Este es el id de tabla de ajustador '+res.length);
-          if (res) {
-
-            //alert('Este es el id de tabla de ajustador '+res);
-            if (res == null || res == undefined || res == '' || res == 0) {
-              $('#submitAudience').prop('disabled', true);
-              this.toaster.presentToastAlert('Esta solicitud aún no se ha completado. Para poder enviarla, es necesario que completes la solicitud BPM con los datos del formulario de cliente y el de ajustador.', 'top', 'danger', 10000);
-              return;
-            }else{
-              console.log('Este es el id de tabla de ajustador ');
-              console.dir(res);
-              //alert('Este es el id de tabla de ajustador '+res[0].IdAudiencia);
-              
-              let disId = res[0].IdAudiencia.toString();
-              this.idTablaDeAjustador = res[0].IdAudiencia.toString();//disId.replace(/,/g, '');
-              console.dir('Este es el id de tabla de ajustador '+this.idTablaDeAjustador);
-              console.dir(this.idTablaDeAjustador);
-              /**/
-            }
-            
-          }
-
-         }, (error) => {
-          console.log('Este es el error '+error);
-          console.dir(error.error.Message);
-          this.toaster.presentToastAlert(error.error.Message, 'top', 'danger', 10000);
-         }
-
-        )
-    }, 1000);
-    
-    
-    this.abogadoNombre = 'Seleccionar Abogado';
+      },
+      async (res) => {
+        const alert = await this.alert.create({
+          header: 'HELP',
+          message: res.error?.Message || 'No fue posible cargar el listado de abogados.',
+          buttons: ['Ok']
+        });
+        await alert.present();
+      }
+    );
   }
 
-  closeAbogadosSearch(){
-    $('#abogadosDatos').fadeIn('xslow');
-    $('#abogadosLista').fadeOut('xslow');
+  private loadAudienceTableId() {
+    if (this.applyAudienceTableId(localStorage.getItem('IdTablaAjustador'))) {
+      return;
+    }
+
+    const stateRecord = Array.isArray(this.expedienteFromState)
+      ? this.expedienteFromState[0]
+      : this.expedienteFromState;
+
+    if (this.applyAudienceTableId(stateRecord)) {
+      return;
+    }
+
+    const atencionId = parseInt(this.idAtencion, 10);
+    if (!Number.isFinite(atencionId)) {
+      console.warn('[prepare-audience] Invalid attention id:', this.idAtencion);
+      return;
+    }
+
+    this.api.Expediente(atencionId).subscribe(
+      (res) => {
+        if (this.applyAudienceTableId(res?.[0])) {
+          return;
+        }
+        this.fetchAudienceTableIdFromAttentionData(atencionId);
+      },
+      () => this.fetchAudienceTableIdFromAttentionData(atencionId)
+    );
   }
 
-  handleInput(event){
-    const query = event.target.value.toLowerCase();
-    this.results = this.abogadosAudiencias.filter((d) => 
+  private fetchAudienceTableIdFromAttentionData(atencionId: number) {
+    this.api.DatosDeAtencion(atencionId).subscribe(
+      (res) => {
+        const record = Array.isArray(res) ? res[0] : res;
+        if (this.applyAudienceTableId(record)) {
+          return;
+        }
+        this.fetchAudienceTableIdFromApi(atencionId);
+      },
+      () => this.fetchAudienceTableIdFromApi(atencionId)
+    );
+  }
+
+  private fetchAudienceTableIdFromApi(atencionId: number) {
+    this.api.ObtenerIdTablaAjustador(atencionId).pipe(
+      finalize(() => {
+        console.log('Audience table lookup finished');
+      })
+    ).subscribe(
+      (res) => {
+        if (this.applyAudienceTableId(res)) {
+          return;
+        }
+        this.logAudienceLookupWarning(
+          'Audience table id not returned by ObtenerIdTablaAjustador.',
+          res
+        );
+      },
+      (error) => {
+        this.logAudienceLookupWarning(
+          this.formatAudienceLookupError(error?.error?.Message),
+          error
+        );
+      }
+    );
+  }
+
+  private formatAudienceLookupError(message?: string): string {
+    const incompleteMessage =
+      'Esta solicitud aún no se ha completado. Para poder enviarla, es necesario que completes la solicitud BPM con los datos del formulario de cliente y el de ajustador.';
+
+    if (!message) {
+      return incompleteMessage;
+    }
+
+    if (message.includes('RefAtencionId') || message.includes('LINQ to Entities')) {
+      return incompleteMessage;
+    }
+
+    return message;
+  }
+
+  private applyAudienceTableId(value: any): boolean {
+    const id = this.extractAudienceTableId(value);
+    if (!id) {
+      return false;
+    }
+
+    this.idTablaDeAjustador = id;
+    localStorage.setItem('IdTablaAjustador', id);
+    console.log('[prepare-audience] Audience table id resolved:', id);
+    return true;
+  }
+
+  private extractAudienceTableId(value: any): string | null {
+    if (value == null || value === '' || value === 0) {
+      return null;
+    }
+
+    if (Array.isArray(value)) {
+      return this.extractAudienceTableId(value[0]);
+    }
+
+    if (typeof value === 'object') {
+      const id = value.IdAjusteAudiencia ??
+        value.IdAudiencia ??
+        value.IdAjustadorAudiencia ??
+        value.IdTablaAjustador ??
+        value.Id;
+      return id != null && id !== '' && id !== 0 ? id.toString() : null;
+    }
+
+    return value.toString();
+  }
+
+  private logAudienceLookupWarning(message: string, detail?: unknown): void {
+    console.warn('[prepare-audience] Audience table lookup issue:', message, detail);
+  }
+
+  closeAbogadosSearch() {
+    this.lawyerSearchOpen = false;
+  }
+
+  handleInput(event: any) {
+    const query = (event.detail?.value || event.target?.value || '').toLowerCase();
+    this.results = this.abogadosAudiencias.filter((d) =>
       d.AgenteNombre.toLowerCase().indexOf(query) > -1
     );
   }
 
   goSearch() {
     this.results = this.abogadosAudiencias;
-    console.dir(this.results);
-    $('#abogadosDatos').fadeOut('xslow');
-    $('#abogadosLista').fadeIn('xslow');
+    this.lawyerSearchOpen = true;
   }
 
-  selectAbogado(index, abogadoId){
+  selectAbogado(abogadoId: number) {
     this.idAbogado = abogadoId;
-    for (let index = 0; index < this.abogadosAudiencias.length; index++) {
-      const element = this.abogadosAudiencias[index];
-      if (abogadoId==element.IdAjustador) {
-        console.log('El abogado seleccionado es '+element.AgenteNombre);
+
+    for (const element of this.abogadosAudiencias) {
+      if (abogadoId === element.IdAjustador) {
         this.abogadoNombre = element.AgenteNombre;
         setTimeout(() => {
-          $('#closeAbogadosSearchButton').click();
+          this.closeAbogadosSearch();
         }, 300);
+        break;
       }
     }
-    
   }
 
-  setLugarAudiencia(event){
-    console.log('target : '+event.target.value);
-    console.log('detail : '+event.detail.value);
-    console.log('lugarAudiencia : '+this.lugarAudiencia);
-  }
-
-  marcarFechaAudiencia(fechaAudiencia){
+  marcarFechaAudiencia(fechaAudiencia) {
     this.laFecha = new Date(fechaAudiencia).toISOString();
-
-    this.formateadaAudiencia = new Date(fechaAudiencia).toLocaleString(); 
-    this.dateFormat = fechaAudiencia.split('T')[0]; 
-    let timeString = this.formateadaAudiencia.split(', ')[1];
-
-    console.log('Hora completa : '+fechaAudiencia.split('T')[1]);
-    this.timeFormat = timeString.split(' ')[0];
-
-    setTimeout(() => {
-      this.formattedDate = this.formatDateForSQL();
-    }, 300);
+    this.formateadaAudiencia = new Date(fechaAudiencia).toLocaleString();
+    this.dateFormat = fechaAudiencia.split('T')[0];
+    const timeString = this.formateadaAudiencia.split(', ')[1];
+    this.timeFormat = timeString?.split(' ')[0];
+    this.formattedDate = this.formatDateForSQL();
   }
 
   formatDateForSQL() {
-    let date = new Date(this.fechaAudiencia); 
+    const date = new Date(this.fechaAudiencia);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Mes (1-12)
-    const day = String(date.getDate()).padStart(2, '0'); // Día del mes
-    const hours = String(date.getHours()).padStart(2, '0'); // Horas (0-23)
-    const minutes = String(date.getMinutes()).padStart(2, '0'); // Minutos (0-59)
-    const seconds = String(date.getSeconds()).padStart(2, '0'); // Segundos (0-59)
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
+  }
 
-  audienceSave(){
-    
-    let agente:any = localStorage.getItem('ajustadorActual');
-    let agenteActual:any = JSON.parse(agente);
-    //let idAgente = agenteActual.ProveedorAgenteId;
+  audienceSave() {
+    if (!this.idTablaDeAjustador) {
+      console.warn('[prepare-audience] Sending audience without resolved IdAjustadorAudiencia.');
+    }
+
+    if (!this.idAbogado) {
+      this.toaster.presentToastAlert('Selecciona un abogado antes de enviar.', 'top', 'warning', 6000);
+      return;
+    }
+
+    if (!this.lugarAudiencia?.trim()) {
+      this.toaster.presentToastAlert('Indica el lugar de la audiencia.', 'top', 'warning', 6000);
+      return;
+    }
+
+    if (!this.formattedDate) {
+      this.toaster.presentToastAlert('Selecciona la fecha y hora de la audiencia.', 'top', 'warning', 6000);
+      return;
+    }
+
     this.isLoading = true;
-    let jsonAudiencia = {
+    const jsonAudiencia = {
       IdAjustadorAudiencia: this.idTablaDeAjustador,
       RefProveedorAgenteAbogadoId: this.idAbogado,
       AgendarAudiencia: 1,
@@ -185,27 +286,28 @@ export class PrepareAudiencePage implements OnInit {
       Hora: this.timeFormat,
       Lugar: this.lugarAudiencia,
       idAgente: this.idAgente
-    }
+    };
 
-    this.api.ActualizarAudicion(jsonAudiencia).pipe( 
-      finalize(async ()=>{
-        console.log('fin');
+    this.api.ActualizarAudicion(jsonAudiencia).pipe(
+      finalize(() => {
+        console.log('Audience update finished');
       })
     ).subscribe(
-       (res) =>{
+      (res) => {
         if (res) {
-          this.toaster.presentToastAlert('Audiencia Actualizada exitosamente!', 'top', 'primary', 10000);
-          this.isLoading = false;
+          this.toaster.presentToastAlert('Audiencia actualizada exitosamente.', 'top', 'primary', 10000);
         }
-       },
-       (error) => {
-        console.log('Este es el error '+error);
-        console.dir(error.error.Message);
-        this.toaster.presentToastAlert(error.error.Message, 'top', 'danger', 10000);
         this.isLoading = false;
-       }
-      )
-
+      },
+      (error) => {
+        this.toaster.presentToastAlert(
+          error?.error?.Message || 'No fue posible actualizar la audiencia.',
+          'top',
+          'danger',
+          10000
+        );
+        this.isLoading = false;
+      }
+    );
   }
-
 }

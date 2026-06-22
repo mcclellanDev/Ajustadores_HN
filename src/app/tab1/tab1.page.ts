@@ -592,15 +592,15 @@ export class Tab1Page implements OnInit, OnDestroy {
     this.sig.dotSize = 3; const mySignature = this.sig.toDataURL("image/jpeg");
       if (mySignature != emptySignature && mySignature != emptySignatureWhite) {
         this.firmaPrecargada = this.sig.toDataURL("image/jpeg");
-        this.firma.push({
+        const firmaPayload = [{
           IdAtencion: idAtencion,
           RefTipoFotoId: 3,
           Foto: this.firmaPrecargada.split(',')[1],
           NombreFirmante: this.elCliente,
           FechaFirma: this.hoy
-        });
+        }];
 
-        this.api.GuardarFirmaAsegurado(this.firma).pipe(
+        this.api.GuardarFirmaAsegurado(firmaPayload).pipe(
           finalize(async () => {this.isLoading = false;})
         ).subscribe(
           (res) => {

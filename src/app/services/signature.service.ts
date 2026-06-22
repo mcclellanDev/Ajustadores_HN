@@ -82,13 +82,13 @@ export class SignatureService {
           ]
           console.table(firmasComparison)
 
-          this.firma.push({
+          const firmaPayload = [{
             IdAtencion: idAtencion,
             RefTipoFotoId:3,
             Foto: this.firmaPrecargada.split(',')[1]
-          });
+          }];
 
-          this.api.GuardarFirmaAsegurado(this.firma).pipe( 
+          this.api.GuardarFirmaAsegurado(firmaPayload).pipe( 
             finalize(async ()=>{
               this.isLoading = false;
             })
@@ -110,13 +110,13 @@ export class SignatureService {
   }
 
   saveSignatureAjustadorBackup(){
-    this.firma.push({
+    const firmaPayload = [{
       IdAtencion: "44612",
       RefTipoFotoId:3,
       Foto: this.firmaPrecargadaAjustador.split(',')[1]
-    });
+    }];
 
-    this.api.GuardarFirmaAsegurado(this.firma).pipe( 
+    this.api.GuardarFirmaAsegurado(firmaPayload).pipe( 
       finalize(async ()=>{
         this.isLoading = false;
       })

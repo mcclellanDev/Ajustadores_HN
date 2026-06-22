@@ -156,6 +156,17 @@ ion-alert.form-choice-alert {
     background: var(--ion-color-primary, #0867cf);
     color: #ffffff;
   }
+
+  .alert-button-confirm {
+    background: #ef5a22;
+    border-color: #ef5a22;
+    color: #ffffff;
+  }
+
+  .alert-button-cancel {
+    border-color: #b9c8d8;
+    color: #17365d;
+  }
 }
 
 ion-alert.no-policy-alert {

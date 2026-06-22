@@ -1,74 +1,119 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-fab slot="start" style="background: transparent;">
-        <ion-fab-button id="botonCerrarModal" (click)="close()">
-          <ion-icon style="font-size: 2rem; color: aliceblue;" name="chevron-down"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
+      <ion-button id="botonCerrarModal" aria-label="Cerrar" (click)="close()">
+        <ion-icon slot="icon-only" name="chevron-down"></ion-icon>
+      </ion-button>
     </ion-buttons>
-    <ion-title slot="end">Atención # {{idAtencion}}</ion-title>
+    <ion-title>Atención #{{idAtencion}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <ion-grid id="mapGrid">
-    <ion-row>
-      <ion-accordion-group [value]="accordionValue" *ngFor="let item of expediente">
-        <ion-accordion class="acordion" value="first">
-          <ion-item slot="header">
-            <ion-label>Datos del asegurado</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <strong>Nombre: {{item.Cliente | titlecase}}</strong><br><br>
-            Telefono: {{item.TelefonoOrigen}}<br>
-            Poliza: {{item.PolizaExterna?.split('-')[1] | titlecase}}<br>
-            <span class="attention-currency-detail-row expediente-currency-value">
-              <span class="attention-currency-detail-row__label">Moneda</span>
-              <app-attention-currency-badge [currency]="miMoneda" variant="detail" [showLabel]="true"></app-attention-currency-badge>
-            </span>
-          </div>
-        </ion-accordion>
+<ion-content class="info-modal-content">
+  <ng-container *ngFor="let item of expediente">
+    <ion-accordion-group id="mapGrid" class="info-modal-form" [value]="accordionValue">
+      <ion-accordion value="first" class="info-modal-section">
+        <ion-item slot="header">
+          <ion-label>Datos del asegurado</ion-label>
+        </ion-item>
+        <div class="info-modal-section-content" slot="content">
+          <dl class="info-detail-list">
+            <div>
+              <dt>Nombre</dt>
+              <dd>{{item.Cliente | titlecase}}</dd>
+            </div>
+            <div>
+              <dt>Teléfono</dt>
+              <dd>{{item.TelefonoOrigen || 'N/D'}}</dd>
+            </div>
+            <div>
+              <dt>Póliza</dt>
+              <dd>{{item.PolizaExterna?.split('-')[1] | titlecase}}</dd>
+            </div>
+            <div class="info-detail-list__currency">
+              <dt>Moneda</dt>
+              <dd>
+                <app-attention-currency-badge [currency]="miMoneda" variant="detail" [showLabel]="true">
+                </app-attention-currency-badge>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </ion-accordion>
 
-        <ion-accordion class="acordion" value="second">
-          <ion-item slot="header">
-            <ion-label>Datos del vehículo</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <strong> Marca: {{item.Marca | titlecase}}</strong><br><br>
-            Modelo: {{item.Modelo | titlecase}}<br>
-            Color: {{item.Color || "N/D" | titlecase}}<br>
-            Año: {{item.Year || "N/D"}}<br>
-            Placa: {{item.NumeroPlaca || "N/D"}}
-          </div>
-        </ion-accordion>
+      <ion-accordion value="second" class="info-modal-section">
+        <ion-item slot="header">
+          <ion-label>Datos del vehículo</ion-label>
+        </ion-item>
+        <div class="info-modal-section-content" slot="content">
+          <dl class="info-detail-list">
+            <div>
+              <dt>Marca</dt>
+              <dd>{{item.Marca | titlecase}}</dd>
+            </div>
+            <div>
+              <dt>Modelo</dt>
+              <dd>{{item.Modelo | titlecase}}</dd>
+            </div>
+            <div>
+              <dt>Color</dt>
+              <dd>{{item.Color || 'N/D' | titlecase}}</dd>
+            </div>
+            <div>
+              <dt>Año</dt>
+              <dd>{{item.Year || 'N/D'}}</dd>
+            </div>
+            <div>
+              <dt>Placa</dt>
+              <dd>{{item.NumeroPlaca || 'N/D'}}</dd>
+            </div>
+          </dl>
+        </div>
+      </ion-accordion>
 
-        <ion-accordion class="acordion" value="third">
-          <ion-item slot="header">
-            <ion-label>Datos del siniestro</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <strong>{{item.Direccion}}</strong><br><br>
-            Ciudad: {{item.Ciudad | titlecase}}<br>
-            Zona: {{item.Zona | titlecase}}<br>
-            Dirección: {{item.Direccion | titlecase}}<br>
-            Direción Destino: {{item.DireccionDestino | titlecase}}<br>
-            Servicio: {{item.Servicio | titlecase}}<br>
-            <ion-grid>
-              <ion-row>
-                <ion-col size="12">
-                  <ion-icon class="route-icon" src="../../assets/img/ruta.svg"></ion-icon>
-                </ion-col>
-                <ion-col offset="8" size="4">
-                  <ion-button id="botonRuta" class="ruta" (click)="onTraceRoute()">
-                    Trazar Ruta
-                  </ion-button>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
+      <ion-accordion value="third" class="info-modal-section">
+        <ion-item slot="header">
+          <ion-label>Datos del siniestro</ion-label>
+        </ion-item>
+        <div class="info-modal-section-content" slot="content">
+          <dl class="info-detail-list">
+            <div>
+              <dt>Ciudad</dt>
+              <dd>{{item.Ciudad | titlecase}}</dd>
+            </div>
+            <div>
+              <dt>Zona</dt>
+              <dd>{{item.Zona | titlecase}}</dd>
+            </div>
+            <div>
+              <dt>Dirección</dt>
+              <dd>{{item.Direccion | titlecase}}</dd>
+            </div>
+            <div>
+              <dt>Dirección destino</dt>
+              <dd>{{item.DireccionDestino | titlecase}}</dd>
+            </div>
+            <div>
+              <dt>Servicio</dt>
+              <dd>{{item.Servicio | titlecase}}</dd>
+            </div>
+          </dl>
+
+          <div class="info-route-action">
+            <div class="info-route-copy">
+              <ion-icon name="navigate-outline"></ion-icon>
+              <div>
+                <span>Ubicación del siniestro</span>
+                <strong>{{item.Direccion | titlecase}}</strong>
+              </div>
+            </div>
+            <ion-button id="botonRuta" expand="block" class="info-route-button" (click)="onTraceRoute()">
+              Trazar ruta
+              <ion-icon slot="end" name="chevron-forward"></ion-icon>
+            </ion-button>
           </div>
-        </ion-accordion>
-      </ion-accordion-group>
-    </ion-row>
-  </ion-grid>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </ng-container>
 </ion-content>

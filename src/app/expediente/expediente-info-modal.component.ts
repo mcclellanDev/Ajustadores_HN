@@ -23,7 +23,7 @@ export class ExpedienteInfoModalComponent implements OnInit {
   }
 
   close() {
-    this.modalCtrl.dismiss();
+    this.modalCtrl.dismiss(undefined, 'close');
   }
 
   onTraceRoute() {

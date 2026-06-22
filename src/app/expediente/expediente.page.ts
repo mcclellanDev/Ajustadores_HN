@@ -58,8 +58,17 @@ export class ExpedientePage implements OnInit {
   private liveTrackingWatchId: string | null = null;
   private lastSyncedPosition: { lat: number; lng: number } | null = null;
   private lastRouteUpdateAt = 0;
-  private readonly LIVE_TRACKING_SYNC_MS = 15000;
-  private readonly LIVE_ROUTE_UPDATE_MS = 12000;
+  private lastRouteOriginPosition: { lat: number; lng: number } | null = null;
+  private readonly LIVE_TRACKING_SYNC_MS = 12000;
+  private readonly LIVE_ROUTE_UPDATE_MS = 10000;
+  private readonly LIVE_ROUTE_MIN_DISTANCE_METERS = 50;
+  private agentAnimationFrame: number | null = null;
+  private animatedAgentPosition: { lat: number; lng: number } | null = null;
+  private googleAnimatedAgentPosition: { lat: number; lng: number } | null = null;
+  private lastAgentTargetAt = 0;
+  private lastGoogleAgentTargetAt = 0;
+  private readonly MIN_AGENT_MARKER_ANIMATION_MS = 900;
+  private readonly MAX_AGENT_MARKER_ANIMATION_MS = 9500;
   mapInfoText: any; anyInterval:any; isArrived:boolean = false; isTracking:boolean=false;  arrayString: string;  elCliente: any;  atenciones: any;  bpmFicohsa: any;breakpoint:number = 1;
   newMarkers:any=[]; coordsLat:any; coordsLon:any; cacheCount:number=0; cacheCliente:any=[]; forwardUrl:any; lugar:any;
   source: any;  proveedorLatitud: number;  proveedorLongitud: number; coordenadasDeCorreccion:any=[]; coordenadasAju:any;
@@ -324,11 +333,9 @@ export class ExpedientePage implements OnInit {
         openThirdAccordion,
         traceRoute: () => this.retraceRoute()
       },
-      presentingElement: document.querySelector('ion-router-outlet') as HTMLElement,
-      backdropDismiss: true,
-      initialBreakpoint: this.initialBrakeInfo,
-      breakpoints: [0, 0.25, 0.5, 0.8, 0.9, 1],
-      cssClass: 'expediente-info-modal',
+      backdropDismiss: false,
+      canDismiss: (_data, role) => Promise.resolve(role === 'close'),
+      cssClass: `expediente-info-modal${this.isItTablet ? ' expediente-info-modal--tablet' : ''}`,
       mode: 'ios'
     });
 
@@ -1132,7 +1139,11 @@ export class ExpedientePage implements OnInit {
     this.leafletAutoFollow = true;
 
     if (this.leafletMap && this.leafletAjuMarker) {
-      this.leafletMap.flyTo(this.leafletAjuMarker.getLatLng(), this.leafletFollowZoom, {
+      const followPosition = this.animatedAgentPosition
+        ? L.latLng(this.animatedAgentPosition.lat, this.animatedAgentPosition.lng)
+        : this.leafletAjuMarker.getLatLng();
+
+      this.leafletMap.flyTo(followPosition, this.leafletFollowZoom, {
         animate: true,
         duration: 0.8
       });
@@ -1223,6 +1234,148 @@ export class ExpedientePage implements OnInit {
     }
 
     this.leafletTravelLine.setLatLngs(this.leafletTravelPoints);
+  }
+
+  private cancelAgentMarkerAnimation(): void {
+    if (this.agentAnimationFrame !== null) {
+      cancelAnimationFrame(this.agentAnimationFrame);
+      this.agentAnimationFrame = null;
+    }
+  }
+
+  private easeInOutAgent(value: number): number {
+    return value < 0.5
+      ? 2 * value * value
+      : 1 - Math.pow(-2 * value + 2, 2) / 2;
+  }
+
+  private updateLeafletTrackingCamera(lat: number, lng: number): void {
+    if (!this.leafletMap || !this.leafletAutoFollow || this.leafletFullRouteLocked) {
+      return;
+    }
+
+    this.leafletMap.panTo(L.latLng(lat, lng), {
+      animate: false,
+      noMoveStart: true
+    });
+  }
+
+  private animateLeafletAgentMarkerTo(lat: number, lng: number): void {
+    if (!this.leafletMap || isNaN(lat) || isNaN(lng)) {
+      return;
+    }
+
+    const to = { lat, lng };
+    const markerPosition = this.leafletAjuMarker?.getLatLng();
+    const from = this.animatedAgentPosition || {
+      lat: markerPosition?.lat ?? lat,
+      lng: markerPosition?.lng ?? lng
+    };
+
+    if (Math.abs(from.lat - to.lat) < 0.000001 && Math.abs(from.lng - to.lng) < 0.000001) {
+      return;
+    }
+
+    if (!this.leafletAjuMarker) {
+      this.leafletAjuMarker = L.marker(L.latLng(from.lat, from.lng), {
+        icon: this.getAdjusterIcon()
+      }).addTo(this.leafletMap);
+    }
+
+    this.cancelAgentMarkerAnimation();
+
+    const now = performance.now();
+    const elapsedSinceLastTarget = this.lastAgentTargetAt
+      ? now - this.lastAgentTargetAt
+      : this.MIN_AGENT_MARKER_ANIMATION_MS;
+    const startedAt = now;
+    const duration = Math.max(
+      this.MIN_AGENT_MARKER_ANIMATION_MS,
+      Math.min(this.MAX_AGENT_MARKER_ANIMATION_MS, elapsedSinceLastTarget)
+    );
+    this.lastAgentTargetAt = now;
+
+    const animate = (timestamp: number) => {
+      const progress = Math.min(1, (timestamp - startedAt) / duration);
+      const easedProgress = this.easeInOutAgent(progress);
+      const nextPosition = {
+        lat: from.lat + (to.lat - from.lat) * easedProgress,
+        lng: from.lng + (to.lng - from.lng) * easedProgress
+      };
+
+      this.animatedAgentPosition = nextPosition;
+      this.leafletAjuMarker?.setLatLng(L.latLng(nextPosition.lat, nextPosition.lng));
+      this.updateLeafletTrackingCamera(nextPosition.lat, nextPosition.lng);
+
+      if (progress < 1) {
+        this.agentAnimationFrame = requestAnimationFrame(animate);
+        return;
+      }
+
+      this.animatedAgentPosition = to;
+      this.leafletAjuMarker?.setLatLng(L.latLng(to.lat, to.lng));
+      this.appendLeafletTravelPoint(L.latLng(to.lat, to.lng));
+      this.agentAnimationFrame = null;
+    };
+
+    this.agentAnimationFrame = requestAnimationFrame(animate);
+  }
+
+  private animateGoogleAgentMarkerTo(lat: number, lng: number): void {
+    if (!this.marcadorAju || isNaN(lat) || isNaN(lng)) {
+      return;
+    }
+
+    const markerPosition = this.marcadorAju.getPosition();
+    const from = this.googleAnimatedAgentPosition || {
+      lat: markerPosition?.lat() || lat,
+      lng: markerPosition?.lng() || lng
+    };
+    const to = { lat, lng };
+
+    if (Math.abs(from.lat - to.lat) < 0.000001 && Math.abs(from.lng - to.lng) < 0.000001) {
+      return;
+    }
+
+    this.cancelAgentMarkerAnimation();
+
+    const now = performance.now();
+    const elapsedSinceLastTarget = this.lastGoogleAgentTargetAt
+      ? now - this.lastGoogleAgentTargetAt
+      : this.MIN_AGENT_MARKER_ANIMATION_MS;
+    const startedAt = now;
+    const duration = Math.max(
+      this.MIN_AGENT_MARKER_ANIMATION_MS,
+      Math.min(this.MAX_AGENT_MARKER_ANIMATION_MS, elapsedSinceLastTarget)
+    );
+    this.lastGoogleAgentTargetAt = now;
+
+    const animate = (timestamp: number) => {
+      const progress = Math.min(1, (timestamp - startedAt) / duration);
+      const easedProgress = this.easeInOutAgent(progress);
+      const nextPosition = {
+        lat: from.lat + (to.lat - from.lat) * easedProgress,
+        lng: from.lng + (to.lng - from.lng) * easedProgress
+      };
+
+      this.googleAnimatedAgentPosition = nextPosition;
+      this.marcadorAju.setPosition(new google.maps.LatLng(nextPosition.lat, nextPosition.lng));
+
+      if (this.mapa && this.isTracking) {
+        this.mapa.panTo(new google.maps.LatLng(nextPosition.lat, nextPosition.lng));
+      }
+
+      if (progress < 1) {
+        this.agentAnimationFrame = requestAnimationFrame(animate);
+        return;
+      }
+
+      this.googleAnimatedAgentPosition = to;
+      this.marcadorAju.setPosition(new google.maps.LatLng(to.lat, to.lng));
+      this.agentAnimationFrame = null;
+    };
+
+    this.agentAnimationFrame = requestAnimationFrame(animate);
   }
 
   private bindLeafletCorrectionClick(directionsService, directionsDisplay, fallbackCoordinates: {lat: any, lng: any}) {
@@ -1358,6 +1511,10 @@ export class ExpedientePage implements OnInit {
       weight: 6
     }).addTo(this.leafletMap);
 
+    if (this.isTracking) {
+      return;
+    }
+
     if (this.leafletAutoFollow && this.leafletAjuMarker) {
       this.leafletMap.setView(this.leafletAjuMarker.getLatLng(), this.leafletFollowZoom);
     } else {
@@ -1473,6 +1630,7 @@ export class ExpedientePage implements OnInit {
         }).addTo(this.leafletMap);
       }
 
+      this.animatedAgentPosition = { lat: coordenadasAju.lat, lng: coordenadasAju.lng };
       this.appendLeafletTravelPoint(position);
 
       if (this.leafletAutoFollow) {
@@ -1590,6 +1748,7 @@ export class ExpedientePage implements OnInit {
           localStorage.setItem('routeString', JSON.stringify(this.routeString));
           this.puntos = JSON.stringify(this.rutaInicial);
 
+          this.markRouteOriginPosition(coordenadasAju.lat, coordenadasAju.lng);
           this.saveInitialAdjusterPosition(coordenadasAju);
           void this.startLiveTracking(true);
         });
@@ -1612,6 +1771,10 @@ export class ExpedientePage implements OnInit {
   }
 
   private async stopLiveTracking(): Promise<void> {
+    this.cancelAgentMarkerAnimation();
+    this.lastRouteOriginPosition = null;
+    this.lastRouteUpdateAt = 0;
+
     if (this.liveTrackingWatchId) {
       try {
         await Geolocation.clearWatch({ id: this.liveTrackingWatchId });
@@ -1646,10 +1809,11 @@ export class ExpedientePage implements OnInit {
       clientLat &&
       clientLng &&
       this.directionsService &&
-      (now - this.lastRouteUpdateAt >= this.LIVE_ROUTE_UPDATE_MS);
+      (now - this.lastRouteUpdateAt >= this.LIVE_ROUTE_UPDATE_MS) &&
+      this.hasMovedMinimumDistanceForRouteRefresh(lat, lng);
 
     if (shouldRefreshRoute) {
-      this.lastRouteUpdateAt = now;
+      this.markRouteOriginPosition(lat, lng);
       this.displayDirection(this.directionsService, this.directionsDisplay, clientLat, clientLng, lat, lng);
     }
 
@@ -2405,17 +2569,20 @@ export class ExpedientePage implements OnInit {
     let coordenadasAju = {lat: parseFloat(latF), lng: parseFloat(lngF)}
 
     if (this.leafletMap) {
-      const adjusterPosition = L.latLng(coordenadasAju.lat, coordenadasAju.lng);
+      if (!this.isTracking) {
+        const adjusterPosition = L.latLng(coordenadasAju.lat, coordenadasAju.lng);
 
-      if (this.leafletAjuMarker) {
-        this.leafletAjuMarker.setLatLng(adjusterPosition);
-      } else {
-        this.leafletAjuMarker = L.marker(adjusterPosition, {
-          icon: this.getAdjusterIcon()
-        }).addTo(this.leafletMap);
+        if (this.leafletAjuMarker) {
+          this.leafletAjuMarker.setLatLng(adjusterPosition);
+        } else {
+          this.leafletAjuMarker = L.marker(adjusterPosition, {
+            icon: this.getAdjusterIcon()
+          }).addTo(this.leafletMap);
+        }
+
+        this.animatedAgentPosition = { lat: coordenadasAju.lat, lng: coordenadasAju.lng };
+        this.appendLeafletTravelPoint(adjusterPosition);
       }
-
-      this.appendLeafletTravelPoint(adjusterPosition);
     } else {
       this.ajuMarker = new google.maps.Marker({
         map: this.mapa,
@@ -2561,6 +2728,28 @@ export class ExpedientePage implements OnInit {
         var d = R * c; // Distance in km
         return d;
     }
+
+  private getDistanceMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    return this.getDistanceFromLatLonInKm(lat1, lng1, lat2, lng2) * 1000;
+  }
+
+  private hasMovedMinimumDistanceForRouteRefresh(lat: number, lng: number): boolean {
+    if (!this.lastRouteOriginPosition) {
+      return true;
+    }
+
+    return this.getDistanceMeters(
+      this.lastRouteOriginPosition.lat,
+      this.lastRouteOriginPosition.lng,
+      lat,
+      lng
+    ) >= this.LIVE_ROUTE_MIN_DISTANCE_METERS;
+  }
+
+  private markRouteOriginPosition(lat: number, lng: number): void {
+    this.lastRouteOriginPosition = { lat, lng };
+    this.lastRouteUpdateAt = Date.now();
+  }
 
     deg2rad(deg) {
       return deg * (Math.PI/180)
@@ -2727,7 +2916,15 @@ export class ExpedientePage implements OnInit {
 
     moveMarker(location, mLat, mLng) {
       if (this.leafletMap) {
-        const position = L.latLng(Number(mLat), Number(mLng));
+        const lat = Number(mLat);
+        const lng = Number(mLng);
+
+        if (this.isTracking) {
+          this.animateLeafletAgentMarkerTo(lat, lng);
+          return;
+        }
+
+        const position = L.latLng(lat, lng);
 
         if (this.leafletAjuMarker) {
           this.leafletAjuMarker.setLatLng(position);
@@ -2737,6 +2934,7 @@ export class ExpedientePage implements OnInit {
           }).addTo(this.leafletMap);
         }
 
+        this.animatedAgentPosition = { lat, lng };
         this.appendLeafletTravelPoint(position);
 
         if (this.leafletAutoFollow) {
@@ -2753,6 +2951,11 @@ export class ExpedientePage implements OnInit {
       }
   
       if (this.marcadorAju) {
+          if (this.isTracking) {
+            this.animateGoogleAgentMarkerTo(Number(mLat), Number(mLng));
+            return;
+          }
+
           this.marcadorAju.setPosition( new google.maps.LatLng(  mLat,  mLng ) );
           //this.mapa.setZoom(16);
             this.mapa.panTo( new google.maps.LatLng( mLat, mLng ) );

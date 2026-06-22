@@ -21,10 +21,11 @@ export class BeneficiarioPage implements OnInit {
   public alertButtons = [
   {
     text: 'Continuar',
+    role: 'cancel',
     cssClass: 'alert-button-cancel',
   },
   {
-    text: 'Sí, Salir',
+    text: 'Sí, salir',
     cssClass: 'alert-button-confirm',
     handler: () => {
       this.salir();
@@ -236,10 +237,13 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
       this.goExpediente();
       return;
     }
-    this.alertaSalir();
-    //this.toaster.presentToastSave('Salir del formulario? Los datos se perderan sin haber guardado. Salir?', 'middle', 'primary', 'this.elExpediente');
-    //this.openModalGuardar();
-    //this.location.back();
+
+    if (this.claimValidationError) {
+      this.goExpediente();
+      return;
+    }
+
+    void this.alertaSalir();
   }
 
   goExpediente() {
@@ -299,7 +303,8 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
   }
 
   salir(){
-    window.location.reload();
+    localStorage.removeItem('finiquito-beneficiarioTipo');
+    this.goExpediente();
   }
 
   async alertaSalir() {
