@@ -95,13 +95,19 @@
                     </ion-row>
                     <ion-row class="coordinate-chip-row">
                       <ion-col size="12" size-md="6">
-                        <div class="coordinate-chip" [ngClass]="coordinateAlertState">
+                        <div class="coordinate-chip"
+                          [class.coordinate-chip-ok]="coordinateAlertState === 'ok'"
+                          [class.coordinate-chip-warning]="coordinateAlertState === 'warning'"
+                          [class.coordinate-chip-danger]="coordinateAlertState === 'danger'">
                           <span>Latitud</span>
                           <strong>{{clienteLatitud || 'No disponible'}}</strong>
                         </div>
                       </ion-col>
                       <ion-col size="12" size-md="6">
-                        <div class="coordinate-chip" [ngClass]="coordinateAlertState">
+                        <div class="coordinate-chip"
+                          [class.coordinate-chip-ok]="coordinateAlertState === 'ok'"
+                          [class.coordinate-chip-warning]="coordinateAlertState === 'warning'"
+                          [class.coordinate-chip-danger]="coordinateAlertState === 'danger'">
                           <span>Longitud</span>
                           <strong>{{clienteLongitud || 'No disponible'}}</strong>
                         </div>
