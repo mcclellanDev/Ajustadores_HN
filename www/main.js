@@ -58,10 +58,10 @@ const routes = [{
   loadChildren: () => __webpack_require__.e(/*! import() */ "src_app_propiedad_propiedad_module_ts").then(__webpack_require__.bind(__webpack_require__, /*! ./propiedad/propiedad.module */ 62921)).then(m => m.PropiedadPageModule)
 }, {
   path: 'clientehn',
-  loadChildren: () => Promise.all(/*! import() */[__webpack_require__.e("default-src_app_environments_segments_ts-src_app_environments_vehicles_ts-src_app_services_fo-4be3a4"), __webpack_require__.e("common"), __webpack_require__.e("src_app_clientehn_clientehn_module_ts")]).then(__webpack_require__.bind(__webpack_require__, /*! ./clientehn/clientehn.module */ 19905)).then(m => m.ClientehnPageModule)
+  loadChildren: () => Promise.all(/*! import() */[__webpack_require__.e("default-src_app_environments_segments_ts-src_app_environments_vehicles_ts-src_app_services_fo-ac8850"), __webpack_require__.e("common"), __webpack_require__.e("src_app_clientehn_clientehn_module_ts")]).then(__webpack_require__.bind(__webpack_require__, /*! ./clientehn/clientehn.module */ 19905)).then(m => m.ClientehnPageModule)
 }, {
   path: 'ajustadorhn',
-  loadChildren: () => Promise.all(/*! import() */[__webpack_require__.e("default-src_app_environments_segments_ts-src_app_environments_vehicles_ts-src_app_services_fo-4be3a4"), __webpack_require__.e("default-src_app_ajustadorhn_ajustadorhn_page_ts"), __webpack_require__.e("src_app_ajustadorhn_ajustadorhn_module_ts")]).then(__webpack_require__.bind(__webpack_require__, /*! ./ajustadorhn/ajustadorhn.module */ 98508)).then(m => m.AjustadorhnPageModule)
+  loadChildren: () => Promise.all(/*! import() */[__webpack_require__.e("default-src_app_environments_segments_ts-src_app_environments_vehicles_ts-src_app_services_fo-ac8850"), __webpack_require__.e("default-src_app_ajustadorhn_ajustadorhn_page_ts"), __webpack_require__.e("src_app_ajustadorhn_ajustadorhn_module_ts")]).then(__webpack_require__.bind(__webpack_require__, /*! ./ajustadorhn/ajustadorhn.module */ 98508)).then(m => m.AjustadorhnPageModule)
 }, {
   path: 'fotoshn',
   loadChildren: () => __webpack_require__.e(/*! import() */ "src_app_fotoshn_fotoshn_module_ts").then(__webpack_require__.bind(__webpack_require__, /*! ./fotoshn/fotoshn.module */ 57561)).then(m => m.FotoshnPageModule)
@@ -82,7 +82,7 @@ const routes = [{
   loadChildren: () => __webpack_require__.e(/*! import() */ "src_app_culpable_culpable_module_ts").then(__webpack_require__.bind(__webpack_require__, /*! ./culpable/culpable.module */ 4220)).then(m => m.CulpablePageModule)
 }, {
   path: 'esignature',
-  loadChildren: () => Promise.all(/*! import() */[__webpack_require__.e("default-node_modules_signature_pad_dist_signature_pad_js"), __webpack_require__.e("default-src_app_environments_segments_ts-src_app_environments_vehicles_ts-src_app_services_fo-4be3a4"), __webpack_require__.e("default-src_app_ajustadorhn_ajustadorhn_page_ts"), __webpack_require__.e("src_app_esignature_esignature_module_ts")]).then(__webpack_require__.bind(__webpack_require__, /*! ./esignature/esignature.module */ 6885)).then(m => m.EsignaturePageModule)
+  loadChildren: () => Promise.all(/*! import() */[__webpack_require__.e("default-node_modules_signature_pad_dist_signature_pad_js"), __webpack_require__.e("default-src_app_environments_segments_ts-src_app_environments_vehicles_ts-src_app_services_fo-ac8850"), __webpack_require__.e("default-src_app_ajustadorhn_ajustadorhn_page_ts"), __webpack_require__.e("src_app_esignature_esignature_module_ts")]).then(__webpack_require__.bind(__webpack_require__, /*! ./esignature/esignature.module */ 6885)).then(m => m.EsignaturePageModule)
 }, {
   path: 'printer',
   loadChildren: () => Promise.all(/*! import() */[__webpack_require__.e("default-src_app_formulario_formulario_module_ts"), __webpack_require__.e("common"), __webpack_require__.e("src_app_printer_printer_module_ts")]).then(__webpack_require__.bind(__webpack_require__, /*! ./printer/printer.module */ 45957)).then(m => m.PrinterPageModule)

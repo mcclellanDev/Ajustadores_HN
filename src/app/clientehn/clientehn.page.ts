@@ -22,6 +22,7 @@ import { FormatosService } from '../services/formatos.service';
 import { CountrydataService } from '../services/countrydata.service';
 import { validateClaimStage } from '../validation/claim-validation';
 import { clienteScreenValidationRules } from '../validation/claim-validation.rules';
+import { normalizeCoordinate, resolveClaimCoordinates } from '../utils/claim-payload-normalizer';
 import { Keyboard } from '@capacitor/keyboard';
 import * as $ from 'jquery';
 import { WebElement } from 'protractor';
@@ -3000,17 +3001,29 @@ export class ClientehnPage implements OnInit {
       this.dataProcess['CelularConductor'] = this.daCelularConductor;
     }
 
-    const cachedLatitud = localStorage.getItem('dataProcess-Latitud');
-    const cachedLongitud = localStorage.getItem('dataProcess-Longitud');
-    const latitudCliente = this.laLatitud || this.clienteLatitud || this.laExpediente?.[0]?.LatitudCliente || cachedLatitud || this.dataProcess['Latitud'];
-    const longitudCliente = this.laLongitud || this.clienteLongitud || this.laExpediente?.[0]?.LongitudCliente || cachedLongitud || this.dataProcess['Longitud'];
-    if (latitudCliente != null && latitudCliente != undefined && latitudCliente != 'undefined') {
+    const expedienteActual = this.laExpediente?.[0] || this.elExpediente || {};
+    const latitudExpediente = normalizeCoordinate(this.clienteLatitud) || normalizeCoordinate(expedienteActual?.LatitudCliente);
+    const longitudExpediente = normalizeCoordinate(this.clienteLongitud) || normalizeCoordinate(expedienteActual?.LongitudCliente);
+    const coordenadasSiniestro = resolveClaimCoordinates({
+      ...expedienteActual,
+      LatitudCliente: latitudExpediente,
+      LongitudCliente: longitudExpediente
+    }, this.idAtencion);
+    const latitudCliente = coordenadasSiniestro.Latitud;
+    const longitudCliente = coordenadasSiniestro.Longitud;
+    if (latitudCliente) {
       this.dataProcess['Latitud'] = latitudCliente;
       localStorage.setItem('dataProcess-Latitud', latitudCliente);
+    } else {
+      this.dataProcess['Latitud'] = '';
+      localStorage.removeItem('dataProcess-Latitud');
     }
-    if (longitudCliente != null && longitudCliente != undefined && longitudCliente != 'undefined') {
+    if (longitudCliente) {
       this.dataProcess['Longitud'] = longitudCliente;
       localStorage.setItem('dataProcess-Longitud', longitudCliente);
+    } else {
+      this.dataProcess['Longitud'] = '';
+      localStorage.removeItem('dataProcess-Longitud');
     }
 
     //alert('Latitud : '+this.laLatitud+', Longitud : '+this.laLongitud)

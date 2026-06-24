@@ -81,16 +81,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "ClientehnPage": () => (/* binding */ ClientehnPage)
 /* harmony export */ });
 /* harmony import */ var _Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 71670);
-/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! tslib */ 42321);
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! tslib */ 42321);
 /* harmony import */ var _clientehn_page_html_ngResource__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./clientehn.page.html?ngResource */ 38002);
 /* harmony import */ var _clientehn_page_scss_ngResource__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./clientehn.page.scss?ngResource */ 39533);
 /* harmony import */ var _clientehn_page_scss_ngResource__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_clientehn_page_scss_ngResource__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! @angular/core */ 22560);
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! @angular/router */ 60124);
-/* harmony import */ var _ionic_angular__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! @ionic/angular */ 93819);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! @angular/core */ 22560);
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! @angular/router */ 60124);
+/* harmony import */ var _ionic_angular__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! @ionic/angular */ 93819);
 /* harmony import */ var _services_api_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/api.service */ 5830);
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! rxjs/operators */ 32313);
-/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! @angular/common */ 94666);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! rxjs/operators */ 32313);
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! @angular/common */ 94666);
 /* harmony import */ var _capacitor_network__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @capacitor/network */ 54984);
 /* harmony import */ var _ionic_native_screen_orientation_ngx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @ionic-native/screen-orientation/ngx */ 6222);
 /* harmony import */ var _ionic_native_native_geocoder_ngx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @ionic-native/native-geocoder/ngx */ 29036);
@@ -106,9 +106,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_countrydata_service__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../services/countrydata.service */ 52972);
 /* harmony import */ var _validation_claim_validation__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../validation/claim-validation */ 29003);
 /* harmony import */ var _validation_claim_validation_rules__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../validation/claim-validation.rules */ 5057);
-/* harmony import */ var _capacitor_keyboard__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! @capacitor/keyboard */ 10523);
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! jquery */ 85139);
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_20__);
+/* harmony import */ var _utils_claim_payload_normalizer__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../utils/claim-payload-normalizer */ 93956);
+/* harmony import */ var _capacitor_keyboard__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! @capacitor/keyboard */ 10523);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! jquery */ 85139);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_21___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_21__);
+
 
 
 
@@ -422,43 +424,43 @@ let ClientehnPage = class ClientehnPage {
               this.setNombreConductor(this.nombreConductor);
             }
             if (esTerceroResponsable) {
-              jquery__WEBPACK_IMPORTED_MODULE_20__('#responsableRadioGroup').val(esTerceroResponsable).change();
+              jquery__WEBPACK_IMPORTED_MODULE_21__('#responsableRadioGroup').val(esTerceroResponsable).change();
             } else {
-              jquery__WEBPACK_IMPORTED_MODULE_20__('#responsableRadioGroup').val('3').change();
+              jquery__WEBPACK_IMPORTED_MODULE_21__('#responsableRadioGroup').val('3').change();
               this.setResponsable(3);
             }
             if (audiencia) {
-              jquery__WEBPACK_IMPORTED_MODULE_20__('#audiRadioGroup').val(audiencia).change();
+              jquery__WEBPACK_IMPORTED_MODULE_21__('#audiRadioGroup').val(audiencia).change();
               this.setAudiencia(audiencia);
             }
             if (vehiculodet) {
-              jquery__WEBPACK_IMPORTED_MODULE_20__('#detenidoVRadioGroup').val(vehiculodet).change();
+              jquery__WEBPACK_IMPORTED_MODULE_21__('#detenidoVRadioGroup').val(vehiculodet).change();
             } else {
-              jquery__WEBPACK_IMPORTED_MODULE_20__('#detenidoVRadioGroup').val('2').change();
+              jquery__WEBPACK_IMPORTED_MODULE_21__('#detenidoVRadioGroup').val('2').change();
               this.setDetenido(2);
             }
             if (conductorDet) {
-              jquery__WEBPACK_IMPORTED_MODULE_20__('#detenidoCRadioGroup').val(conductorDet).change();
+              jquery__WEBPACK_IMPORTED_MODULE_21__('#detenidoCRadioGroup').val(conductorDet).change();
             } else {
-              jquery__WEBPACK_IMPORTED_MODULE_20__('#detenidoCRadioGroup').val('2').change();
+              jquery__WEBPACK_IMPORTED_MODULE_21__('#detenidoCRadioGroup').val('2').change();
               this.setDetenidoElConductor(2);
             }
             if (vehiculoVolcado) {
-              jquery__WEBPACK_IMPORTED_MODULE_20__('#volcoRadioGroup').val(vehiculoVolcado).change();
+              jquery__WEBPACK_IMPORTED_MODULE_21__('#volcoRadioGroup').val(vehiculoVolcado).change();
             } else {
-              jquery__WEBPACK_IMPORTED_MODULE_20__('#volcoRadioGroup').val('2').change();
+              jquery__WEBPACK_IMPORTED_MODULE_21__('#volcoRadioGroup').val('2').change();
               this.setVolcado(2);
             }
             if (tercerosHeridos) {
-              jquery__WEBPACK_IMPORTED_MODULE_20__('#tHeridosRadioGroup').val(tercerosHeridos).change();
+              jquery__WEBPACK_IMPORTED_MODULE_21__('#tHeridosRadioGroup').val(tercerosHeridos).change();
             } else {
-              jquery__WEBPACK_IMPORTED_MODULE_20__('#tHeridosRadioGroup').val('2').change();
+              jquery__WEBPACK_IMPORTED_MODULE_21__('#tHeridosRadioGroup').val('2').change();
               this.setTercerosHeridos(2);
             }
             if (tercerosMuertos) {
-              jquery__WEBPACK_IMPORTED_MODULE_20__('#tMuertosRadioGroup').val(tercerosMuertos).change();
+              jquery__WEBPACK_IMPORTED_MODULE_21__('#tMuertosRadioGroup').val(tercerosMuertos).change();
             } else {
-              jquery__WEBPACK_IMPORTED_MODULE_20__('#tMuertosRadioGroup').val('2').change();
+              jquery__WEBPACK_IMPORTED_MODULE_21__('#tMuertosRadioGroup').val('2').change();
               this.setTercerosMuertos(2);
             }
             if (nombreAtribuyeAccidente) {
@@ -835,43 +837,43 @@ let ClientehnPage = class ClientehnPage {
                   this.setNombreConductor(this.nombreConductor);
                 }
                 if (esTerceroResponsable) {
-                  jquery__WEBPACK_IMPORTED_MODULE_20__('#responsableRadioGroup').val(esTerceroResponsable).change();
+                  jquery__WEBPACK_IMPORTED_MODULE_21__('#responsableRadioGroup').val(esTerceroResponsable).change();
                 } else {
-                  jquery__WEBPACK_IMPORTED_MODULE_20__('#responsableRadioGroup').val('3').change();
+                  jquery__WEBPACK_IMPORTED_MODULE_21__('#responsableRadioGroup').val('3').change();
                   this.setResponsable(3);
                 }
                 if (audiencia) {
-                  jquery__WEBPACK_IMPORTED_MODULE_20__('#audiRadioGroup').val(audiencia).change();
+                  jquery__WEBPACK_IMPORTED_MODULE_21__('#audiRadioGroup').val(audiencia).change();
                   this.setAudiencia(audiencia);
                 }
                 if (vehiculodet) {
-                  jquery__WEBPACK_IMPORTED_MODULE_20__('#detenidoVRadioGroup').val(vehiculodet).change();
+                  jquery__WEBPACK_IMPORTED_MODULE_21__('#detenidoVRadioGroup').val(vehiculodet).change();
                 } else {
-                  jquery__WEBPACK_IMPORTED_MODULE_20__('#detenidoVRadioGroup').val('2').change();
+                  jquery__WEBPACK_IMPORTED_MODULE_21__('#detenidoVRadioGroup').val('2').change();
                   this.setDetenido(2);
                 }
                 if (conductorDet) {
-                  jquery__WEBPACK_IMPORTED_MODULE_20__('#detenidoCRadioGroup').val(conductorDet).change();
+                  jquery__WEBPACK_IMPORTED_MODULE_21__('#detenidoCRadioGroup').val(conductorDet).change();
                 } else {
-                  jquery__WEBPACK_IMPORTED_MODULE_20__('#detenidoCRadioGroup').val('2').change();
+                  jquery__WEBPACK_IMPORTED_MODULE_21__('#detenidoCRadioGroup').val('2').change();
                   this.setDetenidoElConductor(2);
                 }
                 if (vehiculoVolcado) {
-                  jquery__WEBPACK_IMPORTED_MODULE_20__('#volcoRadioGroup').val(vehiculoVolcado).change();
+                  jquery__WEBPACK_IMPORTED_MODULE_21__('#volcoRadioGroup').val(vehiculoVolcado).change();
                 } else {
-                  jquery__WEBPACK_IMPORTED_MODULE_20__('#volcoRadioGroup').val('2').change();
+                  jquery__WEBPACK_IMPORTED_MODULE_21__('#volcoRadioGroup').val('2').change();
                   this.setVolcado(2);
                 }
                 if (tercerosHeridos) {
-                  jquery__WEBPACK_IMPORTED_MODULE_20__('#tHeridosRadioGroup').val(tercerosHeridos).change();
+                  jquery__WEBPACK_IMPORTED_MODULE_21__('#tHeridosRadioGroup').val(tercerosHeridos).change();
                 } else {
-                  jquery__WEBPACK_IMPORTED_MODULE_20__('#tHeridosRadioGroup').val('2').change();
+                  jquery__WEBPACK_IMPORTED_MODULE_21__('#tHeridosRadioGroup').val('2').change();
                   this.setTercerosHeridos(2);
                 }
                 if (tercerosMuertos) {
-                  jquery__WEBPACK_IMPORTED_MODULE_20__('#tMuertosRadioGroup').val(tercerosMuertos).change();
+                  jquery__WEBPACK_IMPORTED_MODULE_21__('#tMuertosRadioGroup').val(tercerosMuertos).change();
                 } else {
-                  jquery__WEBPACK_IMPORTED_MODULE_20__('#tMuertosRadioGroup').val('2').change();
+                  jquery__WEBPACK_IMPORTED_MODULE_21__('#tMuertosRadioGroup').val('2').change();
                   this.setTercerosMuertos(2);
                 }
                 if (nombreAtribuyeAccidente) {
@@ -1110,7 +1112,7 @@ let ClientehnPage = class ClientehnPage {
     if (this.platform.is('android')) {
       this.getCountry();
     }
-    jquery__WEBPACK_IMPORTED_MODULE_20__('#botonFirmar').click();
+    jquery__WEBPACK_IMPORTED_MODULE_21__('#botonFirmar').click();
   }
   hiddenMenu(i) {
     if (!this.menu[i]) {
@@ -1124,14 +1126,14 @@ let ClientehnPage = class ClientehnPage {
     let segmentKey = _environments_predeterminados__WEBPACK_IMPORTED_MODULE_14__.requiredDataCliente[indexFront].segmentKey;
     let segmentId = _environments_predeterminados__WEBPACK_IMPORTED_MODULE_14__.requiredDataCliente[indexFront].segmentoId;
     let segmentIndex = _environments_predeterminados__WEBPACK_IMPORTED_MODULE_14__.requiredDataCliente[indexFront].segmentIndex;
-    this.indexFront = jquery__WEBPACK_IMPORTED_MODULE_20__('.index-input').eq(indexFront).val(); //segmentIndex;
+    this.indexFront = jquery__WEBPACK_IMPORTED_MODULE_21__('.index-input').eq(indexFront).val(); //segmentIndex;
     //alert('valor '+valor+' en el index '+ inputIndex +', el segmento '+requiredDataCliente[indexFront].segmentKey)
     //$('.required-index').eq(inputIndex).addClass('required-missing');
     if (valor == 'undefined' || valor == undefined) {
       setTimeout(() => {
         //this.setSegment(segmentKey, indexSeg);
-        jquery__WEBPACK_IMPORTED_MODULE_20__("#" + segmentId).fadeIn('xslow');
-        jquery__WEBPACK_IMPORTED_MODULE_20__("#" + segmentId).click();
+        jquery__WEBPACK_IMPORTED_MODULE_21__("#" + segmentId).fadeIn('xslow');
+        jquery__WEBPACK_IMPORTED_MODULE_21__("#" + segmentId).click();
         let daSegmentsContainer = document.getElementsByClassName('segment-icon');
         let daTitleContainer = document.getElementsByClassName('segment-title');
         let daSegmentsButton = document.getElementsByClassName('segment-item');
@@ -1141,12 +1143,12 @@ let ClientehnPage = class ClientehnPage {
           const title = daTitleContainer[index];
           const segmentId = _environments_segments__WEBPACK_IMPORTED_MODULE_9__.segments[index].idSegmento;
           if (daIndex == index) {
-            jquery__WEBPACK_IMPORTED_MODULE_20__("#" + segmentId).fadeIn('xslow');
+            jquery__WEBPACK_IMPORTED_MODULE_21__("#" + segmentId).fadeIn('xslow');
             daSegmentsButton[index].setAttribute('style', 'border:1px solid #0058CB');
             element.setAttribute('style', 'color:#0058CB');
             title.setAttribute('style', 'color:#0058CB;margin-left: 9px');
           } else {
-            jquery__WEBPACK_IMPORTED_MODULE_20__("#" + segmentId).fadeOut();
+            jquery__WEBPACK_IMPORTED_MODULE_21__("#" + segmentId).fadeOut();
             daSegmentsButton[index].setAttribute('style', 'border:none');
             element.setAttribute('style', 'color:#7da1c4');
             title.setAttribute('style', 'color:#7da1c4;margin-left: 9px');
@@ -1164,11 +1166,11 @@ let ClientehnPage = class ClientehnPage {
     this.isTablet = this.platform.is('tablet');
     this.esAudiencia = origin === '/prepare-send';
     this.platform.ready().then(() => {
-      _capacitor_keyboard__WEBPACK_IMPORTED_MODULE_19__.Keyboard.addListener('keyboardDidShow', () => {
-        jquery__WEBPACK_IMPORTED_MODULE_20__('.cliente-action-footer').fadeOut();
+      _capacitor_keyboard__WEBPACK_IMPORTED_MODULE_20__.Keyboard.addListener('keyboardDidShow', () => {
+        jquery__WEBPACK_IMPORTED_MODULE_21__('.cliente-action-footer').fadeOut();
       });
-      _capacitor_keyboard__WEBPACK_IMPORTED_MODULE_19__.Keyboard.addListener('keyboardDidHide', () => {
-        jquery__WEBPACK_IMPORTED_MODULE_20__('.cliente-action-footer').fadeIn();
+      _capacitor_keyboard__WEBPACK_IMPORTED_MODULE_20__.Keyboard.addListener('keyboardDidHide', () => {
+        jquery__WEBPACK_IMPORTED_MODULE_21__('.cliente-action-footer').fadeIn();
       });
       setTimeout(() => {
         const imgElement = document.getElementById("imagenFirma");
@@ -1192,9 +1194,9 @@ let ClientehnPage = class ClientehnPage {
     setTimeout(() => {
       let segmentsContainer = document.getElementsByClassName('segment-item');
       //alert($('.segment-item').eq(9).text())
-      jquery__WEBPACK_IMPORTED_MODULE_20__('.segment-item').eq(9).click(function () {
+      jquery__WEBPACK_IMPORTED_MODULE_21__('.segment-item').eq(9).click(function () {
         setTimeout(() => {
-          jquery__WEBPACK_IMPORTED_MODULE_20__('#signButton').click();
+          jquery__WEBPACK_IMPORTED_MODULE_21__('#signButton').click();
         }, 1000);
       });
       //$('#signButton').click();
@@ -1204,7 +1206,7 @@ let ClientehnPage = class ClientehnPage {
     if (this.hasNonDigit(this.idAtencion) == false) {
       //alert(parseInt(this.idAtencion)+1)
       this.atencionId = parseInt(this.idAtencion);
-      this.api.Expediente(this.atencionId).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_21__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+      this.api.Expediente(this.atencionId).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_22__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
         _this.isLoading = false;
       }))).subscribe(res => {
         console.log(res, 'respuesta');
@@ -1229,7 +1231,7 @@ let ClientehnPage = class ClientehnPage {
           pNumEndoso: '',
           pNumAsegurado: ''
         };
-        this.api.Valida_Lista_Coberturas(cobertura).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_21__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+        this.api.Valida_Lista_Coberturas(cobertura).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_22__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
           _this.isLoading = false;
         }))).subscribe(res => {
           console.log('Cobertura de póliza ');
@@ -1465,7 +1467,7 @@ let ClientehnPage = class ClientehnPage {
   }
   loadParentescos() {
     var _this3 = this;
-    this.api.ListTipoParentesco(3).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_21__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    this.api.ListTipoParentesco(3).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_22__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       _this3.isLoading = false;
     }))).subscribe( /*#__PURE__*/function () {
       var _ref5 = (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (res) {
@@ -1809,7 +1811,7 @@ let ClientehnPage = class ClientehnPage {
       let use = localStorage.getItem('dataProcess-AseguradoUsoPoliza');
       let uso = parseInt(use);
       if (parseInt(tipoC) == 1) {
-        this.cliente.Celular = jquery__WEBPACK_IMPORTED_MODULE_20__('#celularAsegurado').val();
+        this.cliente.Celular = jquery__WEBPACK_IMPORTED_MODULE_21__('#celularAsegurado').val();
         this.conductorEsAfiliado = true;
         this.elExpediente.NombreConductor = this.elExpediente.Cliente;
         this.laExpediente[0].NombreConductor = this.laExpediente[0].Cliente;
@@ -2074,7 +2076,7 @@ let ClientehnPage = class ClientehnPage {
     localStorage.setItem('dataProcess-LicenciaEstado', event.target.value);
   }
   entraLicenciaEstadoCalculado(estado) {
-    jquery__WEBPACK_IMPORTED_MODULE_20__('#licenciaEstado').val(estado).change();
+    jquery__WEBPACK_IMPORTED_MODULE_21__('#licenciaEstado').val(estado).change();
     this.dataProcess.LicenciaEstado = estado;
     this.dataProcess['LicenciaEstado'] = estado;
     localStorage.setItem('dataProcess-LicenciaEstado', estado);
@@ -2267,7 +2269,7 @@ let ClientehnPage = class ClientehnPage {
     //this.imageHeight = this.imagen.nativeElement.offsetHeight;
     this.imageHeight = 200;
     //this.firmaPrecargada = localStorage.getItem("dSignatureAsegurado");
-    this.api.obtenerFotoPorAtencion(this.idAtencion, 3).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_21__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    this.api.obtenerFotoPorAtencion(this.idAtencion, 3).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_22__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       _this6.isLoading = false;
     }))).subscribe( /*#__PURE__*/function () {
       var _ref8 = (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (res) {
@@ -2380,7 +2382,7 @@ let ClientehnPage = class ClientehnPage {
       //const load = await this.loading.create();
       //await  load.present();
       _this8.isLoading = true;
-      _this8.api.TipoDeLicencia(paisIdentidad).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_21__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+      _this8.api.TipoDeLicencia(paisIdentidad).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_22__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
         //        await load.dismiss();
         _this8.isLoading = false;
       }))).subscribe( /*#__PURE__*/function () {
@@ -2411,7 +2413,7 @@ let ClientehnPage = class ClientehnPage {
       //const load = await this.loading.create();
       //await  load.present();
       _this9.isLoading = true;
-      _this9.api.TipoDeVehiculo(paisIdentidad).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_21__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+      _this9.api.TipoDeVehiculo(paisIdentidad).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_22__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
         //        await load.dismiss();
         _this9.isLoading = false;
       }))).subscribe( /*#__PURE__*/function () {
@@ -2439,7 +2441,7 @@ let ClientehnPage = class ClientehnPage {
   getTalleres() {
     var _this10 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
-      _this10.api.ListTalleres().pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_21__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+      _this10.api.ListTalleres().pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_22__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
         _this10.isLoading = false;
       }))).subscribe( /*#__PURE__*/function () {
         var _ref17 = (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (res) {
@@ -2466,7 +2468,7 @@ let ClientehnPage = class ClientehnPage {
   obtenerTipoConductor() {
     var _this11 = this;
     //alert('Okay')
-    this.api.ListTipoConductor().pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_21__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    this.api.ListTipoConductor().pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_22__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       console.log('Aqui se termina la carga de tipos de conductor');
     }))).subscribe( /*#__PURE__*/function () {
       var _ref20 = (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (res) {
@@ -2556,16 +2558,16 @@ let ClientehnPage = class ClientehnPage {
     let daIndex = indexInput;
     this.segmentoTitulo = _environments_segments__WEBPACK_IMPORTED_MODULE_9__.segments[daIndex]?.titulo || 'Formulario del cliente';
     if (this.daSegment == 'ribbon') {
-      jquery__WEBPACK_IMPORTED_MODULE_20__('#validateButton').fadeIn();
+      jquery__WEBPACK_IMPORTED_MODULE_21__('#validateButton').fadeIn();
     } else {
-      jquery__WEBPACK_IMPORTED_MODULE_20__('#validateButton').fadeOut();
+      jquery__WEBPACK_IMPORTED_MODULE_21__('#validateButton').fadeOut();
     }
     for (let index = 0; index < daSegmentsContainer.length; index++) {
       const element = daSegmentsContainer[index];
       const title = daTitleContainer[index];
       const segmentId = _environments_segments__WEBPACK_IMPORTED_MODULE_9__.segments[index].idSegmento;
       if (daIndex == index) {
-        jquery__WEBPACK_IMPORTED_MODULE_20__("#" + segmentId).fadeIn('xslow');
+        jquery__WEBPACK_IMPORTED_MODULE_21__("#" + segmentId).fadeIn('xslow');
         daSegmentsButton[index].setAttribute('style', 'border:1px solid #0058CB');
         element.setAttribute('style', 'color:#0058CB');
         title.setAttribute('style', 'color:#0058CB;margin-left: 9px');
@@ -2574,14 +2576,14 @@ let ClientehnPage = class ClientehnPage {
         } else {
           //alert(this.cantidadNulos);
           if (segmentId != 'segmentSignature') {
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#dataNull').fadeOut();
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#dataNull').fadeOut();
           } else {
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#dataNull').fadeIn('xslow');
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#dataNull').fadeIn('xslow');
             //$('#segmentSignature').fadeOut();
           }
         }
       } else {
-        jquery__WEBPACK_IMPORTED_MODULE_20__("#" + segmentId).fadeOut();
+        jquery__WEBPACK_IMPORTED_MODULE_21__("#" + segmentId).fadeOut();
         daSegmentsButton[index].setAttribute('style', 'border:none');
         element.setAttribute('style', 'color:#7da1c4');
         title.setAttribute('style', 'color:#7da1c4;margin-left: 9px');
@@ -2615,11 +2617,11 @@ let ClientehnPage = class ClientehnPage {
   }
 
   signatureDisplay() {
-    jquery__WEBPACK_IMPORTED_MODULE_20__('#segmentSignature').fadeIn();
+    jquery__WEBPACK_IMPORTED_MODULE_21__('#segmentSignature').fadeIn();
   }
   // ENVIO
   validarDatos() {
-    jquery__WEBPACK_IMPORTED_MODULE_20__('#dataNull').fadeIn('xslow');
+    jquery__WEBPACK_IMPORTED_MODULE_21__('#dataNull').fadeIn('xslow');
     //$('#segmentSignature').fadeOut();
     if (this.daCelularConductor == null || this.daCelularConductor == undefined || this.daCelularConductor == 0 || isNaN(this.daCelularConductor) || this.daCelularConductor == '') {
       this.daCelularConductor = this.laExpediente[0].TelefonoOrigen;
@@ -2642,9 +2644,9 @@ let ClientehnPage = class ClientehnPage {
     let indexSeg;
     let inputIndex;
     if (this.daSegment == 'ribbon') {
-      jquery__WEBPACK_IMPORTED_MODULE_20__('#validateButton').fadeIn();
+      jquery__WEBPACK_IMPORTED_MODULE_21__('#validateButton').fadeIn();
     } else {
-      jquery__WEBPACK_IMPORTED_MODULE_20__('#validateButton').fadeOut();
+      jquery__WEBPACK_IMPORTED_MODULE_21__('#validateButton').fadeOut();
     }
     console.log('Filtro de cliente:');
     console.dir(_environments_predeterminados__WEBPACK_IMPORTED_MODULE_14__.requiredDataCliente);
@@ -2695,23 +2697,23 @@ let ClientehnPage = class ClientehnPage {
         let evalor = missingFields.has(_environments_predeterminados__WEBPACK_IMPORTED_MODULE_14__.requiredDataCliente[index]?.nombre);
         if (evalor == true) {
           this.nullsIndex.push(index);
-          jquery__WEBPACK_IMPORTED_MODULE_20__('.nulo-item').eq(index).attr('style', 'color:red; font-weight: bold;');
+          jquery__WEBPACK_IMPORTED_MODULE_21__('.nulo-item').eq(index).attr('style', 'color:red; font-weight: bold;');
         } else {
-          jquery__WEBPACK_IMPORTED_MODULE_20__('.nulo-item').eq(index).attr('style', 'color:gray; font-weight: bold;');
+          jquery__WEBPACK_IMPORTED_MODULE_21__('.nulo-item').eq(index).attr('style', 'color:gray; font-weight: bold;');
         }
         /**/
         if (index == contenedor.length - 1) {
           //alert(this.nullsIndex.length)
           if (this.nullsIndex.length == 0) {
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#validateButton').fadeOut();
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#saveDataButton').fadeIn();
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#validateAgainButton').fadeIn();
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#cancelaButton').fadeIn();
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#validateButton').fadeOut();
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#saveDataButton').fadeIn();
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#validateAgainButton').fadeIn();
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#cancelaButton').fadeIn();
             this.progress = 1;
             clearInterval(this.progInterval);
             this.textoInfo = 'Datos completados con éxito! Ahora puedes proceder a enviarlos haciendo click en GUARDAR DATOS';
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#spanProgress').removeClass('progress');
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#spanProgress').addClass('progress-end');
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#spanProgress').removeClass('progress');
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#spanProgress').addClass('progress-end');
             let iconoContenedor = document.getElementById('infoText');
             let iconoAprobado = document.createElement('img');
             iconoAprobado.src = '../../assets/img/aprobar.svg';
@@ -2744,17 +2746,29 @@ let ClientehnPage = class ClientehnPage {
     if (this.dataProcess['CelularConductor'] == '' || this.dataProcess['CelularConductor'] == null || this.dataProcess['CelularConductor'] == undefined) {
       this.dataProcess['CelularConductor'] = this.daCelularConductor;
     }
-    const cachedLatitud = localStorage.getItem('dataProcess-Latitud');
-    const cachedLongitud = localStorage.getItem('dataProcess-Longitud');
-    const latitudCliente = this.laLatitud || this.clienteLatitud || this.laExpediente?.[0]?.LatitudCliente || cachedLatitud || this.dataProcess['Latitud'];
-    const longitudCliente = this.laLongitud || this.clienteLongitud || this.laExpediente?.[0]?.LongitudCliente || cachedLongitud || this.dataProcess['Longitud'];
-    if (latitudCliente != null && latitudCliente != undefined && latitudCliente != 'undefined') {
+    const expedienteActual = this.laExpediente?.[0] || this.elExpediente || {};
+    const latitudExpediente = (0,_utils_claim_payload_normalizer__WEBPACK_IMPORTED_MODULE_19__.normalizeCoordinate)(this.clienteLatitud) || (0,_utils_claim_payload_normalizer__WEBPACK_IMPORTED_MODULE_19__.normalizeCoordinate)(expedienteActual?.LatitudCliente);
+    const longitudExpediente = (0,_utils_claim_payload_normalizer__WEBPACK_IMPORTED_MODULE_19__.normalizeCoordinate)(this.clienteLongitud) || (0,_utils_claim_payload_normalizer__WEBPACK_IMPORTED_MODULE_19__.normalizeCoordinate)(expedienteActual?.LongitudCliente);
+    const coordenadasSiniestro = (0,_utils_claim_payload_normalizer__WEBPACK_IMPORTED_MODULE_19__.resolveClaimCoordinates)({
+      ...expedienteActual,
+      LatitudCliente: latitudExpediente,
+      LongitudCliente: longitudExpediente
+    }, this.idAtencion);
+    const latitudCliente = coordenadasSiniestro.Latitud;
+    const longitudCliente = coordenadasSiniestro.Longitud;
+    if (latitudCliente) {
       this.dataProcess['Latitud'] = latitudCliente;
       localStorage.setItem('dataProcess-Latitud', latitudCliente);
+    } else {
+      this.dataProcess['Latitud'] = '';
+      localStorage.removeItem('dataProcess-Latitud');
     }
-    if (longitudCliente != null && longitudCliente != undefined && longitudCliente != 'undefined') {
+    if (longitudCliente) {
       this.dataProcess['Longitud'] = longitudCliente;
       localStorage.setItem('dataProcess-Longitud', longitudCliente);
+    } else {
+      this.dataProcess['Longitud'] = '';
+      localStorage.removeItem('dataProcess-Longitud');
     }
     //alert('Latitud : '+this.laLatitud+', Longitud : '+this.laLongitud)
     if (this.elExpediente.UtilizoSerivicioAsistencia == 1) {
@@ -2771,13 +2785,13 @@ let ClientehnPage = class ClientehnPage {
       if (this.firmaPrecargada != _environments_signatures__WEBPACK_IMPORTED_MODULE_11__.emptySignature && this.firmaPrecargada != _environments_signatures__WEBPACK_IMPORTED_MODULE_11__.emptySignatureWhite) {
         this.isLoading = false;
         this.toaster.presentToastNoButtons('Registro Creado Con Exito!', 'middle', 'siniestro');
-        jquery__WEBPACK_IMPORTED_MODULE_20__('#signButton').fadeOut('slow');
-        jquery__WEBPACK_IMPORTED_MODULE_20__('#goSignButton').fadeOut('slow');
-        jquery__WEBPACK_IMPORTED_MODULE_20__('#saveButton').fadeOut('slow');
-        jquery__WEBPACK_IMPORTED_MODULE_20__('#camButton').fadeOut('slow');
-        jquery__WEBPACK_IMPORTED_MODULE_20__('#footerSignButton').fadeOut('slow');
-        jquery__WEBPACK_IMPORTED_MODULE_20__("#successLabel").fadeIn('slow');
-        jquery__WEBPACK_IMPORTED_MODULE_20__("#buttonGoAjuste").fadeIn('slow');
+        jquery__WEBPACK_IMPORTED_MODULE_21__('#signButton').fadeOut('slow');
+        jquery__WEBPACK_IMPORTED_MODULE_21__('#goSignButton').fadeOut('slow');
+        jquery__WEBPACK_IMPORTED_MODULE_21__('#saveButton').fadeOut('slow');
+        jquery__WEBPACK_IMPORTED_MODULE_21__('#camButton').fadeOut('slow');
+        jquery__WEBPACK_IMPORTED_MODULE_21__('#footerSignButton').fadeOut('slow');
+        jquery__WEBPACK_IMPORTED_MODULE_21__("#successLabel").fadeIn('slow');
+        jquery__WEBPACK_IMPORTED_MODULE_21__("#buttonGoAjuste").fadeIn('slow');
         if (this.daType != 1) {
           //alert('No soy el asegurado');
           //this.dataProcess.IdentidaConductor = this.daIdentidadConductor;
@@ -2790,23 +2804,23 @@ let ClientehnPage = class ClientehnPage {
         }
         console.log('dataProcess is');
         console.dir(this.dataProcess);
-        this.api.GuardarCacheCliente(this.dataProcess).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_21__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+        this.api.GuardarCacheCliente(this.dataProcess).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_22__.finalize)( /*#__PURE__*/(0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
           //alert('Finalice')
           _this12.isLoading = false;
           _this12.isComplete = true;
         }))).subscribe( /*#__PURE__*/function () {
           var _ref23 = (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (res) {
             console.log(res);
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#signButton').fadeOut('slow');
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#goSignButton').fadeOut('slow');
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#saveButton').fadeOut('slow');
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#camButton').fadeOut('slow');
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#footerSignButton').fadeOut('slow');
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#saveDataButton').fadeOut();
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#validateAgainButton').fadeOut();
-            jquery__WEBPACK_IMPORTED_MODULE_20__('#cancelaButton').fadeOut();
-            jquery__WEBPACK_IMPORTED_MODULE_20__("#successLabel").fadeIn('slow');
-            jquery__WEBPACK_IMPORTED_MODULE_20__("#buttonGoAjuste").fadeIn('slow');
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#signButton').fadeOut('slow');
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#goSignButton').fadeOut('slow');
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#saveButton').fadeOut('slow');
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#camButton').fadeOut('slow');
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#footerSignButton').fadeOut('slow');
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#saveDataButton').fadeOut();
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#validateAgainButton').fadeOut();
+            jquery__WEBPACK_IMPORTED_MODULE_21__('#cancelaButton').fadeOut();
+            jquery__WEBPACK_IMPORTED_MODULE_21__("#successLabel").fadeIn('slow');
+            jquery__WEBPACK_IMPORTED_MODULE_21__("#buttonGoAjuste").fadeIn('slow');
             _this12.copmleteByCase.push({
               idAtencion: _this12.idAtencion,
               esCompleto: true
@@ -3105,7 +3119,7 @@ let ClientehnPage = class ClientehnPage {
   setBlindado(blinda) {
     this.dataProcess.Blindado = parseInt(blinda);
     this.dataProcess['Blindado'] = parseInt(blinda);
-    jquery__WEBPACK_IMPORTED_MODULE_20__("input[type='radio'][value=" + this.dataProcess.Blindado + "]").attr("checked", 'true').trigger("change");
+    jquery__WEBPACK_IMPORTED_MODULE_21__("input[type='radio'][value=" + this.dataProcess.Blindado + "]").attr("checked", 'true').trigger("change");
     localStorage.setItem('dataProcess-Blindado', blinda);
   }
   marcarFechaSiniestro(laFechaSiniestrox) {
@@ -3218,7 +3232,7 @@ let ClientehnPage = class ClientehnPage {
     } else {
       this.cliente.UtilizoSerivicioAsistencia = uso;
       this.elExpediente.UtilizoSerivicioAsistencia = uso;
-      jquery__WEBPACK_IMPORTED_MODULE_20__('#usoRadioGroup').val(uso).change();
+      jquery__WEBPACK_IMPORTED_MODULE_21__('#usoRadioGroup').val(uso).change();
       //$("input[type='radio'][value="+this.cliente.UtilizoSerivicioAsistencia+"]").attr("checked",'true').trigger("change");
       localStorage.setItem('dataProcess-AseguradoUsoPoliza', uso);
     }
@@ -3242,7 +3256,7 @@ let ClientehnPage = class ClientehnPage {
   setPruebaAlcohol(prueba) {
     console.log('Alcohol ' + parseInt(prueba));
     this.elExpediente.PruebaAlcoholemia = parseInt(prueba);
-    jquery__WEBPACK_IMPORTED_MODULE_20__('#pruebaRadioGroup').val(prueba).change();
+    jquery__WEBPACK_IMPORTED_MODULE_21__('#pruebaRadioGroup').val(prueba).change();
     localStorage.setItem('dataProcess-PruebaAlcoholemia', prueba);
   }
   agendoAudiencia(event) {
@@ -3363,21 +3377,21 @@ let ClientehnPage = class ClientehnPage {
   }
   static {
     this.ctorParameters = () => [{
-      type: _angular_router__WEBPACK_IMPORTED_MODULE_22__.Router
+      type: _angular_router__WEBPACK_IMPORTED_MODULE_23__.Router
     }, {
-      type: _angular_router__WEBPACK_IMPORTED_MODULE_22__.ActivatedRoute
+      type: _angular_router__WEBPACK_IMPORTED_MODULE_23__.ActivatedRoute
     }, {
-      type: _ionic_angular__WEBPACK_IMPORTED_MODULE_23__.LoadingController
+      type: _ionic_angular__WEBPACK_IMPORTED_MODULE_24__.LoadingController
     }, {
-      type: _ionic_angular__WEBPACK_IMPORTED_MODULE_23__.AlertController
+      type: _ionic_angular__WEBPACK_IMPORTED_MODULE_24__.AlertController
     }, {
       type: _services_api_service__WEBPACK_IMPORTED_MODULE_3__.ApiService
     }, {
-      type: _ionic_angular__WEBPACK_IMPORTED_MODULE_23__.ToastController
+      type: _ionic_angular__WEBPACK_IMPORTED_MODULE_24__.ToastController
     }, {
-      type: _angular_common__WEBPACK_IMPORTED_MODULE_24__.Location
+      type: _angular_common__WEBPACK_IMPORTED_MODULE_25__.Location
     }, {
-      type: _ionic_angular__WEBPACK_IMPORTED_MODULE_23__.Platform
+      type: _ionic_angular__WEBPACK_IMPORTED_MODULE_24__.Platform
     }, {
       type: _ionic_native_screen_orientation_ngx__WEBPACK_IMPORTED_MODULE_5__.ScreenOrientation
     }, {
@@ -3389,47 +3403,47 @@ let ClientehnPage = class ClientehnPage {
     }, {
       type: _services_countrydata_service__WEBPACK_IMPORTED_MODULE_16__.CountrydataService
     }, {
-      type: _ionic_angular__WEBPACK_IMPORTED_MODULE_23__.MenuController
+      type: _ionic_angular__WEBPACK_IMPORTED_MODULE_24__.MenuController
     }];
   }
   static {
     this.propDecorators = {
       imagen: [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_25__.ViewChild,
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_26__.ViewChild,
         args: ['imagen']
       }],
       requerido: [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_25__.ViewChild,
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_26__.ViewChild,
         args: ['requerido']
       }],
       modal: [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_25__.ViewChild,
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_26__.ViewChild,
         args: ['modalNulos']
       }],
       daModal: [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_25__.ViewChild,
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_26__.ViewChild,
         args: ['daModal']
       }],
       propModal: [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_25__.ViewChild,
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_26__.ViewChild,
         args: ['propModal']
       }],
       modalLesion: [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_25__.ViewChild,
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_26__.ViewChild,
         args: ['modalLesion']
       }],
       content: [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_25__.ViewChild,
-        args: [_ionic_angular__WEBPACK_IMPORTED_MODULE_23__.IonContent]
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_26__.ViewChild,
+        args: [_ionic_angular__WEBPACK_IMPORTED_MODULE_24__.IonContent]
       }],
       imagenFirma: [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_25__.ViewChild,
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_26__.ViewChild,
         args: ['imagenFirma']
       }]
     };
   }
 };
-ClientehnPage = (0,tslib__WEBPACK_IMPORTED_MODULE_26__.__decorate)([(0,_angular_core__WEBPACK_IMPORTED_MODULE_25__.Component)({
+ClientehnPage = (0,tslib__WEBPACK_IMPORTED_MODULE_27__.__decorate)([(0,_angular_core__WEBPACK_IMPORTED_MODULE_26__.Component)({
   selector: 'app-clientehn',
   template: _clientehn_page_html_ngResource__WEBPACK_IMPORTED_MODULE_1__,
   styles: [(_clientehn_page_scss_ngResource__WEBPACK_IMPORTED_MODULE_2___default())]
