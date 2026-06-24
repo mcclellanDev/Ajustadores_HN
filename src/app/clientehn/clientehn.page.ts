@@ -148,6 +148,30 @@ export class ClientehnPage implements OnInit {
       : 'Cabina envió coordenadas incompletas, inválidas o fuera del rango esperado para Honduras. Revisa la ubicación antes de continuar.';
   }
 
+  get coordinateChipStyles(): { background: string; border: string; color: string } {
+    if (this.coordinateAlertState === 'danger') {
+      return {
+        background: '#fff0f0',
+        border: '#f1a5a5',
+        color: '#aa1f1f'
+      };
+    }
+
+    if (this.coordinateAlertState === 'warning') {
+      return {
+        background: '#fff7df',
+        border: '#f2c96d',
+        color: '#87600e'
+      };
+    }
+
+    return {
+      background: '#effaf4',
+      border: '#9bd7b2',
+      color: '#137343'
+    };
+  }
+
   private getCabinCoordinateValue(field: 'LatitudCliente' | 'LongitudCliente'): any {
     if (field === 'LatitudCliente') {
       return this.clienteLatitud ?? this.laExpediente?.[0]?.LatitudCliente ?? this.elExpediente?.LatitudCliente;
