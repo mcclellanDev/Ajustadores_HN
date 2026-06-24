@@ -116,6 +116,61 @@ export class ClientehnPage implements OnInit {
     subHeader: 'Selecciona una opción'
   };
 
+  get coordinateAlertState(): 'ok' | 'warning' | 'danger' {
+    const rawLatitud = this.getCabinCoordinateValue('LatitudCliente');
+    const rawLongitud = this.getCabinCoordinateValue('LongitudCliente');
+    const hasLatitud = this.hasCoordinateText(rawLatitud);
+    const hasLongitud = this.hasCoordinateText(rawLongitud);
+
+    if (!hasLatitud && !hasLongitud) {
+      return 'danger';
+    }
+
+    const latitud = normalizeCoordinate(rawLatitud);
+    const longitud = normalizeCoordinate(rawLongitud);
+
+    if (!latitud || !longitud || !this.isLikelyHondurasCoordinate(latitud, longitud)) {
+      return 'warning';
+    }
+
+    return 'ok';
+  }
+
+  get coordinateAlertTitle(): string {
+    return this.coordinateAlertState === 'danger'
+      ? 'Coordenadas no disponibles'
+      : 'Coordenadas por revisar';
+  }
+
+  get coordinateAlertMessage(): string {
+    return this.coordinateAlertState === 'danger'
+      ? 'Cabina no envió latitud ni longitud para esta atención. El envío debe detenerse hasta corregir el origen del dato.'
+      : 'Cabina envió coordenadas incompletas, inválidas o fuera del rango esperado para Honduras. Revisa la ubicación antes de continuar.';
+  }
+
+  private getCabinCoordinateValue(field: 'LatitudCliente' | 'LongitudCliente'): any {
+    if (field === 'LatitudCliente') {
+      return this.clienteLatitud ?? this.laExpediente?.[0]?.LatitudCliente ?? this.elExpediente?.LatitudCliente;
+    }
+
+    return this.clienteLongitud ?? this.laExpediente?.[0]?.LongitudCliente ?? this.elExpediente?.LongitudCliente;
+  }
+
+  private hasCoordinateText(value: any): boolean {
+    const text = (value ?? '').toString().trim().toLowerCase();
+    return !!text && !['null', 'undefined', 'string', 'n/a', 'na', 'nd', 'n.d.', 's/d', 'sin dato'].includes(text);
+  }
+
+  private isLikelyHondurasCoordinate(latitud: string, longitud: string): boolean {
+    const latitudNumerica = Number(latitud);
+    const longitudNumerica = Number(longitud);
+
+    return latitudNumerica >= 12
+      && latitudNumerica <= 18
+      && longitudNumerica >= -90.5
+      && longitudNumerica <= -83;
+  }
+
   public progress = 0;  nullsIndex: any = []; textoInfo = 'Validando ... Cuando todos los datos estén completos, se habilitará el botón de guardar.';
   identidadDelCliente: any;  progInterval: any;  indexFront: any; firmaIcono:any = editarFirmaIcono;
   esAudiencia: boolean | undefined;

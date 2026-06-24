@@ -82,12 +82,29 @@
                 </ion-item>
                 <div class="ion-padding" slot="content">
                   <ion-grid>
-                    <ion-row>
-                      <ion-col size="6">
-                        <strong>Latitud : </strong> &nbsp; <ion-text style="color: var(--blueGrayColor);">{{clienteLatitud}}</ion-text>
+                    <ion-row *ngIf="coordinateAlertState !== 'ok'">
+                      <ion-col size="12">
+                        <div class="coordinate-alert" [ngClass]="coordinateAlertState">
+                          <ion-icon [name]="coordinateAlertState === 'danger' ? 'alert-circle' : 'warning'"></ion-icon>
+                          <div>
+                            <strong>{{coordinateAlertTitle}}</strong>
+                            <span>{{coordinateAlertMessage}}</span>
+                          </div>
+                        </div>
                       </ion-col>
-                      <ion-col size="6">
-                        <strong>Longitud : </strong> &nbsp; <ion-text style="color: var(--blueGrayColor);">{{clienteLongitud}}</ion-text>
+                    </ion-row>
+                    <ion-row class="coordinate-chip-row">
+                      <ion-col size="12" size-md="6">
+                        <div class="coordinate-chip" [ngClass]="coordinateAlertState">
+                          <span>Latitud</span>
+                          <strong>{{clienteLatitud || 'No disponible'}}</strong>
+                        </div>
+                      </ion-col>
+                      <ion-col size="12" size-md="6">
+                        <div class="coordinate-chip" [ngClass]="coordinateAlertState">
+                          <span>Longitud</span>
+                          <strong>{{clienteLongitud || 'No disponible'}}</strong>
+                        </div>
                       </ion-col>
                     </ion-row>
                   </ion-grid>
