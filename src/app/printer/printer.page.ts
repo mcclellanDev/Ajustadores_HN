@@ -1,8 +1,6 @@
 import { Router } from '@angular/router';
-import { LinkcheckService } from '../services/linkcheck.service';
-import { Component, OnInit, Pipe } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Atenciones } from '../interfaces/atenciones';
-import { NavController } from '@ionic/angular';
 import { printerIcons, printerIcons_test, printPrefix } from '../environments/printer-center';
 
 @Component({
@@ -16,7 +14,8 @@ export class PrinterPage implements OnInit {
   public iconos = printerIcons;  dateAt:number= Date.now();  elColorEstado:any;  isKeyboard: boolean;
   esClienteCompleto:boolean;  searchInterval:any;  timer:number=0;  busca:string="";  laImg: any;  printUrl:any;
   urlApi:any;
-  constructor(private router: Router, private navController:NavController, private linkCheck:LinkcheckService) { 
+  openingIndex: number | null = null;
+  constructor(private router: Router) { 
     this.idAtencion = localStorage.getItem('idAtencion');
     this.urlApi = localStorage.getItem('apiUrl');
     
@@ -44,19 +43,50 @@ export class PrinterPage implements OnInit {
     this.results = this.atenciones.filter((d) => d.Cliente.toLowerCase().indexOf(query) > -1);
   }
 
-  imprimirPDF(tipo, indexPrinter){
-    let environmentValidate = this.urlApi.indexOf('testportal');
-    if (environmentValidate != -1) {
-      this.printUrl = printerIcons_test[indexPrinter].urlPreview+printPrefix+this.idAtencion;
-    }else{
-      this.printUrl = printerIcons[indexPrinter].urlPreview+printPrefix+this.idAtencion;
+  imprimirPDF(indexPrinter: number){
+    const isTestEnvironment = (this.urlApi || '').includes('testportal');
+    const documents = isTestEnvironment ? printerIcons_test : printerIcons;
+    const selectedDocument = documents[indexPrinter];
+
+    if (!selectedDocument) {
+      return;
     }
-    
+
+    this.openingIndex = indexPrinter;
+    this.printUrl = selectedDocument.urlPreview + printPrefix + this.idAtencion;
+    window.open(this.printUrl, '_blank');
+
     setTimeout(() => {
-      window.open(this.printUrl, '_blank');  
-    }, 1000);
-    
-    
+      this.openingIndex = null;
+    }, 900);
+  }
+
+  getDocumentDescription(description: string): string {
+    const normalized = description.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+    if (normalized.includes('fotograf')) {
+      return 'Evidencia visual registrada durante la atención.';
+    }
+    if (normalized.includes('cotizacion')) {
+      return 'Detalle de valoración y costos del taller seleccionado.';
+    }
+    if (normalized.includes('finiquito')) {
+      return 'Constancia de entrega y aceptación del pago.';
+    }
+    if (normalized.includes('reclamo')) {
+      return 'Información consolidada del reclamo del asegurado.';
+    }
+    if (normalized.includes('inspeccion')) {
+      return 'Resultado documentado de la inspección del ajustador.';
+    }
+    if (normalized.includes('cobertura')) {
+      return 'Resumen del análisis y cierre de las coberturas.';
+    }
+    if (normalized.includes('deuda') || normalized.includes('responsabilidad')) {
+      return 'Acuerdo formal generado durante la gestión del caso.';
+    }else{
+      return 'Documento generado para el expediente de la atención.';
+    }
   }
 
   goPrinters(){
@@ -64,8 +94,9 @@ export class PrinterPage implements OnInit {
   }
 
   goBack(){
-    window.location.reload();
-//    this.navController.back();
+    this.router.navigate(['./expediente'], {
+      queryParams: { Id: Number(this.idAtencion), Source: 1 }
+    });
   }
 
 }

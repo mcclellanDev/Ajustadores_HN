@@ -132,13 +132,29 @@ export class AppComponent {
     this.plt.ready().then(async ()=>{
       console.log('Initialize here');
       this.applyOrientationPolicy();
-      this.api.loadToken();
+      await this.restoreSession();
       //Debug:temporal
       this.geolocation();
       this.OneSignalInit();
 
     })
 
+  }
+
+  async restoreSession() {
+    const hasSession = await this.api.loadToken();
+    const currentPath = window.location.pathname || this.router.url || '/';
+    const publicRoutes = ['/login', '/recovery', '/new-password'];
+    const isPublicRoute = publicRoutes.some(route => currentPath.startsWith(route));
+
+    if (hasSession && (currentPath === '/' || isPublicRoute)) {
+      this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
+      return;
+    }
+
+    if (!hasSession && !isPublicRoute) {
+      this.router.navigateByUrl('/login', { replaceUrl: true });
+    }
   }
 
   applyOrientationPolicy() {

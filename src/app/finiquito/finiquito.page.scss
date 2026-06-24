@@ -149,6 +149,16 @@ ion-back-button {
   margin: 0 0 12px;
 }
 
+.document-copy .exchange-reference {
+  background: #fff8e8;
+  border: 1px solid #efcf82;
+  border-radius: 6px;
+  color: #614b18;
+  font-size: 0.8rem;
+  padding: 9px 10px;
+  text-align: left;
+}
+
 .payment-details {
   border-bottom: 0;
   border-top: 1px solid var(--finiquito-line);
@@ -178,20 +188,38 @@ ion-back-button {
   font-size: 1.8rem;
 }
 
-.signature-canvas-wrap {
+.signature-preview {
+  align-items: center;
   background: #ffffff;
   border: 2px dashed #b9c9da;
   border-radius: 6px;
+  display: flex;
+  height: 150px;
+  justify-content: center;
   overflow: hidden;
   width: 100%;
 }
 
-.signature-canvas {
-  display: block;
-  height: 180px;
-  max-width: 100%;
-  touch-action: none;
+.signature-preview img {
+  height: 100%;
+  object-fit: contain;
   width: 100%;
+}
+
+.signature-empty {
+  align-items: center;
+  color: var(--finiquito-muted);
+  display: flex;
+  flex-direction: column;
+  font-size: 0.78rem;
+  gap: 7px;
+  padding: 14px;
+  text-align: center;
+}
+
+.signature-empty ion-icon {
+  color: var(--finiquito-blue);
+  font-size: 1.8rem;
 }
 
 .signature-note {
@@ -288,8 +316,8 @@ ion-back-button {
     padding: 10px;
   }
 
-  .signature-canvas {
-    height: 155px;
+  .signature-preview {
+    height: 130px;
   }
 
   .signature-actions ion-button,

@@ -1,8 +1,246 @@
-#button-back{
-    border-radius: 50%;
-    margin-bottom: 9px;
-    ion-fab-button{
-      padding-bottom: 25px;
-      ion-icon{color: white;}
-    }
+.reports-header ion-toolbar {
+  --background: var(--primaryColor);
+  --color: #ffffff;
+  --min-height: 58px;
+}
+
+.reports-header ion-title {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  padding-inline: 56px;
+  text-align: center;
+}
+
+.reports-header ion-button,
+.reports-header ion-icon {
+  --color: #ffffff;
+  color: #ffffff;
+}
+
+.reports-content {
+  --background: #eef3f7;
+  --padding-bottom: calc(18px + env(safe-area-inset-bottom));
+  --padding-end: 14px;
+  --padding-start: 14px;
+  --padding-top: 14px;
+}
+
+.reports-shell {
+  margin: 0 auto;
+  max-width: 1180px;
+}
+
+.reports-summary {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #d8e3ed;
+  border-left: 4px solid var(--primaryColor);
+  border-radius: 7px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 16px 18px;
+}
+
+.summary-icon {
+  align-items: center;
+  background: #eaf2ff;
+  border-radius: 6px;
+  color: var(--primaryColor);
+  display: flex;
+  height: 52px;
+  justify-content: center;
+  width: 52px;
+}
+
+.summary-icon ion-icon {
+  font-size: 1.75rem;
+}
+
+.summary-copy span,
+.reports-section-heading span,
+.report-copy span {
+  color: #617b94;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.summary-copy h1 {
+  color: #17365d;
+  font-size: 1.15rem;
+  margin: 2px 0 3px;
+}
+
+.summary-copy p {
+  color: #61758a;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.summary-count {
+  align-items: center;
+  background: #f3f7fb;
+  border: 1px solid #dce6ef;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  min-width: 72px;
+  padding: 8px 10px;
+}
+
+.summary-count strong {
+  color: var(--primaryColor);
+  font-size: 1.15rem;
+}
+
+.summary-count span {
+  color: #617b94;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.reports-section-heading {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 2px 10px;
+}
+
+.reports-section-heading h2 {
+  color: #17365d;
+  font-size: 1rem;
+  margin: 2px 0 0;
+}
+
+.reports-section-heading ion-icon {
+  color: #6e8aa4;
+  font-size: 1.4rem;
+}
+
+.reports-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.report-card {
+  background: #ffffff;
+  border: 1px solid #d8e3ed;
+  border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 190px;
+  padding: 14px;
+}
+
+.report-card-main {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+}
+
+.report-icon {
+  align-items: center;
+  background: #edf4fb;
+  border: 1px solid #d6e4f0;
+  border-radius: 6px;
+  color: var(--primaryColor);
+  display: flex;
+  flex: 0 0 46px;
+  height: 46px;
+  justify-content: center;
+}
+
+.report-icon ion-icon {
+  font-size: 1.55rem;
+}
+
+.report-copy {
+  min-width: 0;
+}
+
+.report-copy h3 {
+  color: #17365d;
+  font-size: 0.92rem;
+  line-height: 1.25;
+  margin: 1px 0 7px;
+  overflow-wrap: anywhere;
+}
+
+.report-copy p {
+  color: #667c91;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.report-card ion-button {
+  --border-color: var(--primaryColor);
+  --border-radius: 5px;
+  --box-shadow: none;
+  --color: var(--primaryColor);
+  font-size: 0.76rem;
+  font-weight: 800;
+  height: 40px;
+  margin: 14px 0 0;
+  text-transform: none;
+}
+
+.report-card ion-spinner {
+  height: 17px;
+  width: 17px;
+}
+
+@media (min-width: 1180px) {
+  .reports-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
+}
+
+@media (max-width: 820px) {
+  .reports-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .reports-content {
+    --padding-end: 8px;
+    --padding-start: 8px;
+    --padding-top: 8px;
+  }
+
+  .reports-summary {
+    gap: 10px;
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 13px;
+  }
+
+  .summary-count {
+    align-items: baseline;
+    flex-direction: row;
+    gap: 5px;
+    grid-column: 1 / -1;
+    justify-content: center;
+    min-width: 0;
+    padding: 6px 8px;
+  }
+
+  .summary-copy p {
+    font-size: 0.76rem;
+  }
+
+  .reports-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-card {
+    min-height: 174px;
+    padding: 12px;
+  }
+}

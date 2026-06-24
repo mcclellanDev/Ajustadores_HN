@@ -1,14 +1,13 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { firmaDemoAjustador, emptySignature, emptySignatureWhite, anySignature } from '../environments/signatures';
+import { Component, OnInit } from '@angular/core';
+import { emptySignature } from '../environments/signatures';
 import { logoFicohsa } from '../environments/default-images';
 import { ApiService } from '../services/api.service';
 import { ToastService } from '../services/toast.service';
-import { Platform, ToastController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
-import SignaturePad from 'signature_pad';
 import { meses } from '../environments/calendario';
-import { adeudaEtiquetas } from '../environments/predeterminados';
 import { Entidades } from '../interfaces/extras';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-adeuda',
@@ -16,10 +15,7 @@ import { Entidades } from '../interfaces/extras';
   styleUrls: ['./adeuda.page.scss'],
 })
 export class AdeudaPage implements OnInit {
-//Firma
-@ViewChild("canvas5", { static: true }) canvas5: ElementRef;
-sig5: SignaturePad;meses:any=meses;firmaDemoAjustador:any = firmaDemoAjustador;emptySignature:any= emptySignature
-emptySignatureWhite:any = emptySignatureWhite;anySignature:any=anySignature
+meses:any=meses;emptySignature:any= emptySignature
 
 isLoading: boolean=false;openModal: boolean = false;fechaParrafo:any;fechaPie:any;acuerdoDeuda:any;
 adeudaCompleta:boolean=false;deviceWidth:any;deviceHeight:any;idAtencion:any;telFijo:any;laPoliza:any;
@@ -27,14 +23,17 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
   ya: boolean=false;  atencionId: number;  expediente: any;  moneda: any;  miMoneda: string; isEmptySignature:boolean=true;
   deudaSent: any;  daniosSelectCulpable: any = []; daniosSelectC :any = [];  isDeudaSent: boolean;  danios: any = [];
   daniosSelectAju:any = []; daniosCulpable:any=[];
+  debtorSignature: string;
+  commonDamages: any[] = [];
+  manualDamages: any[] = [];
 // datos a arreglar
 // poliza, agregar del cliente
 // fecha formato
 // 
 
-  constructor(private platform:Platform, private api:ApiService, private toaster: ToastService, private toast:ToastController) {
+  constructor(private api:ApiService, private toaster: ToastService, private toast:ToastController,
+    private alertController: AlertController, private router: Router) {
     this.deudaSent = localStorage.getItem('deudaSent'); //=== 'true';
-    this.getDanios();
 
       if (this.deudaSent) {
         this.isDeudaSent = this.deudaSent.toString().split('-')[0] === 'true';
@@ -49,13 +48,19 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
       
     this.isLoading = true; 
     this.idAtencion = localStorage.getItem('idAtencion');
-    this.laPoliza = localStorage.getItem('datos-Poliza');
     this.telFijo = localStorage.getItem('telFijo');
-    this.acuerdoDeuda = JSON.parse(localStorage.getItem('deuda'));
-    this.daniosSelectCulpable = JSON.parse(localStorage.getItem('daniosSelectCulpa'));
+    this.acuerdoDeuda = JSON.parse(localStorage.getItem('deuda') || '{}') || {};
+    this.daniosSelectCulpable = JSON.parse(localStorage.getItem('daniosSelectCulpa') || '[]') || [];
+    this.commonDamages = this.acuerdoDeuda.DaniosComunes || this.daniosSelectCulpable;
+    this.manualDamages = this.acuerdoDeuda.DaniosManuales ||
+      JSON.parse(localStorage.getItem('daniosSelectOtroCulpaDetalle') || '[]') || [];
+    this.laPoliza = this.acuerdoDeuda.PolizaExterna || localStorage.getItem('datos-Poliza') || localStorage.getItem('poliza');
+    this.getDanios();
     console.log('Los danios seleccionados');
     console.dir(this.daniosSelectCulpable);
     this.isSigned = localStorage.getItem('adeudaCompleta');
+    this.adeudaCompleta = this.isSigned === 'true' || localStorage.getItem(`acuerdoDeudaEnviado-${this.idAtencion}`) === 'true';
+    this.ya = this.adeudaCompleta;
 
     
 
@@ -81,7 +86,7 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
     this.mesPie = this.now.getMonth();
     this.anioPie = this.now.getFullYear();
 
-    let daDate = localStorage.getItem('FechaRegistro');
+    let daDate = localStorage.getItem('FechaRegistro') || new Date().toISOString();
     this.dia = daDate.split('T')[0].substring(8,10);
     this.mes = daDate.split('T')[0].substring(5,7);
     this.anio = daDate.split('T')[0].substring(0,4);
@@ -90,18 +95,13 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
     console.log((this.diaPie)+ ' días'+' del mes de '+ this.meses[this.mesPie].mes+' de '+this.anioPie,'fecha siniestro');
 
     this.fsLogo = logoFicohsa
-    if (this.platform.is('android')) {
-      this.deviceWidth = this.platform.width()-90;
-    }else{
-      this.deviceWidth = this.platform.width()-100;
-    }
   }
 
   async getDanios(){
     this.daniosSelectAju = [];
     let losDanios:any;
     losDanios = localStorage.getItem('daniosSelectAju');
-    this.daniosSelectAju = JSON.parse(losDanios);
+    this.daniosSelectAju = JSON.parse(losDanios || '[]') || [];
     console.log('Danios desde localstorage');
     console.dir(this.daniosSelectAju);
     
@@ -129,22 +129,26 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
       }
 
     )
+
+    this.api.ObtenerDaniosExtras(this.idAtencion, Entidades[1].tipoEntidad).subscribe(
+      (res) => {
+        if (Array.isArray(res) && res.length > 0) {
+          this.manualDamages = res;
+          this.acuerdoDeuda.DaniosManuales = res;
+          localStorage.setItem('daniosSelectOtroCulpaDetalle', JSON.stringify(res));
+          localStorage.setItem('deuda', JSON.stringify(this.acuerdoDeuda));
+        }
+      },
+      () => {
+        console.log('No fue posible refrescar los daños manuales; se conservarán los datos locales.');
+      }
+    );
   }
 
   ngOnInit() {
-    this.sig5 = new SignaturePad(this.canvas5.nativeElement);
-    this.sig5.fromDataURL(emptySignatureWhite);
-
     setTimeout(() => {
-      this.sig5.clear();
       this.guardarConvenioReparacionTest();
     }, 1000);
-
-    this.sig5.backgroundColor = "rgb(255, 255, 255)";this.sig5.minWidth = 1;this.sig5.maxWidth = 1.5;
-    this.sig5.dotSize = 3;
-
-    
-    //this.sig5.penColor = "rgb(66, 133, 244)";
 
     this.idAtencion = localStorage.getItem('idAtencion');
     if (this.hasNonDigit(this.idAtencion) == false) {
@@ -173,6 +177,8 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
             this.acuerdoDeuda.Modelo = this.expediente[0].Modelo;
             this.acuerdoDeuda.NombreAsegurado = this.expediente[0].Cliente;
             this.acuerdoDeuda.Placa = this.expediente[0].NumeroPlaca;
+            this.acuerdoDeuda.PolizaExterna = this.expediente[0].PolizaExterna;
+            this.laPoliza = this.expediente[0].PolizaExterna || this.laPoliza;
             this.acuerdoDeuda.FechaRegistroDocumento = new Date().toISOString();
             this.acuerdoDeuda.DanioCausadoObservacion = this.acuerdoDeuda.Observaciones;
             //this.acuerdoDeuda.MotorImplicado = this.expediente[0].Motor;
@@ -194,35 +200,63 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
     }
   }
 
+  ionViewWillEnter() {
+    this.debtorSignature = localStorage.getItem(this.signatureStorageKey);
+  }
+
   hasNonDigit(str){
     return /\D/g.test(str.toString());
   }
 
-  clear() {
-    this.sig5.clear();
+  get signatureStorageKey(): string {
+    return `adeudaSignature-${this.idAtencion}`;
   }
-  
-  testSave(){
-    this.isLoading = true;
-    this.isEmptySignature = this.sig5.isEmpty();
-    console.log(this.sig5.isEmpty())
-    if (this.sig5.isEmpty()) {
-      this.toaster.presentToastNoButtonsRed("Necesitas escribir una firma para guardar el acuerdo.", "top", "firma");
-      this.isLoading = false;
-    }else{
-      this.sig5.backgroundColor = "rgb(255, 255, 255)";this.sig5.minWidth = 1;this.sig5.maxWidth = 1.5;
-    this.sig5.dotSize = 3; const mySignature = this.sig5.toDataURL("image/jpeg"); console.log(mySignature);
 
-      //const mySignature =this.sig5.toDataURL("image/jpeg");
-      this.acuerdoDeuda.FirmaDeudor = mySignature.split(',')[1];
-      
-      console.dir(this.acuerdoDeuda);
+  get commitmentLabel(): string {
+    return Number(this.acuerdoDeuda.CompromisoDePago) === 1 ? 'Sí' : 'No';
+  }
 
-      setTimeout(() => {
-        this.guardarDeuda();  
-      }, 1800);
+  get licenseTypeLabel(): string {
+    return this.acuerdoDeuda.TipoLicenciaDescripcion || this.acuerdoDeuda.TipoLicencia || 'Sin información';
+  }
 
+  get totalDamages(): number {
+    return this.commonDamages.length + this.manualDamages.length;
+  }
+
+  goDebtorSignature() {
+    this.router.navigate(['./adeuda-signature']);
+  }
+
+  async confirmarEnvio() {
+    if (!this.debtorSignature) {
+      this.toaster.presentToastNoButtonsRed('La persona responsable debe firmar antes de enviar el acuerdo.', 'top', 'firma');
+      return;
     }
+
+    const alert = await this.alertController.create({
+      cssClass: 'form-choice-alert',
+      header: 'Confirmar envío',
+      subHeader: `Atención #${this.idAtencion}`,
+      message: 'Verifica que los datos del reconocimiento de deuda sean correctos. Después de enviarlo, el documento quedará registrado con esta firma.',
+      buttons: [
+        { text: 'Revisar nuevamente', role: 'cancel' },
+        { text: 'Sí, enviar', role: 'confirm', handler: () => this.testSave() }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  testSave(){
+    if (!this.debtorSignature) {
+      this.toaster.presentToastNoButtonsRed('La persona responsable debe firmar antes de enviar el acuerdo.', 'top', 'firma');
+      return;
+    }
+
+    this.isLoading = true;
+    this.acuerdoDeuda.FirmaDeudor = this.debtorSignature.split(',')[1];
+    this.guardarDeuda();
 
   }
 
@@ -235,10 +269,9 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
 
           
           this.api.insertarReconocimientoDeuda(this.acuerdoDeuda).pipe( 
-            finalize(async ()=>{
-             
+            finalize(() => {
+              this.isLoading = false;
               console.log('fin adeuda')
-              //await load.dismiss();
             })
             
           ).subscribe(
@@ -294,6 +327,8 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
                       this.toaster.presentToastNoButtons('Acuerdo Guardado con Exito. Puedes descargar una copia y enviarla a tu correo.', 'middle', 'deuda');
                       this.adeudaCompleta = true;
                       localStorage.setItem('adeudaCompleta', this.adeudaCompleta.toString());
+                      localStorage.setItem(`acuerdoDeudaEnviado-${this.idAtencion}`, 'true');
+                      localStorage.removeItem(this.signatureStorageKey);
                     }
                     
                   }
@@ -303,11 +338,26 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
               this.toaster.presentToastNoButtons('Acuerdo Guardado con Exito. Puedes descargar una copia y enviarla a tu correo.', 'middle', 'deuda');
               this.adeudaCompleta = true;
               localStorage.setItem('adeudaCompleta', this.adeudaCompleta.toString());
+              localStorage.setItem(`acuerdoDeudaEnviado-${this.idAtencion}`, 'true');
+              localStorage.removeItem(this.signatureStorageKey);
             }
 
               localStorage.setItem('deudaSent', 'true-'+this.atencionId);
+             },
+             (error) => {
+              this.toaster.presentToastNoButtonsRed(
+                error?.error?.Message || 'No fue posible enviar el acuerdo de deuda. La firma se conservará para que puedas reintentar.',
+                'top',
+                'deuda'
+              );
              })
              /**/
+  }
+
+  goExpediente() {
+    this.router.navigate(['./expediente'], {
+      queryParams: { Id: this.atencionId || Number(this.idAtencion), Source: 1 }
+    });
   }
 
   guardarConvenioReparacionTest(){

@@ -320,23 +320,27 @@ ion-item {
 
 #profile-toolbar{
   --background:var(--primaryColor);
-  --min-height: 85px;
+  --min-height: 100px;
+  --padding-bottom: 0;
+  --padding-top: 0;
   background: var(--primaryColor);
-  height: 85px;
+  height: 100px;
 }
 
 #profile-toolbar::part(container) {
-  height: 85px;
-  min-height: 85px;
+  align-items: center;
+  display: flex;
+  height: 100px;
+  min-height: 100px;
 }
 
 .home-logo-title {
   align-items: center;
   display: flex;
-  height: 85px;
-  max-width: 220px;
-  padding: 0 0 0 22px;
-  position: relative;
+  height: 100px;
+  justify-content: flex-start;
+  max-width: 190px;
+  padding: 0 0 0 20px;
 }
 
 #titulo {
@@ -350,17 +354,22 @@ padding: 0;
   display: block;
   height: auto;
   margin: 0;
-  max-height: 62px;
+  max-height: 54px;
   object-fit: contain;
-  width: 90px;
+  width: 82px;
 }
 
 .home-menu-button {
   --background: white;
   --border-radius: 30px;
-  height: 48px;
-  margin-right: 22px;
-  width: 64px;
+  align-self: center;
+  height: 42px;
+  margin: 0 20px 0 0;
+  width: 58px;
+}
+
+.home-menu-button ion-icon {
+  font-size: 26px !important;
 }
 
 #firmaPrevisualizacionCliente {
@@ -1270,6 +1279,17 @@ ion-modal.update-modal {
 }
 
 @media (max-width: 699px) {
+  .home-menu-button {
+    height: 36px;
+    margin-right: 18px;
+    margin-top: -8px;
+    width: 52px;
+  }
+
+  .home-menu-button ion-icon {
+    font-size: 23px !important;
+  }
+
   #greenStat.home-workspace {
     overflow: auto;
     padding: 0 10px 12px;

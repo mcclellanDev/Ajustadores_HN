@@ -9,6 +9,12 @@ import { emptySignatureWhite, imagePrefix, errorImage, editarFirmaIcono } from '
 import { AnimationController, IonAccordionGroup, Platform, ToastController } from '@ionic/angular';
 import { valoresPredeterminados } from '../environments/predeterminados';
 import { abogadosAudiencias } from '../interfaces/arrays';
+import {
+  normalizeChassis,
+  normalizePolicyNumber,
+  resolveClaimCoordinates,
+  resolveClaimDate
+} from '../utils/claim-payload-normalizer';
 
 @Component({
   selector: 'app-prepare-send',
@@ -600,6 +606,22 @@ export class PrepareSendPage implements OnInit {
     
   }
 
+  private getOwnerRelationshipCode(): string {
+    const gender = (
+      this.inicialGenero
+      || this.elGenero
+      || localStorage.getItem('inicialGenero')
+      || localStorage.getItem('elGenero')
+      || ''
+    ).toString().trim().toUpperCase();
+
+    if (gender === 'F' || gender.includes('FEMENINO')) {
+      return 'A002';
+    }
+
+    return 'A001';
+  }
+
   guardarFormulario(){
     if (!this.canSubmit()) {
       return;
@@ -608,7 +630,7 @@ export class PrepareSendPage implements OnInit {
     //console.log('Predeterminados');
     this.isLoading = true;
 
-    this.elParentesco = "AU01";
+    this.elParentesco = this.getOwnerRelationshipCode();
     this.validaNulos = [];
     this.AjustadorFiltro = [];
     this.storageArrayFilter = [];
@@ -663,6 +685,10 @@ export class PrepareSendPage implements OnInit {
         this.openAccordionData();
       }else{
         this.toaster.dismissToast();
+        const expedienteActual = this.cliente && this.cliente.length > 0 ? this.cliente[0] : {};
+        const fechaSiniestro = resolveClaimDate(expedienteActual);
+        const coordenadasSiniestro = resolveClaimCoordinates(expedienteActual, this.idAtencion);
+        const ownerRelationshipCode = this.getOwnerRelationshipCode();
         
         this.datos = {
           RefAtencionId: this.idAtencion,
@@ -673,7 +699,7 @@ export class PrepareSendPage implements OnInit {
           TerceroResponsable: 0,
           LesionadosSinAudiencia: 0,
           DescripcionAudiencia: "NULL",
-          Poliza: this.cliente[0].PolizaExterna,
+          Poliza: normalizePolicyNumber(expedienteActual.PolizaExterna),
           Identificacion: this.identidadAsegurado,
           Nombre: this.cliente[0].Cliente,
           ConductorAfiliado: 1,
@@ -683,7 +709,7 @@ export class PrepareSendPage implements OnInit {
           ModeloVehiculo: this.cliente[0].Modelo,
           AnioVehiculo: this.cliente[0].Year,
           PlacaVehiculo: this.cliente[0].NumeroPlaca,
-          ChasisVehiculo: this.cliente[0].Chasis,
+          ChasisVehiculo: normalizeChassis(expedienteActual.Chasis),
           ColorVehiculo: this.cliente[0].Color,
           VehiculoDetenido: 0,
           DescripcionVehiculo: "NULL",
@@ -701,7 +727,7 @@ export class PrepareSendPage implements OnInit {
           RefCiudadId: 7,
           RefDeptoId: 1,
           RefMunicipioId: 1,
-          FechaHora: this.cliente[0].FechaRegistro,
+          FechaHora: fechaSiniestro,
           Lugar: this.cliente[0].Direccion,
           RefUsuarioId: this.idAjustador,
           TallerMecanicoId: 0,
@@ -709,8 +735,8 @@ export class PrepareSendPage implements OnInit {
           ObservacionTaller: "NULL",
           ReclamoAsegurado: "NULL",
           Observaciones: "NULL",
-          Latitud: this.cliente[0].LatitudCliente,
-          Longitud: this.cliente[0].LongitudCliente,
+          Latitud: coordenadasSiniestro.Latitud,
+          Longitud: coordenadasSiniestro.Longitud,
           NombreConductor: this.nombreConductor,
           IdentidaConductor: this.identidadAsegurado,
           DPI_Pasaporte:this.identidadAsegurado,
@@ -746,7 +772,7 @@ export class PrepareSendPage implements OnInit {
           TipoAcuerdoFicohsa: this.datos.TipoAcuerdoFicohsa,
           DondeSeEncuentraVehiculo: "NULL",
           NumeroUnidad: "NULL",
-          Parentesco: this.elParentesco,
+          Parentesco: ownerRelationshipCode,
           FechaNacimientoConductor: "NULL",
           CulpableCompromisoPago: 0,
           ObservacionCompromisoPago: "NULL",
@@ -772,13 +798,13 @@ export class PrepareSendPage implements OnInit {
           this.idTablaAjustador = res.toString();
   
             // DEBUG Fecha
-            let fechaToString = this.cliente[0].FechaRegistro;//localStorage.getItem('datos-FechaHora');//this.laFechaSiniestroInspeccion.toString();
-            let fechaSplit = fechaToString.split('.')[0];
+            let fechaToString = resolveClaimDate(expedienteActual);
+            let fechaSplit = fechaToString.includes('.') ? fechaToString.split('.')[0] : fechaToString;
   
             this.dataBPM =  {
-              Chasis: this.cliente[0].Chasis,
+              Chasis: normalizeChassis(expedienteActual.Chasis),
               puntoServicio: valoresPredeterminados[0].puntoServicio, // Predeterminado : 504
-              Poliza: this.cliente[0].PolizaExterna, // 
+              Poliza: normalizePolicyNumber(expedienteActual.PolizaExterna), // 
               Certificado: this.cliente[0].Certificado.toString(),//parseInt(this.cliente[0].Certificado), // Pendiente
               NombreAsegurado: this.cliente[0].Cliente,
               Sucursal: valoresPredeterminados[0].Sucursal, // Predeterminado : 0001
@@ -788,18 +814,18 @@ export class PrepareSendPage implements OnInit {
               Causa: valoresPredeterminados[0].Causa, // Pendiente
               ValorReserva: '00.00', // Formulario
               UsuarioBPM: this.elUsuario.UsuarioBPM, // Login
-              Latitud: this.cliente[0].LatitudCliente,//this.latitud,//"14.0985125",//localStorage.getItem('latitud'), // Formulario
-              Longitud: this.cliente[0].LongitudCliente,//this.longitud,//"-87.1849219",//localStorage.getItem('longitud'), // Formulario
+              Latitud: coordenadasSiniestro.Latitud,//this.latitud,//"14.0985125",//localStorage.getItem('latitud'), // Formulario
+              Longitud: coordenadasSiniestro.Longitud,//this.longitud,//"-87.1849219",//localStorage.getItem('longitud'), // Formulario
               NombreConductor: this.nombreConductor, // Formulario
               Genero: this.inicialGenero, // Formulario
-              Parentesco: this.elParentesco, // Formulario
+              Parentesco: ownerRelationshipCode, // Afiliado/propietario
               Observacion: this.idTablaAjustador // Guardar Siniestro
             }
   
             let dataBPMlocal =  {
-              Chasis: this.cliente[0].Chasis,
+              Chasis: normalizeChassis(expedienteActual.Chasis),
               puntoServicio: valoresPredeterminados[0].puntoServicio, // Predeterminado : 504
-              Poliza: this.cliente[0].PolizaExterna, // 
+              Poliza: normalizePolicyNumber(expedienteActual.PolizaExterna), // 
               Certificado: this.cliente[0].Certificado.toString(),//parseInt(this.cliente[0].Certificado), // Pendiente
               NombreAsegurado: this.cliente[0].Cliente,
               Sucursal: valoresPredeterminados[0].Sucursal, // Predeterminado : 0001
@@ -813,7 +839,7 @@ export class PrepareSendPage implements OnInit {
               Longitud: "-87.1849219",
               NombreConductor: this.nombreConductor, // Formulario
               Genero: this.inicialGenero, // Formulario
-              Parentesco: this.elParentesco, // Formulario
+              Parentesco: ownerRelationshipCode, // Afiliado/propietario
               Observacion: this.idTablaAjustador // Guardar Siniestro
             }
   

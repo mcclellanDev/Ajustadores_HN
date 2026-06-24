@@ -45,6 +45,71 @@ ion-header ion-icon {
   max-width: 980px;
 }
 
+.claim-blocked-state {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #d8e3ed;
+  border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  margin: min(12vh, 90px) auto 0;
+  max-width: 540px;
+  padding: 28px 22px;
+  text-align: center;
+}
+
+.claim-blocked-icon {
+  align-items: center;
+  background: #eaf2ff;
+  border-radius: 50%;
+  color: var(--primaryColor);
+  display: flex;
+  height: 62px;
+  justify-content: center;
+  margin-bottom: 14px;
+  width: 62px;
+}
+
+.claim-blocked-icon ion-icon {
+  font-size: 2rem;
+}
+
+.claim-blocked-state > span {
+  color: #617b94;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.claim-blocked-state h2 {
+  color: #17365d;
+  font-size: 1.15rem;
+  margin: 5px 0 8px;
+}
+
+.claim-blocked-state p {
+  color: #557089;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 440px;
+}
+
+.claim-blocked-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.claim-blocked-actions ion-button {
+  --border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  margin: 0;
+}
+
 .form-section {
   background: #ffffff;
   border: 1px solid #d8e3ed;
@@ -76,6 +141,46 @@ ion-header ion-icon {
   display: grid;
   gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.exchange-rate-notice {
+  align-items: flex-start;
+  background: #fff8e8;
+  border: 1px solid #efcf82;
+  border-radius: 6px;
+  color: #614b18;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 11px 12px 8px;
+}
+
+.exchange-rate-notice > ion-icon {
+  color: #b57600;
+  flex: 0 0 auto;
+  font-size: 1.45rem;
+  margin-top: 1px;
+}
+
+.exchange-rate-notice strong {
+  display: block;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.exchange-rate-notice p {
+  font-size: 0.76rem;
+  line-height: 1.4;
+  margin: 4px 0 2px;
+}
+
+.exchange-rate-notice ion-button {
+  --color: #075fca;
+  font-size: 0.72rem;
+  font-weight: 800;
+  height: 32px;
+  margin: 0;
+  text-transform: none;
 }
 
 .date-fields {
@@ -334,5 +439,18 @@ ion-modal.beneficiary-date-modal {
 
   .form-field-wide {
     grid-column: auto;
+  }
+
+  .claim-blocked-state {
+    margin-top: 8vh;
+    padding: 24px 16px;
+  }
+
+  .claim-blocked-actions {
+    flex-direction: column;
+  }
+
+  .claim-blocked-actions ion-button {
+    width: 100%;
   }
 }

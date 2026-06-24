@@ -8,6 +8,7 @@ import { beneficiariosTipos } from '../environments/beneficiarios';
 import * as $ from 'jquery';
 import { AlertController, AnimationController, ModalController } from '@ionic/angular';
 import { ModalGuardarPage } from '../Modales/modal-guardar/modal-guardar.page';
+import { bchUsdReference } from '../environments/exchange-rate';
 
 @Component({
   selector: 'app-beneficiario',
@@ -53,6 +54,11 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
     header: 'Tipo de cobertura',
     subHeader: 'Selecciona una opción'
   };
+  readonly bchUsdReference = bchUsdReference;
+  claimEligibilityChecked = false;
+  canGenerateSettlement = false;
+  claimValidationError = false;
+  private claimAlertOpen = false;
   constructor(private router:Router, private api:ApiService, private toaster:ToastService, private myModal:ModalController,
     private animationCtrl: AnimationController, private alert: AlertController
   ) { 
@@ -127,11 +133,7 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
       //alert(parseInt(this.idAtencion)+1)
       this.atencionId = parseInt(this.idAtencion);
 
-      this.api.Expediente(this.atencionId).pipe( 
-        finalize(async ()=>{
-          this.isLoading = false;
-        })
-      ).subscribe(
+      this.api.Expediente(this.atencionId).subscribe(
          (res) =>{
           console.log(res, 'respuesta');
           this.expediente= res;
@@ -146,17 +148,72 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
           
          }
       )
-    }
 
-   
-    setTimeout(() => {
-      console.log('Caches en storage :');
-      this.obtenerCache();
-    }, 2000);
+      this.validateClaimEligibility();
+    } else {
+      this.isLoading = false;
+      this.claimEligibilityChecked = true;
+      this.claimValidationError = true;
+    }
+  }
+
+  validateClaimEligibility() {
+    let responseReceived = false;
+    this.isLoading = true;
+    this.claimEligibilityChecked = false;
+    this.claimValidationError = false;
+
+    this.api.DatosDeAtencion(this.atencionId).pipe(
+      finalize(() => {
+        this.isLoading = false;
+        this.claimEligibilityChecked = true;
+      })
+    ).subscribe(
+      (res) => {
+        responseReceived = true;
+        const attention = Array.isArray(res) ? res[0] : res;
+        const claimCode = attention?.CodigoReclamoFicohsa?.toString().trim() || '';
+
+        this.codigoReclamo = claimCode;
+        this.numeroDeReclamo = claimCode;
+        this.canGenerateSettlement = !!claimCode;
+
+        if (this.canGenerateSettlement) {
+          localStorage.setItem('codigoReclamo', claimCode);
+          console.log('Caches en storage :');
+          this.obtenerCache();
+          return;
+        }
+
+        localStorage.removeItem('codigoReclamo');
+        this.presentClaimRequiredAlert();
+      },
+      () => {
+        this.canGenerateSettlement = false;
+        this.claimValidationError = true;
+        this.presentClaimValidationErrorAlert();
+      },
+      () => {
+        if (!responseReceived) {
+          localStorage.removeItem('codigoReclamo');
+          this.canGenerateSettlement = false;
+          this.presentClaimRequiredAlert();
+        }
+      }
+    );
   }
 
   hasNonDigit(str){
     return /\D/g.test(str.toString());
+  }
+
+  get isDollarPolicy(): boolean {
+    const currency = (this.moneda || this.miMoneda || '').toString().trim().toUpperCase();
+    return currency.includes('DOLAR') || currency.includes('DÓLAR') || currency.includes('USD') || currency === '$';
+  }
+
+  openBchExchangeRate() {
+    window.open(this.bchUsdReference.sourceUrl, '_system', 'location=yes');
   }
 
   getBeneficiariosTipos(){
@@ -179,10 +236,70 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
   }
 
   goBack(){
+    if (this.claimEligibilityChecked && !this.canGenerateSettlement) {
+      this.goExpediente();
+      return;
+    }
     this.alertaSalir();
     //this.toaster.presentToastSave('Salir del formulario? Los datos se perderan sin haber guardado. Salir?', 'middle', 'primary', 'this.elExpediente');
     //this.openModalGuardar();
     //this.location.back();
+  }
+
+  goExpediente() {
+    this.router.navigate(['./expediente'], {
+      queryParams: { Id: this.atencionId || Number(this.idAtencion), Source: 1 }
+    });
+  }
+
+  async presentClaimRequiredAlert() {
+    if (this.claimAlertOpen) {
+      return;
+    }
+
+    this.claimAlertOpen = true;
+    const alert = await this.alert.create({
+      cssClass: 'form-choice-alert',
+      header: 'Finiquito no disponible',
+      subHeader: `Atención #${this.idAtencion}`,
+      message: 'Esta atención todavía no tiene un reclamo generado. Debes completar ese proceso antes de registrar al beneficiario, el cheque y la firma del finiquito.',
+      buttons: [
+        {
+          text: 'Regresar al expediente',
+          cssClass: 'alert-button-confirm',
+          handler: () => this.goExpediente()
+        }
+      ]
+    });
+    alert.onDidDismiss().then(() => this.claimAlertOpen = false);
+    await alert.present();
+  }
+
+  async presentClaimValidationErrorAlert() {
+    if (this.claimAlertOpen) {
+      return;
+    }
+
+    this.claimAlertOpen = true;
+    const alert = await this.alert.create({
+      cssClass: 'form-choice-alert',
+      header: 'No pudimos verificar el reclamo',
+      message: 'Revisa tu conexión e intenta nuevamente antes de completar el finiquito.',
+      buttons: [
+        {
+          text: 'Regresar',
+          cssClass: 'alert-button-cancel',
+          handler: () => this.goExpediente()
+        },
+        {
+          text: 'Reintentar',
+          cssClass: 'alert-button-confirm',
+          handler: () => this.validateClaimEligibility()
+        }
+      ]
+    });
+    alert.onDidDismiss().then(() => this.claimAlertOpen = false);
+    await alert.present();
   }
 
   salir(){
@@ -261,12 +378,17 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
     }
 
   goFiniquito(){
+    if (!this.claimEligibilityChecked || !this.canGenerateSettlement || !this.codigoReclamo?.toString().trim()) {
+      this.presentClaimRequiredAlert();
+      return;
+    }
+
     if (!this.canContinue()) {
       return;
     }
 
     console.log('antes de ir al finiquito');
-    this.elFiniquito.NumeroReclamo = localStorage.getItem('codigoReclamo');
+    this.elFiniquito.NumeroReclamo = this.codigoReclamo;
     this.elFiniquito.FechaFirma = new Date().toISOString();
     console.dir(this.elFiniquito);
     

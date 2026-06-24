@@ -17,6 +17,14 @@ ion-radio {
   ion-item{
     padding-left: 10px;
   }
+
+  .icono-cerrar{
+    --background: transparent;
+    --background-activated: var(--primaryColor);
+    --box-shadow: none;
+    --color: white;
+    
+  }
   
   ion-radio::part(mark) {
     background: none;
@@ -63,6 +71,7 @@ ion-toolbar{
   font-weight: 800;
   letter-spacing: 0;
   padding-inline: 56px;
+  padding-left: 0;
   text-align: center;
 }
 
@@ -415,10 +424,23 @@ ion-split-pane {
   }
 
   .cliente-form-floating-close ion-fab-button {
+    --background: transparent;//var(--primaryColor);
+    --background-activated: var(--primaryColor);
+    --box-shadow: none;//0 4px 12px rgba(0, 33, 63, 0.28);
+    --color: white;
+    margin-top: 1px;
+    margin-right: -8px;
+  }
+
+  .cliente-form-floating-close-tablet ion-fab-button {
     --background: var(--primaryColor);
     --background-activated: var(--primaryColor);
     --box-shadow: 0 4px 12px rgba(0, 33, 63, 0.28);
     --color: white;
+    margin-top: 1px;
+    margin-right: -8px;
+    border-radius: 50%;
+    color: white;
   }
 
   .cliente-form-floating-close ion-icon {
@@ -773,8 +795,8 @@ ion-split-pane {
     width: 100% !important;
   }
 
-  .cliente-form-content .segmento .birth-date-chip ion-label,
-  .cliente-form-content .segmento .birth-age-chip ion-label {
+  .cliente-form-content .segmento .birth-date-chip ion-label:not(.date-label),
+  .cliente-form-content .segmento .birth-age-chip ion-label:not(.date-label){
     margin: 0;
     overflow: visible;
     text-overflow: clip;
@@ -787,6 +809,10 @@ ion-split-pane {
     flex: 0 0 auto;
     margin: 0;
     position: static;
+  }
+
+  .birth-date-chip{
+    padding-left: 0;
   }
 
   .cliente-form-content .segmento .birth-date-button-column ion-button {

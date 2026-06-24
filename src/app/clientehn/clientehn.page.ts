@@ -1202,6 +1202,8 @@ export class ClientehnPage implements OnInit {
   ionViewDidEnter(){
     let origin = localStorage.getItem('origin');
 
+    this.isTablet = this.platform.is('tablet');
+    
     this.esAudiencia = (origin === '/prepare-send');
 
     this.platform.ready().then(() => {
@@ -1658,7 +1660,7 @@ export class ClientehnPage implements OnInit {
     this.showPropiedad = !this.showPersona;
   }
   next() {
-    this.router.navigate(['./fotoshn'])
+    this.router.navigate(['./cargar-archivos'])
   }
   goAdeuda() {
     this.router.navigate(['./adeuda'])

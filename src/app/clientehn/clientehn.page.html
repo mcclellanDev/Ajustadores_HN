@@ -5,7 +5,7 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title class="cliente-page-title">Atención # {{idAtencion}} - {{miMoneda}}</ion-title>
+    <ion-title class="cliente-page-title">Atención # {{idAtencion}} <br>- {{miMoneda}}</ion-title>
     <input class="required-index" value="40">
   </ion-toolbar>
 </ion-header>
@@ -25,8 +25,9 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding cliente-form-content" id="segmentsContent">
-      <ion-fab slot="fixed" vertical="top" horizontal="end" class="cliente-form-floating-close">
-        <ion-fab-button size="small" aria-label="Cerrar formulario" (click)="closeClientForm()">
+      <ion-fab slot="fixed" vertical="top" horizontal="end" [ngClass]="isTablet == true ? 'cliente-form-floating-close-tablet' : 'cliente-form-floating-close'">
+        <ion-fab-button size="small" aria-label="Cerrar formulario" (click)="closeClientForm()"
+        >
           <ion-icon name="close"></ion-icon>
         </ion-fab-button>
       </ion-fab>

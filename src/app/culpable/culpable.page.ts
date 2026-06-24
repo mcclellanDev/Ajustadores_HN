@@ -55,6 +55,9 @@ export class CulpablePage implements OnInit {
   contador: any;  isSearchCulpable: boolean;   danioResults: any = [];  danioMessage: any;  danioPosition: string;
   danioClass: string;  elModelo: any;  isDeudaSent: boolean; isXXOpen:boolean = false; daniosSelectOtroCulpa:any=[];
   daniosExtrasCulpa: any = [];
+  licenseSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de licencia', subHeader: 'Selecciona una opción' };
+  brandSelectOptions = { cssClass: 'form-choice-alert', header: 'Marca del vehículo', subHeader: 'Selecciona una opción' };
+  modelSelectOptions = { cssClass: 'form-choice-alert', header: 'Modelo del vehículo', subHeader: 'Selecciona una opción' };
   constructor(private loading: LoadingController,private api: ApiService, private router: Router, private route:ActivatedRoute,
     private toaster:ToastService, private toast:ToastController, private navegador: NavController) { 
       
@@ -138,19 +141,30 @@ export class CulpablePage implements OnInit {
   }
 
   openDanioSearch(){
+    this.listarDanios();
+    this.resultsCulpable = this.danioSearchable || this.danios;
     this.isSearchCulpable = true;
-    //this.clearStorageDanios();
-    let danioContainer = document.getElementsByClassName('danio-entrada');
-    if (this.daniosSelectCulpa.length > 0) {
-      console.dir(danioContainer);
-      
-      setTimeout(() => {
-        for (let index = 0; index < this.selectedIndex.length; index++) {
-          const element = this.selectedIndex[index];
-          $('.danio-item-culpa').eq(element).addClass('selected');
-        }
-      }, 1000);
+  }
+
+  isDanioSelected(danioId: any): boolean {
+    return this.daniosSelectCulpa.some((danio) => Number(danio.Id) === Number(danioId));
+  }
+
+  private persistSelectedDamages() {
+    const keysToRemove: string[] = [];
+    for (let index = 0; index < localStorage.length; index++) {
+      const key = localStorage.key(index);
+      if (key?.startsWith('daniosSelectCulpa-')) {
+        keysToRemove.push(key);
+      }
     }
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
+
+    this.daniosSelectCulpa.forEach((danio) => {
+      localStorage.setItem(`daniosSelectCulpa-${danio.Id}`, danio.Id.toString());
+    });
+    localStorage.setItem('daniosSelectCulpa', JSON.stringify(this.daniosSelectCulpa));
+    this.contador = this.daniosSelectCulpa.length;
   }
 
   setReparacion(dannioId, tipo, i, origen){
@@ -263,6 +277,7 @@ export class CulpablePage implements OnInit {
         this.danioSearchable = res;
         this.resultsCulpable = res;
         this.daniosIndex = this.danios.length;
+        this.listarDanios();
       },
       async (res) => {
         this.toaster.presentToast(res.error.Message, 'top', 'danios');
@@ -287,33 +302,18 @@ export class CulpablePage implements OnInit {
   }
 
   entraDanioCulpable(danioId, posicion){
-    for (let index = 0; index < this.danios.length; index++) {
-      const element = this.danios[index];
-
-      console.log('Daño');
-      console.dir(JSON.stringify(element))
-
-      console.dir(element)
-      console.log(element.Id+', '+danioId)
-      console.log(element.Id===danioId);
-      if (element.Id===danioId) {
-        let elItem = $('.danio-item-culpa').eq(index);
-
-      if (elItem.hasClass("selected")) {
-        this.eliminaDanio(danioId, posicion, element.Descripcion);
-        elItem.removeClass('selected');
-      }else{
-        this.daniosSelectCulpa.push(element);
-        this.contador = this.daniosSelectCulpa.length;
-        localStorage.setItem('daniosSelectCulpa-'+posicion, danioId);  
-        elItem.addClass('selected');
-      }
-      }
-
-      
+    const damage = this.danios.find((item) => Number(item.Id) === Number(danioId));
+    if (!damage) {
+      return;
     }
-    /**/
-    
+
+    if (this.isDanioSelected(danioId)) {
+      this.eliminaDanio(danioId, posicion, damage.Descripcion);
+      return;
+    }
+
+    this.daniosSelectCulpa = [...this.daniosSelectCulpa, damage];
+    this.persistSelectedDamages();
   }
 
   eliminaDanioX(danioInputId, index, tipo, codigo){
@@ -395,50 +395,15 @@ export class CulpablePage implements OnInit {
 
 
   eliminaDanio(danioInputId, index, descripcion){
-    //alert(danioInputId+', '+index+', '+descripcion);
-    console.log('El daño en tabla :');
-    console.dir(this.danios[danioInputId-1]);
-
-    for (var i = 0; i < localStorage.length; i++){
-      if (localStorage.key(i).indexOf('daniosSelectCulpa-') == 0) {
-        let idEliminate = localStorage.getItem(localStorage.key(i));
-        let idE = parseInt(idEliminate);
-        if((idE) == danioInputId){
-          localStorage.removeItem(localStorage.key(i));
-        }
-      }
-    }
-    
-    setTimeout(() => {
-      for (let indexDan = 0; indexDan < this.daniosSelectCulpa.length; indexDan++) {
-        const element = this.daniosSelectCulpa[indexDan];
-  
-
-        if (indexDan == (this.daniosSelectCulpa.length-1)) {
-          for (let indexDan = 0; indexDan < this.daniosSelectCulpa.length; indexDan++) {
-            const elementEnd = this.daniosSelectCulpa[indexDan];
-            if (elementEnd.Id === danioInputId) {
-              this.daniosSelectCulpa.splice(index,1);
-              localStorage.removeItem('TipoReparacionCulpa-'+danioInputId);
-              localStorage.removeItem('TipoReparacionCulpaIndex-'+danioInputId);
-            }
-          }
-        }
-        
-        if (indexDan > index) {
-          console.log('En tabla : '+indexDan+', '+element.Id+', '+element.Descripcion+'... Seleccionado : '+danioInputId+', '+index+', '+descripcion); 
-          let resta = indexDan-1;
-          let elTipo = localStorage.getItem('TipoReparacionCulpa-'+element.Id);
-          
-          //alert('el index '+indexDan+' va a cambiar a '+resta+', y su tipo es'+elTipo);
-
-          localStorage.setItem('TipoReparacionCulpaIndex-'+element.Id, resta.toString()); 
-          this.setReparacion(element.Id, elTipo, resta, 2);
-          //
-        }
-        
-      }
-    }, 300);
+    this.daniosSelectCulpa = this.daniosSelectCulpa.filter(
+      (danio) => Number(danio.Id) !== Number(danioInputId)
+    );
+    localStorage.removeItem('TipoReparacionCulpa-'+danioInputId);
+    localStorage.removeItem('TipoReparacionCulpaIndex-'+danioInputId);
+    this.daniosSelectCulpa.forEach((danio, selectedIndex) => {
+      localStorage.setItem(`TipoReparacionCulpaIndex-${danio.Id}`, selectedIndex.toString());
+    });
+    this.persistSelectedDamages();
     
     /*
     for (var i = 0; i < localStorage.length; i++){
@@ -619,8 +584,9 @@ export class CulpablePage implements OnInit {
   }
 
   listarDanios(){
-    
-    this.daniosSelectCulpa = [];
+    const selectedIds = new Set<number>();
+    const storedSelection = JSON.parse(localStorage.getItem('daniosSelectCulpa') || '[]') || [];
+    storedSelection.forEach((danio) => selectedIds.add(Number(danio.Id)));
     let contenedor = document.getElementsByClassName('input-index');
     let contenedorDescripcion = document.getElementsByClassName('danio-descripcion-input');
     
@@ -631,6 +597,7 @@ export class CulpablePage implements OnInit {
         let elCodigo = localStorage.getItem(localStorage.key(i));
         
         let daCode = parseInt(elCodigo);//.split('-')[1];
+        selectedIds.add(daCode);
         console.log('elCodigo '+daCode);
 
         for (let indexDan = 0; indexDan < this.danios.length; indexDan++) {
@@ -666,8 +633,7 @@ export class CulpablePage implements OnInit {
           for (let indexDanio = 0; indexDanio < this.danios.length; indexDanio++) {
             const elementD = this.danios[indexDanio];
             if (indexSelect == elementD.Id) {
-              this.daniosSelectCulpa.push(elementD);
-              console.dir(elementD);
+              selectedIds.add(Number(elementD.Id));
             }
         }
       }
@@ -682,6 +648,9 @@ export class CulpablePage implements OnInit {
       }
       
     }
+
+    this.daniosSelectCulpa = this.danios.filter((danio) => selectedIds.has(Number(danio.Id)));
+    this.contador = this.daniosSelectCulpa.length;
   }
 
   closeOtrosDanios(){
@@ -1217,6 +1186,10 @@ export class CulpablePage implements OnInit {
           setTimeout(() => {
           if (this.isDataMissing == false) {
             this.toaster.dismissToast();
+            const expedienteActual = this.expediente?.[0] || {};
+            const tipoLicenciaSeleccionada = this.tipoLicencia.find(
+              (licencia) => Number(licencia.Id) === Number(this.culpable.LicenciaTipoCulpable)
+            );
             this.reconocimientoDeuda = {
               Id: 0,
               NombreDeudor: this.culpable.NombreCulpable,
@@ -1229,11 +1202,11 @@ export class CulpablePage implements OnInit {
               NombreContacto: this.culpableContacto, // pendiente, agregar a formulario
               CelularContacto: this.culpableContactoNumero.toString(), // pendiente, agregar a formulario
               FechaRegistroDocumento: this.fechaFirma,
-              Marca: 'this.elExpediente[0].Marca',
-              Modelo: 'this.elExpediente[0].Modelo',
-              Anio: 'this.elExpediente[0].Year',
-              Placa: 'this.elExpediente[0].NumeroPlaca',
-              NombreAsegurado: 'this.elExpediente[0].Cliente',
+              Marca: expedienteActual.Marca,
+              Modelo: expedienteActual.Modelo,
+              Anio: expedienteActual.Year,
+              Placa: expedienteActual.NumeroPlaca,
+              NombreAsegurado: expedienteActual.Cliente,
               MarcaImplicado: this.culpable.MarcaCulpable,
               ModeloImplicado: this.culpable.ModeloCulpable,
               AnioImplicado: this.culpable.AnioCulpable,
@@ -1245,7 +1218,7 @@ export class CulpablePage implements OnInit {
               RefAtencionId: this.atencionId,
               FechaRegistro: this.fechaFirma,
               FirmaDeudor: "string",
-              Ciudad: 'this.elExpediente[0].Ciudad', // pendiente, agregar a formulario
+              Ciudad: expedienteActual.Ciudad,
               TelefonoCulpable: this.culpable.TelefonoFijoCulpable.toString(),
               LicenciaCulpable: this.culpable.NumeroLicenciaCulpable,
               TipoLicencia: this.culpable.LicenciaTipoCulpable.toString(),
@@ -1254,7 +1227,11 @@ export class CulpablePage implements OnInit {
               RefTipoFotografiaIdAdeudado: 0,
               RefTipoFotografiaIdBeneficiario: 0,
               CompromisoDePago: parseInt(this.culpable.CompromisoPago),
-              Observaciones: this.culpable.ObservacionesCulpable
+              Observaciones: this.culpable.ObservacionesCulpable,
+              PolizaExterna: expedienteActual.PolizaExterna,
+              TipoLicenciaDescripcion: tipoLicenciaSeleccionada?.TipoLicencia || this.TipoDeLicencia,
+              DaniosComunes: this.daniosSelectCulpa,
+              DaniosManuales: this.daniosSelectOtroCulpa
             }
 
 
@@ -1262,8 +1239,6 @@ export class CulpablePage implements OnInit {
             // NombrePersonaPropiedadImplicada  // NombreDireccionPropietarioVehiculoImplicado
         
             //this.reconocimientoDeuda.NombrePersonaPropiedadImplicada = $('.data-input').eq(14).val();
-            this.reconocimientoDeuda.NombreDireccionPropietarioVehiculoImplicado = $('.data-input').eq(15).val();
-
             setTimeout(() => {
               console.log('Los daños');
               console.dir(this.daniosSelectCulpa);
@@ -1271,7 +1246,9 @@ export class CulpablePage implements OnInit {
               console.dir(this.reconocimientoDeuda);
               localStorage.setItem('deuda', JSON.stringify(this.reconocimientoDeuda));
               localStorage.setItem('daniosSelectCulpa', JSON.stringify(this.daniosSelectCulpa));
-              localStorage.setItem('poliza',this.poliza);
+              localStorage.setItem('daniosSelectOtroCulpaDetalle', JSON.stringify(this.daniosSelectOtroCulpa));
+              localStorage.setItem('poliza', expedienteActual.PolizaExterna || this.poliza || '');
+              localStorage.setItem('datos-Poliza', expedienteActual.PolizaExterna || this.poliza || '');
               localStorage.setItem('telFijo', this.telFijo);
               localStorage.setItem('fechaFirma', this.fechaFirma);
               this.isLoading = false;

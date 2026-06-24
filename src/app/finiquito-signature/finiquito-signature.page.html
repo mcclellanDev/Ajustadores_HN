@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button aria-label="Regresar al finiquito" (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Firma del beneficiario</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [scrollY]="false" class="beneficiary-signature-page">
+  <main class="signature-workspace">
+    <header class="signature-context">
+      <img [src]="fsLogo" alt="Ficohsa Seguros" />
+      <div>
+        <span>Finiquito - Atención #{{idAtencion}}</span>
+        <h1>{{receiverName}}</h1>
+        <p>Firme dentro del área blanca para confirmar la lectura y aceptación del documento.</p>
+      </div>
+    </header>
+
+    <section class="signature-pad-shell" aria-label="Área de firma del beneficiario">
+      <canvas #signatureCanvas></canvas>
+    </section>
+
+    <footer class="signature-controls">
+      <ion-button fill="outline" (click)="clear()">
+        <ion-icon slot="start" name="trash-outline"></ion-icon>
+        Limpiar
+      </ion-button>
+      <ion-button (click)="save()">
+        <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+        Usar esta firma
+      </ion-button>
+    </footer>
+  </main>
+</ion-content>

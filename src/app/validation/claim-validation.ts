@@ -48,7 +48,16 @@ export function isMissingValue(value: any): boolean {
 
   if (typeof value === 'string') {
     const normalized = value.trim().toLowerCase();
-    return normalized === '' || normalized === 'undefined' || normalized === 'null';
+    return normalized === ''
+      || normalized === 'undefined'
+      || normalized === 'null'
+      || normalized === 'string'
+      || normalized === 'nd'
+      || normalized === 'n.d.'
+      || normalized === 's/d'
+      || normalized === 'sin dato'
+      || normalized.includes('this.')
+      || normalized.startsWith('1999-01-01');
   }
 
   return false;

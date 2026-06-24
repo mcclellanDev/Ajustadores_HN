@@ -512,7 +512,7 @@
     </ion-fab>
 
 
-    <ion-grid id="saludoInicial" style="background: transparent; height: 100%;padding: 0; display: inherit; position: absolute;left: 0; bottom: 0; z-index: 1000;
+    <ion-grid *ngIf="showLocationPrompt" id="saludoInicial" style="background: transparent; height: 100%;padding: 0; display: inherit; position: absolute;left: 0; bottom: 0; z-index: 1000;
       width: 100%;">
       <ion-row style="width: 100%; position: absolute; bottom: 420px; z-index: 1040;">
         <ion-col size="12">

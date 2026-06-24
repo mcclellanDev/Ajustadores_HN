@@ -4,6 +4,7 @@ import { User } from './../interfaces/user';
 import { helpFilesUrl } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { tap, switchMap, finalize } from 'rxjs/operators';
 import { BehaviorSubject, from, Observable, of } from 'rxjs';
@@ -48,9 +49,9 @@ export class ApiService {
   idAtencion: string;
   siniestroData: any = [];
   coberturas: any = [];
+  private silentLoginPromise: Promise<boolean> | null = null;
   constructor(private http: HttpClient, private router: Router, private toaster:ToastService){ 
     localStorage.setItem('apiUrl', this.apiUrl);
-    this.loadToken();
   }
    async request(urlRequest:string, data:any){
     const options ={
@@ -61,17 +62,18 @@ export class ApiService {
     console.log(options);
     const response: HttpResponse = await CapacitorHttp.post(options);
   }
-  async loadToken(){
+  async loadToken(): Promise<boolean>{
     const token=  await Preferences.get({key: ACCESS_TOKEN_KEY}); // maybe need use JSON.parse
     const user = await Preferences.get({key: USER_DATA});// this is the local variable user
     if(token && token.value && user && user.value){
       this.currentAccessToken= token.value;
       this.currentUser = JSON.parse(user.value);
       this.isAuthenticated.next(true);
-      this.router.navigateByUrl('/tabs', { replaceUrl: true });
+      localStorage.setItem('ajustadorActual', user.value);
+      return true;
     }else{
       this.isAuthenticated.next(false);
-      this.router.navigateByUrl('/', { replaceUrl: true });
+      return false;
     }
   }
   MisAtenciones(credentials:any): Observable<any> {
@@ -934,6 +936,52 @@ export class ApiService {
     )
   }
 
+  refreshSessionSilently(): Promise<boolean> {
+    if (this.silentLoginPromise) {
+      return this.silentLoginPromise;
+    }
+
+    this.silentLoginPromise = this.executeSilentLogin().finally(() => {
+      this.silentLoginPromise = null;
+    });
+
+    return this.silentLoginPromise;
+  }
+
+  private async executeSilentLogin(): Promise<boolean> {
+    const credentials = await this.getStoredLoginCredentials();
+
+    if (!credentials.User || !credentials.Password) {
+      return false;
+    }
+
+    return new Promise<boolean>((resolve) => {
+      this.login(credentials).subscribe(
+        () => resolve(true),
+        () => resolve(false)
+      );
+    });
+  }
+
+  private async getStoredLoginCredentials(): Promise<{ User: string, Password: string }> {
+    const secureUser = await this.readSecureValue('User');
+    const securePassword = await this.readSecureValue('Password');
+
+    return {
+      User: secureUser || localStorage.getItem('correoActual') || '',
+      Password: securePassword || localStorage.getItem('passwordActual') || ''
+    };
+  }
+
+  private async readSecureValue(key: string): Promise<string> {
+    try {
+      const result = await SecureStoragePlugin.get({ key });
+      return result?.value || '';
+    } catch {
+      return '';
+    }
+  }
+
   
 
   // POST /api/Login/EnviarNotificacionAccidente
@@ -1620,9 +1668,14 @@ logout() {
       localStorage.setItem('previous', this.router.url);
       const deleteAccess = Preferences.remove({ key: ACCESS_TOKEN_KEY });
       const deleteUserData = Preferences.remove({ key: USER_DATA });
+      const deleteSecureUser = SecureStoragePlugin.remove({ key: 'User' }).catch(() => null);
+      const deleteSecurePassword = SecureStoragePlugin.remove({ key: 'Password' }).catch(() => null);
+      localStorage.removeItem('correoActual');
+      localStorage.removeItem('passwordActual');
+      localStorage.removeItem('ajustadorActual');
       this.isAuthenticated.next(false);
       this.router.navigateByUrl('login', { replaceUrl: true });
-      return from(Promise.all([deleteAccess,deleteUserData]))//, deleteRefresh]));
+      return from(Promise.all([deleteAccess, deleteUserData, deleteSecureUser, deleteSecurePassword]))//, deleteRefresh]));
 
   //  }),
   //  tap(_ => {

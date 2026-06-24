@@ -65,7 +65,7 @@ export class Tab1Page implements OnInit {
 
   emptySignatureWhite = emptySignatureWhite;
   conectividadStat: string | undefined;  estadoConexion: string | undefined;  estadoConexionGPS: string | undefined; 
-  gpsOn: boolean = false;  isTablet: boolean = false;
+  gpsOn: boolean = false;  isTablet: boolean = false; showLocationPrompt: boolean = false;
 
 
   constructor(private router: Router, private loading: LoadingController,private alert: AlertController,private api: ApiService,private toast: ToastController,
@@ -135,7 +135,7 @@ export class Tab1Page implements OnInit {
   }
 
   next() {
-    if (this.elColorEstado == "green") {this.router.navigate(['./fotoshn']);} else {
+    if (this.elColorEstado == "green") {this.router.navigate(['./cargar-archivos']);} else {
       this.tostador.presentToastSiniestroCerrado("Este informe ya ha sido cerrado y no se puede editar. Para mayor información, contacta a tu administrador de sistema", 'middle', 'firma');
     }
   }
@@ -295,6 +295,7 @@ export class Tab1Page implements OnInit {
       if (result.location == 'granted') {
         this.conectividad = true;
         this.gpsOn = true;
+        this.showLocationPrompt = false;
         this.estadoConexion = 'Conectado a Internet';
         this.estadoConexionGPS = 'Permisos GPS activados';
         //$('#gpsCard').css('display', 'none');
@@ -305,14 +306,17 @@ export class Tab1Page implements OnInit {
       }
 
       if(result.location == 'denied'){
-        this.conectividad = false;
-        this.gpsOn = false;
-        this.estadoConexion = 'Sin conexión';
-        this.estadoConexionGPS = 'Permisos GPS denegados';
+        const isInstalledApp = this.platform.is('hybrid') || this.platform.is('capacitor');
+        this.conectividad = !isInstalledApp;
+        this.gpsOn = !isInstalledApp;
+        this.showLocationPrompt = isInstalledApp;
+        this.estadoConexion = isInstalledApp ? 'Sin conexión' : 'Vista web de desarrollo';
+        this.estadoConexionGPS = isInstalledApp ? 'Permisos GPS denegados' : 'Permisos GPS no disponibles en navegador';
         //$('#gpsCard').css('display', 'inherit');
-        $('#saludoInicial').css('display', 'inherit');
-        $('#chipGPS').removeClass('gps-out');
-        $('#chipGPS').addClass('gps-in');
+        if (isInstalledApp) {
+          $('#chipGPS').removeClass('gps-out');
+          $('#chipGPS').addClass('gps-in');
+        }
         
       }
 
@@ -1094,10 +1098,14 @@ permitirGPS(){
       $('#chipGPS').addClass('gps-out');
       //$('#gpsCard').css('display', 'none');
       $('#saludoInicial').css('display', 'none');
+      this.showLocationPrompt = false;
       
         setTimeout(() => {
           window.location.reload();
         }, 600);
+    }else if (!this.platform.is('hybrid') && !this.platform.is('capacitor')) {
+      this.showLocationPrompt = false;
+      this.estadoConexionGPS = 'Permisos GPS no disponibles en navegador';
     }
   });
 }

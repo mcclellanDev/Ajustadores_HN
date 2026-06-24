@@ -1,50 +1,58 @@
-<ion-header>
-  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
-  <ion-footer id="spinFooter" *ngIf="isLoading == true"></ion-footer>
-  <ion-fab id="button-back" style="position: fixed;" vertical="top" horizontal="start" (click)="goBack()">
-    <ion-fab-button (click)="'confirmar()'">
-      <ion-icon name="arrow-back"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+<ion-header class="reports-header">
   <ion-toolbar>
-    <ion-grid>
-      <ion-row>
-        <ion-col size="3"></ion-col>
-        <ion-col size="6">Historial De Documentos De Atención # {{idAtencion}}</ion-col>
-        <ion-col size="3" style="float: right;color:blue;"></ion-col>
-      </ion-row>
-    </ion-grid>
+    <ion-buttons slot="start">
+      <ion-button aria-label="Regresar al expediente" (click)="goBack()">
+        <ion-icon slot="icon-only" name="chevron-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Reportes</ion-title>
   </ion-toolbar>
-  <!--ion-toolbar>
-    <ion-searchbar #searchCase id="search-case" placeholder="Buscar asignación" inputmode="text" type="text"
-    [debounce]="1000" (ionInput)="handleInput($event)"></ion-searchbar>
-  </!--ion-toolbar -->
 </ion-header>
-<ion-content [fullscreen]="true">
-  <ion-grid class="ion-no-padding" style="width: 100%;">
-    <ion-row>
-      <ion-col size="3" *ngFor="let item of iconos; let i = index" style="margin-bottom: 10px;">
-        <ion-card style="height: 100%;max-height:100%;" (click)="imprimirPDF(1, indexPrinter.value)">
-          <!--a href="{{item.urlPreview}}/{{idAtencion}}"></!--a -->
-          <a href="#"></a>
-          <ion-card-header style="text-align: center;">
-            <ion-icon name="{{item.name}}" style="font-size: 6rem; margin: 5px; margin-top: 8%; color: var(--blueGrayColor);" id="open-modal-sign" (click)="'recargarFirma()'"></ion-icon>
-            <ion-card-subtitle style="color: gray;">{{item.descripcion}}</ion-card-subtitle>
-            <ion-input #indexPrinter [value]="i" [hidden]="true"></ion-input>
-          </ion-card-header>
-          <ion-grid>
-            <!--ion-row>
-              <ion-col size="6">
-                <ion-button style="width: 100%; border-radius: 0;" fill="outline" (click)="imprimirPDF(1, indexPrinter.value)">VER</ion-button>
-              </ion-col>
-              <ion-col size="6">
-                <ion-button style="width: 100%; border-radius: 0;" fill="solid" (click)="imprimirPDF(2, indexPrinter.value)">IMPRIMIR</ion-button>
-              </ion-col>
-            </!--ion-row -->
-          </ion-grid>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-    <br><br><br>
-  </ion-grid>
+
+<ion-content class="reports-content">
+  <div class="reports-shell">
+    <section class="reports-summary">
+      <div class="summary-icon">
+        <ion-icon name="documents-outline"></ion-icon>
+      </div>
+      <div class="summary-copy">
+        <span>Centro de documentos</span>
+        <h1>Atención #{{idAtencion}}</h1>
+        <p>Consulta los documentos y reportes generados durante la gestión de esta atención.</p>
+      </div>
+      <div class="summary-count" aria-label="Cantidad de reportes">
+        <strong>{{iconos.length}}</strong>
+        <span>reportes</span>
+      </div>
+    </section>
+
+    <div class="reports-section-heading">
+      <div>
+        <span>Documentos disponibles</span>
+        <h2>Historial de la atención</h2>
+      </div>
+      <ion-icon name="reader-outline"></ion-icon>
+    </div>
+
+    <section class="reports-grid">
+      <article class="report-card" *ngFor="let item of iconos; let i = index">
+        <div class="report-card-main">
+          <div class="report-icon">
+            <ion-icon [name]="item.name"></ion-icon>
+          </div>
+          <div class="report-copy">
+            <h3>{{item.descripcion}}</h3>
+            <p>{{getDocumentDescription(item.descripcion)}}</p>
+          </div>
+        </div>
+
+        <ion-button fill="outline" expand="block" [disabled]="openingIndex === i" (click)="imprimirPDF(i)">
+          <ion-spinner *ngIf="openingIndex === i" slot="start" name="crescent"></ion-spinner>
+          <ion-icon *ngIf="openingIndex !== i" slot="start" name="eye-outline"></ion-icon>
+          {{openingIndex === i ? 'Abriendo...' : 'Ver reporte'}}
+          <ion-icon *ngIf="openingIndex !== i" slot="end" name="open-outline"></ion-icon>
+        </ion-button>
+      </article>
+    </section>
+  </div>
 </ion-content>

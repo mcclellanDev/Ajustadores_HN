@@ -8,7 +8,7 @@ import { tipoSolicitante, tipoLicencia, tipoFirma, tipoCombustible, Formulario, 
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { AlertController, LoadingController, ToastController, PopoverController, Platform, InfiniteScrollCustomEvent, 
-  CheckboxCustomEvent, IonModal, AnimationController, IonAccordionGroup, ModalController } from '@ionic/angular';
+  CheckboxCustomEvent, IonModal, AnimationController, IonAccordionGroup, ModalController, IonContent } from '@ionic/angular';
 import { ApiService } from '../services/api.service';
 import { tiposTransmision } from '../environments/vehicles';
 import { finalize } from 'rxjs/operators';
@@ -31,6 +31,14 @@ import {
   ficohsaBpmConfirmationRules,
   ficohsaBpmValidationRules
 } from '../validation/claim-validation.rules';
+import {
+  normalizeChassis,
+  normalizeCoordinate,
+  normalizeParentescoCode,
+  normalizePolicyNumber,
+  resolveClaimCoordinates,
+  resolveClaimDate
+} from '../utils/claim-payload-normalizer';
 
 import * as $ from 'jquery';
 import { parse } from 'path';
@@ -44,6 +52,7 @@ const USER_DATA = 'MY_USER_DATA';
   styleUrls: ['./ajustadorhn.page.scss'],
 })
 export class AjustadorhnPage implements OnInit {
+  @ViewChild('ajustadorContent', { static: false }) ajustadorContent: IonContent;
   @ViewChild('accordionGroup', { static: true }) accordionGroup: IonAccordionGroup;
   @ViewChild('accordionGroup2', { static: true }) accordionGroup2: IonAccordionGroup;
   @ViewChild('modalNulosAju') modal: IonModal;
@@ -116,12 +125,13 @@ export class AjustadorhnPage implements OnInit {
   atencionId: number; expediente: any; moneda: any;  miMoneda: string; isBPMcomplete:boolean=false;
   daDate: Date;  identidadCliente: any;  nombreCliente: any;  elTelefonoOrigen: any; elCorreoElectronico:any; laMarcaAsegurado:any;  elModeloAsegurado: any;
   elAnioAsegurado:any; elChasisAsegurado:any; elNumeroPlacaAsegurado:any; elMotorAsegurado:any; isFirstTime:boolean=true; clickCount:number=0;
-  laPolizaExternaAsegurado: any;contadorSegmentos:number=0; segmentoTitulo:any;  storageKeys: any=[]; countTrue:number=0; fechaInspeccion:any;
+  laPolizaExternaAsegurado: any;contadorSegmentos:number=0; segmentoTitulo:any;  storageKeys: any=[]; countTrue:number=0; fechaInspeccion:any; minFechaInspeccion:string;
   danioMessage:string; danioPosition:string; danioClass:string; storageArrayFilter:any=[];  idSelect: any;  storageArrayIndexs: any[];  storageArrayStrings: any[];
   sucessIcon:any; ssucessIconRecycle:any; losParentescos:any=[];  idTabla: any;  audienciaId: any;  cacheCliente: any[]; OtrosTalleres:any;
   elParentesco: any; refreshIcon:any; isRefreshing:boolean = false; isPressed:boolean=false; deudaSent:boolean;
   acompaniantes: any = [];  testigos: any = [];  lesionados: any = [];  propiedades: any = []; formularioCompleto:boolean=false;
   fechaInspeccionLocal: string;  clienteFiltroAju: any = [];  nullsIndexAju: any = [];
+  mostrarPanelValidacion:boolean=false; validationPanelIsActive:boolean=false;
   textoInfo = 'Validando ... Cuando todos los datos estén completos, se habilitará el botón de guardar.';
   textoInfoIncompleto = 'Faltan datos por completar. Por favor, revisa el formulario.';
   textoInfoDanios = 'Aún no se han seleccionado daños. Puedes guardar la atención, sin embargo no se reflejarán daños en los informes.';
@@ -278,19 +288,17 @@ export class AjustadorhnPage implements OnInit {
           // Setups date from register, if there is not a date set it up as today
           
           
-          let hoy = localStorage.getItem('FechaHora');//this.elExpediente[0].FechaRegistro;
-          let ahora = new Date().toLocaleString();
-          //let inspeccionFecha = ahora.getFullYear()+'-'+ahora.getMonth()+'-'+ahora.getDate()+''
-          console.log('Esto es ahora : '+ahora+' ///////////////////////////////////////////////////////////');
+          const fechaSiniestro = this.elExpediente[0].FechaRegistro;
+          const fechaInspeccionInicial = this.getFechaInspeccionInicial();
 
-          this.fechaInspeccion = new Date().toISOString();
-//          localStorage.setItem('datos-FechaHora', this.fechaInspeccion);
-          localStorage.setItem('datos-FechaHora', this.elExpediente[0].FechaRegistro);
-          
+          console.log('Fecha de inspeccion inicial : '+fechaInspeccionInicial+' ///////////////////////////////////////////////////////////');
 
-          this.marcarFecha(hoy);
-          this.marcarFechaAjustador(ahora);
-          this.marcarFechaInspeccion(hoy);
+          this.fechaInspeccion = fechaInspeccionInicial;
+          localStorage.setItem('datos-FechaHora', fechaInspeccionInicial);
+
+          this.marcarFecha(fechaSiniestro);
+          this.marcarFechaAjustador(fechaInspeccionInicial);
+          this.marcarFechaInspeccion(fechaInspeccionInicial);
 
           /*
           console.log('Esto es hoy'+ hoy);
@@ -470,9 +478,30 @@ export class AjustadorhnPage implements OnInit {
       nativeEl.value = position;
     };
 
+    /*
     toogleAccordion2 = (position) => {
       const nativeEl = this.accordionGroup2;
       nativeEl.value = position;
+    }
+    */
+
+    private focusValidationPanel(){
+      const panel = document.getElementById('dataNullAju');
+      if (!panel) {
+        return;
+      }
+
+      //this.toogleAccordion2(this.cantidadNulos > 0 ? 'tres' : 'dos');
+      this.validationPanelIsActive = true;
+
+      setTimeout(() => {
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        this.ajustadorContent?.scrollToPoint(0, Math.max(panel.offsetTop - 10, 0), 450);
+      }, 80);
+
+      setTimeout(() => {
+        this.validationPanelIsActive = false;
+      }, 1800);
     }
 
     closeAccordions(){
@@ -818,14 +847,16 @@ export class AjustadorhnPage implements OnInit {
             console.dir(arregloParaEnviar);
 
 
-            this.latitud = this.elExpediente[0].LatitudCliente;
-            this.longitud = this.elExpediente[0].LongitudCliente;
+            const expedienteActual = this.elExpediente && this.elExpediente.length > 0 ? this.elExpediente[0] : {};
+            const coordenadasSiniestro = resolveClaimCoordinates(expedienteActual, this.idAtencion);
+            this.latitud = coordenadasSiniestro.Latitud;
+            this.longitud = coordenadasSiniestro.Longitud;
             let reserva:any = localStorage.getItem('bpmArray-ValorReserva');
                       this.valorReserva = reserva;
                       this.datos['valorReserva'] = reserva;
             
-            let fechaToString = localStorage.getItem('datos-FechaHora');
-                      let fechaSplit = fechaToString.split('T')[0];
+            let fechaToString = resolveClaimDate(expedienteActual);
+                      let fechaSplit = fechaToString.includes('T') ? fechaToString.split('T')[0] : fechaToString;
 
             
 
@@ -841,16 +872,18 @@ export class AjustadorhnPage implements OnInit {
                         this.valorReserva = '0';
                       }
                       
-
-                        if (this.elExpediente[0].PolizaExterna.indexOf('-') != -1) {
-                        polizaTrunk = this.elExpediente[0].PolizaExterna.split('-')[1];
-                      }else{
-                        polizaTrunk = this.elExpediente[0].PolizaExterna;
-                      }
+                      polizaTrunk = normalizePolicyNumber(expedienteActual.PolizaExterna);
 
                       if (this.valorReserva == null || this.valorReserva == undefined) {
                         this.valorReserva = '0';
                       }
+
+                      arregloParaEnviar['Poliza'] = normalizePolicyNumber(arregloParaEnviar['Poliza'] || expedienteActual.PolizaExterna);
+                      arregloParaEnviar['PolizaExterna'] = normalizePolicyNumber(arregloParaEnviar['PolizaExterna'] || expedienteActual.PolizaExterna);
+                      arregloParaEnviar['ChasisVehiculo'] = normalizeChassis(arregloParaEnviar['ChasisVehiculo'] || expedienteActual.Chasis);
+                      arregloParaEnviar['Latitud'] = coordenadasSiniestro.Latitud;
+                      arregloParaEnviar['Longitud'] = coordenadasSiniestro.Longitud;
+                      arregloParaEnviar['Parentesco'] = normalizeParentescoCode(arregloParaEnviar['Parentesco'], this.tipoParentescos);
 
                       let elParentesco = arregloParaEnviar['Parentesco'];
 
@@ -1031,21 +1064,21 @@ export class AjustadorhnPage implements OnInit {
                       if (!this.nombreDelConductor) {
                         this.nombreDelConductor = localStorage.getItem('NombreConductor');
                       }
-                      let fechaToString = localStorage.getItem('datos-FechaHora');
-                      let fechaSplit = fechaToString.split('T')[0];
+                      const expedienteActualBpm = this.elExpediente && this.elExpediente.length > 0 ? this.elExpediente[0] : {};
+                      let fechaToString = resolveClaimDate(expedienteActualBpm);
+                      let fechaSplit = fechaToString.includes('T') ? fechaToString.split('T')[0] : fechaToString;
 
                       let reserva:any = localStorage.getItem('bpmArray-ValorReserva');
                       this.valorReserva = reserva;
                       
                       this.inicialGenero = localStorage.getItem('inicialGenero');
 
-                      let elParentesco = arregloParaEnviar['Parentesco'];
+                      let elParentesco = normalizeParentescoCode(arregloParaEnviar['Parentesco'], this.tipoParentescos);
 
-                      if (this.elExpediente[0].PolizaExterna.indexOf('-') != -1) {
-                        polizaTrunk = this.elExpediente[0].PolizaExterna.split('-')[1];
-                      }else{
-                        polizaTrunk = this.elExpediente[0].PolizaExterna;
-                      }
+                      polizaTrunk = normalizePolicyNumber(expedienteActualBpm.PolizaExterna);
+                      const coordenadasBpm = resolveClaimCoordinates(expedienteActualBpm, this.idAtencion);
+                      this.latitud = coordenadasBpm.Latitud;
+                      this.longitud = coordenadasBpm.Longitud;
 
                       if (this.valorReserva == null || this.valorReserva == undefined) {
                         this.valorReserva = '0';
@@ -1053,7 +1086,7 @@ export class AjustadorhnPage implements OnInit {
 
 
                       this.dataBPM =  {
-                        Chasis: this.elExpediente[0].Chasis,
+                        Chasis: normalizeChassis(expedienteActualBpm.Chasis),
                         puntoServicio: valoresPredeterminados[0].puntoServicio, // Predeterminado : 504
                         Poliza: polizaTrunk, // 
                         Certificado: this.elExpediente[0].Certificado.toString(),//parseInt(this.elExpediente[0].Certificado), // Pendiente
@@ -1220,6 +1253,7 @@ export class AjustadorhnPage implements OnInit {
     validarDatos(origen:any){
 
       this.isLoading = true;
+      this.mostrarPanelValidacion = true;
       this.datosComunes = [];
       this.cacheCliente = [];
       this.validaNulosAju = [];
@@ -1230,14 +1264,13 @@ export class AjustadorhnPage implements OnInit {
       this.evaluarFotos();
       this.evaluarDeuda();
       this.cantidadNulos = 1;
-      $('#dataNullAju').fadeIn('xslow');
       $('#camButtonAju').fadeOut();
       
-      this.accordionGroup.value = [];
-      this.toogleAccordion2('second');
+      //this.accordionGroup.value = [];
+      //this.toogleAccordion2('second');
       
       let fotosLocal = JSON.parse(localStorage.getItem('fotos-'+this.atencionId));
-        if (fotosLocal) {
+      if (fotosLocal) {
           this.fotos = fotosLocal;
         }
 
@@ -1246,138 +1279,20 @@ export class AjustadorhnPage implements OnInit {
         })
       ).subscribe(
         async (res) =>{
-        this.cacheCliente = res[0];
-        
+          this.cacheCliente = res && res.length > 0 ? res[0] : {};
+          this.cacheClienteFix = this.normalizeRecordForReview(this.cacheCliente);
+          this.datosCompletados = this.collectAjustadorLocalData();
+          this.completeAjustadorValidationReview();
+        },
+        async (error) => {
+          console.log('No se pudo obtener el cache del cliente para validacion');
+          console.dir(error);
+          this.cacheCliente = [];
+          this.cacheClienteFix = [];
+          this.datosCompletados = this.collectAjustadorLocalData();
+          this.completeAjustadorValidationReview();
         }
       )
-      
-
-      setTimeout(() => {
-        const texto = JSON.stringify(this.cacheCliente); //"Arreglo { variable1: valor1, variable2: valor2, variable3: valor3 }";
-
-          // Extraer todo lo que está dentro de las llaves
-          const contenido = texto.match(/\{([^}]+)\}/)[1];
-
-          // Separar por comas
-          const pares = contenido.split(",").map(p => p.trim());
-
-          // Separar clave y valor
-          const resultado = pares.map(p => {
-            const [nombre, valor] = p.split(":").map(x => x.trim().replace('"', '').replace('"', ''));
-            return { nombre, valor };
-          });
-
-          this.cacheClienteFix = resultado;
-          
-          console.log('resultado'); console.dir(resultado);
-
-          for (var i = 0; i < localStorage.length; i++){
-            if (localStorage.key(i).indexOf('datos-') == 0) {
-              console.log('Para datos 1')
-              let storageKey = localStorage.key(i)?.split('-')[1];
-              let storageVal = localStorage.getItem(localStorage.key(i));
-              let tryValue = parseInt(storageVal);
-
-              console.log('storage key : '+storageKey+', storage val : '+storageVal+', try value : '+tryValue);
-
-              this.datosCompletados.push({nombre: storageKey, valor: storageVal});
-
-              if (typeof tryValue == 'number' && !isNaN(tryValue) && (storageVal.length < 7)) {
-                this.datos.push(
-                  {nombre: storageKey, valor: tryValue}
-                  )
-              }else{
-                this.datos.push(
-                  {nombre: storageKey, valor: storageVal}
-                  )
-                }
-          }
-        }
-
-      }, 900);
-
-      setTimeout(() => {
-        console.log('Los datos listos ');
-        console.dir(this.datosCompletados);
-      }, 1300);
-      
-      setTimeout(() => {
-        const datosAjustador = this.buildAjustadorValidationRecord();
-        const validationResult = validateClaimStage(datosAjustador, ajustadorScreenValidationRules);
-
-        this.datosIncompletos = validationResult.missing.map((issue) => {
-          const item = requiredDataAjustador.find((requiredItem) => requiredItem.nombre === issue.field);
-          return {
-            nombre: issue.label,
-            valor: 'null',
-            elementSegmento: item?.pagSegmento,
-            indexSegmento: item?.segmentIndex
-          };
-        });
-        this.datosComunes = ajustadorScreenValidationRules
-          .filter((rule) => !validationResult.missing.some((issue) => issue.field === rule.field))
-          .map((rule) => ({ nombre: rule.field, valor: datosAjustador[rule.field] }));
-      }, 1600);
-      
-      
-      setTimeout(() => {
-        $('#camButtonAju').fadeIn();
-        this.cantidadNulos = this.datosIncompletos.length;
-        
-        this.isLoading = false;
-        if (this.cantidadNulos == 0) {
-          this.estaEvaluado = true;
-          
-          localStorage.setItem('estaEvaluado', 'true');
-          
-          this.evaluarDanios();
-
-          let iconoContenedor = document.getElementById('infoText');
-            let iconoAprobado = document.createElement('img');
-            iconoAprobado.src = '../../assets/img/aprobar.svg';
-            iconoAprobado.style.width = '45px';
-            iconoAprobado.style.height = '45px';
-            iconoAprobado.style.position = 'absolute';
-            iconoAprobado.style.top = '-5px';
-            iconoAprobado.style.right = '-5px';
-            iconoContenedor.appendChild(iconoAprobado);
-
-          //$('#validateButtona').fadeOut();
-            //$('#saveDataButtona').fadeIn();
-            //$('#validateAgainButtona').fadeIn();
-            //$('#cancelaButtona').fadeIn();
-            //clearInterval(this.progInterval);
-            this.textoInfo = 'Datos completados con éxito! Ahora puedes proceder a enviarlos haciendo click en GUARDAR DATOS';
-            $('#spanProgressAju').removeClass('progress');
-            $('#spanProgressAju').addClass('progress-end');
-            
-        }else{
-          this.estaEvaluado = false;
-          setTimeout(() => {
-            localStorage.setItem('estaEvaluado', 'true');
-            $('#dataNullAju').fadeIn(); $('#dataNullAju').attr('style', 'display:inherit !important;');
-
-            if (this.cantidadNulos > 0) {
-              //$('#validateButtona').fadeIn();
-              //$('#infoIncompleto').fadeIn();
-              
-              //$('#saveDataButtona').fadeOut();
-              //$('#validateAgainButtona').fadeOut();
-              //$('#cancelaButtona').fadeOut();
-              //$('#dataNullAju').fadeOut(); $('#dataNullAju').attr('style', 'display:none !important;');
-            }else{
-              //$('#validateButtona').fadeOut();
-              //$('#infoIncompleto').fadeOut();
-
-              //$('#saveDataButtona').fadeIn();
-              //$('#validateAgainButtona').fadeIn();
-              //$('#cancelaButtona').fadeIn();
-              
-            }
-          }, 2500);
-          
-        }
-      }, 2800);
 
     }
   evaluarDeuda() {
@@ -1519,16 +1434,154 @@ export class AjustadorhnPage implements OnInit {
       }, {});
     }
 
+    normalizeRecordForReview(record: any){
+      if (!record) {
+        return [];
+      }
+
+      const source = Array.isArray(record) ? record[0] : record;
+
+      if (!source || typeof source !== 'object') {
+        return [];
+      }
+
+      return Object.keys(source)
+        .filter((key) => key && key !== '$id')
+        .map((key) => ({
+          nombre: key === 'IdAtencion' ? 'RefAtencionId' : key,
+          valor: source[key]
+        }));
+    }
+
+    private valueBelongsToCurrentAttention(value: any){
+      if (value === null || value === undefined) {
+        return false;
+      }
+
+      const stringValue = value.toString();
+      const currentAttention = this.idAtencion?.toString();
+
+      if (!currentAttention || !stringValue.includes('-')) {
+        return true;
+      }
+
+      const [possibleAttention] = stringValue.split('-');
+      if (possibleAttention === currentAttention) {
+        return true;
+      }
+
+      return /^\d{5,}$/.test(possibleAttention) ? false : true;
+    }
+
+    private cleanStoredValue(value: any){
+      if (value === null || value === undefined) {
+        return value;
+      }
+
+      const stringValue = value.toString();
+      const currentAttention = this.idAtencion?.toString();
+
+      if (currentAttention && stringValue.startsWith(currentAttention+'-')) {
+        return stringValue.split('-').slice(1).join('-');
+      }
+
+      return value;
+    }
+
+    collectAjustadorLocalData(){
+      const completed = [];
+
+      for (let i = 0; i < localStorage.length; i++){
+        const key = localStorage.key(i);
+
+        if (!key || key.indexOf('datos-') !== 0) {
+          continue;
+        }
+
+        const storageKey = key.split('-').slice(1).join('-');
+        const storageVal = localStorage.getItem(key);
+
+        if (!this.valueBelongsToCurrentAttention(storageVal)) {
+          continue;
+        }
+
+        completed.push({
+          nombre: storageKey,
+          valor: this.cleanStoredValue(storageVal)
+        });
+      }
+
+      return completed;
+    }
+
+    completeAjustadorValidationReview(){
+      console.log('Cache cliente para revision');
+      console.dir(this.cacheClienteFix);
+      console.log('Datos completados para revision');
+      console.dir(this.datosCompletados);
+
+      const datosAjustador = this.buildAjustadorValidationRecord();
+      const validationResult = validateClaimStage(datosAjustador, ajustadorScreenValidationRules);
+
+      this.datosIncompletos = validationResult.missing.map((issue) => {
+        const item = requiredDataAjustador.find((requiredItem) => requiredItem.nombre === issue.field);
+        return {
+          nombre: issue.label,
+          valor: 'null',
+          elementSegmento: item?.pagSegmento,
+          indexSegmento: item?.segmentIndex
+        };
+      });
+
+      this.datosComunes = ajustadorScreenValidationRules
+        .filter((rule) => !validationResult.missing.some((issue) => issue.field === rule.field))
+        .map((rule) => ({ nombre: rule.field, valor: datosAjustador[rule.field] }));
+
+      $('#camButtonAju').fadeIn();
+      this.cantidadNulos = this.datosIncompletos.length;
+      this.isLoading = false;
+      this.focusValidationPanel();
+
+      if (this.cantidadNulos == 0) {
+        this.estaEvaluado = true;
+        localStorage.setItem('estaEvaluado', 'true');
+        this.evaluarDanios();
+
+        const iconoContenedor = document.getElementById('infoText');
+        if (iconoContenedor && !iconoContenedor.querySelector('.validation-success-icon')) {
+          const iconoAprobado = document.createElement('img');
+          iconoAprobado.src = '../../assets/img/aprobar.svg';
+          iconoAprobado.className = 'validation-success-icon';
+          iconoAprobado.style.width = '45px';
+          iconoAprobado.style.height = '45px';
+          iconoAprobado.style.position = 'absolute';
+          iconoAprobado.style.top = '-5px';
+          iconoAprobado.style.right = '-5px';
+          iconoContenedor.appendChild(iconoAprobado);
+        }
+
+        this.textoInfo = 'Datos completados con éxito! Ahora puedes proceder a enviarlos haciendo click en GUARDAR DATOS';
+        $('#spanProgressAju').removeClass('progress');
+        $('#spanProgressAju').addClass('progress-end');
+      } else {
+        this.estaEvaluado = false;
+        localStorage.setItem('estaEvaluado', 'true');
+        this.textoInfo = 'Validación completada. Revisa los datos incompletos para continuar.';
+        $('#spanProgressAju').removeClass('progress-end');
+        $('#spanProgressAju').addClass('progress');
+      }
+    }
+
     buildAjustadorValidationRecord(){
       const datosAjustador = this.toValidationRecord(this.datosCompletados);
       const currentAttention = this.idAtencion?.toString();
 
       return requiredDataAjustador.reduce((record, item) => {
         const storageValue = localStorage.getItem(item.storageKey);
-        const belongsToCurrentAttention = storageValue?.startsWith(currentAttention+'-');
+        const belongsToCurrentAttention = this.valueBelongsToCurrentAttention(storageValue);
 
         if (belongsToCurrentAttention) {
-          record[item.nombre] = datosAjustador[item.nombre] ?? storageValue.split('-').slice(1).join('-');
+          record[item.nombre] = datosAjustador[item.nombre] ?? this.cleanStoredValue(storageValue);
         }
 
         return record;
@@ -1814,9 +1867,14 @@ export class AjustadorhnPage implements OnInit {
       },
       async (res) => {
         const alert = await this.alert.create({
+          cssClass: 'ajustador-form-alert',
           header:'HELP',
           message:res.error.Message,
-          buttons:['Ok']
+          buttons:[{
+            text: 'OK',
+            role: 'cancel',
+            cssClass: 'alert-button-ok'
+          }]
         });
         await alert.present();
       }
@@ -1866,7 +1924,7 @@ export class AjustadorhnPage implements OnInit {
   }
 
   goFotos() {
-    this.router.navigate(['./fotoshn']);
+    this.router.navigate(['./cargar-archivos']);
   }
 
   goESignature(){
@@ -1962,9 +2020,14 @@ export class AjustadorhnPage implements OnInit {
       },
       async (res) => {
         const alert = await this.alert.create({
+          cssClass: 'ajustador-form-alert',
           header:'HELP',
           message:res.error.Message,
-          buttons:['Ok']
+          buttons:[{
+            text: 'OK',
+            role: 'cancel',
+            cssClass: 'alert-button-ok'
+          }]
         });
         await alert.present();
       }
@@ -1985,9 +2048,14 @@ export class AjustadorhnPage implements OnInit {
       },
       async (res) => {
         const alert = await this.alert.create({
+          cssClass: 'ajustador-form-alert',
           header:'HELP',
           message:res.error.Message,
-          buttons:['Ok']
+          buttons:[{
+            text: 'OK',
+            role: 'cancel',
+            cssClass: 'alert-button-ok'
+          }]
         });
         await alert.present();
       }
@@ -2072,9 +2140,14 @@ export class AjustadorhnPage implements OnInit {
       },
       async (res) => {
         const alert = await this.alert.create({
+          cssClass: 'ajustador-form-alert',
           header:'HELP',
           message:res.error.Message,
-          buttons:['Ok']
+          buttons:[{
+            text: 'OK',
+            role: 'cancel',
+            cssClass: 'alert-button-ok'
+          }]
         });
         await alert.present();
       }
@@ -2128,7 +2201,7 @@ export class AjustadorhnPage implements OnInit {
 
   next(extra){
                 
-    this.router.navigate(['./fotoshn'], extra)
+    this.router.navigate(['./cargar-archivos'], extra)
   }
   
   saveFirma(){
@@ -2142,6 +2215,7 @@ export class AjustadorhnPage implements OnInit {
 
   async alertaSalir() {
     const alert = await this.alert.create({
+      cssClass: 'ajustador-form-alert',
       header:'Salir del formulario?',
       message:'Los datos se perderan sin haber enviado. Salir?',
       buttons:this.alertButtons
@@ -2499,18 +2573,49 @@ export class AjustadorhnPage implements OnInit {
      //console.log(dateFormat+' ... '+timeFormat);
   }
 
+  getFechaInspeccionInicial(): string {
+    const ahora = new Date();
+    this.minFechaInspeccion = this.getStartOfToday().toISOString();
+
+    const fechaGuardada = localStorage.getItem('datos-FechaHora');
+    if (fechaGuardada) {
+      const fecha = new Date(fechaGuardada);
+      if (!Number.isNaN(fecha.getTime()) && fecha >= this.getStartOfToday()) {
+        return fecha.toISOString();
+      }
+    }
+
+    return ahora.toISOString();
+  }
+
+  getStartOfToday(): Date {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    return hoy;
+  }
+
   marcarFechaAjustador(mydateAjustador){
+    let fechaSeleccionada = new Date(mydateAjustador);
+    if (Number.isNaN(fechaSeleccionada.getTime()) || fechaSeleccionada < this.getStartOfToday()) {
+      fechaSeleccionada = new Date();
+    }
+
+    const fechaIso = fechaSeleccionada.toISOString();
+    this.fechaInspeccion = fechaIso;
+    this.minFechaInspeccion = this.getStartOfToday().toISOString();
+    localStorage.setItem('datos-FechaHora', fechaIso);
+
     let brakePoint;
-    if (mydateAjustador.toString().indexOf('T') == -1) {
+    if (fechaIso.toString().indexOf('T') == -1) {
       brakePoint = ', ';
     }else{
       brakePoint = 'T';
     }
 
-    this.fechaInspeccionLocal = new Date(mydateAjustador).toLocaleString(); 
+    this.fechaInspeccionLocal = fechaSeleccionada.toLocaleString(); 
 
-    this.mydateAjustador = mydateAjustador.split(brakePoint)[0];
-    this.laFechaInspeccion = 'Fecha : '+mydateAjustador.split(brakePoint)[0].toString()+', Hora : '+(mydateAjustador.split(brakePoint)[1].toString()).split('-')[0];
+    this.mydateAjustador = fechaIso.split(brakePoint)[0];
+    this.laFechaInspeccion = 'Fecha : '+fechaIso.split(brakePoint)[0].toString()+', Hora : '+(fechaIso.split(brakePoint)[1].toString()).split('.')[0];
 
 
   }

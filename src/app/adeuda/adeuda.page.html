@@ -1,198 +1,184 @@
 <ion-header>
-  <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
-  <ion-footer *ngIf="isLoading == true"></ion-footer>
-  <!--ion-fab id="button-back" style="position: fixed;" vertical="top" horizontal="start" (click)="goBack()">
-    <ion-fab-button (click)="'confirmar()'">
-      <ion-icon name="arrow-back"></ion-icon>
-    </ion-fab-button>
-  </!--ion-fab -->
+  <div class="adeuda-loading" *ngIf="isLoading"><ion-spinner color="primary" name="lines"></ion-spinner></div>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
-    <ion-title>
-      <ion-grid>
-        <ion-row>
-          <ion-col size="3"></ion-col>
-          <ion-col size="6">Acuerdo de Deuda - Atención # {{idAtencion}} - {{miMoneda}}</ion-col>
-          <!--ion-col size="6">Formulario Declaración - Atención # {{idAtencion}}</!--ion-col -->
-          <ion-col size="3" style="float: right;color:blue;"></ion-col>
-        </ion-row>
-      </ion-grid>
-      <!--div *ngIf="isTablet == true" style="margin-left: 40%;">Formulario Declaración</!--div>
-      <div *ngIf="isTablet == false" style="margin-left: 1%;">Formulario Declaración</div -->
-    </ion-title>
-    <!--ion-label style="position: absolute; top:-10px;left:88.5%;color:blue;z-index: 999;"><br>Atención # {{idAtencion}}</!--ion-label -->
+    <ion-buttons slot="start"><ion-back-button defaultHref="/culpable"></ion-back-button></ion-buttons>
+    <ion-title>Acuerdo de deuda - Atención #{{idAtencion}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-label class="text-size-lg" style="padding-left: 5px;">
-  </ion-label>
-  <ion-grid style="margin-top: -40px;">
-    <ion-row>
-      <ion-col size="12">
-        <ion-card style="margin: 0;padding:0;">
-          <ion-grid>
-            <ion-row>
-              <ion-col size="10">
-                <img alt="Ficohsa Seguros" src="{{fsLogo}}" style="width: 281px; height: 61px; margin-left: 15px; margin-top: 15px;" />
-              </ion-col>
-              <ion-col size="2">
-                <!--ion-icon class="impresora" name="eye" (click)="this.modalPdf.present()" id="open-modal-pdf" style="margin-right: 25%;"></!--ion-icon>
-                <ion-icon class="impresora" name="print" (click)="this.modalPdf.present()" id="open-modal-pdf"></ion-icon -->
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-          
-          <ion-card-header>
-            <ion-card-title>Reconocimiento de Deuda</ion-card-title>
-            <ion-card-subtitle style="text-align: justify;">Yo {{acuerdoDeuda.NombreDeudor}}, mayor de edad, con tarjeta de identidad No {{acuerdoDeuda.IdentidadDeudor}}, con 
-              domicilio en {{acuerdoDeuda.Domicilio}} No de teléfono {{acuerdoDeuda.TelefonoCulpable}}, celular No {{acuerdoDeuda.Celular}}, 
-              trabajo en {{acuerdoDeuda.LugarDeTrabajo}}, correo electrónico <a>{{acuerdoDeuda.CorreoElectronico}}</a>, nombre de contacto (familiar o amigo)
-              {{acuerdoDeuda.NombreContacto}}, celular No {{acuerdoDeuda.CelularContacto}}
+<ion-content class="adeuda-page">
+  <main class="adeuda-layout">
+    <section class="adeuda-document" aria-label="Reconocimiento de deuda">
+      <header class="document-header">
+        <img class="document-logo" alt="Ficohsa Seguros" [src]="fsLogo" />
+        <div class="document-heading">
+          <span>Documento para revisión</span>
+          <h1>Reconocimiento de deuda</h1>
+          <p>Atención No. {{idAtencion}}</p>
+        </div>
+      </header>
 
-              Declaro: <strong style="font-weight: bold;">PRIMERO</strong>: Actuando en mi condición de deudor de INTERAMERICANA DE SEGUROS S.A., también conocida como FICOHSA SEGUROS,
-              por deuda contraída con esta institución, en el accidente de fecha {{fechaParrafo}}, en el cual resultó perjudicado 
-              el vehículo marca {{acuerdoDeuda.Marca}} modelo {{acuerdoDeuda.Modelo}}, año {{acuerdoDeuda.Anio}}, placa {{acuerdoDeuda.Placa}} del asegurado {{acuerdoDeuda.NombreAsegurado}}, con poliza No {{laPoliza}}, 
-              cuyos daños fueron ocasionados por el vehículo: marca {{acuerdoDeuda.MarcaImplicado}}, modelo {{acuerdoDeuda.ModeloImplicado}}, año {{acuerdoDeuda.AnioImplicado}}, placa {{acuerdoDeuda.PlacaImplicado}}, propiedad de {{acuerdoDeuda.NombrePersonaPropiedadImplicada}}.
+      <div class="document-summary">
+        <div><span>Persona responsable</span><strong>{{acuerdoDeuda.NombreDeudor || 'Sin información'}}</strong></div>
+        <div><span>Identidad</span><strong>{{acuerdoDeuda.IdentidadDeudor || 'Sin información'}}</strong></div>
+        <div><span>Póliza externa</span><strong>{{laPoliza || 'Sin información'}}</strong></div>
+        <div><span>Daños registrados</span><strong>{{totalDamages}}</strong></div>
+      </div>
 
-              <strong style="font-weight: bold;">SEGUNDO</strong>: De dicho accidente resultaron los siguientes daños: 
-              {{acuerdoDeuda.DanioCausadoObservacion}}, <span *ngFor="let danio of daniosSelectAju; let i = index">{{danio.Descripcion}}<ion-text *ngIf="i<(daniosSelectAju.length-1)">, </ion-text><ion-text *ngIf="i==(daniosSelectAju.length-1)">. </ion-text> </span>
+      <section class="review-section">
+        <div class="review-heading"><span>Datos registrados</span><h2>Persona responsable y contacto</h2></div>
+        <div class="review-grid">
+          <div><span>Edad</span><strong>{{acuerdoDeuda.Edad || 'Sin información'}}</strong></div>
+          <div><span>Domicilio</span><strong>{{acuerdoDeuda.Domicilio || 'Sin información'}}</strong></div>
+          <div><span>Teléfono</span><strong>{{acuerdoDeuda.TelefonoCulpable || 'Sin información'}}</strong></div>
+          <div><span>Celular</span><strong>{{acuerdoDeuda.Celular || 'Sin información'}}</strong></div>
+          <div><span>Correo electrónico</span><strong>{{acuerdoDeuda.CorreoElectronico || 'Sin información'}}</strong></div>
+          <div><span>Lugar de trabajo</span><strong>{{acuerdoDeuda.LugarDeTrabajo || 'Sin información'}}</strong></div>
+          <div><span>Contacto</span><strong>{{acuerdoDeuda.NombreContacto || 'Sin información'}}</strong></div>
+          <div><span>Celular del contacto</span><strong>{{acuerdoDeuda.CelularContacto || 'Sin información'}}</strong></div>
+        </div>
+      </section>
 
-              Acepto que quedan comprendidos en este acto, los daños mecánicos que aun no han sido constatados siempre y cuando estos sean
-              producto de la colisión causada por mi persona.
+      <section class="review-section">
+        <div class="review-heading"><span>Documento de conducción</span><h2>Licencia y vigencia</h2></div>
+        <div class="review-grid review-grid-three">
+          <div><span>Tipo de licencia</span><strong>{{licenseTypeLabel}}</strong></div>
+          <div><span>Número de licencia</span><strong>{{acuerdoDeuda.LicenciaCulpable || 'Sin información'}}</strong></div>
+          <div><span>Fecha de vencimiento</span><strong>{{acuerdoDeuda.FechaVencimientoLicencia | date:'dd/MM/yyyy'}}</strong></div>
+        </div>
+      </section>
 
-              <strong style="font-weight: bold;">TERCERO</strong>: Acepto que la factura de reparación de los daños mencionados en la cláusula SEGUNDA, formará para integrar el presente
-              Reconocimiento de Deuda.
-            </ion-card-subtitle>
-          </ion-card-header>
-        
-          <ion-card-content>
-            En fé de lo cual firmo en la ciudad de Tegucigalpa a los {{fechaPie}}.
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <!--ion-col size="12" style="color: #3171e0;">
-        <ion-label style="margin-left: 19px;">Firma Implicado</ion-label>
-      </!--ion-col -->
-      <ion-col size="12" style="margin-top: -10px;">
-        <ion-card id="cardAsegurado">
-          <ion-card-content>
-            <!--ion-img *ngIf="isSign == true" src="{{firmaPrecargada}}"/ -->
-            <canvas id="canvasAdeudado" width="{{deviceWidth}}" [height]="200"  #canvas5 style="border: 6px dashed #ede9e9"></canvas>
-            <!--canvas id="canvasAsegurado" [width]="500" [height]="150"  #canvas2 style="border: 6px dashed #ede9e9"></!--canvas -->
-          </ion-card-content>
-          <ion-grid>
-            <ion-row>
-              <ion-col size="6">
-                <ion-button expand="block" (click)="clear()">Limpiar Firma</ion-button>
-              </ion-col>
-              <ion-col size="6">
-                <ion-button *ngIf="ya == false" expand="block" (click)="testSave()">Enviar</ion-button>
-                <ion-button *ngIf="ya == true" expand="block" disabled>Enviar</ion-button>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-card>
-      </ion-col>
-      
-    </ion-row>
-  </ion-grid>
+      <section class="review-section">
+        <div class="review-heading"><span>Vehículos y propiedad</span><h2>Información incluida en el acuerdo</h2></div>
+        <div class="vehicle-review-grid">
+          <div class="vehicle-review">
+            <span>Vehículo asegurado</span>
+            <strong>{{acuerdoDeuda.Marca}} {{acuerdoDeuda.Modelo}} · {{acuerdoDeuda.Anio}}</strong>
+            <p>Placa {{acuerdoDeuda.Placa || 'sin información'}} · Asegurado: {{acuerdoDeuda.NombreAsegurado || 'sin información'}}</p>
+            <small>Póliza externa: {{laPoliza || 'Sin información'}}</small>
+          </div>
+          <div class="vehicle-review">
+            <span>Vehículo implicado</span>
+            <strong>{{acuerdoDeuda.MarcaImplicado}} {{acuerdoDeuda.ModeloImplicado}} · {{acuerdoDeuda.AnioImplicado}}</strong>
+            <p>Placa {{acuerdoDeuda.PlacaImplicado || 'sin información'}} · Motor {{acuerdoDeuda.MotorImplicado || 'sin información'}} · Chasis {{acuerdoDeuda.ChasisImplicado || 'sin información'}}</p>
+            <small>Propietario: {{acuerdoDeuda.NombrePersonaPropiedadImplicada || 'Sin información'}}</small>
+            <small>Dirección: {{acuerdoDeuda.NombreDireccionPropietarioVehiculoImplicado || 'Sin información'}}</small>
+          </div>
+        </div>
+        <div class="commitment-summary">
+          <span>Compromiso de pago</span><strong>{{commitmentLabel}}</strong>
+        </div>
+      </section>
+
+      <section class="review-section damage-review-section">
+        <div class="review-heading"><span>Daños registrados</span><h2>Detalle para el reconocimiento de deuda</h2></div>
+        <p class="damage-observation"><strong>Observación general:</strong> {{acuerdoDeuda.Observaciones || 'Sin observaciones adicionales.'}}</p>
+        <div class="damage-review-groups">
+          <div>
+            <h3>Daños comunes</h3>
+            <p class="empty-review" *ngIf="commonDamages.length === 0">No se seleccionaron daños comunes.</p>
+            <ul *ngIf="commonDamages.length > 0">
+              <li *ngFor="let danio of commonDamages">{{danio.Descripcion}}</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Daños agregados manualmente</h3>
+            <p class="empty-review" *ngIf="manualDamages.length === 0">No se agregaron daños manuales.</p>
+            <ul *ngIf="manualDamages.length > 0">
+              <li *ngFor="let danio of manualDamages">{{danio.DescripcionDeDanio || danio.Descripcion}}</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <article class="document-copy">
+        <p>
+          Yo, <strong>{{acuerdoDeuda.NombreDeudor}}</strong>, mayor de edad, con tarjeta de identidad
+          No. {{acuerdoDeuda.IdentidadDeudor}}, con domicilio en {{acuerdoDeuda.Domicilio}}, teléfono
+          {{acuerdoDeuda.TelefonoCulpable}}, celular {{acuerdoDeuda.Celular}}, lugar de trabajo
+          {{acuerdoDeuda.LugarDeTrabajo}} y correo electrónico {{acuerdoDeuda.CorreoElectronico}},
+          declaro lo siguiente:
+        </p>
+
+        <p>
+          <strong>PRIMERO:</strong> Actuando en mi condición de deudor de INTERAMERICANA DE SEGUROS,
+          S.A., también conocida como FICOHSA SEGUROS, reconozco la deuda contraída con esta institución
+          por el accidente ocurrido el {{fechaParrafo}}.
+        </p>
+
+        <p>
+          En dicho accidente resultó perjudicado el vehículo marca {{acuerdoDeuda.Marca}}, modelo
+          {{acuerdoDeuda.Modelo}}, año {{acuerdoDeuda.Anio}}, placa {{acuerdoDeuda.Placa}}, propiedad del
+          asegurado {{acuerdoDeuda.NombreAsegurado}} y amparado por la póliza No. {{laPoliza}}. Los daños
+          fueron ocasionados por el vehículo marca {{acuerdoDeuda.MarcaImplicado}}, modelo
+          {{acuerdoDeuda.ModeloImplicado}}, año {{acuerdoDeuda.AnioImplicado}}, placa
+          {{acuerdoDeuda.PlacaImplicado}}, propiedad de {{acuerdoDeuda.NombrePersonaPropiedadImplicada}}.
+        </p>
+
+        <p>
+          <strong>SEGUNDO:</strong> Del accidente resultaron los siguientes daños:
+          {{acuerdoDeuda.DanioCausadoObservacion}}.
+          <span *ngFor="let danio of commonDamages; let i = index">
+            {{danio.Descripcion}}<span *ngIf="i < commonDamages.length - 1">, </span><span *ngIf="i === commonDamages.length - 1">. </span>
+          </span>
+          <span *ngFor="let danio of manualDamages; let i = index">
+            {{danio.DescripcionDeDanio || danio.Descripcion}}<span *ngIf="i < manualDamages.length - 1">, </span><span *ngIf="i === manualDamages.length - 1">. </span>
+          </span>
+          Quedan comprendidos los daños mecánicos que aún no hayan sido constatados, siempre que sean
+          producto de la colisión causada por mi persona.
+        </p>
+
+        <p>
+          <strong>TERCERO:</strong> Acepto que la factura de reparación de los daños mencionados en la
+          cláusula segunda formará parte integral del presente reconocimiento de deuda.
+        </p>
+
+        <p>En fe de lo cual firmo en la ciudad de {{acuerdoDeuda.Ciudad || 'Tegucigalpa'}}, a los {{fechaPie}}.</p>
+      </article>
+
+      <div class="contact-details">
+        <div><span>Ciudad de firma</span><strong>{{acuerdoDeuda.Ciudad || 'Tegucigalpa'}}</strong></div>
+        <div><span>Compromiso de pago</span><strong>{{commitmentLabel}}</strong></div>
+        <div><span>Propietario implicado</span><strong>{{acuerdoDeuda.NombrePersonaPropiedadImplicada || 'Sin información'}}</strong></div>
+      </div>
+    </section>
+
+    <section class="adeuda-signature" [class.is-complete]="adeudaCompleta">
+      <div class="signature-heading">
+        <div>
+          <span>{{adeudaCompleta ? 'Envío completado' : 'Firma de la persona responsable'}}</span>
+          <h2>{{adeudaCompleta ? 'Acuerdo enviado correctamente' : (debtorSignature ? 'Firma registrada' : 'Firma pendiente')}}</h2>
+        </div>
+        <ion-icon [name]="adeudaCompleta ? 'checkmark-circle' : 'create-outline'"></ion-icon>
+      </div>
+
+      <div class="signature-preview" *ngIf="!adeudaCompleta">
+        <img *ngIf="debtorSignature" [src]="debtorSignature" alt="Firma del deudor" />
+        <div *ngIf="!debtorSignature" class="signature-empty">
+          <ion-icon name="create-outline"></ion-icon>
+          <span>Aún no se ha registrado la firma de la persona responsable.</span>
+        </div>
+      </div>
+
+      <p class="signature-note" *ngIf="!adeudaCompleta">
+        La firma se captura en una pantalla independiente para mantener el área completamente libre.
+      </p>
+
+      <div class="signature-actions" *ngIf="!adeudaCompleta">
+        <ion-button fill="outline" (click)="goDebtorSignature()">
+          <ion-icon slot="start" name="create-outline"></ion-icon>
+          {{debtorSignature ? 'Editar firma' : 'Firmar'}}
+        </ion-button>
+        <ion-button (click)="confirmarEnvio()" [disabled]="isLoading || !debtorSignature">
+          <ion-icon slot="start" name="send-outline"></ion-icon>
+          Enviar acuerdo
+        </ion-button>
+      </div>
+
+      <ion-button class="return-button" expand="block" *ngIf="adeudaCompleta" (click)="goExpediente()">
+        <ion-icon slot="start" name="folder-open-outline"></ion-icon>
+        Regresar al expediente
+      </ion-button>
+    </section>
+  </main>
 </ion-content>
-
-<ion-modal #modalPdf #modal trigger="open-modal-pdf" [initialBreakpoint]="0.5" [breakpoints]="[0, 0.25, 0.5, 0.75]">
-  <ng-template>
-    <ion-content>
-      <ion-toolbar>Decargar PDFs</ion-toolbar>
-      <ion-list>
-        <ion-item (click)="printPdf()">
-          <ion-avatar slot="start">
-            <ion-icon style="font-size: 2.8rem;" name="wallet-outline"></ion-icon>
-          </ion-avatar>
-          <ion-label>
-            <h2>Acuerdo de Deuda</h2>
-            <p>Compromiso de deuda</p>
-          </ion-label>
-        </ion-item>
-        
-        <!--ion-item id="step1" (click)="printPdf(2)">
-          <ion-avatar slot="start">
-            <ion-icon style="font-size: 2.8rem;" name="shield-outline"></ion-icon>
-          </ion-avatar>
-          <ion-grid>
-            <ion-row>
-              <ion-col size="6">
-                <ion-label>
-                  <h2>Cierre de Cobertura</h2>
-                  <p>Cobertura de Seguro</p>
-                </ion-label>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </!--ion-item>
-        <ion-item id="step2" (click)="printPdf(3)">
-          <ion-avatar slot="start">
-            <ion-icon style="font-size: 2.8rem;" name="document-attach-outline"></ion-icon>
-          </ion-avatar>
-          <ion-label>
-            <h2>Reclamo de Cliente</h2>
-            <p>Reclamo de Cobertura</p>
-          </ion-label>
-        </ion-item -->
-
-        <ion-item>
-        </ion-item>
-      </ion-list>
-    </ion-content>
-  </ng-template>
-</ion-modal>
-
-<ion-modal #modalPdfPre trigger="open-modal-pdf-pre" [initialBreakpoint]="0.5" [breakpoints]="[0, 0.25, 0.5, 0.75]">
-  <ng-template>
-    <ion-content>
-      <ion-toolbar>Decargar PDFs</ion-toolbar>
-      <ion-list>
-        <ion-item (click)="previewPdf()">
-          <ion-avatar slot="start">
-            <ion-icon style="font-size: 2.8rem;" name="wallet-outline"></ion-icon>
-          </ion-avatar>
-          <ion-label>
-            <h2>Acuerdo de Deuda</h2>
-            <p>Compromiso de deuda</p>
-          </ion-label>
-        </ion-item>
-        
-        <!--ion-item id="step1" (click)="printPdf(2)">
-          <ion-avatar slot="start">
-            <ion-icon style="font-size: 2.8rem;" name="shield-outline"></ion-icon>
-          </ion-avatar>
-          <ion-grid>
-            <ion-row>
-              <ion-col size="6">
-                <ion-label>
-                  <h2>Cierre de Cobertura</h2>
-                  <p>Cobertura de Seguro</p>
-                </ion-label>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </!--ion-item>
-        <ion-item id="step2" (click)="printPdf(3)">
-          <ion-avatar slot="start">
-            <ion-icon style="font-size: 2.8rem;" name="document-attach-outline"></ion-icon>
-          </ion-avatar>
-          <ion-label>
-            <h2>Reclamo de Cliente</h2>
-            <p>Reclamo de Cobertura</p>
-          </ion-label>
-        </ion-item -->
-
-        <ion-item>
-        </ion-item>
-      </ion-list>
-    </ion-content>
-  </ng-template>
-</ion-modal>
