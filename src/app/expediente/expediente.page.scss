@@ -42,7 +42,7 @@ modal{
   font-size: 1.8rem;
   position: absolute;
   right: 10px;
-  top: 100%;
+  top: calc(100% - 4px);
   margin-top: 5px;
   background: white; //var(--blueGrayColor);
   box-shadow: 2px 2px 6px gray;
@@ -50,10 +50,48 @@ modal{
   border-radius: 50%;
   padding: 8px;
   pointer-events: auto;
+  z-index: 11;
 }
 
 .boton-trazar-ruta {
   cursor: pointer;
+}
+
+.expediente-header ion-toolbar {
+  position: relative;
+}
+
+.expediente-toolbar-title {
+  left: 50%;
+  padding-inline: 0;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(340px, calc(100% - 104px));
+}
+
+.expediente-toolbar-title__stack {
+  align-items: center;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 7px;
+  justify-content: center;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.expediente-toolbar-title__id {
+  color: #ffffff;
+  display: block;
+  font-size: clamp(0.76rem, 3.6vw, 1rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.1;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+  white-space: normal;
 }
 
 main{

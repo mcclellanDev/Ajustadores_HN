@@ -2,7 +2,9 @@ ion-spinner { height: 20%; left: 40%; position: fixed; top: 28%; width: 20%; z-i
 #spinFooter { background: rgba(0, 0, 0, 0.6); bottom: 0; height: 100vh; position: fixed; width: 100vw; z-index: 900; }
 
 .culpable-header ion-toolbar { --background: var(--primaryColor); --color: #fff; --min-height: 58px; }
-.culpable-header ion-title { color: #fff; font-size: 1rem; font-weight: 800; letter-spacing: 0; padding-inline: 56px; text-align: center; }
+.culpable-header ion-title { color: #fff; font-size: clamp(0.82rem, 3.4vw, 1rem); font-weight: 800; letter-spacing: 0; min-width: 0; padding-inline: clamp(42px, 13vw, 58px); text-align: center; }
+.culpable-header .attention-toolbar-title { display: flex; flex-direction: column; gap: 5px; max-width: 100%; min-width: 0; width: 100%; }
+.culpable-header .attention-toolbar-title__id { display: block; font-size: clamp(0.8rem, 3.8vw, 1rem); line-height: 1.12; max-width: 100%; overflow-wrap: anywhere; white-space: normal; }
 .culpable-header ion-button, .culpable-header ion-icon { --color: #fff; color: #fff; }
 
 .culpable-content, .damage-search-content { --background: #eef3f7; --padding-bottom: 20px; --padding-end: 12px; --padding-start: 12px; --padding-top: 12px; }

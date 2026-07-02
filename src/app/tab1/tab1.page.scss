@@ -930,6 +930,11 @@ ion-avatar {
   font-size: 0.9rem;
 }
 
+.status-badge.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
 .signature-status {
   --background: #fff4e6;
   --color: #a95c00;
@@ -1062,6 +1067,27 @@ ion-avatar {
   padding: 12px 14px;
 }
 
+.bulk-attempt-summary-action {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  display: block;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.bulk-attempt-summary-action:active {
+  opacity: 0.72;
+}
+
+.bulk-attempt-summary-action:disabled {
+  cursor: default;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
 .bulk-attempt-summary ion-icon {
   color: #ea580c;
   flex: 0 0 auto;
@@ -1081,6 +1107,36 @@ ion-avatar {
   display: block;
   font-size: 0.72rem;
   line-height: 1.35;
+}
+
+.bulk-attempt-summary .bulk-attempt-last-error {
+  background: rgba(255, 255, 255, 0.62);
+  border-radius: 7px;
+  color: #7f1d1d;
+  font-weight: 800;
+  margin-top: 7px;
+  padding: 7px 8px;
+}
+
+.bulk-attempt-summary .bulk-attempt-resend {
+  align-items: center;
+  background: #ea580c;
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 0.72rem;
+  font-weight: 900;
+  gap: 5px;
+  line-height: 1;
+  margin-top: 9px;
+  padding: 7px 10px;
+  width: auto;
+}
+
+.bulk-attempt-summary .bulk-attempt-resend ion-icon {
+  color: #ffffff;
+  font-size: 0.92rem;
+  margin: 0;
 }
 
 .empty-state-card {

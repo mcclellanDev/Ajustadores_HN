@@ -1,10 +1,17 @@
+:root {
+  --attention-stack-toolbar-min-height: 78px;
+  --attention-stack-toolbar-padding-block: 8px;
+}
+
 .attention-toolbar-title {
   align-items: center;
   display: inline-flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  gap: 5px;
   justify-content: center;
   max-width: 100%;
+  min-width: 0;
+  width: 100%;
 }
 
 .attention-toolbar-title--stacked {
@@ -15,10 +22,14 @@
 
 .attention-toolbar-title__id {
   color: inherit;
-  display: inline-block;
-  font-size: 1em;
+  display: block;
+  font-size: clamp(0.78rem, 3.8vw, 1rem);
   font-weight: inherit;
-  line-height: 1.2;
+  line-height: 1.12;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+  white-space: normal;
 }
 
 .segment-toolbar-title {
@@ -63,6 +74,11 @@ ion-title .attention-toolbar-title--stacked {
   padding-inline: 4px;
 }
 
+ion-title:has(.attention-toolbar-title) {
+  min-width: 0;
+  padding-inline: clamp(42px, 13vw, 58px) !important;
+}
+
 ion-toolbar ion-title .attention-currency-badge--toolbar {
   color: #ffffff;
 }
@@ -72,30 +88,48 @@ ion-toolbar ion-title .attention-currency-badge--toolbar {
 }
 
 .cliente-page-title .attention-currency-badge--toolbar {
-  background: var(--primaryColor, #0058cb);
-  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.38);
   color: #ffffff;
 }
 
+.attention-stack-header ion-toolbar,
 .segment-form-header ion-toolbar {
   --background: var(--primaryColor, #0058cb);
   --color: #ffffff;
-  --min-height: 58px;
+  --min-height: var(--attention-stack-toolbar-min-height);
+  --padding-top: calc(var(--attention-stack-toolbar-padding-block) / 2);
+  --padding-bottom: calc(var(--attention-stack-toolbar-padding-block) / 2);
 }
 
+.attention-stack-header ion-title,
 .segment-form-header ion-title {
   color: #ffffff;
-  font-size: 1rem;
+  font-size: clamp(0.82rem, 3.4vw, 1rem);
   font-weight: 800;
   letter-spacing: 0;
-  padding-inline: 56px;
+  min-width: 0;
+  padding-inline: clamp(42px, 13vw, 58px);
   text-align: center;
 }
 
+.attention-stack-header .attention-toolbar-title--stacked,
+.segment-form-header .attention-toolbar-title--stacked {
+  gap: 6px;
+  padding-block: 2px;
+}
+
+.attention-stack-header ion-back-button,
+.attention-stack-header ion-button,
 .segment-form-header ion-back-button,
 .segment-form-header ion-button {
   --color: #ffffff;
   color: #ffffff;
+}
+
+.attention-stack-header {
+  position: relative;
+  z-index: 10;
 }
 
 .prepare-send-currency dd,
@@ -109,4 +143,17 @@ ion-toolbar ion-title .attention-currency-badge--toolbar {
   flex-wrap: wrap;
   gap: 10px;
   justify-content: space-between;
+}
+
+@media (max-width: 420px) {
+  :root {
+    --attention-stack-toolbar-min-height: 76px;
+    --attention-stack-toolbar-padding-block: 6px;
+  }
+
+  ion-title .attention-toolbar-title,
+  ion-title .attention-toolbar-title--stacked {
+    font-size: 0.9rem;
+    padding-inline: 0;
+  }
 }

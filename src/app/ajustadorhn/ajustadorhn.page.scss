@@ -245,6 +245,30 @@ ion-radio {
       text-transform: uppercase;
     }
 
+    .segmento ion-item.input {
+      position: relative;
+    }
+
+    .segmento ion-item.input ion-grid > ion-row:first-child {
+      min-height: 38px;
+      padding-right: 126px !important;
+      position: relative;
+    }
+
+    .segmento ion-chip[id$="Select"],
+    .segmento ion-chip[id$="Selecta"] {
+      border-color: #cbd9e5 !important;
+      color: #315b80 !important;
+      font-size: 0.74rem !important;
+      min-height: 32px !important;
+      padding-inline: 10px !important;
+      position: absolute !important;
+      right: 12px !important;
+      top: 6px !important;
+      width: auto !important;
+      z-index: 3;
+    }
+
   ion-menu{
     margin-right: -7px;
   }
@@ -410,7 +434,7 @@ ion-radio {
   }
 
 
-  ion-chip:not(.date-siniestro){
+  ion-chip:not(.date-siniestro):not([id$="Select"]):not([id$="Selecta"]){
     margin-top: 0%;
     width: 100%;
     height: 60px;
@@ -442,11 +466,30 @@ ion-radio {
 
 .ajustador-header ion-title {
   color: #ffffff;
-  font-size: 1rem;
+  font-size: clamp(0.82rem, 3.4vw, 1rem);
   font-weight: 800;
   letter-spacing: 0;
-  padding-inline: 56px;
+  min-width: 0;
+  padding-inline: clamp(42px, 13vw, 58px);
   text-align: center;
+}
+
+.ajustador-header .attention-toolbar-title {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.ajustador-header .attention-toolbar-title__id {
+  display: block;
+  font-size: clamp(0.8rem, 3.8vw, 1rem);
+  line-height: 1.12;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .ajustador-header ion-button,
@@ -586,13 +629,58 @@ ion-radio {
   padding: 10px;
 }
 
-.signature-tile img {
+.signature-tile img,
+.signature-empty-state {
   background: #ffffff;
   border: 1.5px dashed #cbd9e7;
   border-radius: 8px;
   height: 118px;
   object-fit: contain;
   width: 100%;
+}
+
+.signature-empty-state {
+  align-items: center;
+  color: #6c83a0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+  padding: 10px;
+}
+
+.signature-empty-state ion-icon {
+  color: var(--primaryColor);
+  font-size: 1.6rem;
+}
+
+.signature-empty-state strong {
+  color: #17365d;
+  font-size: 0.86rem;
+  font-weight: 850;
+}
+
+.signature-empty-state small {
+  color: #6c83a0;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.signature-edit-action {
+  --border-color: var(--blueGrayColor);
+  --border-radius: 6px;
+  --box-shadow: none;
+  --color: var(--blueGrayColor);
+  color: var(--blueGrayColor) !important;
+  font-size: 0.78rem;
+  font-weight: 800;
+  height: 32px;
+  margin: 2px 0 0;
+  text-transform: none;
+}
+
+.signature-edit-action ion-icon {
+  color: var(--blueGrayColor);
 }
 
 .signature-tile span,
@@ -726,9 +814,19 @@ ion-radio {
   --background: transparent;
   --border-color: #d8e4f0;
   --color: #17365d;
+  color: #17365d;
   --inner-padding-end: 0;
   font-size: 0.9rem;
   font-weight: 750;
+}
+
+.review-accordions ion-list ion-item .damage-description,
+.review-accordions ion-list ion-item ion-label.damage-description {
+  --color: #17365d;
+  color: #17365d !important;
+  display: block;
+  font-weight: 850;
+  opacity: 1;
 }
 
 .result-card {
@@ -1239,8 +1337,9 @@ ion-radio {
   }
 
   #camButtonAju {
-    flex-basis: 48px;
-    width: 48px !important;
+    flex-basis: auto;
+    min-width: 112px;
+    width: 100% !important;
   }
 }
   

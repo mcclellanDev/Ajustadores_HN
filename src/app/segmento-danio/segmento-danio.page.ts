@@ -23,6 +23,7 @@ export class SegmentoDanioPage implements OnInit {
   idAtencion:any; miMoneda: string; moneda: any;  segmentoTitulo: string;  isSearch: boolean=false; public results = [];
   danios:any=[]; daniosExtras: any = []; daniosSelect:any=[];  danioResults:any=[];  daniosOtros:any=[]; danioSearchable:any=[]; isLoading:boolean=false;
   daniosIndex: any;  contador: number = 0; datos:any=[];  selectedIndex: any=[]; selectedExtra: any=[];  valorReserva:any = 0;
+  reservaEsCero: boolean = true;
   elTipoSiniestro:any; tipoSiniestros:any=[];  elTipoDeSiniestro: any; formulario: Formulario= {}; danioMessage:string; 
   danioPosition:string; danioClass:string; ssucessIconRecycle:any; danioOtro:any=[]; TipoReparacion:any; daniosSeleccionados: any[];
   daniosSelectOtro: any = []; isXOpen:boolean=false;
@@ -100,10 +101,8 @@ export class SegmentoDanioPage implements OnInit {
 
       if (reserva === undefined || reserva === null || reserva === '') {
         this.setReserva('0');
-        $('#noReservaTexto').fadeIn();
       }else{
-        this.valorReserva = parseInt(reserva);
-        $('#noReservaTexto').fadeOut();
+        this.setReserva(reserva);
       }
       
     }, 1300);
@@ -583,11 +582,7 @@ export class SegmentoDanioPage implements OnInit {
       // Nunca enviamos null/negativos: vacío/inválido/negativo => 0 (el servidor rechaza null).
       const reservaCoercida = this.coerceReserva(valor);
 
-      if (reservaCoercida === 0) {
-        $('#noReservaTexto').fadeIn();
-      }else{
-        $('#noReservaTexto').fadeOut();
-      }
+      this.reservaEsCero = reservaCoercida === 0;
 
     console.log('Soy el valor de reserva '+this.valorReserva)
     this.valorReserva = reservaCoercida;

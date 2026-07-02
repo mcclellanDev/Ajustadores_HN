@@ -44,7 +44,14 @@
         <div class="review-grid review-grid-three">
           <div><span>Tipo de licencia</span><strong>{{licenseTypeLabel}}</strong></div>
           <div><span>Número de licencia</span><strong>{{acuerdoDeuda.LicenciaCulpable || 'Sin información'}}</strong></div>
-          <div><span>Fecha de vencimiento</span><strong>{{licenseExpiryLabel}}</strong></div>
+          <div>
+            <span>Fecha de vencimiento</span>
+            <strong>{{licenseExpiryLabel}}</strong>
+            <ion-chip class="license-status-chip" [class.license-status-chip--valid]="licenciaVigente" [class.license-status-chip--expired]="!licenciaVigente">
+              <ion-icon [name]="licenciaVigente ? 'checkmark-circle' : 'alert-circle'"></ion-icon>
+              <ion-label>{{licenciaVigente ? 'Vigente' : 'No vigente'}}</ion-label>
+            </ion-chip>
+          </div>
         </div>
       </section>
 
@@ -117,7 +124,6 @@
 
         <p>
           <strong>SEGUNDO:</strong> Del accidente resultaron los siguientes daños:
-          {{acuerdoDeuda.DanioCausadoObservacion}}.
           <span *ngFor="let danio of commonDamages; let i = index">
             {{danio.Descripcion}}<span *ngIf="i < commonDamages.length - 1">, </span><span *ngIf="i === commonDamages.length - 1">. </span>
           </span>
@@ -152,7 +158,7 @@
         <ion-icon [name]="adeudaCompleta ? 'checkmark-circle' : 'create-outline'"></ion-icon>
       </div>
 
-      <div class="signature-preview" *ngIf="!adeudaCompleta">
+      <div class="signature-preview">
         <img *ngIf="debtorSignature" [src]="debtorSignature" alt="Firma del deudor" />
         <div *ngIf="!debtorSignature" class="signature-empty">
           <ion-icon name="create-outline"></ion-icon>
@@ -160,16 +166,16 @@
         </div>
       </div>
 
-      <p class="signature-note" *ngIf="!adeudaCompleta">
+      <p class="signature-note">
         La firma se captura en una pantalla independiente para mantener el área completamente libre.
       </p>
 
-      <div class="signature-actions" *ngIf="!adeudaCompleta">
+      <div class="signature-actions">
         <ion-button fill="outline" (click)="goDebtorSignature()">
           <ion-icon slot="start" name="create-outline"></ion-icon>
           {{debtorSignature ? 'Editar firma' : 'Firmar'}}
         </ion-button>
-        <ion-button (click)="confirmarEnvio()" [disabled]="isLoading || !debtorSignature">
+        <ion-button (click)="confirmarEnvio()" [disabled]="isLoading || !debtorSignature || adeudaCompleta">
           <ion-icon slot="start" name="send-outline"></ion-icon>
           Enviar acuerdo
         </ion-button>

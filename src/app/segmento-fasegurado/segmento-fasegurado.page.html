@@ -1,6 +1,6 @@
 <ion-header>
   <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
-  <ion-footer *ngIf="isLoading == true"></ion-footer>
+  <ion-footer class="loading-backdrop" *ngIf="isLoading == true"></ion-footer>
   
   <ion-toolbar>
     <ion-buttons slot="start">

@@ -1,6 +1,6 @@
 ion-toolbar { --background: var(--primaryColor); --color: #ffffff; }
 ion-toolbar ion-button, ion-toolbar ion-icon { --color: #ffffff; color: #ffffff; }
-ion-toolbar ion-title { font-size: 1rem; font-weight: 800; letter-spacing: 0; padding-inline: 52px; text-align: center; }
+ion-toolbar ion-title { font-size: clamp(.82rem, 3.5vw, 1rem); font-weight: 800; letter-spacing: 0; line-height: 1.15; min-width: 0; overflow-wrap: anywhere; padding-inline: clamp(42px, 13vw, 56px); text-align: center; white-space: normal; }
 .debtor-signature-page { --background: #eef3f7; }
 .signature-workspace { box-sizing: border-box; display: grid; gap: 10px; grid-template-rows: auto minmax(0, 1fr) auto; height: 100%; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); }
 .signature-context { align-items: center; background: #ffffff; border: 1px solid #d8e3ed; border-radius: 7px; display: flex; gap: 14px; min-height: 88px; padding: 10px 14px; }

@@ -5,9 +5,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { ApiService } from '../services/api.service';
 import { resolveAttentionCurrency } from '../utils/currency-display.util';
+import { normalizeChassis, normalizePolicyNumber, resolveClaimCoordinates, resolveClaimDate } from '../utils/claim-payload-normalizer';
 import * as $ from 'jquery';
 import { emptySignatureWhite, imagePrefix, errorImage, editarFirmaIcono } from '../environments/default-images';
-import { AnimationController, IonAccordionGroup, Platform, ToastController } from '@ionic/angular';
+import { AlertController, AnimationController, IonAccordionGroup, Platform, ToastController } from '@ionic/angular';
 import { valoresPredeterminados } from '../environments/predeterminados';
 import { abogadosAudiencias } from '../interfaces/arrays';
 import {
@@ -23,7 +24,7 @@ import {
 export class PrepareSendPage implements OnInit {
   @ViewChild('accordionGroup', { static: true }) accordionGroup: IonAccordionGroup;
   
-  idAtencion: any; tipoDeCobertura: any; coberturaDisplayName:any; isLoading:boolean=false;
+  idAtencion: any; tipoDeCobertura: any; coberturaDisplayName:any; causasPorCobertura:any=[]; causaBpmCodigo:any; causaBpmDescripcion:any; isLoading:boolean=false;
   cliente: any = []; dataProcess: any = []; datos:any=[]; tiposdeCobertura:any=[];
   moneda: any;  miMoneda: string; identidad:any; identidadAsegurado:any;  nombreConductor: any;
   formateadaSiniestro: any;   firmaPrecargada: string;  imageHeight: number;  isSignature: boolean;
@@ -60,7 +61,7 @@ export class PrepareSendPage implements OnInit {
 
   constructor(private platform:Platform, private api: ApiService,
     private routeActive: ActivatedRoute, private router: Router, private toaster: ToastService,
-    private animationCtrl: AnimationController, public bulkAttemptService: AttentionBulkAttemptService) { 
+    private animationCtrl: AnimationController, private alert: AlertController, public bulkAttemptService: AttentionBulkAttemptService) { 
     this.firmaPrecargada = localStorage.getItem("dSignatureAsegurado");
     this.sucessIcon = '../../assets/img/guardado.gif';
     if (this.firmaPrecargada) {
@@ -185,12 +186,48 @@ export class PrepareSendPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.firmaPrecargada = localStorage.getItem('dSignatureAsegurado');
-    this.isSignature = !!this.firmaPrecargada &&
-      this.firmaPrecargada !== this.emptySignatureWhite &&
-      this.firmaPrecargada !== this.emptySignature;
-    this.invalidSignature = this.validationAttempted && !this.isSignature;
+    this.refreshClientSignature();
     this.refreshBulkAttemptInfo();
+  }
+
+  private signatureStorageKey(): string {
+    return this.idAtencion ? 'dSignatureAsegurado-' + this.idAtencion : 'dSignatureAsegurado';
+  }
+
+  private isValidClientSignature(signature: any): boolean {
+    const value = (signature || '').toString();
+    return !!value &&
+      value !== this.errorImage &&
+      value !== this.emptySignatureWhite &&
+      value !== this.emptySignature &&
+      value !== 'null' &&
+      value !== 'undefined';
+  }
+
+  private refreshClientSignature(): string {
+    const signatureByAttention = this.idAtencion ? localStorage.getItem(this.signatureStorageKey()) : null;
+    const genericSignature = localStorage.getItem('dSignatureAsegurado');
+    const signature = this.isValidClientSignature(signatureByAttention) ? signatureByAttention : genericSignature;
+
+    this.firmaPrecargada = this.isValidClientSignature(signature) ? signature : this.emptySignatureWhite;
+    this.isSignature = this.isValidClientSignature(this.firmaPrecargada);
+    this.invalidSignature = this.validationAttempted && !this.isSignature;
+
+    return this.firmaPrecargada;
+  }
+
+  private persistClientSignature(signature: string): void {
+    if (!this.isValidClientSignature(signature)) {
+      return;
+    }
+
+    this.firmaPrecargada = signature;
+    localStorage.setItem('dSignatureAsegurado', signature);
+    if (this.idAtencion) {
+      localStorage.setItem(this.signatureStorageKey(), signature);
+    }
+    this.isSignature = true;
+    this.invalidSignature = false;
   }
 
   private refreshBulkAttemptInfo(): void {
@@ -234,16 +271,76 @@ export class PrepareSendPage implements OnInit {
     });
   }
 
-  private extractBulkErrorMessage(error: any, fallback = 'Error al enviar datos'): string {
-    return error?.error?.Message || error?.message || fallback;
+  private normalizeClaimServerMessage(message: any): string {
+    return String(message || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  }
+
+  private translateClaimServerMessage(message: any, fallback = 'No es posible procesar esta solicitud en este momento. Recomendamos revisar los datos ingresados, intentar nuevamente o finalizar el proceso manualmente.'): string {
+    const rawMessage = message || fallback;
+    const normalized = this.normalizeClaimServerMessage(rawMessage);
+
+    if (
+      normalized.includes('ocurrio un error') ||
+      normalized.includes('ha ocurrido un error') ||
+      normalized.includes('occurred an error') ||
+      normalized.includes('an error has occurred') ||
+      normalized.includes('error has occurred') ||
+      normalized.includes('error occurred')
+    ) {
+      return 'No es posible procesar esta solicitud en este momento. Se recomienda revisar si la póliza está siendo renovada, o bien finalizar el proceso manualmente.';
+    }
+
+    if (
+      normalized.includes('certificado no valido') ||
+      normalized.includes('invalid certificate') ||
+      normalized.includes('certificate invalid')
+    ) {
+      return 'No es posible procesar esta solicitud en este momento. Recomendamos revisar número de chasis para saber si tiene cobertura, o bien finalizar el proceso manualmente.';
+    }
+
+    if (
+      normalized.includes('causa no corresponde') ||
+      normalized.includes('producto especificado') ||
+      normalized.includes('causa incorrecta') ||
+      normalized.includes('cause does not correspond') ||
+      normalized.includes('specified product') ||
+      normalized.includes('incorrect cause')
+    ) {
+      return 'No es posible procesar esta solicitud en este momento. Recomendamos revisar el tipo de cobertura seleccionada, o bien finalizar el proceso manualmente.';
+    }
+
+    return fallback;
+  }
+
+  private extractBulkErrorMessage(error: any, fallback = 'No es posible procesar esta solicitud en este momento. Recomendamos revisar los datos ingresados, intentar nuevamente o finalizar el proceso manualmente.'): string {
+    const rawMessage = error?.error?.Message || error?.message || error?.descripcion || fallback;
+    return this.translateClaimServerMessage(rawMessage, fallback);
+  }
+
+  private async presentClaimSendFailureAlert(message: string) {
+    const alert = await this.alert.create({
+      cssClass: 'form-choice-alert entry-validation-alert claim-send-failure-alert',
+      header: 'No se pudo enviar la solicitud',
+      message,
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: 'Entendido',
+          role: 'cancel',
+          cssClass: 'form-choice-confirm'
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   updateValidationState() {
-    const firmaActual = this.firmaPrecargada || localStorage.getItem('dSignatureAsegurado');
-    this.isSignature = !!firmaActual &&
-      firmaActual !== this.errorImage &&
-      firmaActual !== this.emptySignatureWhite &&
-      firmaActual !== this.emptySignature;
+    const firmaActual = this.refreshClientSignature();
+    this.isSignature = this.isValidClientSignature(firmaActual);
     this.invalidCoverage = !this.coberturaDisplayName?.toString().trim();
     this.invalidDriverName = !this.nombreConductor?.toString().trim();
     this.invalidGender = !this.elGenero?.toString().trim();
@@ -291,6 +388,94 @@ export class PrepareSendPage implements OnInit {
     localStorage.setItem('laCobertura', this.idAtencion.toString()+'-'+this.coberturaDisplayName);
     localStorage.setItem('datos-TipoAcuerdoFicohsa', this.coberturaDisplayName);
     this.setAtencionActual();
+    this.clearSelectedCause();
+    this.solicitarCausaPorCobertura(this.resolveCoverageCode(this.tipoDeCobertura));
+  }
+
+  private resolveCoverageCode(value: any): string {
+    const selected = (value || '').toString();
+    let storedCoverages: any[] = [];
+    try {
+      storedCoverages = JSON.parse(localStorage.getItem('coberturas') || '[]');
+    } catch (_) {
+      storedCoverages = [];
+    }
+    const localCoverage = storedCoverages?.find((item) =>
+      item?.cOBERTURAField?.toString() === selected ||
+      item?.COD_COBERTURA?.toString() === selected ||
+      item?.dESCRIPCIONField?.toString() === selected ||
+      item?.DESCRIPCION_COBE?.toString() === selected
+    );
+    return (localCoverage?.cOBERTURAField || localCoverage?.COD_COBERTURA || localStorage.getItem('coberturaId') || selected || '').toString();
+  }
+
+  private getCodigoCausaBpm(): string {
+    return (this.causaBpmCodigo || localStorage.getItem('codigoCausaBpm') || valoresPredeterminados[0].Causa || '').toString();
+  }
+
+  private async solicitarCausaPorCobertura(codigoCobertura: any): Promise<void> {
+    const codigo = (codigoCobertura || '').toString().trim();
+    if (!codigo) {
+      return;
+    }
+    this.isLoading = true;
+    this.api.ObtenerCausasPorCobertura(codigo).pipe(finalize(() => this.isLoading = false)).subscribe(
+      async (res: any) => {
+        this.causasPorCobertura = Array.isArray(res) ? res : [];
+        if (!this.causasPorCobertura.length) {
+          this.toaster.presentToastAlert('No se encontraron causas para la cobertura seleccionada.', 'top', 'warning', 5000);
+          return;
+        }
+        await this.presentarSelectorCausa();
+      },
+      async () => {
+        this.toaster.presentToastAlert('No fue posible obtener las causas para esta cobertura.', 'top', 'danger', 6000);
+      }
+    );
+  }
+
+  private async presentarSelectorCausa(): Promise<void> {
+    const alert = await this.alert.create({
+      cssClass: 'form-choice-alert',
+      header: this.getCauseSelectorHeader(),
+      subHeader: 'Selecciona una opción',
+      inputs: this.causasPorCobertura.map((causa) => ({
+        type: 'radio',
+        label: causa.DESCRIPCION_CAUS,
+        value: causa.COD_CAUSA,
+        checked: causa.COD_CAUSA === this.causaBpmCodigo || causa.COD_CAUSA === localStorage.getItem('codigoCausaBpm')
+      })),
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Seleccionar',
+          handler: (codigoCausa) => {
+            if (!codigoCausa) {
+              return false;
+            }
+            const seleccionada = this.causasPorCobertura.find((causa) => causa.COD_CAUSA === codigoCausa);
+            this.causaBpmCodigo = codigoCausa;
+            this.causaBpmDescripcion = seleccionada?.DESCRIPCION_CAUS || '';
+            localStorage.setItem('codigoCausaBpm', this.causaBpmCodigo || '');
+            localStorage.setItem('descripcionCausaBpm', this.causaBpmDescripcion || '');
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private clearSelectedCause(): void {
+    this.causaBpmCodigo = '';
+    this.causaBpmDescripcion = '';
+    localStorage.removeItem('codigoCausaBpm');
+    localStorage.removeItem('descripcionCausaBpm');
+  }
+
+  private getCauseSelectorHeader(): string {
+    const description = (this.coberturaDisplayName || this.tipoDeCobertura || localStorage.getItem('datos-TipoAcuerdoFicohsa') || '').toString().trim();
+    const coverageHint = description.split(/\s+/).filter(Boolean).slice(0, 2).join(' ');
+    return coverageHint ? 'Causa del reclamo - ' + coverageHint : 'Causa del reclamo';
   }
   
   seTipoCobertura(tipo){
@@ -364,22 +549,18 @@ export class PrepareSendPage implements OnInit {
       })
     ).subscribe(
       async (res) => {
-        console.log("Firmas para este usuario : " + res.length);
-        console.dir(res);
-        for (let index = 0; index < res.length; index++) {
-          const element = res[index];
-          if (index == (res.length - 1)) {
-            this.firmaPrecargada = imagePrefix + element.FotoFirma;
-            localStorage.setItem("dSignatureAsegurado", this.firmaPrecargada);
-            this.isSignature = true;
+        const firmas = Array.isArray(res) ? res : (res ? [res] : []);
+        console.log("Firmas para este usuario : " + firmas.length);
+        console.dir(firmas);
+        for (let index = 0; index < firmas.length; index++) {
+          const element = firmas[index];
+          if (element?.FotoFirma) {
+            this.persistClientSignature(imagePrefix + element.FotoFirma);
           }
-
         }
       },
       async (res) => {
-        this.firmaPrecargada = emptySignatureWhite;
-        localStorage.setItem("dSignatureAsegurado", this.firmaPrecargada);
-        this.isSignature = false;
+        this.refreshClientSignature();
       }
     );
 
@@ -409,23 +590,23 @@ export class PrepareSendPage implements OnInit {
     /*
     
     this.dataBPM =  {
-              Chasis: this.cliente[0].Chasis,
+              Chasis: chasisSiniestro,
               puntoServicio: valoresPredeterminados[0].puntoServicio, // Predeterminado : 504
-              Poliza: this.cliente[0].PolizaExterna, // 
+              Poliza: polizaSiniestro, // 
               Certificado: this.cliente[0].Certificado.toString(),//parseInt(this.cliente[0].Certificado), // Pendiente
               NombreAsegurado: this.cliente[0].Cliente,
               Sucursal: valoresPredeterminados[0].Sucursal, // Predeterminado : 0001
               Producto: valoresPredeterminados[0].Producto, // Predeterminado : AU01
               Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
-              FechaOcurrencia: fechaSplit,//fechaSplit,//this.cliente[0].FechaRegistro, OJO
-              Causa: valoresPredeterminados[0].Causa, // Pendiente
+              FechaOcurrencia: fechaSiniestroBpm,//fechaSplit,//this.cliente[0].FechaRegistro, OJO
+              Causa: this.getCodigoCausaBpm(), // Causa Ficohsa por cobertura
               ValorReserva: '00.00', // Formulario
               UsuarioBPM: this.elUsuario.UsuarioBPM, // Login
-              Latitud: this.cliente[0].LatitudCliente,//this.latitud,//"14.0985125",//localStorage.getItem('latitud'), // Formulario
-              Longitud: this.cliente[0].LongitudCliente,//this.longitud,//"-87.1849219",//localStorage.getItem('longitud'), // Formulario
+              Latitud: coordenadasSiniestro.Latitud,//this.latitud,//"14.0985125",//localStorage.getItem('latitud'), // Formulario
+              Longitud: coordenadasSiniestro.Longitud,//this.longitud,//"-87.1849219",//localStorage.getItem('longitud'), // Formulario
               NombreConductor: this.nombreConductor, // Formulario
               Genero: this.inicialGenero, // Formulario
-              Parentesco: this.elParentesco, // Formulario
+              Parentesco: ownerRelationshipCode, // Formulario
               Observacion: this.idTablaAjustador // Guardar Siniestro
             }
     
@@ -547,10 +728,8 @@ export class PrepareSendPage implements OnInit {
     }
 
     this.isLoading = true;
-    const laFirma = this.firmaPrecargada || localStorage.getItem('dSignatureAsegurado');
-    const testFirmaError = !laFirma || laFirma === errorImage;
-    const testFirmaWhite = laFirma === this.emptySignatureWhite || laFirma === this.emptySignature;
-    this.invalidSignature = testFirmaError || testFirmaWhite;
+    const laFirma = this.refreshClientSignature();
+    this.invalidSignature = !this.isValidClientSignature(laFirma);
 
     if (this.invalidSignature) {
       this.toaster.presentToastNoButtonsRed("Necesitas escribir una firma para guardar los datos.", "top", "firma");
@@ -650,6 +829,11 @@ export class PrepareSendPage implements OnInit {
     
   }
 
+  private getOwnerRelationshipCode(): string {
+    const gender = (this.inicialGenero || this.elGenero || localStorage.getItem('inicialGenero') || localStorage.getItem('elGenero') || '').toString().toUpperCase();
+    return gender === 'F' || gender.includes('FEMENINO') ? 'A002' : 'A001';
+  }
+
   guardarFormulario(){
     if (!this.canSubmit()) {
       return;
@@ -658,7 +842,7 @@ export class PrepareSendPage implements OnInit {
     //console.log('Predeterminados');
     this.isLoading = true;
 
-    this.elParentesco = "AU01";
+    this.elParentesco = this.getOwnerRelationshipCode();
     this.validaNulos = [];
     this.AjustadorFiltro = [];
     this.storageArrayFilter = [];
@@ -702,6 +886,14 @@ export class PrepareSendPage implements OnInit {
         this.cliente.PorqueNoUsoServicioAsistencia = 'PREFERENCIA DEL AFILIADO';
       }
 
+      const expedienteActual = this.cliente && this.cliente.length > 0 ? this.cliente[0] : {};
+      const fechaSiniestro = resolveClaimDate(expedienteActual);
+      const fechaSiniestroBpm = (fechaSiniestro || '').split('T')[0];
+      const coordenadasSiniestro = resolveClaimCoordinates(expedienteActual, this.idAtencion);
+      const polizaSiniestro = normalizePolicyNumber(expedienteActual?.PolizaExterna);
+      const chasisSiniestro = normalizeChassis(expedienteActual?.Chasis);
+      const ownerRelationshipCode = this.getOwnerRelationshipCode();
+
     setTimeout(() => {
       let losNulos = this.validaNulos.length;
       //alert(this.validaNulos.length)
@@ -724,7 +916,7 @@ export class PrepareSendPage implements OnInit {
           TerceroResponsable: 0,
           LesionadosSinAudiencia: 0,
           DescripcionAudiencia: "NULL",
-          Poliza: this.cliente[0].PolizaExterna,
+          Poliza: polizaSiniestro,
           Identificacion: this.identidadAsegurado,
           Nombre: this.cliente[0].Cliente,
           ConductorAfiliado: 1,
@@ -734,7 +926,7 @@ export class PrepareSendPage implements OnInit {
           ModeloVehiculo: this.cliente[0].Modelo,
           AnioVehiculo: this.cliente[0].Year,
           PlacaVehiculo: this.cliente[0].NumeroPlaca,
-          ChasisVehiculo: this.cliente[0].Chasis,
+          ChasisVehiculo: chasisSiniestro,
           ColorVehiculo: this.cliente[0].Color,
           VehiculoDetenido: 0,
           DescripcionVehiculo: "NULL",
@@ -752,7 +944,7 @@ export class PrepareSendPage implements OnInit {
           RefCiudadId: 7,
           RefDeptoId: 1,
           RefMunicipioId: 1,
-          FechaHora: this.cliente[0].FechaRegistro,
+          FechaHora: fechaSiniestro,
           Lugar: this.cliente[0].Direccion,
           RefUsuarioId: this.idAjustador,
           TallerMecanicoId: 0,
@@ -760,8 +952,8 @@ export class PrepareSendPage implements OnInit {
           ObservacionTaller: "NULL",
           ReclamoAsegurado: "NULL",
           Observaciones: "NULL",
-          Latitud: this.cliente[0].LatitudCliente,
-          Longitud: this.cliente[0].LongitudCliente,
+          Latitud: coordenadasSiniestro.Latitud,
+          Longitud: coordenadasSiniestro.Longitud,
           NombreConductor: this.nombreConductor,
           IdentidaConductor: this.identidadAsegurado,
           DPI_Pasaporte:this.identidadAsegurado,
@@ -797,7 +989,7 @@ export class PrepareSendPage implements OnInit {
           TipoAcuerdoFicohsa: this.datos.TipoAcuerdoFicohsa,
           DondeSeEncuentraVehiculo: "NULL",
           NumeroUnidad: "NULL",
-          Parentesco: this.elParentesco,
+          Parentesco: ownerRelationshipCode,
           FechaNacimientoConductor: "NULL",
           CulpableCompromisoPago: 0,
           ObservacionCompromisoPago: "NULL",
@@ -823,48 +1015,47 @@ export class PrepareSendPage implements OnInit {
           this.idTablaAjustador = res.toString();
   
             // DEBUG Fecha
-            let fechaToString = this.cliente[0].FechaRegistro;//localStorage.getItem('datos-FechaHora');//this.laFechaSiniestroInspeccion.toString();
-            let fechaSplit = fechaToString.split('.')[0];
+            let fechaSplit = fechaSiniestroBpm;
   
             this.dataBPM =  {
-              Chasis: this.cliente[0].Chasis,
+              Chasis: chasisSiniestro,
               puntoServicio: valoresPredeterminados[0].puntoServicio, // Predeterminado : 504
-              Poliza: this.cliente[0].PolizaExterna, // 
+              Poliza: polizaSiniestro, // 
               Certificado: this.cliente[0].Certificado.toString(),//parseInt(this.cliente[0].Certificado), // Pendiente
               NombreAsegurado: this.cliente[0].Cliente,
               Sucursal: valoresPredeterminados[0].Sucursal, // Predeterminado : 0001
               Producto: valoresPredeterminados[0].Producto, // Predeterminado : AU01
               Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
-              FechaOcurrencia: fechaSplit,//fechaSplit,//this.cliente[0].FechaRegistro, OJO
-              Causa: valoresPredeterminados[0].Causa, // Pendiente
+              FechaOcurrencia: fechaSiniestroBpm,//fechaSplit,//this.cliente[0].FechaRegistro, OJO
+              Causa: this.getCodigoCausaBpm(), // Causa Ficohsa por cobertura
               ValorReserva: '00.00', // Formulario
               UsuarioBPM: this.elUsuario.UsuarioBPM, // Login
-              Latitud: this.cliente[0].LatitudCliente,//this.latitud,//"14.0985125",//localStorage.getItem('latitud'), // Formulario
-              Longitud: this.cliente[0].LongitudCliente,//this.longitud,//"-87.1849219",//localStorage.getItem('longitud'), // Formulario
+              Latitud: coordenadasSiniestro.Latitud,//this.latitud,//"14.0985125",//localStorage.getItem('latitud'), // Formulario
+              Longitud: coordenadasSiniestro.Longitud,//this.longitud,//"-87.1849219",//localStorage.getItem('longitud'), // Formulario
               NombreConductor: this.nombreConductor, // Formulario
               Genero: this.inicialGenero, // Formulario
-              Parentesco: this.elParentesco, // Formulario
+              Parentesco: ownerRelationshipCode, // Formulario
               Observacion: this.idTablaAjustador // Guardar Siniestro
             }
   
             let dataBPMlocal =  {
-              Chasis: this.cliente[0].Chasis,
+              Chasis: chasisSiniestro,
               puntoServicio: valoresPredeterminados[0].puntoServicio, // Predeterminado : 504
-              Poliza: this.cliente[0].PolizaExterna, // 
+              Poliza: polizaSiniestro, // 
               Certificado: this.cliente[0].Certificado.toString(),//parseInt(this.cliente[0].Certificado), // Pendiente
               NombreAsegurado: this.cliente[0].Cliente,
               Sucursal: valoresPredeterminados[0].Sucursal, // Predeterminado : 0001
               Producto: valoresPredeterminados[0].Producto, // Predeterminado : AU01
               Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
-              FechaOcurrencia: fechaSplit,//this.elExpediente[0].FechaRegistro,
-              Causa: valoresPredeterminados[0].Causa, // Pendiente
+              FechaOcurrencia: fechaSiniestroBpm,//this.elExpediente[0].FechaRegistro,
+              Causa: this.getCodigoCausaBpm(), // Causa Ficohsa por cobertura
               ValorReserva: '00.00', // Formulario
               UsuarioBPM: this.elUsuario.UsuarioBPM, // Login
-              Latitud: "14.0985125",
-              Longitud: "-87.1849219",
+              Latitud: coordenadasSiniestro.Latitud,
+              Longitud: coordenadasSiniestro.Longitud,
               NombreConductor: this.nombreConductor, // Formulario
               Genero: this.inicialGenero, // Formulario
-              Parentesco: this.elParentesco, // Formulario
+              Parentesco: ownerRelationshipCode, // Formulario
               Observacion: this.idTablaAjustador // Guardar Siniestro
             }
   
@@ -939,36 +1130,37 @@ export class PrepareSendPage implements OnInit {
                                   this.isLoading = false;
                                   this.markBulkAttemptFailed(this.extractBulkErrorMessage(res));
                                   let errorKey = 'acsel';
-                                  let elError = res.error.Message;
+                                  let elError = res?.error?.Message || res?.message || '';
   
                                   //alert('El resdultado del intento con el bpm es '+elError.toString().toLowerCase().includes(errorKey));
                                   console.log('El resdultado del intento con el bpm es '+elError.toString().toLowerCase().includes(errorKey));
                                   console.log('El resdultado indexOf del intento con el bpm es '+elError.toString().toLowerCase().indexOf(errorKey));
                                   console.dir(res);
                                   if (elError.toString().toLowerCase().includes(errorKey)) {
-                                    this.toaster.presentToast('Este chasis no está registrado en un programa de Seguros Ficohsa. Esta atención deberá ser procesada de diferente forma. Consulta a tu administrador de operaciones para una mejor resolución.', 'top', 'solicitante');  
+                                    await this.presentClaimSendFailureAlert('Este chasis no está registrado en un programa de Seguros Ficohsa. Esta atención deberá ser procesada de diferente forma. Consulta a tu administrador de operaciones para una mejor resolución.');  
                                   }else{
-                                    this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
+                                    await this.presentClaimSendFailureAlert(this.extractBulkErrorMessage(res));
                                     this.miLogRespuesta = res;
                                   }
                                 }
                               )
                             }else{
                               this.isLoading = false;
-                              this.markBulkAttemptFailed("Código :  "+resAtencion[0].codigo+', error :'+resAtencion[0].descripcion);
-                              this.toaster.presentToastDataMissing("Código :  "+resAtencion[0].codigo+', error :'+resAtencion[0].descripcion, 'top', 'bpm');  
+                              const bpmErrorMessage = this.translateClaimServerMessage(resAtencion[0].descripcion);
+                              this.markBulkAttemptFailed(bpmErrorMessage);
+                              await this.presentClaimSendFailureAlert(bpmErrorMessage);  
                             }
                             
                           }else{
                             this.isLoading = false;
                             this.markBulkAttemptFailed(this.extractBulkErrorMessage(resAtencion));
-                            this.toaster.presentToast(resAtencion.error.Message, 'top', 'solicitante');
+                            await this.presentClaimSendFailureAlert(this.extractBulkErrorMessage(resAtencion));
                           }
                       },
                       async (res) => {
                         this.isLoading = false;
                         this.markBulkAttemptFailed(this.extractBulkErrorMessage(res));
-                        this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
+                        await this.presentClaimSendFailureAlert(this.extractBulkErrorMessage(res));
                       }
                 
                     )
@@ -978,7 +1170,7 @@ export class PrepareSendPage implements OnInit {
           async (error) => {
             this.isLoading = false;
             this.markBulkAttemptFailed(this.extractBulkErrorMessage(error));
-            this.toaster.presentToast(this.extractBulkErrorMessage(error), 'top', 'solicitante');
+            await this.presentClaimSendFailureAlert(this.extractBulkErrorMessage(error));
           }
         )
  

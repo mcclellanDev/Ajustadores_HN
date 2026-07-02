@@ -37,9 +37,18 @@
         </div>
         <div class="signature-grid">
           <div class="signature-tile">
-            <img #firmaAsegurado id="firmaAsegurado" alt="Firma asegurado" src="{{firmaPrecargada}}" onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'" />
+            <img *ngIf="hasValidClientSignature()" #firmaAsegurado id="firmaAsegurado" alt="Firma asegurado" src="{{firmaPrecargada}}" onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'" />
+            <button *ngIf="!hasValidClientSignature()" type="button" class="signature-empty-state" (click)="goESignature($event)">
+              <ion-icon name="create-outline"></ion-icon>
+              <strong>Firma pendiente</strong>
+              <small>Toca para registrar la firma.</small>
+            </button>
             <span>Asegurado o conductor</span>
             <strong>{{aseguradoNombre}}</strong>
+            <ion-button type="button" fill="outline" class="signature-edit-action" (click)="goESignature($event)">
+              <ion-icon slot="start" name="create-outline"></ion-icon>
+              {{hasValidClientSignature() ? 'Editar firma' : 'Agregar firma'}}
+            </ion-button>
           </div>
           <div class="signature-tile">
             <img alt="Firma ajustador" src="{{firmaPrecargadaInspector}}" [(ngModel)]="firmaPrecargadaInspector" onerror="this.src='https://ionicframework.com/docs/img/demos/card-media.png'" />
@@ -217,7 +226,7 @@
           <div class="accordion-body" slot="content">
             <ion-list>
               <ion-item *ngFor="let danio of seleccionDeDanios; let i = index">
-                <ion-label>{{i+1}}. {{danio.DescripcionDeDanio || danio.Descripcion}}</ion-label>
+                <ion-label class="damage-description">{{i+1}}. {{getDanioDescripcion(danio)}}</ion-label>
                 <ion-chip *ngIf="danio.tipoId == 1 || danio.tipoId == 2" outline="true">{{danio.tipo}}</ion-chip>
               </ion-item>
             </ion-list>
@@ -237,7 +246,7 @@
           <div class="accordion-body" slot="content">
             <ion-list *ngIf="seleccionDeDaniosCulpable.length > 0">
               <ion-item *ngFor="let danio of seleccionDeDaniosCulpable; let i = index">
-                <ion-label>{{i+1}}. {{danio.DescripcionDeDanio || danio.Descripcion}}</ion-label>
+                <ion-label class="damage-description">{{i+1}}. {{getDanioDescripcion(danio)}}</ion-label>
                 <ion-chip *ngIf="danio.tipoId == 1 || danio.tipoId == 2" outline="true">{{danio.tipo}}</ion-chip>
               </ion-item>
             </ion-list>

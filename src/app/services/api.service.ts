@@ -389,6 +389,22 @@ export class ApiService {
    )
    }
 
+   // GET /api/Proveedor/ObtenerCausasPorCobertura?codigoCobertura={codigoCobertura}
+   ObtenerCausasPorCobertura(codigoCobertura:any): Observable<any> {
+    const codigo = encodeURIComponent((codigoCobertura || '').toString().trim());
+    return this.http.get(this.apiUrl + '/Proveedor/ObtenerCausasPorCobertura?codigoCobertura=' + codigo).pipe(
+      switchMap((res: any) => {
+        if (!Array.isArray(res)) {
+          return of([]);
+        }
+        return from(Promise.all(res));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+   }
+
   //Guardar fotos
   GuardarFotos(credentials:any): Observable<any> {
     const body = this.normalizeImageUploadPayload(credentials);
@@ -1308,7 +1324,7 @@ export class ApiService {
 
   //GET /api/Proveedor/ListaFotografiasFirmasAtencion
 //  obtenerFirmaPorAtencion(atencionId:any, TipoFotoFirma:any) : Observable<any> {
-    obtenerFotoPorAtencion(atencionId:any, TipoFotoFirma:any) : Observable<any> {
+  obtenerFotoPorAtencion(atencionId:any, TipoFotoFirma:any) : Observable<any> {
     let body:any = {
       IdAtencion:atencionId,
       TipoFotoFirma:TipoFotoFirma
@@ -1318,6 +1334,19 @@ export class ApiService {
       switchMap(( res: any  ) => {
       return from(Promise.all(res));
       }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    )
+  }
+
+  obtenerFotoPorAtencionRaw(atencionId:any, TipoFotoFirma:any) : Observable<any> {
+    let body:any = {
+      IdAtencion:atencionId,
+      TipoFotoFirma:TipoFotoFirma
+    }
+
+    return this.http.post(`${this.apiUrl}/Proveedor/ListaFotografiasFirmasAtencion`, body).pipe(
       tap(_ => {
         this.isAuthenticated.next(true);
       })

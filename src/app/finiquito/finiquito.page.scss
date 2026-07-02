@@ -12,10 +12,15 @@ ion-toolbar {
 }
 
 ion-toolbar ion-title {
-  font-size: 1rem;
+  font-size: clamp(0.82rem, 3.5vw, 1rem);
   font-weight: 700;
   letter-spacing: 0;
+  line-height: 1.15;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding-inline: clamp(42px, 13vw, 58px);
   text-align: center;
+  white-space: normal;
 }
 
 ion-back-button {
@@ -274,8 +279,8 @@ ion-back-button {
 
 @media (max-width: 699px) {
   ion-toolbar ion-title {
-    font-size: 0.88rem;
-    padding-inline: 48px;
+    font-size: clamp(0.78rem, 3.7vw, 0.9rem);
+    padding-inline: clamp(42px, 13vw, 52px);
   }
 
   .finiquito-layout {

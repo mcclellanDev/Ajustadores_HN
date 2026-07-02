@@ -10,11 +10,15 @@ ion-toolbar ion-icon {
 }
 
 ion-toolbar ion-title {
-  font-size: 1rem;
+  font-size: clamp(0.82rem, 3.5vw, 1rem);
   font-weight: 800;
   letter-spacing: 0;
-  padding-inline: 52px;
+  line-height: 1.15;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding-inline: clamp(42px, 13vw, 56px);
   text-align: center;
+  white-space: normal;
 }
 
 .beneficiary-signature-page {

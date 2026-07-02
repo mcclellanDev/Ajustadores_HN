@@ -23,11 +23,11 @@ html.ios {
   }
 
   ion-content.segment-form-content {
-    --padding-bottom: calc(132px + env(safe-area-inset-bottom));
+    --padding-bottom: calc(24px + env(safe-area-inset-bottom));
   }
 
   ion-content.cliente-form-content {
-    --padding-bottom: calc(168px + env(safe-area-inset-bottom));
+    --padding-bottom: calc(24px + env(safe-area-inset-bottom));
   }
 
   ion-modal.expediente-info-modal:not(.expediente-info-modal--tablet) {

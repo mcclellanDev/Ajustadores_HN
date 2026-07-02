@@ -54,21 +54,15 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
   private loadAdeudaDraftFromStorage(initializeDates: boolean): void {
     this.idAtencion = localStorage.getItem('idAtencion');
     this.telFijo = localStorage.getItem('telFijo');
-    this.acuerdoDeuda = this.readJson('deuda', {});
-    this.daniosSelectCulpable = this.normalizeDamageList(this.readJson('daniosSelectCulpa', []));
-    this.commonDamages = this.normalizeDamageList(
-      this.acuerdoDeuda?.DaniosComunes ?? this.daniosSelectCulpable
-    );
-    this.manualDamages = this.normalizeDamageList(
-      this.acuerdoDeuda?.DaniosManuales ?? this.readJson('daniosSelectOtroCulpaDetalle', [])
-    );
+    this.acuerdoDeuda = this.readJson(this.scopedKey('deuda'), {});
+    this.daniosSelectCulpable = this.normalizeDamageList(this.readJson(this.scopedKey('daniosSelectCulpa'), []));
+    this.resolveAgreementDamageLists();
     this.laPoliza =
       this.acuerdoDeuda?.PolizaExterna ||
       localStorage.getItem('datos-Poliza') ||
       localStorage.getItem('poliza');
-    this.isSigned = localStorage.getItem('adeudaCompleta');
-    this.adeudaCompleta =
-      this.isSigned === 'true' || localStorage.getItem(`acuerdoDeudaEnviado-${this.idAtencion}`) === 'true';
+    this.isSigned = localStorage.getItem(`acuerdoDeudaEnviado-${this.idAtencion}`);
+    this.adeudaCompleta = this.isSigned === 'true';
     this.ya = this.adeudaCompleta;
 
     if (!initializeDates) {
@@ -103,8 +97,64 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
     }
   }
 
+  private scopedKey(prefix: string, suffix?: any): string {
+    const attentionId = (this.idAtencion || this.atencionId || localStorage.getItem('idAtencion') || '').toString();
+    return suffix !== undefined && suffix !== null
+      ? `${prefix}-${attentionId}-${suffix}`
+      : `${prefix}-${attentionId}`;
+  }
+
   private normalizeDamageList(value: unknown): any[] {
     return Array.isArray(value) ? value : [];
+  }
+
+  private getAffiliateCommonDamages(): any[] {
+    const storedCommonDamages = this.normalizeDamageList(this.readJson('daniosSelectAju', []));
+    if (storedCommonDamages.length > 0) {
+      return storedCommonDamages;
+    }
+
+    if (!Array.isArray(this.danios) || this.danios.length === 0) {
+      return [];
+    }
+
+    const selectedIds = new Set<number>();
+    for (let index = 0; index < localStorage.length; index++) {
+      const key = localStorage.key(index);
+      if (key?.startsWith('daniosSelect-')) {
+        const parsedValue = Number(localStorage.getItem(key));
+        if (!Number.isNaN(parsedValue)) {
+          selectedIds.add(parsedValue);
+        }
+      }
+    }
+
+    return this.danios.filter((damage) => selectedIds.has(Number(damage.Id)));
+  }
+
+  private getAffiliateManualDamagesFromStorage(): any[] {
+    const manualDamages: any[] = [];
+    for (let index = 0; index < localStorage.length; index++) {
+      const key = localStorage.key(index);
+      if (key?.startsWith('danioOtro-')) {
+        const storedDamage = this.readOptionalJson(key);
+        if (storedDamage) {
+          manualDamages.push(storedDamage);
+        }
+      }
+    }
+
+    return manualDamages;
+  }
+
+  private resolveAgreementDamageLists(): void {
+    this.commonDamages = this.getAffiliateCommonDamages();
+    this.manualDamages = this.normalizeDamageList(this.manualDamages);
+    if (this.manualDamages.length === 0) {
+      this.manualDamages = this.getAffiliateManualDamagesFromStorage();
+    }
+    this.acuerdoDeuda.DaniosComunes = this.commonDamages;
+    this.acuerdoDeuda.DaniosManuales = this.manualDamages;
   }
 
   private resolveDamageKey(damage: { Id?: unknown; Codigo?: unknown }): string {
@@ -128,12 +178,13 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
     ).subscribe(
        async (res) =>{
         this.danios = res;
+        this.resolveAgreementDamageLists();
 
         console.log('Todos los daños');
         console.dir(this.danios);
         for (let index = 0; index < localStorage.length; index++) {
           const element = localStorage.getItem(localStorage.key(index));
-          if (localStorage.key(index).indexOf('daniosSelectCulpa') == 0) {
+          if (localStorage.key(index).indexOf(this.scopedKey('daniosSelectCulpa')) == 0) {
             console.log('Este daño : '+element)
           }
         }
@@ -145,17 +196,13 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
 
     )
 
-    this.api.ObtenerDaniosExtras(this.idAtencion, Entidades[1].tipoEntidad).subscribe(
+    this.api.ObtenerDaniosExtras(this.idAtencion, Entidades[0].tipoEntidad).subscribe(
       (res) => {
-        if (Array.isArray(res) && res.length > 0) {
-          this.manualDamages = res;
-          this.acuerdoDeuda.DaniosManuales = res;
-          localStorage.setItem('daniosSelectOtroCulpaDetalle', JSON.stringify(res));
-          localStorage.setItem('deuda', JSON.stringify(this.acuerdoDeuda));
-        }
+        this.manualDamages = this.normalizeDamageList(res);
+        this.resolveAgreementDamageLists();
       },
       () => {
-        console.log('No fue posible refrescar los daños manuales; se conservarán los datos locales.');
+        this.resolveAgreementDamageLists();
       }
     );
   }
@@ -224,20 +271,56 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
   }
 
   get licenseExpiryLabel(): string {
-    const rawValue = this.acuerdoDeuda?.FechaVencimientoLicencia;
-    if (!rawValue) {
-      return 'Sin información';
-    }
-
-    const parsed = new Date(rawValue);
-    if (Number.isNaN(parsed.getTime())) {
-      return String(rawValue);
+    const parsed = this.parseLicenseExpiryDate(this.acuerdoDeuda?.FechaVencimientoLicencia);
+    if (!parsed) {
+      const rawValue = this.acuerdoDeuda?.FechaVencimientoLicencia;
+      return rawValue ? String(rawValue) : 'Sin información';
     }
 
     const day = String(parsed.getDate()).padStart(2, '0');
     const month = String(parsed.getMonth() + 1).padStart(2, '0');
     const year = parsed.getFullYear();
     return `${day}/${month}/${year}`;
+  }
+
+  get licenciaVigente(): boolean {
+    const parsed = this.parseLicenseExpiryDate(this.acuerdoDeuda?.FechaVencimientoLicencia);
+    if (!parsed) {
+      return false;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    parsed.setHours(0, 0, 0, 0);
+    return parsed >= today;
+  }
+
+  private parseLicenseExpiryDate(rawValue: unknown): Date | null {
+    const value = String(rawValue || '').trim();
+    if (!value) {
+      return null;
+    }
+
+    const isoMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (isoMatch) {
+      return new Date(
+        Number(isoMatch[1]),
+        Number(isoMatch[2]) - 1,
+        Number(isoMatch[3])
+      );
+    }
+
+    const hnMatch = value.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+    if (hnMatch) {
+      return new Date(
+        Number(hnMatch[3]),
+        Number(hnMatch[2]) - 1,
+        Number(hnMatch[1])
+      );
+    }
+
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
   }
 
   get totalDamages(): number {
@@ -306,7 +389,7 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
                   const element = this.daniosSelectCulpable[index];
                   const damageKey = this.resolveDamageKey(element);
 
-                  let elTipoReparacion = localStorage.getItem('TipoReparacionCulpa-'+damageKey);
+                  let elTipoReparacion = localStorage.getItem(this.scopedKey('TipoReparacionCulpa', damageKey));
                   let reparaArray = {
                     codigoDanio : element.Codigo ?? element.Id,
                     descripcionDanio : element.Descripcion,
@@ -393,7 +476,7 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
         continue;
       }
 
-      const elTipoReparacion = localStorage.getItem('TipoReparacionCulpa-'+damageKey);
+      const elTipoReparacion = localStorage.getItem(this.scopedKey('TipoReparacionCulpa', damageKey));
       const reparaArray = {
         codigoDanio : element.Codigo ?? element.Id,
         descripcionDanio : element.Descripcion,
@@ -404,9 +487,9 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
         TipoReparacion: elTipoReparacion
       };
 
-      const storedManualDamage = this.readOptionalJson(`danioOtroCulpa-${damageKey}`);
+      const storedManualDamage = this.readOptionalJson(this.scopedKey('danioOtroCulpa', damageKey));
       if (storedManualDamage) {
-        const tipoReparacionCulpa = localStorage.getItem('TipoReparacionCulpa-'+damageKey);
+        const tipoReparacionCulpa = localStorage.getItem(this.scopedKey('TipoReparacionCulpa', damageKey));
         const reparaArrayOtro = {
           RefAtencionId: this.idAtencion,
           DescripcionDeDanio: element.Descripcion,

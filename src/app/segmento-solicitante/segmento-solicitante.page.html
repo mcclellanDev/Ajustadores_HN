@@ -56,7 +56,12 @@
               </ion-chip>
             </ion-row>
             <ion-row>
-              <ion-col #TipoAcuerdoDisplay id="TipoAcuerdoDisplay" size="12">{{coberturaDisplayName}}</ion-col>
+              <ion-col #TipoAcuerdoDisplay id="TipoAcuerdoDisplay" size="12">
+                <span class="coverage-display-name">{{coberturaDisplayName}}</span>
+                <small class="coverage-cause-label" *ngIf="getSelectedCauseDescription() as selectedCause">
+                  Causa: {{selectedCause}}
+                </small>
+              </ion-col>
               <ion-col size="4" style="text-align: rigth;">
                 <ion-select #tipoCoberturaSelect class="text-size-xs native-select-hidden" (ionChange)="seleccionarTipoCobertura($event)" [(ngModel)]="datos.TipoAcuerdoFicohsa" multiple="false" 
                 interface="alert" [interfaceOptions]="coverageTypeSelectOptions" okText="Seleccionar" cancelText="Cancelar" style="float: right;">
@@ -240,3 +245,12 @@
     </ion-row>
   </ion-grid>
 </ion-content>
+
+<ion-footer class="segment-form-nav-footer">
+  <ion-toolbar>
+    <ion-button expand="block" class="segment-form-back-button" aria-label="Regresar al formulario" (click)="handleSegmentBack()">
+      <ion-icon slot="start" name="chevron-back"></ion-icon>
+      Volver al formulario
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

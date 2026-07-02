@@ -179,3 +179,159 @@ ion-alert.no-policy-alert {
     text-align: center;
   }
 }
+
+ion-alert.entry-validation-alert {
+  .alert-message {
+    color: #526b84;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    padding: 18px 20px 4px;
+    text-align: center;
+  }
+
+  .alert-button-group {
+    grid-template-columns: 1fr;
+  }
+
+  .alert-button {
+    width: 100%;
+  }
+}
+
+ion-alert.claim-send-failure-alert {
+  .alert-head {
+    background: #c3352b;
+  }
+
+  .alert-button {
+    border-color: #c3352b;
+    color: #c3352b;
+  }
+
+  .form-choice-confirm {
+    background: #c3352b;
+    color: #ffffff;
+  }
+}
+
+
+ion-alert.coordinate-change-alert {
+  .alert-head {
+    background: var(--ion-color-primary, #0867cf);
+  }
+
+  .alert-message {
+    color: #526b84;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    padding: 18px 20px 4px;
+    text-align: center;
+  }
+
+  .alert-button-confirm {
+    background: var(--ion-color-primary, #0867cf);
+    border-color: var(--ion-color-primary, #0867cf);
+    color: #fff;
+  }
+
+  .alert-button-cancel {
+    background: #fff;
+    border-color: #b9c8d8;
+    color: #17365d;
+  }
+}
+
+ion-alert.coordinate-change-alert--danger {
+  .alert-head {
+    background: #c3352b;
+  }
+
+  .form-choice-confirm {
+    background: #c3352b;
+    border-color: #c3352b;
+    color: #fff;
+  }
+}
+
+.help-map-crash-marker {
+  align-items: center;
+  display: flex;
+  height: 116px;
+  justify-content: center;
+  pointer-events: none;
+  position: absolute;
+  transform: translate(-58px, -72px);
+  width: 116px;
+}
+
+.help-map-crash-halo {
+  animation: help-map-crash-pulse 2.05s ease-out infinite;
+  background: rgba(0, 194, 232, 0.18);
+  border: 2px solid rgba(0, 88, 203, 0.34);
+  border-radius: 999px;
+  box-shadow: 0 0 22px rgba(0, 194, 232, 0.32);
+  height: 78px;
+  position: absolute;
+  width: 78px;
+}
+
+.help-map-crash-halo-two {
+  animation-delay: 0.75s;
+  border-color: rgba(239, 90, 34, 0.28);
+  box-shadow: 0 0 24px rgba(239, 90, 34, 0.22);
+}
+
+.help-map-crash-pin {
+  align-items: center;
+  background: #fff;
+  border: 3px solid #0058cb;
+  border-radius: 999px;
+  box-shadow: 0 12px 28px rgba(21, 48, 95, 0.30);
+  display: flex;
+  height: 58px;
+  justify-content: center;
+  position: relative;
+  width: 58px;
+  z-index: 2;
+}
+
+.help-map-crash-pin::after {
+  background: #0058cb;
+  border-radius: 0 0 8px 0;
+  bottom: -9px;
+  content: '';
+  height: 17px;
+  position: absolute;
+  transform: rotate(45deg);
+  width: 17px;
+  z-index: -1;
+}
+
+.help-map-crash-icon {
+  align-items: center;
+  background: #0058cb;
+  border-radius: 999px;
+  display: flex;
+  height: 39px;
+  justify-content: center;
+  width: 39px;
+}
+
+.help-map-crash-icon img {
+  display: block;
+  height: 29px;
+  width: 29px;
+}
+
+@keyframes help-map-crash-pulse {
+  0% {
+    opacity: 0.72;
+    transform: scale(0.72);
+  }
+
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.78);
+  }
+}

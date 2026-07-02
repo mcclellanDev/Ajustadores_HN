@@ -23,6 +23,7 @@ import { FormatosService } from '../services/formatos.service';
 import { CountrydataService } from '../services/countrydata.service';
 import { validateClaimStage, normalizeLicenseExpirationDate } from '../validation/claim-validation';
 import { clienteScreenValidationRules } from '../validation/claim-validation.rules';
+import { normalizeCoordinate, resolveClaimCoordinates } from '../utils/claim-payload-normalizer';
 import {
   buildInterAutoValidationInput,
   evaluateInterAutoChassisValidation,
@@ -105,7 +106,7 @@ export class ClientehnPage implements OnInit {
   nombreConductor: any;  daTipoConductor: any;  daNombreConductor: any;  daIdentidadConductor: any;  identidad: any; daTelefonoFijoConductor:any;
   tel: any;  daCelularConductor: any;  cel: any;  horaSiniestro: any;  TelefonoFijoConductor: any;  CelularConductor: string | null;
   elResponsableTipo: number;  laExpediente: any = [];  clienteLatitud: any;  clienteLongitud: any; DatosDeAtencion:any = [];
-  segmentoTitulo: string = 'Formulario del cliente';
+  segmentoTitulo: string = 'Formulario del cliente'; clientFormOpen: boolean = false;
   readonly birthDateMin = '1900-01-01';
   readonly birthDateMax = new Date().toISOString().split('T')[0];
   readonly licenseExpirationMin = new Date().toISOString().split('T')[0];
@@ -125,6 +126,177 @@ export class ClientehnPage implements OnInit {
     header: 'Tipo de licencia',
     subHeader: 'Selecciona una opción'
   };
+  get coordinateAlertState(): 'ok' | 'warning' | 'danger' {
+    const corrected = this.getCorrectedCoordinatesForAttention();
+
+    if (corrected) {
+      return 'ok';
+    }
+
+    const rawLatitud = this.getCabinCoordinateValue('LatitudCliente');
+    const rawLongitud = this.getCabinCoordinateValue('LongitudCliente');
+    const hasLatitud = this.hasCoordinateText(rawLatitud);
+    const hasLongitud = this.hasCoordinateText(rawLongitud);
+
+    if (!hasLatitud && !hasLongitud) {
+      return 'danger';
+    }
+
+    const latitud = normalizeCoordinate(rawLatitud);
+    const longitud = normalizeCoordinate(rawLongitud);
+
+    if (!latitud || !longitud || !this.isLikelyHondurasCoordinate(latitud, longitud)) {
+      return 'warning';
+    }
+
+    return 'ok';
+  }
+
+  get coordinateAlertTitle(): string {
+    if (this.getCorrectedCoordinatesForAttention()) {
+      return 'Ubicación corregida por ajustador';
+    }
+
+    return this.coordinateAlertState === 'danger'
+      ? 'Coordenadas no disponibles'
+      : 'Coordenadas por revisar';
+  }
+
+  get coordinateAlertMessage(): string {
+    if (this.getCorrectedCoordinatesForAttention()) {
+      return 'Se usará la ubicación capturada manualmente en el mapa para esta atención.';
+    }
+
+    return this.coordinateAlertState === 'danger'
+      ? 'Cabina no envió latitud ni longitud para esta atención. Captura el punto del siniestro en el mapa antes de enviar.'
+      : 'Cabina envió coordenadas incompletas, inválidas o fuera del rango esperado para Honduras. Revisa la ubicación antes de continuar.';
+  }
+
+  get coordinateChipStyles(): { background: string; border: string; color: string } {
+    if (this.getCorrectedCoordinatesForAttention()) {
+      return { background: '#effaf4', border: '#9bd7b2', color: '#137343' };
+    }
+
+    if (this.coordinateAlertState === 'danger') {
+      return { background: '#fff0f0', border: '#f1a5a5', color: '#aa1f1f' };
+    }
+
+    if (this.coordinateAlertState === 'warning') {
+      return { background: '#fff7df', border: '#f2c96d', color: '#87600e' };
+    }
+
+    return { background: '#effaf4', border: '#9bd7b2', color: '#137343' };
+  }
+
+  get coordinateActionLabel(): string {
+    return this.coordinateAlertState === 'danger' ? 'Capturar ubicación' : 'Ajustar ubicación';
+  }
+
+  get coordinateActionIcon(): string {
+    return this.coordinateAlertState === 'danger' ? 'pin-outline' : 'map-outline';
+  }
+
+  get coordinateCorrectionNoteText(): string {
+    return this.hasManualCoordinateCorrection
+      ? 'Ubicación corregida manualmente por el ajustador.'
+      : 'Si considera que debe mejorar la precisión de la ubicación del lugar del siniestro, puede corregirla manualmente.';
+  }
+
+  get displayedLatitud(): string {
+    return this.getDisplayCoordinates().Latitud || 'Pendiente';
+  }
+
+  get displayedLongitud(): string {
+    return this.getDisplayCoordinates().Longitud || 'Pendiente';
+  }
+
+  get hasManualCoordinateCorrection(): boolean {
+    return !!this.getCorrectedCoordinatesForAttention();
+  }
+
+  private getDisplayCoordinates(): { Latitud: string; Longitud: string } {
+    const corrected = this.getCorrectedCoordinatesForAttention();
+
+    if (corrected) {
+      return corrected;
+    }
+
+    return {
+      Latitud: normalizeCoordinate(this.getCabinCoordinateValue('LatitudCliente')),
+      Longitud: normalizeCoordinate(this.getCabinCoordinateValue('LongitudCliente'))
+    };
+  }
+
+  private getCorrectedCoordinatesForAttention(): { Latitud: string; Longitud: string } | null {
+    const attentionId = this.idAtencion || localStorage.getItem('idAtencion');
+
+    if (!attentionId) {
+      return null;
+    }
+
+    if (localStorage.getItem('coords-correccion-confirmada-' + attentionId) !== 'true') {
+      return null;
+    }
+
+    const latitud = normalizeCoordinate(localStorage.getItem('coords-latitud-' + attentionId));
+    const longitud = normalizeCoordinate(localStorage.getItem('coords-longitud-' + attentionId));
+
+    return latitud && longitud ? { Latitud: latitud, Longitud: longitud } : null;
+  }
+
+  private applyCorrectedCoordinatesFromNavigation(latitud: any, longitud: any): void {
+    const normalizedLatitud = normalizeCoordinate(latitud);
+    const normalizedLongitud = normalizeCoordinate(longitud);
+
+    if (!normalizedLatitud || !normalizedLongitud) {
+      return;
+    }
+
+    const attentionId = this.idAtencion || localStorage.getItem('idAtencion');
+    this.laLatitud = normalizedLatitud;
+    this.laLongitud = normalizedLongitud;
+    this.clienteLatitud = normalizedLatitud;
+    this.clienteLongitud = normalizedLongitud;
+    this.cliente.Latitud = normalizedLatitud;
+    this.cliente.Longitud = normalizedLongitud;
+    this.dataProcess['Latitud'] = normalizedLatitud;
+    this.dataProcess['Longitud'] = normalizedLongitud;
+    localStorage.setItem('dataProcess-Latitud', normalizedLatitud);
+    localStorage.setItem('dataProcess-Longitud', normalizedLongitud);
+    localStorage.setItem('clienteLatitud', normalizedLatitud);
+    localStorage.setItem('clienteLongitud', normalizedLongitud);
+
+    if (attentionId) {
+      localStorage.setItem('coords-latitud-' + attentionId, normalizedLatitud);
+      localStorage.setItem('coords-longitud-' + attentionId, normalizedLongitud);
+      localStorage.setItem('coords-corregidas-' + attentionId, 'true');
+      localStorage.setItem('coords-correccion-confirmada-' + attentionId, 'true');
+      localStorage.setItem('coords-observacion-' + attentionId, 'Ubicacion del siniestro corregida manualmente por el ajustador');
+    }
+  }
+
+  private getCabinCoordinateValue(field: 'LatitudCliente' | 'LongitudCliente'): any {
+    if (field === 'LatitudCliente') {
+      return this.clienteLatitud ?? this.laExpediente?.[0]?.LatitudCliente ?? this.elExpediente?.LatitudCliente;
+    }
+
+    return this.clienteLongitud ?? this.laExpediente?.[0]?.LongitudCliente ?? this.elExpediente?.LongitudCliente;
+  }
+
+  private hasCoordinateText(value: any): boolean {
+    const text = (value ?? '').toString().trim().toLowerCase();
+    return !!text && !['null', 'undefined', 'string', 'n/a', 'na', 'nd', 'n.d.', 's/d', 'sin dato'].includes(text);
+  }
+
+  private isLikelyHondurasCoordinate(latitud: string, longitud: string): boolean {
+    const latitudNumerica = Number(latitud);
+    const longitudNumerica = Number(longitud);
+
+    return latitudNumerica >= 12
+      && latitudNumerica <= 18
+      && longitudNumerica >= -90.5
+      && longitudNumerica <= -83;
+  }
 
   public progress = 0;  nullsIndex: any = []; textoInfo = 'Validando ... Cuando todos los datos estén completos, se habilitará el botón de guardar.';
   validacionCompleta: boolean = false;
@@ -132,7 +304,6 @@ export class ClientehnPage implements OnInit {
   esAudiencia: boolean | undefined;
   chassisValidation: InterAutoChassisValidationState | null = null;
   interAutoManualChasisEntryActive = false;
-
   // INICIALIZACION
   constructor(private router: Router,    private route: ActivatedRoute,    private loading: LoadingController,    private alert: AlertController,
     private api: ApiService,    private toast: ToastController,    private location: Location,    private platform: Platform,    private so: ScreenOrientation,
@@ -185,7 +356,9 @@ export class ClientehnPage implements OnInit {
         this.identidad = localStorage.getItem('dataProcess-IdentidaConductor');
         if (this.identidad == 'undefined' || this.identidad == '') {
           this.daIdentidadConductor = '';
-        }else{}
+        } else {
+          this.restoreConductorIdentityFromCache();
+        }
         let responsableId:any;
         responsableId = localStorage.getItem('dataProcess-TerceroResponsable');
         this.tel = localStorage.getItem('dataProcess-TelefonoAsegurado');
@@ -221,20 +394,21 @@ export class ClientehnPage implements OnInit {
         this.route.queryParams.subscribe(params => {
       if (this.router.getCurrentNavigation()?.extras.state) {
         let navParams = this.router.getCurrentNavigation()?.extras.state;
-        this.laLatitud = navParams?.data[1].latitud;
-        this.laLongitud = navParams?.data[2].longitud;
+        if (navParams?.coordinateCorrectionConfirmed === true) {
+          this.applyCorrectedCoordinatesFromNavigation(navParams?.data?.[1]?.latitud, navParams?.data?.[2]?.longitud);
+        }
 
-        //self.alert('Latitud : '+this.laLatitud+' Longitud : '+this.laLongitud)
-
-        this.cliente.Latitud = this.laExpediente[0].LatitudCliente;
-        this.cliente.Longitud = this.laExpediente[0].LongitudCliente;
-        this.clienteLatitud = this.laExpediente[0].LatitudCliente;
-        this.clienteLongitud = this.laExpediente[0].LongitudCliente;
+        if (!this.getCorrectedCoordinatesForAttention()) {
+          this.cliente.Latitud = this.laExpediente[0].LatitudCliente;
+          this.cliente.Longitud = this.laExpediente[0].LongitudCliente;
+          this.clienteLatitud = this.laExpediente[0].LatitudCliente;
+          this.clienteLongitud = this.laExpediente[0].LongitudCliente;
+          localStorage.setItem('dataProcess-Latitud', this.cliente.Latitud);
+          localStorage.setItem('dataProcess-Longitud', this.cliente.Longitud);
+        }
 
         if (this.laExpediente) {
           //self.alert('Hay expediente '+this.cliente.Latitud)
-          localStorage.setItem('dataProcess-Latitud', this.cliente.Latitud);
-          localStorage.setItem('dataProcess-Longitud', this.cliente.Longitud);
           localStorage.setItem('dataProcess-Nombre', this.laExpediente[0].Cliente);
 
           setTimeout(() => {
@@ -488,9 +662,17 @@ export class ClientehnPage implements OnInit {
 
               if (descripcionTercerosHeridos) {
                 this.elExpediente.DescripcionTercerosHeridos = descripcionTercerosHeridos;
+                if (this.laExpediente?.[0]) {
+                  this.laExpediente[0].DescripcionTercerosHeridos = descripcionTercerosHeridos;
+                }
+                this.dataProcess['DescripcionTercerosHeridos'] = descripcionTercerosHeridos;
               } 
               if (descripcionTercerosMuertos) {
                 this.elExpediente.DescripcionTercerosMuertos = descripcionTercerosMuertos;
+                if (this.laExpediente?.[0]) {
+                  this.laExpediente[0].DescripcionTercerosMuertos = descripcionTercerosMuertos;
+                }
+                this.dataProcess['DescripcionTercerosMuertos'] = descripcionTercerosMuertos;
               } 
               if (descripcionDanio) {
                 this.elExpediente.DescripcionDanioVehiculo = descripcionDanio;
@@ -609,10 +791,9 @@ export class ClientehnPage implements OnInit {
     let client:any = localStorage.getItem('elExpediente');
     this.identidadAsegurado = localStorage.getItem('identidadAsegurado');
     this.cliente = JSON.parse(client);
-    this.firmaPrecargada = localStorage.getItem("dSignatureAsegurado");
-    if (this.firmaPrecargada) {
-      console.log('Traigo una firma '+this.firmaPrecargada); 
-    }
+    this.restoreConductorIdentityFromCache();
+    this.restoreRelatedInfoDescriptionsFromCache();
+    this.firmaPrecargada = emptySignatureWhite;
     
     console.log('El arreglo de segmentos');
     console.dir(segments)
@@ -668,7 +849,9 @@ export class ClientehnPage implements OnInit {
         this.identidad = localStorage.getItem('dataProcess-IdentidaConductor');
         if (this.identidad == 'undefined' || this.identidad == '') {
           this.daIdentidadConductor = '';
-        }else{}
+        } else {
+          this.restoreConductorIdentityFromCache();
+        }
         
         this.tel = localStorage.getItem('dataProcess-TelefonoAsegurado');
         this.cel = localStorage.getItem('dataProcess-CelularAsegurado');
@@ -705,16 +888,20 @@ export class ClientehnPage implements OnInit {
         this.route.queryParams.subscribe(params => {
       if (this.router.getCurrentNavigation()?.extras.state) {
         let navParams = this.router.getCurrentNavigation()?.extras.state;
-        this.laLatitud = navParams?.data[1].latitud;
-        this.laLongitud = navParams?.data[2].longitud;
-        this.cliente.Latitud = this.elExpediente.LatitudCliente;
-        this.cliente.Longitud = this.elExpediente.LongitudCliente;
-        this.clienteLatitud = this.laExpediente[0].LatitudCliente;
-        this.clienteLongitud = this.laExpediente[0].LongitudCliente;
+        if (navParams?.coordinateCorrectionConfirmed === true) {
+          this.applyCorrectedCoordinatesFromNavigation(navParams?.data?.[1]?.latitud, navParams?.data?.[2]?.longitud);
+        }
 
-        if (this.elExpediente) {
+        if (!this.getCorrectedCoordinatesForAttention()) {
+          this.cliente.Latitud = this.elExpediente.LatitudCliente;
+          this.cliente.Longitud = this.elExpediente.LongitudCliente;
+          this.clienteLatitud = this.laExpediente[0].LatitudCliente;
+          this.clienteLongitud = this.laExpediente[0].LongitudCliente;
           localStorage.setItem('dataProcess-Latitud', this.cliente.Latitud);
           localStorage.setItem('dataProcess-Longitud', this.cliente.Longitud);
+        }
+
+        if (this.elExpediente) {
           localStorage.setItem('dataProcess-Nombre', this.elExpediente.Cliente);
 
           setTimeout(() => {
@@ -986,9 +1173,17 @@ export class ClientehnPage implements OnInit {
 
               if (descripcionTercerosHeridos) {
                 this.elExpediente.DescripcionTercerosHeridos = descripcionTercerosHeridos;
+                if (this.laExpediente?.[0]) {
+                  this.laExpediente[0].DescripcionTercerosHeridos = descripcionTercerosHeridos;
+                }
+                this.dataProcess['DescripcionTercerosHeridos'] = descripcionTercerosHeridos;
               } 
               if (descripcionTercerosMuertos) {
                 this.elExpediente.DescripcionTercerosMuertos = descripcionTercerosMuertos;
+                if (this.laExpediente?.[0]) {
+                  this.laExpediente[0].DescripcionTercerosMuertos = descripcionTercerosMuertos;
+                }
+                this.dataProcess['DescripcionTercerosMuertos'] = descripcionTercerosMuertos;
               } 
               if (descripcionDanio) {
                 this.elExpediente.DescripcionDanioVehiculo = descripcionDanio;
@@ -1206,6 +1401,8 @@ export class ClientehnPage implements OnInit {
     this.isTablet = this.platform.is('tablet');
     
     this.esAudiencia = (origin === '/prepare-send');
+    this.restoreConductorIdentityFromCache();
+    this.restoreRelatedInfoDescriptionsFromCache();
 
     this.platform.ready().then(() => {
 
@@ -1363,7 +1560,19 @@ export class ClientehnPage implements OnInit {
   }
 
   goMap(){
-    this.router.navigate(['./mapa']);
+    const displayCoordinates = this.getDisplayCoordinates();
+    const navigateExtras: NavigationExtras = {
+      state: {
+        mode: 'claim-coordinate-correction',
+        source: './clientehn',
+        attentionId: this.idAtencion || localStorage.getItem('idAtencion'),
+        latitud: displayCoordinates.Latitud,
+        longitud: displayCoordinates.Longitud,
+        coordinateState: this.coordinateAlertState
+      }
+    };
+
+    this.router.navigate(['./mapa'], navigateExtras);
   }
 
   scrollToElement() {
@@ -1378,7 +1587,66 @@ export class ClientehnPage implements OnInit {
     //console.log(this.sig.toDataURL("image/jpeg"));
   }
 
+  private isBlank(value: any): boolean {
+    return value === null || value === undefined || String(value).trim() === '';
+  }
+
+  private hasHondurasPhoneLength(value: any): boolean {
+    if (this.isBlank(value)) {
+      return false;
+    }
+
+    const digits = String(value).replace(/\D/g, '');
+    return digits.length >= 8;
+  }
+
+  private hasPersonaMinimumData(): boolean {
+    return !this.isBlank(this.persona?.Nombre) && this.hasHondurasPhoneLength(this.persona?.Telefono);
+  }
+
+  private hasPropiedadMinimumData(): boolean {
+    return !this.isBlank(this.propiedadPrivada?.NombrePropietario) && this.hasHondurasPhoneLength(this.propiedadPrivada?.Telefono);
+  }
+
+  private async showEntryValidationMessage(message: string) {
+    const alert = await this.alert.create({
+      cssClass: 'form-choice-alert entry-validation-alert',
+      header: 'Datos incompletos',
+      message,
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: 'Entendido',
+          role: 'cancel',
+          cssClass: 'form-choice-confirm'
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  closePersonaModal() {
+    this.showPersona = false;
+    this.showPersonaLesion = false;
+    this.persona = {};
+    this.editar = false;
+    this.guardar = true;
+  }
+
+  closePropiedadModal() {
+    this.showPropiedad = false;
+    this.propiedadPrivada = {};
+    this.editar = false;
+    this.guardar = true;
+  }
+
   addPersona() {
+    if (!this.hasPersonaMinimumData()) {
+      this.showEntryValidationMessage('Ingrese nombre y un teléfono válido de al menos 8 dígitos antes de agregar el registro.');
+      return;
+    }
+
     switch (this.persona.TipoPersona) {
       case 1:
         this.acompaniante.push(this.persona);
@@ -1445,6 +1713,11 @@ export class ClientehnPage implements OnInit {
     //this.showPersonaLesion = true;
   }
   updatePersona() {
+    if (!this.hasPersonaMinimumData()) {
+      this.showEntryValidationMessage('Ingrese nombre y un teléfono válido de al menos 8 dígitos antes de actualizar el registro.');
+      return;
+    }
+
     //alert(this.persona.TipoPersona)
     let miTipo = this.persona.TipoPersona;
     switch (this.persona.TipoPersona) {
@@ -1628,6 +1901,11 @@ export class ClientehnPage implements OnInit {
   }
 
   addPropiedad() {
+    if (!this.hasPropiedadMinimumData()) {
+      this.showEntryValidationMessage('Ingrese nombre del propietario y un teléfono válido de al menos 8 dígitos antes de agregar la propiedad.');
+      return;
+    }
+
     this.showPropiedad = !this.showPropiedad;
     this.propiedadesprivadas.push(this.propiedadPrivada);
     for (let index = 0; index < this.propiedadesprivadas.length; index++) {
@@ -1640,12 +1918,17 @@ export class ClientehnPage implements OnInit {
   }
   editPropiedad(i: number) {
     this.propiedadPrivada = this.propiedadesprivadas[i];
-    this.indexPersona = i;
+    this.indexPropiedad = i;
     this.editar = true;
     this.guardar = false;
     this.showPropiedad = true;
   }
   updatePropiedad() {
+    if (!this.hasPropiedadMinimumData()) {
+      this.showEntryValidationMessage('Ingrese nombre del propietario y un teléfono válido de al menos 8 dígitos antes de actualizar la propiedad.');
+      return;
+    }
+
     this.propiedadesprivadas[this.indexPropiedad] = this.propiedadPrivada;
     localStorage.setItem('propiedadesprivadas-'+this.indexPropiedad, JSON.stringify(this.propiedadPrivada));
     this.propiedadPrivada = {};
@@ -1807,7 +2090,9 @@ export class ClientehnPage implements OnInit {
   }
 
   seleccionarTipoConductor(tipoCId:any) {
-    this.daType = tipoCId.target.value;
+    const selectedTipoConductor = parseInt(tipoCId.target.value);
+    this.daType = selectedTipoConductor;
+    this.daTipoConductor = selectedTipoConductor;
 
     for (let indexT = 0; indexT < this.tipoConductor.length; indexT++) {
       const element = this.tipoConductor[indexT];
@@ -1822,11 +2107,11 @@ export class ClientehnPage implements OnInit {
     
     //this.entraResponsable()
     //alert(this.daType+1)
-    this.elExpediente.ConducidoPor = parseInt(tipoCId.target.value);
-    this.laExpediente[0].ConducidoPor = parseInt(tipoCId.target.value);
-    this.dataProcess.RefTipoConductorId = parseInt(tipoCId.target.value);
-    this.dataProcess['RefTipoConductorId'] = parseInt(tipoCId.target.value);
-    localStorage.setItem('dataProcess-RefTipoConductorId', tipoCId.target.value);
+    this.elExpediente.ConducidoPor = selectedTipoConductor;
+    this.laExpediente[0].ConducidoPor = selectedTipoConductor;
+    this.dataProcess.RefTipoConductorId = selectedTipoConductor;
+    this.dataProcess['RefTipoConductorId'] = selectedTipoConductor;
+    localStorage.setItem('dataProcess-RefTipoConductorId', selectedTipoConductor.toString());
 
     this.formateadaNacimiento = null;
     this.elTipoDeParentesco = null;
@@ -1868,7 +2153,7 @@ export class ClientehnPage implements OnInit {
     localStorage.removeItem('elParentesco');
 
 
-    if (tipoCId.target.value == 1) {
+    if (selectedTipoConductor == 1) {
       this.syncConductorFromPropietario();
     } else {
       this.conductorEsAfiliado = false;
@@ -1880,9 +2165,9 @@ export class ClientehnPage implements OnInit {
       this.dataProcess['NombreConductor'] = '';
       localStorage.setItem('dataProcess-NombreConductor', '');
 
-      this.dataProcess.ConductorAfiliado = tipoCId.target.value;
-      this.dataProcess['ConductorAfiliado'] = tipoCId.target.value;
-      localStorage.setItem('dataProcess-ConductorAfiliado', tipoCId.target.value);
+      this.dataProcess.ConductorAfiliado = selectedTipoConductor;
+      this.dataProcess['ConductorAfiliado'] = selectedTipoConductor;
+      localStorage.setItem('dataProcess-ConductorAfiliado', selectedTipoConductor.toString());
 
       //this.nombreConductor = localStorage.getItem('dataProcess-NombreConductor');
       if (this.nombreConductor) {
@@ -1907,11 +2192,14 @@ export class ClientehnPage implements OnInit {
 
   seTipoConductor(tipoC:any, origen:any) {
     //alert('Yes '+tipoC)
-    this.elExpediente.ConducidoPor = parseInt(tipoC);
-    this.laExpediente[0].ConducidoPor = parseInt(tipoC);
-    this.dataProcess.RefTipoConductorId = parseInt(tipoC);
-    this.dataProcess['RefTipoConductorId'] = parseInt(tipoC);
-    localStorage.setItem('dataProcess-RefTipoConductorId', tipoC);
+    const selectedTipoConductor = parseInt(tipoC);
+    this.daType = selectedTipoConductor;
+    this.daTipoConductor = selectedTipoConductor;
+    this.elExpediente.ConducidoPor = selectedTipoConductor;
+    this.laExpediente[0].ConducidoPor = selectedTipoConductor;
+    this.dataProcess.RefTipoConductorId = selectedTipoConductor;
+    this.dataProcess['RefTipoConductorId'] = selectedTipoConductor;
+    localStorage.setItem('dataProcess-RefTipoConductorId', selectedTipoConductor.toString());
 
     //alert(this.tipoConductor.length)
     for (let indexT = 0; indexT < this.tipoConductor.length; indexT++) {
@@ -1920,7 +2208,7 @@ export class ClientehnPage implements OnInit {
 
       //alert(idTipo+' == '+this.daTipoConductor+', '+(idTipo == this.daTipoConductor));
 
-      if (idTipo == this.daTipoConductor) {
+      if (idTipo == selectedTipoConductor) {
         this.elTipoDeConductor = element.TipoConductor;  
       }
       
@@ -1930,7 +2218,7 @@ export class ClientehnPage implements OnInit {
       let use:any = localStorage.getItem('dataProcess-AseguradoUsoPoliza');
               let uso = parseInt(use);
 
-      if (parseInt(tipoC) == 1) {
+      if (selectedTipoConductor == 1) {
         this.syncConductorFromPropietario();
       } else {
         this.conductorEsAfiliado = false;
@@ -1964,8 +2252,12 @@ export class ClientehnPage implements OnInit {
 
     this.conductorEsAfiliado = true;
     this.daType = 1;
+    this.daTipoConductor = 1;
     this.elExpediente.ConducidoPor = 1;
     this.laExpediente[0].ConducidoPor = 1;
+    this.dataProcess.RefTipoConductorId = 1;
+    this.dataProcess['RefTipoConductorId'] = 1;
+    localStorage.setItem('dataProcess-RefTipoConductorId', '1');
     this.elExpediente.NombreConductor = nombrePropietario;
     this.laExpediente[0].NombreConductor = nombrePropietario;
     this.nombreConductor = nombrePropietario;
@@ -2057,15 +2349,29 @@ export class ClientehnPage implements OnInit {
   }
 
   dTercerosHeridos(event:any) {
-    this.dataProcess.DescripcionTercerosHeridos = event.target.value;
-    this.dataProcess['DescripcionTercerosHeridos'] = event.target.value;
-    localStorage.setItem('dataProcess-DescripcionTercerosHeridos', event.target.value);
+    const value = event.target.value;
+    this.dataProcess.DescripcionTercerosHeridos = value;
+    this.dataProcess['DescripcionTercerosHeridos'] = value;
+    localStorage.setItem('dataProcess-DescripcionTercerosHeridos', value);
+    if (this.laExpediente?.[0]) {
+      this.laExpediente[0].DescripcionTercerosHeridos = value;
+    }
+    if (this.elExpediente) {
+      this.elExpediente.DescripcionTercerosHeridos = value;
+    }
   }
 
   dTercerosMuertos(event:any) {
-    this.dataProcess.DescripcionTercerosMuertos = event.target.value;
-    this.dataProcess['DescripcionTercerosMuertos'] = event.target.value;
-    localStorage.setItem('dataProcess-DescripcionTercerosMuertos', event.target.value);
+    const value = event.target.value;
+    this.dataProcess.DescripcionTercerosMuertos = value;
+    this.dataProcess['DescripcionTercerosMuertos'] = value;
+    localStorage.setItem('dataProcess-DescripcionTercerosMuertos', value);
+    if (this.laExpediente?.[0]) {
+      this.laExpediente[0].DescripcionTercerosMuertos = value;
+    }
+    if (this.elExpediente) {
+      this.elExpediente.DescripcionTercerosMuertos = value;
+    }
   }
 
 
@@ -2469,22 +2775,42 @@ export class ClientehnPage implements OnInit {
       })
     ).subscribe(
       async (res) => {
-        console.log("Firmas para este usuario : " + res.length);
-        console.dir(res);
-        for (let index = 0; index < res.length; index++) {
-          const element = res[index];
-          if (index == (res.length - 1)) {
-            this.firmaPrecargada = imagePrefix + element.FotoFirma;
-            localStorage.setItem("dSignatureAsegurado", this.firmaPrecargada);
-            this.isSignature = true;
+        const firmas = Array.isArray(res) ? res : (res ? [res] : []);
+        console.log("Firmas para este usuario : " + firmas.length);
+        console.dir(firmas);
+        let latestSignature = null;
+        for (let index = 0; index < firmas.length; index++) {
+          const element = firmas[index];
+          if (element?.FotoFirma) {
+            latestSignature = element.FotoFirma;
           }
 
         }
+        if (latestSignature) {
+          this.firmaPrecargada = latestSignature.toString().startsWith('data:image') ? latestSignature : imagePrefix + latestSignature;
+          localStorage.setItem("dSignatureAsegurado", this.firmaPrecargada);
+          localStorage.setItem("dSignatureAsegurado-" + this.idAtencion, this.firmaPrecargada);
+          localStorage.setItem("dSignatureAseguradoAtencion", this.idAtencion.toString());
+          this.isSignature = true;
+        } else {
+          localStorage.removeItem("dSignatureAsegurado-" + this.idAtencion);
+          if (localStorage.getItem("dSignatureAseguradoAtencion") === this.idAtencion.toString()) {
+            localStorage.removeItem("dSignatureAsegurado");
+            localStorage.removeItem("dSignatureAseguradoAtencion");
+          }
+          this.firmaPrecargada = emptySignatureWhite;
+          this.isSignature = false;
+        }
       },
       async (res) => {
-        this.firmaPrecargada = emptySignatureWhite;
-        localStorage.setItem("dSignatureAsegurado", this.firmaPrecargada);
-        this.isSignature = false;
+        const storedSignature = localStorage.getItem("dSignatureAsegurado-" + this.idAtencion);
+        if (storedSignature && storedSignature !== emptySignatureWhite && storedSignature !== emptySignature) {
+          this.firmaPrecargada = storedSignature;
+          this.isSignature = true;
+        } else {
+          this.firmaPrecargada = emptySignatureWhite;
+          this.isSignature = false;
+        }
       }
     );
 
@@ -2691,6 +3017,7 @@ export class ClientehnPage implements OnInit {
   }
 
   closeClientForm() {
+    this.clientFormOpen = false;
     this.menuController.close('cliente-form-menu');
   }
 
@@ -2743,6 +3070,8 @@ export class ClientehnPage implements OnInit {
     this.identidad = localStorage.getItem('dataProcess-IdentidaConductor');
     this.TelefonoFijoConductor = localStorage.getItem('dataProcess-TelefonoConductor');
     this.CelularConductor = localStorage.getItem('dataProcess-CelularConductor');
+    this.restoreConductorIdentityFromCache();
+    this.restoreRelatedInfoDescriptionsFromCache();
     
     
 
@@ -2793,10 +3122,8 @@ export class ClientehnPage implements OnInit {
       }
     }
 
-    if (openForm && !window.matchMedia('(min-width: 900px) and (orientation: landscape)').matches) {
-      setTimeout(() => {
-        this.menuController.open('cliente-form-menu');
-      }, 120);
+    if (openForm) {
+      this.clientFormOpen = true;
     }
   }
 
@@ -2840,7 +3167,19 @@ export class ClientehnPage implements OnInit {
     $('#dataNull').fadeIn('xslow');
     //$('#segmentSignature').fadeOut();
 
-    if (this.conductorEsAfiliado || this.daType == 1 || this.daTipoConductor == 1 || parseInt(this.laExpediente?.[0]?.ConducidoPor) === 1) {
+    const tipoConductorActual = parseInt(
+      this.dataProcess?.RefTipoConductorId
+      || this.dataProcess?.['RefTipoConductorId']
+      || this.daType
+      || this.daTipoConductor
+      || this.laExpediente?.[0]?.ConducidoPor
+    );
+
+    this.daType = tipoConductorActual;
+    this.daTipoConductor = tipoConductorActual;
+    this.conductorEsAfiliado = tipoConductorActual === 1;
+
+    if (tipoConductorActual === 1) {
       this.syncConductorFromPropietario();
     }
 
@@ -2983,17 +3322,29 @@ export class ClientehnPage implements OnInit {
       this.dataProcess['CelularConductor'] = this.daCelularConductor;
     }
 
-    const cachedLatitud = localStorage.getItem('dataProcess-Latitud');
-    const cachedLongitud = localStorage.getItem('dataProcess-Longitud');
-    const latitudCliente = this.laLatitud || this.clienteLatitud || this.laExpediente?.[0]?.LatitudCliente || cachedLatitud || this.dataProcess['Latitud'];
-    const longitudCliente = this.laLongitud || this.clienteLongitud || this.laExpediente?.[0]?.LongitudCliente || cachedLongitud || this.dataProcess['Longitud'];
-    if (latitudCliente != null && latitudCliente != undefined && latitudCliente != 'undefined') {
+    const expedienteActual = this.laExpediente?.[0] || this.elExpediente || {};
+    const latitudExpediente = normalizeCoordinate(this.clienteLatitud) || normalizeCoordinate(expedienteActual?.LatitudCliente);
+    const longitudExpediente = normalizeCoordinate(this.clienteLongitud) || normalizeCoordinate(expedienteActual?.LongitudCliente);
+    const coordenadasSiniestro = resolveClaimCoordinates({
+      ...expedienteActual,
+      LatitudCliente: latitudExpediente,
+      LongitudCliente: longitudExpediente
+    }, this.idAtencion);
+    const latitudCliente = coordenadasSiniestro.Latitud;
+    const longitudCliente = coordenadasSiniestro.Longitud;
+    if (latitudCliente) {
       this.dataProcess['Latitud'] = latitudCliente;
       localStorage.setItem('dataProcess-Latitud', latitudCliente);
+    } else {
+      this.dataProcess['Latitud'] = '';
+      localStorage.removeItem('dataProcess-Latitud');
     }
-    if (longitudCliente != null && longitudCliente != undefined && longitudCliente != 'undefined') {
+    if (longitudCliente) {
       this.dataProcess['Longitud'] = longitudCliente;
       localStorage.setItem('dataProcess-Longitud', longitudCliente);
+    } else {
+      this.dataProcess['Longitud'] = '';
+      localStorage.removeItem('dataProcess-Longitud');
     }
 
     //alert('Latitud : '+this.laLatitud+', Longitud : '+this.laLongitud)
@@ -3096,20 +3447,24 @@ export class ClientehnPage implements OnInit {
   }
 
   validaIdentidadConductor(daType: any, identidadDelCliente: any, daIdentidadConductor: any): any {
-    if (daType == 1) {
-      if(identidadDelCliente == null ){          if (daIdentidadConductor == null || daIdentidadConductor == 'null') {
-            this.toaster.presentToastNoButtonsRed('La identidad del conductor no puede ser nula o vacía. Por favor, ingresa una identidad válida.', 'top', 'identidad-conductor');
-            this.validaNulos.push({etiqueta: 'Identidad del conductor', valor: identidadDelCliente, indexSegmento: 3, inputIndex: 12});
-          }else{
-            identidadDelCliente = daIdentidadConductor;
-          }
-        }else{
-          daIdentidadConductor = identidadDelCliente;
-        }
+    const tipoConductor = parseInt(daType);
+    const identidadCliente = this.cleanStorageLikeValue(identidadDelCliente);
+    const identidadConductor = this.cleanStorageLikeValue(daIdentidadConductor);
+    const identidadFinal = tipoConductor === 1 ? (identidadCliente || identidadConductor) : identidadConductor;
+
+    if (!identidadFinal) {
+      this.toaster.presentToastNoButtonsRed('La identidad del conductor no puede ser nula o vacía. Por favor, ingresa una identidad válida.', 'top', 'identidad-conductor');
+      this.validaNulos.push({etiqueta: 'Identidad del conductor', valor: identidadFinal, indexSegmento: 3, inputIndex: 12});
+      return identidadFinal;
     }
 
-    this.dataProcess['IdentidaConductor'] = identidadDelCliente;
-    return identidadDelCliente;
+    this.setIdentidadConductor(identidadFinal);
+    return identidadFinal;
+  }
+
+  private cleanStorageLikeValue(value: any): string {
+    const normalizedValue = (value ?? '').toString().trim();
+    return normalizedValue && normalizedValue !== 'undefined' && normalizedValue !== 'null' ? normalizedValue : '';
   }
 
   setTipoSolicitante(event:any) {
@@ -3161,31 +3516,85 @@ export class ClientehnPage implements OnInit {
   }
 
   entraIdentidadConductor(event:any) {
-    if (this.daType == 1) {
-      console.log('soy el asegurado');
-    }else{
-      console.log(this.daIdentidadConductor);
-      console.log('soy el conductor');
-      localStorage.setItem('dataProcess-IdentidaConductor', this.daIdentidadConductor);
-      this.elExpediente.IdentidadConductor = this.daIdentidadConductor;
-      this.dataProcess.IdentidaConductor = this.daIdentidadConductor;
-      this.dataProcess['IdentidaConductor'] = this.daIdentidadConductor;
+    const identidad = event?.target?.value ?? this.daIdentidadConductor ?? '';
+    this.setIdentidadConductor(identidad);
+  }
+
+  entraIdentidadAsegurado(event:any) {
+    const identidad = event?.target?.value ?? this.identidadAsegurado ?? '';
+    this.identidadAsegurado = identidad;
+    localStorage.setItem('identidadAsegurado', identidad);
+
+    if (this.conductorEsAfiliado || this.daType == 1) {
+      this.setIdentidadConductor(identidad);
     }
-    
-    /*
-    console.log('la identidad '+ event.target.value)
-    this.elExpediente.IdentidadConductor = event.target.value;
-    this.dataProcess['IdentidaConductor'] = event.target.value;
-    */
-    
   }
 
   setIdentidadConductor(identidad:any) {
-    console.log('la identidad '+ identidad)
-    this.elExpediente.IdentidadConductor = identidad;
-    this.dataProcess.IdentidaConductor = identidad;
-    this.dataProcess['IdentidaConductor'] = identidad;
-    localStorage.setItem('dataProcess-IdentidaConductor', identidad);
+    if (identidad === null || identidad === undefined) {
+      return;
+    }
+
+    const normalizedIdentidad = String(identidad).trim();
+    if (!normalizedIdentidad || normalizedIdentidad === 'undefined' || normalizedIdentidad === 'null') {
+      return;
+    }
+
+    console.log('la identidad '+ normalizedIdentidad)
+    this.identidad = normalizedIdentidad;
+    this.daIdentidadConductor = normalizedIdentidad;
+    this.elExpediente.IdentidadConductor = normalizedIdentidad;
+    if (this.laExpediente?.[0]) {
+      this.laExpediente[0].IdentidaConductor = normalizedIdentidad;
+    }
+    this.dataProcess.IdentidaConductor = normalizedIdentidad;
+    this.dataProcess['IdentidaConductor'] = normalizedIdentidad;
+    localStorage.setItem('dataProcess-IdentidaConductor', normalizedIdentidad);
+  }
+
+  private readCachedStorageValue(key: string): string {
+    const value = localStorage.getItem(key);
+    if (!value || value === 'undefined' || value === 'null') {
+      return '';
+    }
+    return value;
+  }
+
+  restoreConductorIdentityFromCache(): void {
+    const cachedIdentidad = this.readCachedStorageValue('dataProcess-IdentidaConductor')
+      || this.readCachedStorageValue('identidadAsegurado')
+      || (this.identidadDelCliente ? String(this.identidadDelCliente).trim() : '');
+
+    if (!cachedIdentidad) {
+      return;
+    }
+
+    this.setIdentidadConductor(cachedIdentidad);
+  }
+
+  restoreRelatedInfoDescriptionsFromCache(): void {
+    const descripcionHeridos = this.readCachedStorageValue('dataProcess-DescripcionTercerosHeridos');
+    const descripcionMuertos = this.readCachedStorageValue('dataProcess-DescripcionTercerosMuertos');
+
+    if (descripcionHeridos) {
+      this.dataProcess['DescripcionTercerosHeridos'] = descripcionHeridos;
+      if (this.laExpediente?.[0]) {
+        this.laExpediente[0].DescripcionTercerosHeridos = descripcionHeridos;
+      }
+      if (this.elExpediente) {
+        this.elExpediente.DescripcionTercerosHeridos = descripcionHeridos;
+      }
+    }
+
+    if (descripcionMuertos) {
+      this.dataProcess['DescripcionTercerosMuertos'] = descripcionMuertos;
+      if (this.laExpediente?.[0]) {
+        this.laExpediente[0].DescripcionTercerosMuertos = descripcionMuertos;
+      }
+      if (this.elExpediente) {
+        this.elExpediente.DescripcionTercerosMuertos = descripcionMuertos;
+      }
+    }
   }
 
   entraPolizaConductor(event:any) {

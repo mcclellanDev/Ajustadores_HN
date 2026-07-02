@@ -52,7 +52,7 @@ export class SegmentoVehiculoPage implements OnInit {
   elAnioAsegurado:any; elChasisAsegurado:any; elNumeroPlacaAsegurado:any; elMotorAsegurado:any; isFirstTime:boolean=true; clickCount:number=0;
   laPolizaExternaAsegurado: any;contadorSegmentos:number=0; marcasVehiculos:any=marcasVehiculos; modelosMarca:any=[]; elExpediente:any;
   isMarca:boolean=false; isModelo:boolean=false; talleresFiltrados:any=[];  esPesado: any; elExpedienteKilometraje:any; ajustador: ajustadorHn={};
-  datos:any=[]; esKilometraje:boolean=false;  elExpedienteSerie: any; segmentoTitulo:any; isLoading:boolean = false;
+  datos:any=[]; esKilometraje:boolean=false; kilometrajeEsCero:boolean = true;  elExpedienteSerie: any; segmentoTitulo:any; isLoading:boolean = false;
   chassisValidation: InterAutoChassisValidationState | null = null;
   interAutoManualChasisEntryActive = false;
 
@@ -268,13 +268,14 @@ export class SegmentoVehiculoPage implements OnInit {
   }
 
   evaluateKm(event){
-    this.ajustador.Kilometraje = event.target.value;
-    this.datos['Kilometraje'] = event.target.value;
-    localStorage.setItem('elKilometraje', this.idAtencion.toString()+'-'+event.target.value.toString());
-    localStorage.setItem('datos-Kilometraje', (this.ajustador.Kilometraje).toString());
-    if (this.ajustador.Kilometraje == null || this.ajustador.Kilometraje.toString() == '' || this.ajustador.Kilometraje == 0) {
+    const kilometraje = this.coerceKilometraje(event.target.value);
+    this.ajustador.Kilometraje = kilometraje;
+    this.datos['Kilometraje'] = kilometraje;
+    this.kilometrajeEsCero = kilometraje === 0;
+    localStorage.setItem('elKilometraje', this.idAtencion.toString()+'-'+kilometraje.toString());
+    localStorage.setItem('datos-Kilometraje', kilometraje.toString());
+    if (this.kilometrajeEsCero) {
       this.toaster.presentToastNoButtonsRed('Aun no se ha asignado un valor de Kilometraje. Si no asignas un Kilometraje, el valor a guardarse es cero.', 'top', 'km');
-      this.ajustador.Kilometraje = 0;
       
     }else{
       this.toaster.dismissToast();
@@ -285,11 +286,31 @@ export class SegmentoVehiculoPage implements OnInit {
   }
 
   setKilo(kilo){
-    this.ajustador.Kilometraje = kilo;
-    this.datos['Kilometraje'] = kilo;
+    const kilometraje = this.coerceKilometraje(kilo);
+    this.ajustador.Kilometraje = kilometraje;
+    this.datos['Kilometraje'] = kilometraje;
+    this.kilometrajeEsCero = kilometraje === 0;
     this.esKilometraje = true;
-    localStorage.setItem('elKilometraje', this.idAtencion.toString()+'-'+kilo.toString());
-    localStorage.setItem('datos-Kilometraje', kilo.toString());
+    localStorage.setItem('elKilometraje', this.idAtencion.toString()+'-'+kilometraje.toString());
+    localStorage.setItem('datos-Kilometraje', kilometraje.toString());
+  }
+
+  private coerceKilometraje(valor: any): number {
+    if (valor === undefined || valor === null) {
+      return 0;
+    }
+
+    const normalizado = typeof valor === 'string' ? valor.trim().toLowerCase() : valor;
+    if (normalizado === '' || normalizado === 'null' || normalizado === 'undefined' || normalizado === 'nan') {
+      return 0;
+    }
+
+    const kilometraje = Number(normalizado);
+    if (!Number.isFinite(kilometraje) || kilometraje < 0) {
+      return 0;
+    }
+
+    return kilometraje;
   }
 
   editarKilo(){

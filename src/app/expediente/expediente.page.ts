@@ -4,6 +4,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router, NavigationExtras, RouterOutlet, ActivationStart } from '@angular/router';
 import {  ActionSheetController, AlertController, LoadingController, ToastController, Platform } from '@ionic/angular';
 import { finalize } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
 import { Expedientes } from '../interfaces/expedientes';
 import { ApiService } from '../services/api.service';
 import { resolveAttentionCurrency } from '../utils/currency-display.util';
@@ -70,7 +71,7 @@ export class ExpedientePage implements OnInit {
   private readonly MIN_AGENT_MARKER_ANIMATION_MS = 900;
   private readonly MAX_AGENT_MARKER_ANIMATION_MS = 9500;
   mapInfoText: any; anyInterval:any; isArrived:boolean = false; isTracking:boolean=false;  arrayString: string;  elCliente: any;  atenciones: any;  bpmFicohsa: any;breakpoint:number = 1;
-  newMarkers:any=[]; coordsLat:any; coordsLon:any; cacheCount:number=0; cacheCliente:any=[]; forwardUrl:any; lugar:any;
+  newMarkers:any=[]; coordsLat:any; coordsLon:any; cacheCount:number=0; cacheCliente:any=[]; forwardUrl:any; lugar:any; hasNoPolicyCache:boolean=false;
   source: any;  proveedorLatitud: number;  proveedorLongitud: number; coordenadasDeCorreccion:any=[]; coordenadasAju:any;
   nuevaLatitud: number;
   nuevaLongitud: number;
@@ -295,22 +296,36 @@ export class ExpedientePage implements OnInit {
     });
   }
 
-  handleForward(){
+  async handleForward(){
     this.isLoading = true;
-    this.obtenerCacheCliente(this.idAtencion);
+    try {
+      await this.refreshCacheClienteForNavigation();
 
-    //alert('El cliente completo es '+ this.esClienteCompleto);
-    setTimeout(() => {
+      if (this.hasNoPolicyCache == true) {
+        await this.goPrepareSend();
+        return;
+      }
+
       if (this.esClienteCompleto==true) {
         //alert('Voy a ajustar el HN');
-        this.ajustadorHn();      
+        await this.ajustadorHn();      
       }else{
         //alert('Voy a ir al cliente');
-        this.goCliente();
+        await this.goCliente();
       }  
+    } finally {
       this.isLoading = false;
-    }, 3000);
+    }
     
+  }
+
+  private async refreshCacheClienteForNavigation(): Promise<void> {
+    try {
+      const res = await firstValueFrom(this.api.ObtenercacheCliente(this.idAtencion));
+      this.applyCacheClienteResponse(res);
+    } catch {
+      this.hasNoPolicyCache = false;
+    }
   }
 
   triggerModalInfo(){
@@ -347,32 +362,33 @@ export class ExpedientePage implements OnInit {
     modal?.setCurrentBreakpoint(breakpoint);
   }
 
-  goAdeuda(){
-    this.Torval();
-    this.router.navigate(['./adeuda'])
+  async goAdeuda(){
+    await this.Torval();
+    await this.navigateFromExpedienteSafely(['./adeuda']);
   }
 
-  goCulpable(){
-    this.Torval();
+  async goCulpable(){
+    await this.Torval();
+    await this.dismissTopOverlaysSafe();
     this.openModal = false;
-    this.myModal.dismiss();
     //this.router.navigate(['./culpable']);
-    this.router.navigate(['./culpable'], { queryParams: { pageSource: './expediente' } });
+    await this.navigateFromExpedienteSafely(['./culpable'], { queryParams: { pageSource: './expediente' } });
   }
 
-  goBeneficiario(){
-    this.Torval();
+  async goBeneficiario(){
+    await this.Torval();
+    await this.dismissTopOverlaysSafe();
     this.openModal = false;
-    this.myModal.dismiss();
-    this.router.navigate(['./beneficiario']);
+    await this.navigateFromExpedienteSafely(['./beneficiario']);
   }
 
-  goFiniquito(){
-    this.Torval();
+  async goFiniquito(){
+    await this.Torval();
+    await this.dismissTopOverlaysSafe();
     
     localStorage.setItem('finiquito', JSON.stringify(this.elFiniquito));
 
-    this.router.navigate(['./finiquito']);
+    await this.navigateFromExpedienteSafely(['./finiquito']);
   }
 
   async getAtenciones() {
@@ -427,9 +443,9 @@ export class ExpedientePage implements OnInit {
     //this.router.navigate(['./tab1']);
   }
 
-  centroDeImpresion(){
+  async centroDeImpresion(){
     localStorage.setItem('idAtencion', this.idAtencion);
-    this.router.navigate(['./printer']);
+    await this.navigateFromExpedienteSafely(['./printer']);
   }
 
   async presentExpedienteActions(event?: Event) {
@@ -448,31 +464,23 @@ export class ExpedientePage implements OnInit {
         {
           text: 'Audiencia',
           icon: 'chatbubbles-outline',
-          handler: () => {
-            this.goAudience();
-          }
+          handler: () => this.goAudience()
         },
         {
           text: 'Imprimir',
           icon: 'print-outline',
-          handler: () => {
-            this.goPrinter();
-          }
+          handler: () => this.goPrinter()
         },
         
         {
           text: 'Finiquito',
           icon: 'cash-outline',
-          handler: () => {
-            this.goBeneficiario();
-          }
+          handler: () => this.goBeneficiario()
         },
         {
           text: 'Fotos',
           icon: 'camera-outline',
-          handler: () => {
-            this.goFotos();
-          }
+          handler: () => this.goFotos()
         },
         {
           text: 'Solicitar grúa',
@@ -480,6 +488,7 @@ export class ExpedientePage implements OnInit {
           cssClass: 'expediente-action-warning',
           handler: () => {
             this.grua();
+            return true;
           }
         },
         {
@@ -496,6 +505,7 @@ export class ExpedientePage implements OnInit {
           cssClass: 'expediente-action-primary',
           handler: () => {
             this.retraceRoute();
+            return true;
           }
         },
         {
@@ -726,76 +736,50 @@ export class ExpedientePage implements OnInit {
   }
 
   obtenerCacheCliente(AtencionId:any){
+    this.hasNoPolicyCache = false;
     this.api.ObtenercacheCliente(AtencionId).pipe(
       finalize(async () => {
         this.isLoading = false;
       })
     ).subscribe(
       async (res) => {
-        
-
-        console.log("Detalles de cache en ver expediente: " + res.length);
-        console.dir(res);
-          if (res) {
-            let indexFlag = 'no tiene';
-          let respuesta = '';
-          let verificacion:any;
-          let answer:any = '';
-
-          /*
-          for (let index = 0; index < res.length; index++) {
-            const element = res[index];
-            
-            answer = answer + element;
-            verificacion = answer.indexOf(indexFlag);
-
-            alert('El elemento es '+element+ ' y la palabra es '+answer+ ' y la verificacion es '+verificacion);
-            console.log('El elemento es '+element+ ' y la palabra es '+answer+ ' y la verificacion es '+verificacion);
-            console.dir(element)
-
-            respuesta = respuesta+element;
-            
-            if (index== (res.length-1)) {
-              verificacion = answer.indexOf(indexFlag);
-              console.log('verificacion '+ verificacion)
-              if (verificacion != -1) {
-                this.esClienteCompleto = false;
-              }
-
-              if (verificacion == -1 || verificacion == '-1') {
-                this.esClienteCompleto = true;
-              }
-
-              setTimeout(() => {
-                //alert('El cliente completo es '+ this.esClienteCompleto);
-              }, 600);
-            }
-          }
-          */
-
-          this.cacheCount = res.length;
-          //alert('La cache tiene '+ this.cacheCount+ ' elementos, mas '+(this.cacheCount+1)+ ' evaluacion '+(this.cacheCount>0));
-          if (this.cacheCount>1) {
-            this.esClienteCompleto = false;
-          }else{
-            this.esClienteCompleto = true;
-          }
-          
-        }else{
-         //this.esClienteCompleto = false;
-        }
-        
+        this.applyCacheClienteResponse(res);
       },
       async (error) => {
         console.log('Nou')
         //this.esClienteCompleto = false;
         //this.cacheCount = 0;
+        this.hasNoPolicyCache = false;
       }
     )
 
     setTimeout(() => {
       //alert(this.esClienteCompleto)
     }, 1000);
+  }
+
+  private applyCacheClienteResponse(res: any): void {
+    const cacheLength = Array.isArray(res) ? res.length : (res ? 1 : 0);
+    console.log("Detalles de cache en ver expediente: " + cacheLength);
+    console.dir(res);
+
+    if (!res) {
+      this.cacheCount = 0;
+      this.cacheCliente = [];
+      this.hasNoPolicyCache = false;
+      return;
+    }
+
+    this.cacheCount = cacheLength;
+    this.cacheCliente = res;
+    this.hasNoPolicyCache = this.isNoPolicyCacheResponse(res);
+    this.esClienteCompleto = this.cacheCount <= 1;
+  }
+
+  private isNoPolicyCacheResponse(cacheResponse: any): boolean {
+    const cacheRecord = Array.isArray(cacheResponse) ? cacheResponse[0] : cacheResponse;
+    const usoPoliza = cacheRecord?.AseguradoUsoPoliza ?? cacheRecord?.aseguradoUsoPoliza ?? cacheRecord?.UtilizoSerivicioAsistencia;
+    return String(usoPoliza || '').trim() === '2';
   }
 
   handleBack(){
@@ -808,52 +792,40 @@ export class ExpedientePage implements OnInit {
     this.router.navigate(['./tabs/tab1'], { queryParams: { Id: this.idAtencion, Source:1 } });
   }
 
-  goCliente(){
+  async goPrepareSend(){
+    await this.Torval();
+    await this.dismissTopOverlaysSafe();
+    this.openModal = false;
+    localStorage.setItem('atencionEnProceso', this.idAtencion);
+    localStorage.setItem('dataProcess-AseguradoUsoPoliza', '2');
+
+    const navigateExtras: NavigationExtras = {
+      state: {
+        data: [
+          { forma: this.expediente },
+          { idAtencion: this.idAtencion }
+        ]
+      }
+    };
+
+    await this.navigateFromExpedienteSafely(['./prepare-send'], navigateExtras);
+  }
+
+  async goCliente(){
     //this.Torval();
     this.elColorEstado = localStorage.getItem('elColorEstado');
     //alert(this.elColorEstado)
     if (this.elColorEstado == 'green') {
       //this.presentToast(this.message, this.position, this.class);
       //alert(this.idAtencion)
-      this.api.obtenerCoordenadasPorAtencion(this.idAtencion, 'AJU_INI').pipe( 
-        finalize(async ()=>{
-          console.log('fin');
-          //alert('Ya')
-        })
-      ).subscribe(
-          (res) =>{
-            console.dir(res.length)
-            //alert(res.length)
-            if (res.length > 0) {
-              //this.Torval();
-              this.clearIntervals();
-              this.openModal = false;
-              this.toastr.dismissToast();
-              //this.myModal.dismiss();
-              const navigateExtras: NavigationExtras = 
-              {
-                state:{
-                  data: [
-                    {'forma': this.expediente},
-                    {'latitud': this.latitud},
-                    {'longitud' : this.longitud}
-                  ]
-                }
-              }
-              //$('#clickButton').fadeOut('slow');
-              //$('#trackButton').attr('style', 'border: none');
-
-              //alert(navigateExtras.state.data[0].forma[0].Cliente);
-              this.router.navigate(['./clientehn'],navigateExtras);
-            
-            }else{
-              $('#clickButton').fadeIn('slow');
-              //$('#trackButton').attr('style', 'border: 1px solid red');
-              this.toastr.presentToastNoButtonsRed('Aun no has activado la geolocalización en vivo. Presiona el botón de ruta e intenta nuevamente tomar la atención.', 'top', 'ruta');
-            }
-            /**/
-          }
-      )
+      const hasInitialPosition = await this.hasInitialAdjusterPosition();
+      if (hasInitialPosition) {
+        await this.navigateToCliente();
+      }else{
+        $('#clickButton').fadeIn('slow');
+        //$('#trackButton').attr('style', 'border: 1px solid red');
+        this.toastr.presentToastNoButtonsRed('Aun no has activado la geolocalización en vivo. Presiona el botón de ruta e intenta nuevamente tomar la atención.', 'top', 'ruta');
+      }
     }else{
       
     }
@@ -869,6 +841,48 @@ export class ExpedientePage implements OnInit {
 
     
     
+  }
+
+  private async hasInitialAdjusterPosition(): Promise<boolean> {
+    if (this.hasLocalAdjusterPosition()) {
+      return true;
+    }
+
+    try {
+      const res: any = await firstValueFrom(this.api.obtenerCoordenadasPorAtencion(this.idAtencion, 'AJU_INI'));
+      return Array.isArray(res) && res.length > 0;
+    } catch {
+      return this.hasLocalAdjusterPosition();
+    }
+  }
+
+  private hasLocalAdjusterPosition(): boolean {
+    const lat = Number(this.latitudAju || localStorage.getItem('laLatitud'));
+    const lng = Number(this.longitudAju || localStorage.getItem('laLongitud'));
+    return Number.isFinite(lat) && Number.isFinite(lng) && lat !== 0 && lng !== 0;
+  }
+
+  private async navigateToCliente(): Promise<void> {
+    await this.Torval();
+    await this.dismissTopOverlaysSafe();
+    this.openModal = false;
+    this.toastr.dismissToast();
+    localStorage.setItem('idAtencion', this.idAtencion);
+    const navigateExtras: NavigationExtras = 
+    {
+      state:{
+        data: [
+          {'forma': this.expediente},
+          {'latitud': this.latitud},
+          {'longitud' : this.longitud}
+        ]
+      }
+    }
+    //$('#clickButton').fadeOut('slow');
+    //$('#trackButton').attr('style', 'border: none');
+
+    //alert(navigateExtras.state.data[0].forma[0].Cliente);
+    await this.navigateFromExpedienteSafely(['./clientehn'], navigateExtras);
   }
 
   comenzarFormulario(){
@@ -894,15 +908,16 @@ export class ExpedientePage implements OnInit {
     //alert('Aheyyyy')
   }
 
-  ajustadorHn(){
+  async ajustadorHn(){
     this.elColorEstado = localStorage.getItem('elColorEstado');
     //alert(this.elColorEstado)
-    this.Torval();
+    await this.Torval();
     if (this.elColorEstado == 'green') {
       
       this.openModal = false;
-      this.myModal.dismiss();
-      this.router.navigate(['./ajustadorhn'])
+      await this.dismissTopOverlaysSafe();
+      localStorage.setItem('idAtencion', this.idAtencion);
+      await this.navigateFromExpedienteSafely(['./ajustadorhn'])
     }else{
       
     }
@@ -914,6 +929,36 @@ export class ExpedientePage implements OnInit {
       this.toastr.presentToastSiniestroCancelado("Este registro ya fue anulado o cancelado. Para mayor información, contacte a su administrador de sistema", 'middle', 'expediente');
     }
     
+  }
+
+  private async dismissTopModalSafe(): Promise<void> {
+    await this.dismissTopOverlaysSafe();
+  }
+
+  private async dismissTopOverlaysSafe(): Promise<void> {
+    let topActionSheet = await this.actionSheetCtrl.getTop();
+    while (topActionSheet) {
+      await topActionSheet.dismiss().catch(() => {});
+      topActionSheet = await this.actionSheetCtrl.getTop();
+    }
+
+    let topModal = await this.myModal.getTop();
+    while (topModal) {
+      await topModal.dismiss().catch(() => {});
+      topModal = await this.myModal.getTop();
+    }
+  }
+
+  private async navigateFromExpedienteSafely(commands: any[], extras?: NavigationExtras): Promise<void> {
+    await this.dismissTopOverlaysSafe();
+
+    const navigationCompleted = await this.router.navigate(commands, extras || {});
+    if (navigationCompleted) {
+      return;
+    }
+
+    await this.router.navigateByUrl('/tabs/tab1', { skipLocationChange: true });
+    await this.router.navigate(commands, extras || {});
   }
   async getCambiarEstado(estado:number){
     this.openModal = true;
@@ -2428,9 +2473,11 @@ export class ExpedientePage implements OnInit {
     void this.startLiveTracking(true);
   }
 
-  goFotos(){
-    this.Torval();
-    this.router.navigate(['./cargar-archivos']);
+  async goFotos(){
+    await this.Torval();
+    await this.dismissTopOverlaysSafe();
+    localStorage.setItem('idAtencion', this.idAtencion);
+    await this.navigateFromExpedienteSafely(['./cargar-archivos']);
   }
 
   displayDirectionInit(directionsService, directionsDisplay, latI, lngI, latF, lngF) {
@@ -2759,13 +2806,11 @@ export class ExpedientePage implements OnInit {
       
     }
 
-    goAudience(){
-      this.Torval();
+    async goAudience(){
+      await this.Torval();
       this.clearIntervals();
-      if (this.myModal) {
-        this.myModal.dismiss();
-        this.openModal = false;
-      }
+      await this.dismissTopOverlaysSafe();
+      this.openModal = false;
       
       if (this.toastr) {
         this.toastr.dismissToast();
@@ -2780,38 +2825,34 @@ export class ExpedientePage implements OnInit {
           ]
         }
       }
-      this.router.navigate(['./prepare-audience'], navigateExtras);
+      await this.navigateFromExpedienteSafely(['./prepare-audience'], navigateExtras);
     }
     
-    goAudienceNo(){
-      this.Torval();
+    async goAudienceNo(){
+      await this.Torval();
       this.clearIntervals();
-      if (this.myModal) {
-        this.myModal.dismiss();
-        this.openModal = false;
-      }
+      await this.dismissTopOverlaysSafe();
+      this.openModal = false;
       
       if (this.toastr) {
         this.toastr.dismissToast();
       }
       
-      this.router.navigate(['./prepare-audience'])
+      await this.navigateFromExpedienteSafely(['./prepare-audience'])
     }
 
-    goPrinter(){
+    async goPrinter(){
       
-      this.Torval();
+      await this.Torval();
       this.clearIntervals();
-      if (this.myModal) {
-        this.myModal.dismiss();
-        this.openModal = false;
-      }
+      await this.dismissTopOverlaysSafe();
+      this.openModal = false;
       
       if (this.toastr) {
         this.toastr.dismissToast();
       }
       
-      this.router.navigate(['./printer'])
+      await this.navigateFromExpedienteSafely(['./printer'])
     }
 
     savePosition(pos){

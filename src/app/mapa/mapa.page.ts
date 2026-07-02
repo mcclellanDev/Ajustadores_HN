@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { AlertController, LoadingController, ToastController, Platform } from '@ionic/angular';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { Router, NavigationExtras } from '@angular/router';
 import { Expedientes } from './../interfaces/expedientes';
@@ -18,7 +18,8 @@ import { finalize } from 'rxjs/operators';
 })
 export class MapaPage implements OnInit {
   @ViewChild('map')
- mapRef: ElementRef<HTMLElement>;  newMaP: GoogleMap;  laPrecision:any;  formulario: Formulario= {};  expediente: Expedientes;  isLoading:boolean=false;
+ mapRef: ElementRef<HTMLElement>;
+  @ViewChild('placeSearchInput') placeSearchInput: ElementRef<HTMLInputElement>;  newMaP: GoogleMap;  laPrecision:any;  formulario: Formulario= {};  expediente: Expedientes;  isLoading:boolean=false;
   isMap:boolean=false;  markerId:string;  miLatitud:any;  miLongitud:any;  coordinates:any; laLocalidad:any;  miLocalidad:any;  latitud:any;  longitud:any;
   miPais:any;  isLoadingData: boolean = false;  isTrack: any=false;  latitudAju: string;  longitudAju: string; mapa: google.maps.Map; firstInterval: NodeJS.Timeout;
   directionsService: google.maps.DirectionsService; directionsDisplay: google.maps.DirectionsRenderer;trackInterval: NodeJS.Timeout; ajuMarker: google.maps.Marker;
@@ -43,8 +44,37 @@ export class MapaPage implements OnInit {
   idAtencion: any;
   api: ApiService;
   alert: any;
+  coordinateCorrectionMode = false;
+  coordinateCorrectionSource = './clientehn';
+  coordinateState: 'ok' | 'warning' | 'danger' = 'warning';
+  hasSelectedCrashPoint = false;
+  instructionCollapsed = false;
+  previousLatitud: any;
+  previousLongitud: any;
+  crashOverlay: google.maps.OverlayView;
+  crashOverlayElement: HTMLElement;
+  placeAutocomplete: google.maps.places.Autocomplete;
 
-  constructor(private router: Router,  private toaster: ToastController, private platform:Platform, private so: ScreenOrientation, private location:Location) { 
+  get mapTitle(): string {
+    return this.coordinateState === 'danger' ? 'Capturar ubicación' : 'Verificar ubicación';
+  }
+
+  get mapInstructionTitle(): string {
+    return this.hasSelectedCrashPoint ? 'Punto seleccionado' : 'Toca el lugar del siniestro';
+  }
+
+  get mapInstructionText(): string {
+    return this.hasSelectedCrashPoint
+      ? 'Confirma para reemplazar las coordenadas de cabina por esta ubicación.'
+      : 'Ubica el punto real del siniestro en el mapa y toca una vez sobre el lugar correcto.';
+  }
+
+  toggleInstructionCard(): void {
+    this.instructionCollapsed = !this.instructionCollapsed;
+  }
+
+  constructor(private router: Router,  private toaster: ToastController, private platform:Platform, private so: ScreenOrientation, private location:Location,
+    private apiService: ApiService, private alertController: AlertController, private zone: NgZone) { 
      /* const state = this.router.getCurrentNavigation().extras.state;
     console.log(state.data);
     */
@@ -54,17 +84,6 @@ export class MapaPage implements OnInit {
     this.idAtencion = parseInt(localStorage.getItem('idAtencion'));
     //alert(this.idAtencion+1)
 
-    this.api.DatosDeAtencion(this.idAtencion).pipe(
-      finalize(async () => {
-        alert('Ahora si')
-        console.log('ya finalicé')
-        this.isLoading = false;
-      })
-    ).subscribe(
-      async (res) => {
-//        this.expediente = res;
-      }
-    )
 /*
     this.api.Expediente(this.idAtencion).pipe(
       finalize(async () => {
@@ -133,10 +152,23 @@ export class MapaPage implements OnInit {
     });
   }
   ionViewDidEnter(){
+    this.configureCorrectionMode();
     this.isLoading = true;
-      this.isMap = false;
+    this.isMap = false;
     this.createMap();
    }
+
+  private configureCorrectionMode(): void {
+    const navState: any = this.router.getCurrentNavigation()?.extras?.state || history.state || {};
+    this.coordinateCorrectionMode = navState.mode === 'claim-coordinate-correction';
+    this.coordinateCorrectionSource = navState.source || './clientehn';
+    this.coordinateState = navState.coordinateState || 'warning';
+    this.idAtencion = navState.attentionId || this.idAtencion || parseInt(localStorage.getItem('idAtencion'));
+    this.previousLatitud = navState.latitud || localStorage.getItem('clienteLatitud') || localStorage.getItem('dataProcess-Latitud');
+    this.previousLongitud = navState.longitud || localStorage.getItem('clienteLongitud') || localStorage.getItem('dataProcess-Longitud');
+    this.latitud = this.previousLatitud || localStorage.getItem('laLatitud') || 14.0818;
+    this.longitud = this.previousLongitud || localStorage.getItem('laLongitud') || -87.2068;
+  }
   async createMap() {
     this.isLoadingData = true;
     this.laLocalidad = JSON.parse(localStorage.getItem('miLocalidad'));
@@ -155,13 +187,25 @@ export class MapaPage implements OnInit {
     }
 
     this.mapa = new google.maps.Map(document.getElementById("map"), mapOptions);
+    this.mapa.addListener('click', (event: google.maps.MapMouseEvent) => {
+      if (!event.latLng) {
+        return;
+      }
+
+      this.zone.run(() => this.handleMapSelection(event.latLng.lat(), event.latLng.lng()));
+    });
     this.directionsService = new google.maps.DirectionsService;
     this.directionsDisplay = new google.maps.DirectionsRenderer;
     this.directionsDisplay.setMap(this.mapa);
 
     //alert('Hey vooo : '+this.latitud+', '+this.longitud+', '+this.latitudAju+', '+this.longitudAju)
     setTimeout(() => {
-      this.displayDirectionInit(this.directionsService,this.directionsDisplay, this.latitud, this.longitud, this.latitudAju, this.longitudAju);  
+      if (this.coordinateCorrectionMode) {
+        this.centerCorrectionMap();
+        this.initPlaceSearch();
+      } else {
+        this.displayDirectionInit(this.directionsService,this.directionsDisplay, this.latitud, this.longitud, this.latitudAju, this.longitudAju);
+      }
     }, 1000);
 
     if (this.platform.is('android')) {
@@ -177,7 +221,13 @@ export class MapaPage implements OnInit {
 
       this.geoloc = navigator.geolocation;
     
-    this.watcher = this.geoloc.watchPosition(this.savePosition, this.positionError, {enableHighAccuracy:true});
+    if (!this.coordinateCorrectionMode) {
+      this.watcher = this.geoloc.watchPosition(this.savePosition, this.positionError, {enableHighAccuracy:true});
+    }
+
+    if (this.coordinateCorrectionMode) {
+      return;
+    }
 
     this.trackInterval = setInterval(()=>{
       this.moveCoords = JSON.parse(localStorage.getItem('moveCoords'));
@@ -224,11 +274,11 @@ export class MapaPage implements OnInit {
           Latitud: parseFloat(this.moveLatitud),
           Longitud: parseFloat(this.moveLongitud),
           RefAtencionId: this.idAtencion,
-          RefUsuarioId: this.api.currentUser.ProveedorAgenteId,
+          RefUsuarioId: this.apiService.currentUser.ProveedorAgenteId,
           Tipo: 'AJU_MOV'
         }
 
-        this.api.setPositionNRoute(jsonPosition).pipe( 
+        this.apiService.setPositionNRoute(jsonPosition).pipe( 
           finalize(async ()=>{
             console.log('fin');
           })
@@ -236,7 +286,7 @@ export class MapaPage implements OnInit {
            (res) =>{
           },
           async (res) => {
-            const alert = await this.alert.create({
+            const alert = await this.alertController.create({
               header:'HELP',
               message:res.error.Message,
               buttons:['Ok']
@@ -525,6 +575,191 @@ export class MapaPage implements OnInit {
     return Math.floor(Math.random() * (max - min + 1) + min).toFixed(2);
   }
   
+  private centerCorrectionMap(): void {
+    const lat = Number(this.latitud);
+    const lng = Number(this.longitud);
+    const agentLat = Number(localStorage.getItem('laLatitud'));
+    const agentLng = Number(localStorage.getItem('laLongitud'));
+    const hasInitialCrashPoint = Number.isFinite(lat) && Number.isFinite(lng) && this.coordinateState !== 'danger';
+    const hasAgentPoint = Number.isFinite(agentLat) && Number.isFinite(agentLng);
+    const center = hasInitialCrashPoint
+      ? { lat, lng }
+      : hasAgentPoint
+        ? this.getOffsetAgentReference(agentLat, agentLng)
+        : { lat: 14.0818, lng: -87.2068 };
+
+    this.latitud = center.lat;
+    this.longitud = center.lng;
+    this.mapa.setCenter(center);
+    this.mapa.setZoom(hasInitialCrashPoint ? 16 : 15);
+    this.setSingleCrashMarker(center);
+    this.isLoadingData = false;
+  }
+
+  private getOffsetAgentReference(lat: number, lng: number): google.maps.LatLngLiteral {
+    return {
+      lat: lat + 0.00018,
+      lng: lng + 0.00018
+    };
+  }
+
+  private initPlaceSearch(): void {
+    if (!this.placeSearchInput?.nativeElement || !google.maps.places?.Autocomplete) {
+      return;
+    }
+
+    this.placeAutocomplete = new google.maps.places.Autocomplete(this.placeSearchInput.nativeElement, {
+      componentRestrictions: { country: 'hn' },
+      fields: ['geometry', 'name', 'formatted_address']
+    });
+
+    this.placeAutocomplete.addListener('place_changed', () => {
+      this.zone.run(() => {
+        const place = this.placeAutocomplete.getPlace();
+        const location = place.geometry?.location;
+
+        if (!location) {
+          return;
+        }
+
+        const position = { lat: location.lat(), lng: location.lng() };
+        this.mapa.panTo(position);
+        this.mapa.setZoom(17);
+        this.handleMapSelection(position.lat, position.lng);
+      });
+    });
+  }
+
+  private handleMapSelection(lat: number, lng: number): void {
+    this.latitud = lat;
+    this.longitud = lng;
+    this.hasSelectedCrashPoint = true;
+    this.setSingleCrashMarker({ lat, lng });
+  }
+
+  private setSingleCrashMarker(position: google.maps.LatLngLiteral): void {
+    if (this.firstInterval) {
+      clearInterval(this.firstInterval);
+    }
+
+    if (this.crashMarker) {
+      this.crashMarker.setMap(null);
+      this.crashMarker = null;
+    }
+
+    if (!this.crashOverlay) {
+      this.crashOverlay = this.createCrashHaloOverlay();
+      this.crashOverlay.setMap(this.mapa);
+    }
+
+    (this.crashOverlay as any).setPosition(position);
+  }
+
+  private createCrashHaloOverlay(): google.maps.OverlayView {
+    let markerElement: HTMLElement;
+    const overlay = new google.maps.OverlayView();
+
+    (overlay as any).position = null;
+    (overlay as any).setPosition = (position: google.maps.LatLngLiteral) => {
+      (overlay as any).position = new google.maps.LatLng(position.lat, position.lng);
+      overlay.draw();
+    };
+
+    overlay.onAdd = () => {
+      markerElement = document.createElement('div');
+      markerElement.className = 'help-map-crash-marker';
+      markerElement.innerHTML = `
+        <span class="help-map-crash-halo help-map-crash-halo-one"></span>
+        <span class="help-map-crash-halo help-map-crash-halo-two"></span>
+        <span class="help-map-crash-pin">
+          <span class="help-map-crash-icon">
+            <img src="assets/img/crash-white.svg" alt="" aria-hidden="true" />
+          </span>
+        </span>
+      `;
+      this.crashOverlayElement = markerElement;
+      overlay.getPanes().overlayMouseTarget.appendChild(markerElement);
+    };
+
+    overlay.draw = () => {
+      const position = (overlay as any).position;
+
+      if (!position || !markerElement) {
+        return;
+      }
+
+      const projection = overlay.getProjection();
+      const point = projection.fromLatLngToDivPixel(position);
+      markerElement.style.left = point.x + 'px';
+      markerElement.style.top = point.y + 'px';
+    };
+
+    overlay.onRemove = () => {
+      if (markerElement?.parentNode) {
+        markerElement.parentNode.removeChild(markerElement);
+      }
+    };
+
+    return overlay;
+  }
+
+  async confirmarCambioUbicacion(){
+    if (!this.hasSelectedCrashPoint) {
+      const alert = await this.alertController.create({
+        cssClass: 'form-choice-alert entry-validation-alert coordinate-change-alert coordinate-change-alert--danger',
+        header: 'Selecciona una ubicación',
+        message: 'Toca el mapa sobre el lugar real del siniestro antes de confirmar.',
+        buttons: [
+          {
+            text: 'Entendido',
+            cssClass: 'form-choice-confirm'
+          }
+        ]
+      });
+      await alert.present();
+      return;
+    }
+
+    const alert = await this.alertController.create({
+      cssClass: 'form-choice-alert entry-validation-alert coordinate-change-alert',
+      header: 'Confirmar ubicación del siniestro',
+      message: 'Se reemplazarán las coordenadas recibidas desde cabina por el punto seleccionado en el mapa. Esta corrección quedará marcada como realizada por el ajustador.',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'alert-button-cancel'
+        },
+        {
+          text: 'Confirmar',
+          cssClass: 'alert-button-confirm',
+          handler: () => {
+            this.persistirCoordenadasCorregidas();
+            this.continuar();
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private persistirCoordenadasCorregidas(): void {
+    const latitud = String(this.latitud);
+    const longitud = String(this.longitud);
+    localStorage.setItem('dataProcess-Latitud', latitud);
+    localStorage.setItem('dataProcess-Longitud', longitud);
+    localStorage.setItem('clienteLatitud', latitud);
+    localStorage.setItem('clienteLongitud', longitud);
+
+    if (this.idAtencion) {
+      localStorage.setItem('coords-latitud-' + this.idAtencion, latitud);
+      localStorage.setItem('coords-longitud-' + this.idAtencion, longitud);
+      localStorage.setItem('coords-corregidas-' + this.idAtencion, 'true');
+      localStorage.setItem('coords-correccion-confirmada-' + this.idAtencion, 'true');
+      localStorage.setItem('coords-observacion-' + this.idAtencion, 'Ubicacion del siniestro corregida manualmente por el ajustador');
+    }
+  }
+
   async addMapMarker(coordenates: any){
     console.log(coordenates.lat+', '+coordenates.lng)
     const markerId = await this.newMaP.addMarker({
@@ -549,6 +784,16 @@ export class MapaPage implements OnInit {
       })
   }
   async Torval(){
+    this.clearIntervals();
+    if (this.watcher && this.geoloc?.clearWatch) {
+      this.geoloc.clearWatch(this.watcher);
+    }
+
+    if (this.crashOverlay) {
+      this.crashOverlay.setMap(null);
+      this.crashOverlay = null;
+    }
+
     if(this.newMaP !== undefined){
       const putin = this.newMaP.destroy();
       console.log(putin)
@@ -563,7 +808,9 @@ export class MapaPage implements OnInit {
           {'forma': this.formulario},
           {'latitud': this.latitud},
           {'longitud' : this.longitud}
-        ]
+        ],
+        coordinateCorrectionConfirmed: this.coordinateCorrectionMode,
+        attentionId: this.idAtencion
       }
     }
     this.Torval();

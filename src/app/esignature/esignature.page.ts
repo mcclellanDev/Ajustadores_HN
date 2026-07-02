@@ -90,6 +90,9 @@ export class EsignaturePage implements OnInit {
           (res) => {
             console.log(res, 'token respuesta');
             localStorage.setItem('dSignatureAsegurado', this.firmaPrecargada);
+            localStorage.setItem('dSignatureAsegurado-' + idAtencion, this.firmaPrecargada);
+            localStorage.setItem('dSignatureAseguradoAtencion', idAtencion.toString());
+            localStorage.setItem('signatureSavedAt', new Date().toISOString());
             this.tostador.presentToastNoButtons("Firma guardada exitosamente! Ya puedes reutilizarla cuando sea necesario.", "top", "firma");
             const element = document.getElementById('cardAsegurado');
             const elementInput = document.getElementById('nombreInput');

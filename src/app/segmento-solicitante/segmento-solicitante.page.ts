@@ -27,7 +27,7 @@ export class SegmentoSolicitantePage implements OnInit {
   elCorreoElectronico:any; isNombreCliente:boolean=false; isStorageClienteNombre:boolean=false; isIdCliente:boolean=false; isTelCliente:boolean=false; isMailCliente:boolean=false;
   segmentoTitulo:any;  isFirst: boolean; fechaValida: boolean;  miPais: string;  banderaPais: string;
   codigoPais: string;  iconIndex: any; disExpediente:any= [];  cacheDeCliente: any = []; solicitanteId:any;
-  coberturas: any = [];
+  coberturas: any = []; causasPorCobertura:any=[]; causaBpmCodigo:any; causaBpmDescripcion:any;
   private pendingLoads = 0;
 
   applicantTypeSelectOptions = { cssClass: 'form-choice-alert', header: 'Tipo de solicitante', subHeader: 'Selecciona una opción' };
@@ -89,6 +89,8 @@ export class SegmentoSolicitantePage implements OnInit {
       let elParentesco = localStorage.getItem('elParentesco');
       let elTelefonoCliente = localStorage.getItem('elTelefonoOrigen');
       let elCorreo = localStorage.getItem('dataProcess-CorreoElectronico');
+      this.causaBpmCodigo = localStorage.getItem('codigoCausaBpm');
+      this.causaBpmDescripcion = localStorage.getItem('descripcionCausaBpm');
 
 
       if (tipoSolicitante) {
@@ -934,6 +936,8 @@ seleccionarTipoCobertura(event){
       //alert('coberturaFIeld '+element.cOBERTURAField+' == tipoDeCobertura del front '+this.tipoDeCobertura+', validacion '+validacion+'coberturaDisplayName '+element.dESCRIPCIONField);
       localStorage.setItem('coberturaId', element.cOBERTURAField);
       this.seTipoCobertura(element.dESCRIPCIONField);
+      this.clearSelectedCause();
+      this.solicitarCausaPorCobertura(element.cOBERTURAField);
     }
   }
 
@@ -947,13 +951,81 @@ seleccionarTipoCobertura(event){
 seTipoCobertura(tipo){
   this.tipoDeCobertura = tipo;
   localStorage.setItem('tipoCobertura', tipo);
-  $("#TipoAcuerdoDisplay").text(this.tipoDeCobertura);
   this.coberturaDisplayName = this.tipoDeCobertura;
   localStorage.setItem('laCobertura', this.idAtencion.toString()+'-'+this.coberturaDisplayName);
   localStorage.setItem('datos-TipoAcuerdoFicohsa', this.coberturaDisplayName);
   this.setAtencionActual();
 }
 
+
+private async solicitarCausaPorCobertura(codigoCobertura: any): Promise<void> {
+  const codigo = (codigoCobertura || '').toString().trim();
+  if (!codigo) {
+    return;
+  }
+  this.isLoading = true;
+  this.api.ObtenerCausasPorCobertura(codigo).pipe(finalize(() => this.isLoading = false)).subscribe(
+    async (res: any) => {
+      this.causasPorCobertura = Array.isArray(res) ? res : [];
+      if (!this.causasPorCobertura.length) {
+        this.toaster.presentToastAlert('No se encontraron causas para la cobertura seleccionada.', 'top', 'warning', 5000);
+        return;
+      }
+      await this.presentarSelectorCausa();
+    },
+    async () => {
+      this.toaster.presentToastAlert('No fue posible obtener las causas para esta cobertura.', 'top', 'danger', 6000);
+    }
+  );
+}
+
+private async presentarSelectorCausa(): Promise<void> {
+  const alert = await this.alert.create({
+    cssClass: 'form-choice-alert',
+    header: this.getCauseSelectorHeader(),
+    subHeader: 'Selecciona una opción',
+    inputs: this.causasPorCobertura.map((causa) => ({
+      type: 'radio',
+      label: causa.DESCRIPCION_CAUS,
+      value: causa.COD_CAUSA,
+      checked: causa.COD_CAUSA === this.causaBpmCodigo || causa.COD_CAUSA === localStorage.getItem('codigoCausaBpm')
+    })),
+    buttons: [
+      { text: 'Cancelar', role: 'cancel' },
+      {
+        text: 'Seleccionar',
+        handler: (codigoCausa) => {
+          if (!codigoCausa) {
+            return false;
+          }
+          const seleccionada = this.causasPorCobertura.find((causa) => causa.COD_CAUSA === codigoCausa);
+          this.causaBpmCodigo = codigoCausa;
+          this.causaBpmDescripcion = seleccionada?.DESCRIPCION_CAUS || '';
+          localStorage.setItem('codigoCausaBpm', this.causaBpmCodigo || '');
+          localStorage.setItem('descripcionCausaBpm', this.causaBpmDescripcion || '');
+        }
+      }
+    ]
+  });
+  await alert.present();
+}
+
+private clearSelectedCause(): void {
+  this.causaBpmCodigo = '';
+  this.causaBpmDescripcion = '';
+  localStorage.removeItem('codigoCausaBpm');
+  localStorage.removeItem('descripcionCausaBpm');
+}
+
+private getCauseSelectorHeader(): string {
+  const description = (this.coberturaDisplayName || this.tipoDeCobertura || localStorage.getItem('datos-TipoAcuerdoFicohsa') || '').toString().trim();
+  const coverageHint = description.split(/\s+/).filter(Boolean).slice(0, 2).join(' ');
+  return coverageHint ? 'Causa del reclamo - ' + coverageHint : 'Causa del reclamo';
+}
+
+getSelectedCauseDescription(): string {
+  return (this.causaBpmDescripcion || localStorage.getItem('descripcionCausaBpm') || '').toString().trim();
+}
 
 
 

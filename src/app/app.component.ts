@@ -18,6 +18,7 @@ import { NetworkInfo } from './environments/network';
 import { Observable } from 'rxjs';
 import { AppConnectionStatus } from './services/connection.service';
 import { DeviceService } from './services/device.service';
+import { PROJECT_SIGNATURE } from './environments/project-signature';
 import * as $ from 'jquery';
 
 
@@ -36,6 +37,7 @@ export class AppComponent {
   emptySignature:any = emptySignature;stripeForm: any;
   connectionStatus$: Observable<AppConnectionStatus>;
   conectividad?: boolean;  conectividadStat: string | undefined;
+  readonly projectSignature = PROJECT_SIGNATURE;
 
   constructor(private plt: Platform, 
     private api: ApiService,

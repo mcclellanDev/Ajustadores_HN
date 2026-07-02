@@ -61,10 +61,30 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
   canGenerateSettlement = false;
   claimValidationError = false;
   private claimAlertOpen = false;
+  private readonly finiquitoDraftAttentionKey = 'finiquitoDraftAttentionId';
+  private readonly finiquitoDraftKeys = [
+    'elFiniquito',
+    'tipoCobertura',
+    'NombreAFavor',
+    'IdentidadQuienRecibe',
+    'NombreQuienRecibe',
+    'ValorDelCheque',
+    'NumeroCheque',
+    'finiquito-beneficiarioTipo',
+    'finiquito-FechaDesde',
+    'finiquito-FechaHasta',
+    'finiquito-FechaDelCheque',
+    'finiquito-numeroCheque',
+    'finiquito-ValorDelCheque',
+    'finiquito-NombreQuienRecibe',
+    'finiquito-IdentidadQuienRecibe',
+    'finiquito-NombreAFavor'
+  ];
   constructor(private router:Router, private api:ApiService, private toaster:ToastService, private myModal:ModalController,
     private animationCtrl: AnimationController, private alert: AlertController
   ) { 
     this.idAtencion = localStorage.getItem('idAtencion');
+    this.clearFiniquitoDraftIfAttentionChanged();
     
     
     this.now = new Date();
@@ -228,7 +248,7 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
 
   seleccionarTipoCobertura(event) {
     this.elFiniquito.TipoCoberturaFicohsa = event.target.value;
-    localStorage.setItem('tipoCobertura', event.target.value);
+    this.setFiniquitoDraftValue('tipoCobertura', event.target.value);
     this.invalidCoverage = false;
   }
 
@@ -307,6 +327,61 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
     this.goExpediente();
   }
 
+  private clearFiniquitoDraftIfAttentionChanged(): void {
+    const currentAttentionId = String(this.idAtencion || localStorage.getItem('idAtencion') || '').trim();
+    if (!currentAttentionId) {
+      return;
+    }
+
+    const storedAttentionId = localStorage.getItem(this.finiquitoDraftAttentionKey);
+    const draftAttentionId = this.getStoredFiniquitoAttentionId();
+    const legacyDraftWithoutAttention =
+      !storedAttentionId &&
+      !draftAttentionId &&
+      this.finiquitoDraftKeys.some((key) => localStorage.getItem(key) !== null);
+    const belongsToAnotherAttention =
+      legacyDraftWithoutAttention ||
+      (!!storedAttentionId && storedAttentionId !== currentAttentionId) ||
+      (!!draftAttentionId && draftAttentionId !== currentAttentionId);
+
+    if (belongsToAnotherAttention) {
+      this.finiquitoDraftKeys.forEach((key) => localStorage.removeItem(key));
+    }
+
+    localStorage.setItem(this.finiquitoDraftAttentionKey, currentAttentionId);
+  }
+
+  private getStoredFiniquitoAttentionId(): string {
+    try {
+      const draft = JSON.parse(localStorage.getItem('elFiniquito') || '{}') || {};
+      return String(draft.RefAtencionId || draft.IdAtencion || '').trim();
+    } catch {
+      return '';
+    }
+  }
+
+  private markCurrentFiniquitoDraft(): void {
+    const currentAttentionId = String(this.idAtencion || localStorage.getItem('idAtencion') || '').trim();
+    if (currentAttentionId) {
+      localStorage.setItem(this.finiquitoDraftAttentionKey, currentAttentionId);
+    }
+  }
+
+  private finiquitoScopedKey(key: string): string {
+    const currentAttentionId = String(this.idAtencion || localStorage.getItem('idAtencion') || '').trim();
+    return currentAttentionId ? `finiquito-${currentAttentionId}-${key}` : `finiquito-${key}`;
+  }
+
+  private setFiniquitoDraftValue(key: string, value: any): void {
+    this.markCurrentFiniquitoDraft();
+    localStorage.setItem(this.finiquitoScopedKey(key), value ?? '');
+  }
+
+  private getFiniquitoDraftValue(key: string): string {
+    const value = localStorage.getItem(this.finiquitoScopedKey(key));
+    return value && value !== 'undefined' && value !== 'null' ? value : '';
+  }
+
   async alertaSalir() {
     const alert = await this.alert.create({
       cssClass: 'form-choice-alert',
@@ -355,27 +430,27 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
   entraAFavorDe(event) {
     this.elFiniquito.NombreAFavor = event.target.value;
     this.invalidPayee = !this.elFiniquito.NombreAFavor?.toString().trim();
-    localStorage.setItem('NombreAFavor', this.elFiniquito.NombreAFavor);
+    this.setFiniquitoDraftValue('NombreAFavor', this.elFiniquito.NombreAFavor);
     }
     entraentraReceptorIdentidad(event) {
     this.elFiniquito.IdentidadQuienRecibe = event.target.value;
     this.invalidReceiverId = !this.elFiniquito.IdentidadQuienRecibe?.toString().trim();
-    localStorage.setItem('IdentidadQuienRecibe', this.elFiniquito.IdentidadQuienRecibe);
+    this.setFiniquitoDraftValue('IdentidadQuienRecibe', this.elFiniquito.IdentidadQuienRecibe);
     }
     entraReceptorNombre(event) {
     this.elFiniquito.NombreQuienRecibe = event.target.value;
     this.invalidReceiverName = !this.elFiniquito.NombreQuienRecibe?.toString().trim();
-    localStorage.setItem('NombreQuienRecibe', this.elFiniquito.NombreQuienRecibe);
+    this.setFiniquitoDraftValue('NombreQuienRecibe', this.elFiniquito.NombreQuienRecibe);
     }
     entraChequeMonto(event) {
     this.elFiniquito.ValorDelCheque = event.target.value;
     this.invalidCheckAmount = !this.elFiniquito.ValorDelCheque || Number(this.elFiniquito.ValorDelCheque) <= 0;
-    localStorage.setItem('ValorDelCheque', this.elFiniquito.ValorDelCheque);
+    this.setFiniquitoDraftValue('ValorDelCheque', this.elFiniquito.ValorDelCheque);
     }
     entraChequeNumero(event) {
     this.elFiniquito.NumeroCheque = event.target.value;
     this.invalidCheckNumber = !this.elFiniquito.NumeroCheque?.toString().trim();
-    localStorage.setItem('NumeroCheque', this.elFiniquito.NumeroCheque);
+    this.setFiniquitoDraftValue('NumeroCheque', this.elFiniquito.NumeroCheque);
     }
 
   goFiniquito(){
@@ -389,10 +464,12 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
     }
 
     console.log('antes de ir al finiquito');
+    this.elFiniquito.RefAtencionId = this.atencionId || Number(this.idAtencion);
     this.elFiniquito.NumeroReclamo = this.codigoReclamo;
     this.elFiniquito.FechaFirma = new Date().toISOString();
     console.dir(this.elFiniquito);
     
+    this.markCurrentFiniquitoDraft();
     localStorage.setItem('elFiniquito', JSON.stringify(this.elFiniquito));
 
     this.router.navigate(['./finiquito']);
@@ -424,47 +501,48 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
   }
 
   guardaCache(position){
+    this.markCurrentFiniquitoDraft();
     if (position == 0) {
-      localStorage.setItem('finiquito-beneficiarioTipo', this.elFiniquito.beneficiarioTipo);
+      this.setFiniquitoDraftValue('beneficiarioTipo', this.elFiniquito.beneficiarioTipo);
     }
     if (position == 1) {
-      localStorage.setItem('finiquito-FechaDesde', this.elFiniquito.FechaDesde);
+      this.setFiniquitoDraftValue('FechaDesde', this.elFiniquito.FechaDesde);
       //alert(this.elFiniquito.FechaDesde)
     }
     if (position == 2) {
-      localStorage.setItem('finiquito-FechaHasta', this.elFiniquito.FechaHasta);
+      this.setFiniquitoDraftValue('FechaHasta', this.elFiniquito.FechaHasta);
     }
     if (position == 3) {
-      localStorage.setItem('finiquito-FechaDelCheque', this.elFiniquito.FechaDelCheque);
+      this.setFiniquitoDraftValue('FechaDelCheque', this.elFiniquito.FechaDelCheque);
     }
     if (position == 4) {
-      localStorage.setItem('finiquito-numeroCheque', this.elFiniquito.NumeroCheque);
+      this.setFiniquitoDraftValue('NumeroCheque', this.elFiniquito.NumeroCheque);
     }
     if (position == 5) {
-      localStorage.setItem('finiquito-ValorDelCheque', this.elFiniquito.ValorDelCheque);
+      this.setFiniquitoDraftValue('ValorDelCheque', this.elFiniquito.ValorDelCheque);
     }
     if (position == 6) {
-      localStorage.setItem('finiquito-NombreQuienRecibe', this.elFiniquito.NombreQuienRecibe);
+      this.setFiniquitoDraftValue('NombreQuienRecibe', this.elFiniquito.NombreQuienRecibe);
     }
     if (position == 7) {
-      localStorage.setItem('finiquito-IdentidadQuienRecibe', this.elFiniquito.IdentidadQuienRecibe);
+      this.setFiniquitoDraftValue('IdentidadQuienRecibe', this.elFiniquito.IdentidadQuienRecibe);
     }
     if (position == 8) {
-      localStorage.setItem('finiquito-NombreAFavor', this.elFiniquito.NombreAFavor);
+      this.setFiniquitoDraftValue('NombreAFavor', this.elFiniquito.NombreAFavor);
     }
   }
 
   obtenerCache(){
-      const beneficiaryType = localStorage.getItem('finiquito-beneficiarioTipo');
+      const beneficiaryType = this.getFiniquitoDraftValue('beneficiarioTipo');
       this.elFiniquito.beneficiarioTipo = beneficiaryType ? parseInt(beneficiaryType, 10) : this.elFiniquito.beneficiarioTipo;
-      this.desdeFecha = localStorage.getItem('finiquito-FechaDesde');
-      this.hastaFecha = localStorage.getItem('finiquito-FechaHasta');
-      this.chequeFecha = localStorage.getItem('finiquito-FechaDelCheque');
-      this.numeroCheque = localStorage.getItem('finiquito-numeroCheque');
-      this.montoCheque = localStorage.getItem('finiquito-ValorDelCheque');
-      this.receptorNombre = localStorage.getItem('finiquito-NombreQuienRecibe');
-      this.receptorIdentidad = localStorage.getItem('finiquito-IdentidadQuienRecibe');
-      this.aFavorDe = localStorage.getItem('finiquito-NombreAFavor');
+      this.desdeFecha = this.getFiniquitoDraftValue('FechaDesde');
+      this.hastaFecha = this.getFiniquitoDraftValue('FechaHasta');
+      this.chequeFecha = this.getFiniquitoDraftValue('FechaDelCheque');
+      this.numeroCheque = this.getFiniquitoDraftValue('NumeroCheque');
+      this.montoCheque = this.getFiniquitoDraftValue('ValorDelCheque');
+      this.receptorNombre = this.getFiniquitoDraftValue('NombreQuienRecibe');
+      this.receptorIdentidad = this.getFiniquitoDraftValue('IdentidadQuienRecibe');
+      this.aFavorDe = this.getFiniquitoDraftValue('NombreAFavor');
       this.elFiniquito.FechaDesde = this.desdeFecha || this.elFiniquito.FechaDesde;
       this.elFiniquito.FechaHasta = this.hastaFecha || this.elFiniquito.FechaHasta;
       this.elFiniquito.FechaDelCheque = this.chequeFecha || this.elFiniquito.FechaDelCheque;
@@ -473,7 +551,7 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
       this.elFiniquito.NombreQuienRecibe = this.receptorNombre || this.elFiniquito.NombreQuienRecibe;
       this.elFiniquito.IdentidadQuienRecibe = this.receptorIdentidad || this.elFiniquito.IdentidadQuienRecibe;
       this.elFiniquito.NombreAFavor = this.aFavorDe || this.elFiniquito.NombreAFavor;
-      const cachedCoverage = localStorage.getItem('tipoCobertura');
+      const cachedCoverage = this.getFiniquitoDraftValue('tipoCobertura');
       this.elFiniquito.TipoCoberturaFicohsa = this.elFiniquito.TipoCoberturaFicohsa ||
         (cachedCoverage?.trim().toLowerCase() === 'string' ? '' : cachedCoverage);
       this.isLoading = false;

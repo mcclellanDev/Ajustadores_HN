@@ -79,6 +79,14 @@ export class Tab1Page implements OnInit, OnDestroy {
   gpsOn: boolean = false;  isTablet: boolean = false; showLocationPrompt: boolean = false;
   bulkAttemptsById: Record<number, AttentionBulkAttempt> = {};
 
+  get hasActiveAttentionSelected(): boolean {
+    const selectedId = this.atIndex || this.idAtencion;
+    return Array.isArray(this.filtroAtenciones)
+      && this.filtroAtenciones.length > 0
+      && !!selectedId
+      && this.filtroAtenciones.some(item => item.IdAtencion?.toString() === selectedId.toString());
+  }
+
 
   constructor(private router: Router, private loading: LoadingController,private alert: AlertController,private api: ApiService,private toast: ToastController,
     private tostador: ToastService,private actionSheetCtrl: ActionSheetController,private platform: Platform,private toaster: ToastController,private so: ScreenOrientation,
@@ -156,13 +164,149 @@ export class Tab1Page implements OnInit, OnDestroy {
     localStorage.setItem('firmaPrecargadaAjustador', this.firmaPrecargadaAjustador);
   }
 
+  private signatureStorageKey(idAtencion?: any): string {
+    const attentionId = idAtencion || this.atIndex || this.idAtencion || localStorage.getItem('idAtencion');
+    return attentionId ? 'dSignatureAsegurado-' + attentionId : 'dSignatureAsegurado';
+  }
+
+  private isValidClientSignature(signature: any): boolean {
+    const value = (signature || '').toString();
+    return !!value &&
+      value !== emptySignature &&
+      value !== emptySignatureWhite &&
+      value !== 'null' &&
+      value !== 'undefined';
+  }
+
+  private refreshClientSignatureFromStorage(idAtencion?: any): void {
+    const attentionId = idAtencion || this.atIndex || this.idAtencion || localStorage.getItem('idAtencion');
+    const signatureByAttention = localStorage.getItem(this.signatureStorageKey(attentionId));
+    const genericSignature = localStorage.getItem('dSignatureAsegurado');
+    const genericAttentionId = localStorage.getItem('dSignatureAseguradoAtencion');
+    const canUseGenericSignature = !attentionId || genericAttentionId === attentionId.toString();
+    const signature = this.isValidClientSignature(signatureByAttention)
+      ? signatureByAttention
+      : (canUseGenericSignature ? genericSignature : null);
+
+    if (this.isValidClientSignature(signature)) {
+      this.firmaPrecargada = signature;
+      this.isSignature = true;
+      return;
+    }
+
+    this.firmaPrecargada = emptySignatureWhite;
+    this.isSignature = false;
+  }
+
+  private clearClientSignature(idAtencion?: any): void {
+    const attentionId = idAtencion || this.atIndex || this.idAtencion || localStorage.getItem('idAtencion');
+
+    if (attentionId) {
+      localStorage.removeItem(this.signatureStorageKey(attentionId));
+    }
+
+    if (!attentionId || localStorage.getItem('dSignatureAseguradoAtencion') === attentionId.toString()) {
+      localStorage.removeItem('dSignatureAsegurado');
+      localStorage.removeItem('dSignatureAseguradoAtencion');
+    }
+
+    this.firmaPrecargada = emptySignatureWhite;
+    this.isSignature = false;
+  }
+
+  private refreshClientSignatureFromServer(idAtencion?: any): void {
+    const attentionId = idAtencion || this.atIndex || this.idAtencion || localStorage.getItem('idAtencion');
+
+    if (!attentionId) {
+      this.refreshClientSignatureFromStorage();
+      return;
+    }
+
+    let latestSignatureRecord = null;
+
+    this.api.obtenerFotoPorAtencion(attentionId, 3).subscribe({
+      next: async (res) => {
+        const firmas = this.normalizeClientSignatureResponse(res);
+        for (let index = 0; index < firmas.length; index++) {
+          const element = firmas[index];
+          if (this.isClientSignatureRecord(element) && this.isValidClientSignature(element?.FotoFirma)) {
+            latestSignatureRecord = element;
+          }
+        }
+      },
+      error: async () => {
+        this.refreshClientSignatureFromStorage(attentionId);
+      },
+      complete: () => {
+        if (!latestSignatureRecord?.FotoFirma) {
+          this.clearClientSignature(attentionId);
+          return;
+        }
+
+        const firma = latestSignatureRecord.FotoFirma.toString().startsWith('data:image')
+          ? latestSignatureRecord.FotoFirma
+          : imagePrefix + latestSignatureRecord.FotoFirma;
+        this.persistClientSignature(firma, attentionId);
+      }
+    });
+  }
+
+  private normalizeClientSignatureResponse(res: any): any[] {
+    if (Array.isArray(res)) {
+      return res;
+    }
+
+    if (Array.isArray(res?.data)) {
+      return res.data;
+    }
+
+    if (Array.isArray(res?.result)) {
+      return res.result;
+    }
+
+    if (Array.isArray(res?.Result)) {
+      return res.Result;
+    }
+
+    return res ? [res] : [];
+  }
+
+  private isClientSignatureRecord(record: any): boolean {
+    const tipoFirma = record?.RefTipoFotoId ??
+      record?.RefTipoFotografiaId ??
+      record?.TipoFotoFirma ??
+      record?.RefTipoFotoFirmaId;
+
+    return tipoFirma === undefined || tipoFirma === null || tipoFirma.toString() === '3';
+  }
+
+  private persistClientSignature(signature: string, idAtencion?: any): void {
+    if (!this.isValidClientSignature(signature)) {
+      return;
+    }
+
+    this.firmaPrecargada = signature;
+    localStorage.setItem('dSignatureAsegurado', signature);
+    localStorage.setItem(this.signatureStorageKey(idAtencion), signature);
+    if (idAtencion) {
+      localStorage.setItem('dSignatureAseguradoAtencion', idAtencion.toString());
+    }
+    this.isSignature = true;
+  }
+
   next() {
+    if (this.blockWhenNoActiveAttention()) {
+      return;
+    }
     if (this.elColorEstado == "green") {this.router.navigate(['./cargar-archivos']);} else {
       this.tostador.presentToastSiniestroCerrado("Este informe ya ha sido cerrado y no se puede editar. Para mayor información, contacta a tu administrador de sistema", 'middle', 'firma');
     }
   }
 
   goFotos(){
+    if (this.blockWhenNoActiveAttention()) {
+      return;
+    }
     this.router.navigate(['./cargar-archivos']);
   }
 
@@ -188,6 +332,7 @@ export class Tab1Page implements OnInit, OnDestroy {
     return false;
   }
 
+  
   
 
   ngOnInit() {
@@ -288,7 +433,7 @@ export class Tab1Page implements OnInit, OnDestroy {
 
   updateIntent(){
     this.api.GetAppVersion('android').pipe(finalize(async ()=>{})).subscribe(async (res) =>{
-      this.dbVersion = res;
+      this.dbVersion = this.normalizeVersionValue(res);
       if (versionAndroid.versionCodigo) {
         this.store = 'https://portal.porsalud.net/Outer/AppRepositorio/HELP/NuevaVersion/HELP.apk';
         this.androidVersion = versionAndroid.versionCodigo;
@@ -303,6 +448,23 @@ export class Tab1Page implements OnInit, OnDestroy {
       }
 
     }, async (res) => {})
+  }
+
+  private normalizeVersionValue(value: any): string {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    if (Array.isArray(value)) {
+      return value.map(item => this.normalizeVersionValue(item)).join('').replace(/,+/g, '');
+    }
+
+    if (typeof value === 'object') {
+      const possibleValue = value.versionCodigo || value.version || value.Version || value.data || value.result || value.value;
+      return this.normalizeVersionValue(possibleValue ?? JSON.stringify(value));
+    }
+
+    return value.toString().replace(/,/g, '').trim();
   }
 
   openStore(store){
@@ -422,6 +584,7 @@ export class Tab1Page implements OnInit, OnDestroy {
 
   async enterView(){
     if (this.firmaPrecargadaAjustador != null && this.firmaPrecargadaAjustador != undefined) {this.isSign = true;} else {this.isSign = false;}
+    this.refreshClientSignatureFromServer();
     
     this.isTablet = this.deviceService.isTablet;
 
@@ -585,6 +748,10 @@ export class Tab1Page implements OnInit, OnDestroy {
   }
 
   saveSignatureAsegurado(idAtencion) {
+    if (this.blockWhenNoActiveAttention()) {
+      return;
+    }
+
     idAtencion = this.atIndex;
     this.hoy= new Date().toISOString();
     
@@ -604,6 +771,7 @@ export class Tab1Page implements OnInit, OnDestroy {
           finalize(async () => {this.isLoading = false;})
         ).subscribe(
           (res) => {
+            this.persistClientSignature(this.firmaPrecargada, idAtencion);
             this.tostador.presentToastNoButtons("Firma guardada exitosamente! Ya puedes reutilizarla cuando sea necesario.", "top", "firma");
             const element = document.getElementById('cardAsegurado');
             const elementInput = document.getElementById('nombreInput');
@@ -864,8 +1032,44 @@ export class Tab1Page implements OnInit, OnDestroy {
     this.atIndex = null;
     this.idAtencion = null;
     this.firstSegmentId = null;
+    this.atIndexId = 0;
+    this.elCliente = '';
+    this.elServicio = '';
+    this.elColorEstado = '';
+    this.laFecha = null;
+    this.firmaPrecargada = emptySignatureWhite;
+    this.isSignature = false;
     localStorage.setItem('atencionesCount', '0');
+    localStorage.removeItem('idAtencion');
+    localStorage.removeItem('ultimaAtencionSeleccionada');
+    localStorage.removeItem('indexAtencion');
+    localStorage.removeItem('indexAtencion-0');
+    localStorage.removeItem('indexAtencion-2');
+    localStorage.removeItem('elColorEstado');
+    localStorage.removeItem('elCliente');
     void this.api.markCurrentAppVersion();
+  }
+
+  private blockWhenNoActiveAttention(): boolean {
+    if (this.hasActiveAttentionSelected) {
+      return false;
+    }
+
+    if (Array.isArray(this.filtroAtenciones) && this.filtroAtenciones.length > 0) {
+      this.restoreLastActiveAttention();
+      if (this.hasActiveAttentionSelected) {
+        return false;
+      }
+    } else {
+      this.applyEmptyActiveAttentionsState();
+    }
+
+    this.tostador.presentToastNoButtons(
+      'No hay atenciones activas disponibles para procesar en este momento.',
+      'top',
+      'tab'
+    );
+    return true;
   }
 
   private restoreLastActiveAttention() {
@@ -1109,7 +1313,59 @@ export class Tab1Page implements OnInit, OnDestroy {
   }
 
   verExpediente(idAtencion: number) {
+    if (!idAtencion || this.blockWhenNoActiveAttention()) {
+      return;
+    }
     this.router.navigate(['./expediente'], { queryParams: { Id: idAtencion, Source:1 } });
+  }
+
+  async goBulkRetryFromHome(idAtencion: number) {
+    if (!idAtencion || this.blockWhenNoActiveAttention()) {
+      return;
+    }
+
+    this.isLoading = true;
+    localStorage.setItem('idAtencion', idAtencion.toString());
+    localStorage.setItem('atencionEnProceso', idAtencion.toString());
+
+    this.api.ObtenercacheCliente(idAtencion).pipe(
+      finalize(async () => {
+        this.isLoading = false;
+      })
+    ).subscribe(
+      async (cacheRes) => {
+        const cacheRecord = Array.isArray(cacheRes) ? cacheRes[0] : cacheRes;
+        const usoPoliza = cacheRecord?.AseguradoUsoPoliza ?? cacheRecord?.aseguradoUsoPoliza ?? cacheRecord?.UtilizoSerivicioAsistencia;
+
+        if (String(usoPoliza || '').trim() === '2') {
+          this.api.DatosDeAtencion(idAtencion).pipe(
+            finalize(async () => {})
+          ).subscribe(
+            async (expedienteRes) => {
+              localStorage.setItem('elExpediente', JSON.stringify(expedienteRes));
+              localStorage.setItem('dataProcess-AseguradoUsoPoliza', '2');
+              this.router.navigate(['./prepare-send'], {
+                state: {
+                  data: [
+                    { forma: expedienteRes },
+                    { idAtencion }
+                  ]
+                }
+              });
+            },
+            async () => {
+              this.router.navigate(['./expediente'], { queryParams: { Id: idAtencion, Source: 1 } });
+            }
+          );
+          return;
+        }
+
+        this.router.navigate(['./ajustadorhn']);
+      },
+      async () => {
+        this.router.navigate(['./expediente'], { queryParams: { Id: idAtencion, Source: 1 } });
+      }
+    );
   }
 
   abrirMenu(idAtencion: number, indexInput){
@@ -1117,6 +1373,10 @@ export class Tab1Page implements OnInit, OnDestroy {
   }
 
   verExpedienteBusqueda(idAtencion: number, indexInput) {
+    if (!this.results?.length || !idAtencion) {
+      this.blockWhenNoActiveAttention();
+      return;
+    }
     
     this.elColorEstado = this.results[indexInput].ColorEstado;
     
@@ -1145,6 +1405,9 @@ export class Tab1Page implements OnInit, OnDestroy {
   goProfile() {this.router.navigate(['./tabs/tab3'], { queryParams: { Id: 'idAtencion' } });}
 
   goESignature() {
+    if (this.blockWhenNoActiveAttention()) {
+      return;
+    }
     const idAtencion = this.atIndex || this.idAtencion || localStorage.getItem('idAtencion');
     if (idAtencion) {
       localStorage.setItem('idAtencion', idAtencion.toString());
@@ -1620,28 +1883,7 @@ permitirGPS(){
         async (res) => {}
       )
 
-      this.api.obtenerFotoPorAtencion(idAtencion, 3).pipe(
-        finalize(async () => {
-          this.isLoading = false;
-        })
-      ).subscribe(
-        async (res) => {
-          for (let index = 0; index < res.length; index++) {
-            const element = res[index];
-            if (index == (res.length - 1)) {
-              this.firmaPrecargada = imagePrefix + element.FotoFirma;
-              localStorage.setItem("dSignatureAsegurado", this.firmaPrecargada);
-              this.isSignature = true;
-            }
-
-          }
-        },
-        async (res) => {
-          this.firmaPrecargada = emptySignatureWhite;
-          localStorage.setItem("dSignatureAsegurado", this.firmaPrecargada);
-          this.isSignature = false;
-        }
-      );
+      this.refreshClientSignatureFromServer(idAtencion);
     } else {
       this.firmaPrecargada = emptySignatureWhite;
       this.isSignature = false;
@@ -1980,6 +2222,10 @@ permitirGPS(){
   }
 
   grua(){
+    if (this.blockWhenNoActiveAttention()) {
+      return;
+    }
+
     this.call.callNumber('22802886',true)
     .then(res => 
       console.log('')

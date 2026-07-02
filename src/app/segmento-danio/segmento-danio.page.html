@@ -1,6 +1,6 @@
 <ion-header class="segment-form-header">
   <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
-  <ion-footer *ngIf="isLoading == true"></ion-footer>
+  <ion-footer class="loading-backdrop" *ngIf="isLoading == true"></ion-footer>
   
   <ion-toolbar>
     <ion-buttons slot="start">
@@ -194,8 +194,8 @@
                     <ion-col size="9">
                       <ion-input type="number" maxlength="10" (ionChange)="setReserva(valorReserva)" (ionBlur)="setReserva(valorReserva)" [(ngModel)]="valorReserva"></ion-input>
                     </ion-col>
-                    <ion-col id="noReservaTexto" size="3" style="text-align: justify; color: red; display: inherit;">
-                      El valor de reserva está vacío. Se asignará un valor de 0 (cero) por defecto.
+                    <ion-col id="noReservaTexto" *ngIf="reservaEsCero" size="12" class="zero-value-warning">
+                      El valor de reserva está en 0. Debe cambiarse por un valor diferente de cero para evitar guardar una reserva vacía.
                     </ion-col>
                   </ion-row>
                 </ion-grid>
@@ -292,6 +292,15 @@
     </ion-grid>
   </ion-col>
 </ion-content>
+
+<ion-footer *ngIf="!isSearch" class="segment-form-nav-footer">
+  <ion-toolbar>
+    <ion-button expand="block" class="segment-form-back-button" aria-label="Regresar al formulario" (click)="handleSegmentBack()">
+      <ion-icon slot="start" name="chevron-back"></ion-icon>
+      Volver al formulario
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>
 
 <ion-button id="reloadDaniosButton" style="position: fixed;width: 16%;height: 60px;bottom: 11%;right: 1%; z-index: 999;--background: #f14f23;
 --background-activated: #a8462a;

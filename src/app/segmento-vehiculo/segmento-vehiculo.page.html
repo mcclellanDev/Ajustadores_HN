@@ -1,6 +1,6 @@
 <ion-header class="segment-form-header">
   <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
-  <ion-footer *ngIf="isLoading == true"></ion-footer>
+  <ion-footer class="loading-backdrop" *ngIf="isLoading == true"></ion-footer>
   
   <ion-toolbar>
     <ion-buttons slot="start">
@@ -124,6 +124,9 @@
                 <ion-input type="number" maxlength="7" [(ngModel)]="ajustador.Kilometraje" placeholder="0"
             (ionBlur)="evaluateKm($event)" class="required-data"></ion-input>
               </ion-col>
+              <ion-col *ngIf="kilometrajeEsCero" size="12" class="zero-value-warning">
+                El kilometraje está en 0. Debe cambiarse por un valor diferente de cero para evitar guardar un kilometraje vacío.
+              </ion-col>
             </ion-row>
           </ion-grid>
         </ion-item>
@@ -226,3 +229,12 @@
     </ion-row>
   </ion-grid>
 </ion-content>
+
+<ion-footer class="segment-form-nav-footer">
+  <ion-toolbar>
+    <ion-button expand="block" class="segment-form-back-button" aria-label="Regresar al formulario" (click)="handleSegmentBack()">
+      <ion-icon slot="start" name="chevron-back"></ion-icon>
+      Volver al formulario
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

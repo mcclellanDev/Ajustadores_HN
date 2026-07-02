@@ -23,11 +23,30 @@ ion-spinner {
 }
 
 ion-header ion-title {
-  font-size: 1rem;
+  font-size: clamp(0.82rem, 3.4vw, 1rem);
   font-weight: 800;
   letter-spacing: 0;
-  padding-inline: 56px;
+  min-width: 0;
+  padding-inline: clamp(42px, 13vw, 58px);
   text-align: center;
+}
+
+ion-header ion-title .attention-toolbar-title {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+ion-header ion-title .attention-toolbar-title__id {
+  display: block;
+  font-size: clamp(0.8rem, 3.8vw, 1rem);
+  line-height: 1.12;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 ion-header ion-button,

@@ -26,6 +26,25 @@ export class FiniquitoPage implements OnInit {
   isEmptySignature: any;  ya: boolean=false; fechaDesde:any; fechaHasta:any; fecaCheque:any;
   readonly bchUsdReference = bchUsdReference;
   beneficiarySignature: string;
+  private readonly finiquitoDraftAttentionKey = 'finiquitoDraftAttentionId';
+  private readonly finiquitoDraftKeys = [
+    'elFiniquito',
+    'tipoCobertura',
+    'NombreAFavor',
+    'IdentidadQuienRecibe',
+    'NombreQuienRecibe',
+    'ValorDelCheque',
+    'NumeroCheque',
+    'finiquito-beneficiarioTipo',
+    'finiquito-FechaDesde',
+    'finiquito-FechaHasta',
+    'finiquito-FechaDelCheque',
+    'finiquito-numeroCheque',
+    'finiquito-ValorDelCheque',
+    'finiquito-NombreQuienRecibe',
+    'finiquito-IdentidadQuienRecibe',
+    'finiquito-NombreAFavor'
+  ];
 
   constructor(private platform:Platform, private toaster:ToastService, private api:ApiService,
     private alertController: AlertController, private router: Router) { 
@@ -76,12 +95,73 @@ export class FiniquitoPage implements OnInit {
   "Motor": "string" // de la info del asegurado
 }
     */
+    this.idAtencion = localStorage.getItem('idAtencion');
+    this.clearFiniquitoDraftIfAttentionChanged();
     this.acuerdoFiniquito = JSON.parse(localStorage.getItem('elFiniquito') || '{}') || {};
+    this.applyScopedFiniquitoDraft();
     this.fechaDesde = this.acuerdoFiniquito.FechaDesde?.split('T')[0] || '';
     this.fechaHasta = this.acuerdoFiniquito.FechaHasta?.split('T')[0] || '';
-    this.idAtencion = localStorage.getItem('idAtencion');
     this.finiquitoCompleto = localStorage.getItem(`finiquitoEnviado-${this.idAtencion}`) === 'true';
     this.fsLogo = logoFicohsa
+  }
+
+  private clearFiniquitoDraftIfAttentionChanged(): void {
+    const currentAttentionId = String(this.idAtencion || localStorage.getItem('idAtencion') || '').trim();
+    if (!currentAttentionId) {
+      return;
+    }
+
+    const storedAttentionId = localStorage.getItem(this.finiquitoDraftAttentionKey);
+    const draftAttentionId = this.getStoredFiniquitoAttentionId();
+    const legacyDraftWithoutAttention =
+      !storedAttentionId &&
+      !draftAttentionId &&
+      this.finiquitoDraftKeys.some((key) => localStorage.getItem(key) !== null);
+    const belongsToAnotherAttention =
+      legacyDraftWithoutAttention ||
+      (!!storedAttentionId && storedAttentionId !== currentAttentionId) ||
+      (!!draftAttentionId && draftAttentionId !== currentAttentionId);
+
+    if (belongsToAnotherAttention) {
+      this.finiquitoDraftKeys.forEach((key) => localStorage.removeItem(key));
+    }
+
+    localStorage.setItem(this.finiquitoDraftAttentionKey, currentAttentionId);
+  }
+
+  private getStoredFiniquitoAttentionId(): string {
+    try {
+      const draft = JSON.parse(localStorage.getItem('elFiniquito') || '{}') || {};
+      return String(draft.RefAtencionId || draft.IdAtencion || '').trim();
+    } catch {
+      return '';
+    }
+  }
+
+  private finiquitoScopedKey(key: string): string {
+    const currentAttentionId = String(this.idAtencion || localStorage.getItem('idAtencion') || '').trim();
+    return currentAttentionId ? `finiquito-${currentAttentionId}-${key}` : `finiquito-${key}`;
+  }
+
+  private getFiniquitoDraftValue(key: string): string {
+    const value = localStorage.getItem(this.finiquitoScopedKey(key));
+    return value && value !== 'undefined' && value !== 'null' ? value : '';
+  }
+
+  private applyScopedFiniquitoDraft(): void {
+    const tipoCobertura = this.getFiniquitoDraftValue('tipoCobertura');
+    const nombreAFavor = this.getFiniquitoDraftValue('NombreAFavor');
+    const identidadQuienRecibe = this.getFiniquitoDraftValue('IdentidadQuienRecibe');
+    const nombreQuienRecibe = this.getFiniquitoDraftValue('NombreQuienRecibe');
+    const valorDelCheque = this.getFiniquitoDraftValue('ValorDelCheque');
+    const numeroCheque = this.getFiniquitoDraftValue('NumeroCheque');
+
+    this.acuerdoFiniquito.TipoCoberturaFicohsa = tipoCobertura || this.acuerdoFiniquito.TipoCoberturaFicohsa;
+    this.acuerdoFiniquito.NombreAFavor = nombreAFavor || this.acuerdoFiniquito.NombreAFavor;
+    this.acuerdoFiniquito.IdentidadQuienRecibe = identidadQuienRecibe || this.acuerdoFiniquito.IdentidadQuienRecibe;
+    this.acuerdoFiniquito.NombreQuienRecibe = nombreQuienRecibe || this.acuerdoFiniquito.NombreQuienRecibe;
+    this.acuerdoFiniquito.ValorDelCheque = valorDelCheque || this.acuerdoFiniquito.ValorDelCheque;
+    this.acuerdoFiniquito.NumeroCheque = numeroCheque || this.acuerdoFiniquito.NumeroCheque;
   }
 
   ngOnInit() {
@@ -198,14 +278,10 @@ export class FiniquitoPage implements OnInit {
 
   guardarFiniquito(){
 
-          this.acuerdoFiniquito.TipoCoberturaFicohsa = localStorage.getItem('tipoCobertura');
-          this.acuerdoFiniquito.NombreAFavor = localStorage.getItem('NombreAFavor');
-          this.acuerdoFiniquito.IdentidadQuienRecibe = localStorage.getItem('IdentidadQuienRecibe');
-          this.acuerdoFiniquito.NombreQuienRecibe = localStorage.getItem('NombreQuienRecibe');
-          this.acuerdoFiniquito.ValorDelCheque = localStorage.getItem('ValorDelCheque');
-          this.acuerdoFiniquito.NumeroCheque = localStorage.getItem('NumeroCheque');
+          this.applyScopedFiniquitoDraft();
+          this.acuerdoFiniquito.RefAtencionId = this.atencionId || Number(this.idAtencion);
           this.acuerdoFiniquito.NumeroReclamo = this.CodigoReclamo;
-          this.acuerdoFiniquito.TipoCoberturaFicohsa = this.TipoCoberturaFicohsa;
+          this.acuerdoFiniquito.TipoCoberturaFicohsa = this.acuerdoFiniquito.TipoCoberturaFicohsa || this.TipoCoberturaFicohsa;
             
           console.dir(this.acuerdoFiniquito);
           

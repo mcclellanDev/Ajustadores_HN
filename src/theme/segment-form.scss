@@ -56,13 +56,53 @@
   }
 }
 
+ion-footer.loading-backdrop {
+  background: black;
+  bottom: 0;
+  height: 100vh;
+  opacity: 0.6;
+  position: fixed;
+  width: 100vw;
+  z-index: 900;
+}
+
+.segment-form-nav-footer ion-toolbar {
+  --background: #ffffff;
+  --border-width: 1px 0 0 0;
+  --border-color: #d9e1e8;
+  --padding-top: 8px;
+  --padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  --padding-start: 12px;
+  --padding-end: 12px;
+  box-shadow: 0 -4px 14px rgba(0, 33, 63, 0.08);
+}
+
+.segment-form-nav-footer .segment-form-back-button {
+  --background: var(--primaryColor, #0058cb);
+  --background-activated: var(--primaryColor, #0058cb);
+  --border-radius: 8px;
+  --box-shadow: none;
+  --color: #ffffff;
+  color: #ffffff !important;
+  font-size: 0.95rem;
+  font-weight: 700;
+  height: 48px;
+  margin: 0;
+  text-transform: none;
+}
+
+.segment-form-nav-footer .segment-form-back-button ion-icon {
+  color: #ffffff;
+  font-size: 1.2rem;
+}
+
 @media (max-width: 600px) {
   .segment-form-content {
     --background: #eef3f7;
     --padding-start: 0;
     --padding-end: 0;
     --padding-top: 8px;
-    --padding-bottom: calc(120px + env(safe-area-inset-bottom));
+    --padding-bottom: calc(24px + env(safe-area-inset-bottom));
   }
 
   .segment-form-content > ion-grid,
@@ -138,6 +178,7 @@
     --padding-start: 12px;
     --padding-end: 0;
     margin: 0;
+    position: relative;
     width: 100%;
   }
 
@@ -156,7 +197,9 @@
     font-weight: 800;
     letter-spacing: 0;
     line-height: 1.2;
-    padding: 8px 0 5px;
+    min-height: 38px;
+    padding: 8px 126px 5px 0;
+    position: relative;
     text-transform: uppercase;
   }
 
@@ -197,17 +240,34 @@
     color: #17365d;
   }
 
-  // "Seleccionar" helper chips overlap the new boxed selects; tuck them inline.
-  .segment-form-content .segmento ion-chip {
+  .segment-form-content .segmento .zero-value-warning {
+    align-items: center;
+    background: #fff6e6;
+    border: 1px solid #f3c46b;
+    border-radius: 5px;
+    color: #8a5200;
+    display: flex;
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1.25;
+    margin-top: 8px;
+    padding: 9px 10px;
+    text-transform: none;
+  }
+
+  // "Seleccionar" helper chips stay pinned to the top-right corner of the field.
+  .segment-form-content .segmento ion-chip[id$="Select"],
+  .segment-form-content .segmento ion-chip[id$="Selecta"] {
     border-color: #cbd9e5;
     color: #315b80;
     font-size: 0.74rem;
     min-height: 32px;
-    position: static !important;
-    top: auto !important;
-    right: auto !important;
+    padding-inline: 10px !important;
+    position: absolute !important;
+    right: 12px !important;
+    top: 6px !important;
     width: auto !important;
-    padding-left: 10px !important;
+    z-index: 3;
   }
 
   // Yes/No (and similar) radio groups laid out as a tidy card grid.

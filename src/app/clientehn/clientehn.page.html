@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header class="attention-stack-header clientehn-header" [hidden]="clientFormOpen == true">
   <ion-spinner color="primary" name="lines" *ngIf="isLoading == true"></ion-spinner>
   <ion-footer *ngIf="isLoading == true"></ion-footer>
   <ion-toolbar>
@@ -17,19 +17,23 @@
 <ion-split-pane id="big-pane-nulls" contentId="main-nulls">
   <div class="ion-page" id="main-nulls"></div>
 </ion-split-pane>
-<ion-split-pane id="big-pane-cliente" when="(min-width: 900px) and (orientation: landscape)" contentId="main">
-  <ion-menu id="ele" menuId="cliente-form-menu" contentId="main" type="overlay" class="cliente-form-menu">
+<main id="big-pane-cliente" class="clientehn-shell" [class.clientehn-shell--form-open]="clientFormOpen">
+  <section id="ele" class="cliente-form-view" [hidden]="clientFormOpen == false">
     <ion-header>
       <ion-toolbar class="cliente-form-toolbar">
-        <ion-title>{{segmentoTitulo || 'Formulario del cliente'}}</ion-title>
+        <ion-title class="cliente-form-title">
+          <span class="cliente-form-title__eyebrow">Formulario del cliente</span>
+          <span class="cliente-form-title__segment">{{segmentoTitulo || 'Selecciona una sección'}}</span>
+        </ion-title>
         <ion-buttons slot="end" class="cliente-form-close">
-          <ion-button aria-label="Cerrar formulario" (click)="closeClientForm()">
-            <ion-icon slot="icon-only" name="close"></ion-icon>
+          <ion-button class="cliente-form-return-button" aria-label="Volver al menú de secciones" (click)="closeClientForm()">
+            <ion-icon slot="start" name="chevron-back-outline"></ion-icon>
+            <span>Menú</span>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content class="ion-padding cliente-form-content" id="segmentsContent">
+    <ion-content class="ion-no-padding cliente-form-content" id="segmentsContent">
       <ion-fab slot="fixed" vertical="top" horizontal="end" [ngClass]="isTablet == true ? 'cliente-form-floating-close-tablet' : 'cliente-form-floating-close'">
         <ion-fab-button size="small" aria-label="Cerrar formulario" (click)="closeClientForm()"
         >
@@ -53,7 +57,8 @@
                   <ion-label>Uso del servicio</ion-label>
                 </ion-item>
                 <div class="ion-padding" slot="content">
-                  <ion-list class="ion-no-padding">
+                  <ion-list class="ion-no-padding" style="
+                  margin-top: 30px;">
                     <ion-item  class="ion-no-padding  input">
                       <ion-grid>
                         <ion-row size="12" style="color: var(--blueGrayColor);font-size:1rem;">
@@ -86,16 +91,41 @@
                   <ion-label>Posicionamiento</ion-label>
                 </ion-item>
                 <div class="ion-padding" slot="content">
-                  <ion-grid>
-                    <ion-row>
-                      <ion-col size="6">
-                        <strong>Latitud : </strong> &nbsp; <ion-text style="color: var(--blueGrayColor);">{{clienteLatitud}}</ion-text>
-                      </ion-col>
-                      <ion-col size="6">
-                        <strong>Longitud : </strong> &nbsp; <ion-text style="color: var(--blueGrayColor);">{{clienteLongitud}}</ion-text>
-                      </ion-col>
-                    </ion-row>
-                  </ion-grid>
+                  <div *ngIf="coordinateAlertState !== 'ok'" class="coordinate-alert" [ngClass]="coordinateAlertState">
+                    <ion-icon [name]="coordinateAlertState === 'danger' ? 'alert-circle' : 'warning'"></ion-icon>
+                    <div>
+                      <strong>{{coordinateAlertTitle}}</strong>
+                      <span>{{coordinateAlertMessage}}</span>
+                    </div>
+                  </div>
+                  <div class="coordinates-summary">
+                    <div class="coordinate-chip"
+                      [style.background]="coordinateChipStyles.background"
+                      [style.border-style]="'solid'"
+                      [style.border-width]="'1px'"
+                      [style.border-color]="coordinateChipStyles.border"
+                      [style.color]="coordinateChipStyles.color">
+                      <span class="coordinate-chip__label" [style.color]="coordinateChipStyles.color">Latitud</span>
+                      <span class="coordinate-chip__value" [style.color]="coordinateChipStyles.color">{{displayedLatitud}}</span>
+                    </div>
+                    <div class="coordinate-chip"
+                      [style.background]="coordinateChipStyles.background"
+                      [style.border-style]="'solid'"
+                      [style.border-width]="'1px'"
+                      [style.border-color]="coordinateChipStyles.border"
+                      [style.color]="coordinateChipStyles.color">
+                      <span class="coordinate-chip__label" [style.color]="coordinateChipStyles.color">Longitud</span>
+                      <span class="coordinate-chip__value" [style.color]="coordinateChipStyles.color">{{displayedLongitud}}</span>
+                    </div>
+                  </div>
+                  <div class="coordinate-correction-note" *ngIf="coordinateAlertState === 'ok'" [class.manual]="hasManualCoordinateCorrection">
+                    <ion-icon [name]="hasManualCoordinateCorrection ? 'checkmark-circle' : 'information-circle-outline'"></ion-icon>
+                    <span>{{coordinateCorrectionNoteText}}</span>
+                  </div>
+                  <ion-button expand="block" class="coordinate-correction-button" [ngClass]="coordinateAlertState" (click)="goMap()">
+                    <ion-icon slot="start" [name]="coordinateActionIcon"></ion-icon>
+                    {{coordinateActionLabel}}
+                  </ion-button>
                 </div>
               </ion-accordion>
               <ion-accordion class="acordion" value="third">
@@ -103,17 +133,18 @@
                   <ion-label>Ubicación</ion-label>
                 </ion-item>
                 <div class="ion-padding" slot="content">
-                  <strong>
-                    SINIESTRO OCURRIDO EN LA REGIÓN DE {{miPaisNombre}}
-                  </strong>
-
-                  <ion-grid>
-                    <ion-row>
-                      <ion-col size="12">
-                        LOCALIDAD DE {{miPaisLocalidad}}, {{miPaisLocalidadSub}}
-                      </ion-col>
-                    </ion-row>
-                  </ion-grid>
+                  <div class="location-summary">
+                    <div class="location-summary__icon">
+                      <ion-icon name="location-outline"></ion-icon>
+                    </div>
+                    <div class="location-summary__body">
+                      <span class="location-summary__label">Región del siniestro</span>
+                      <strong>{{miPaisNombre || 'Pendiente'}}</strong>
+                      <span class="location-summary__detail">
+                        Localidad de {{miPaisLocalidad || 'Pendiente'}}<ng-container *ngIf="miPaisLocalidadSub">, {{miPaisLocalidadSub}}</ng-container>
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </ion-accordion>
             </ion-accordion-group>
@@ -152,7 +183,7 @@
                     </ion-row>
                     <ion-row>
                       <ion-col size="12">
-                        <ion-input type="text" [(ngModel)]="identidadAsegurado"></ion-input>
+                        <ion-input type="text" [(ngModel)]="identidadAsegurado" (ionChange)="entraIdentidadAsegurado($event)"></ion-input>
                       </ion-col>
                     </ion-row>
                   </ion-grid>
@@ -498,9 +529,7 @@
                     </ion-row>
                 <ion-row>
                   <ion-col size="12">
-                    <ion-input [hidden]="conductorEsAfiliado == true" [(ngModel)]="identidadDelCliente" type="text" class="required-data"></ion-input>
-                    <input class="required-index" value="19">
-                    <ion-input [hidden]="conductorEsAfiliado == false" [(ngModel)]="daIdentidadConductor" type="text" (ionChange)="entraIdentidadConductor($event)"
+                    <ion-input type="text" [(ngModel)]="daIdentidadConductor" (ionChange)="entraIdentidadConductor($event)"
                     class="required-data"></ion-input>
                     <input class="required-index" value="20">
                   </ion-col>
@@ -1195,17 +1224,22 @@
         </ion-row>
       </ion-grid>
     </ion-content>
-  </ion-menu>
-  <div class="ion-page" id="main">
-    <ion-header>
+    <ion-footer class="cliente-segment-nav-footer">
+      <ion-toolbar>
+        <ion-button expand="block" class="cliente-segment-back-button" (click)="closeClientForm()">
+          <ion-icon slot="start" name="list-outline"></ion-icon>
+          Volver al menú de secciones
+        </ion-button>
+      </ion-toolbar>
+    </ion-footer>
+  </section>
+  <section class="cliente-segments-view" id="main" [hidden]="clientFormOpen == true">
+    <ion-header class="clientehn-segments-header">
       <ion-toolbar class="cliente-segments-toolbar">
         <ion-title>Secciones del formulario</ion-title>
-        <ion-buttons slot="end" class="cliente-form-shortcut">
-          <ion-menu-button menu="cliente-form-menu" aria-label="Abrir formulario"></ion-menu-button>
-        </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content class="ion-no-padding" style="width: 99%;padding: 3%;text-align: justify;font-size: 1rem;white-space: normal;overflow-y: scroll;height: 39%;">
+    <ion-content class="ion-no-padding cliente-segments-content">
       <ion-list style="width: 100%;">
         <ion-item *ngFor="let segment of segments; let i = index" class="segment-item" (click)="setSegment(segmentInput.value, indexInput.value, true)">
           <ion-input #segmentInput [hidden]="true" [value]="segment.name"></ion-input>
@@ -1215,10 +1249,10 @@
       </ion-list>
 
     </ion-content>
-  </div>
+  </section>
   
 
-</ion-split-pane>
+</main>
 
 <ion-footer class="cliente-action-footer">
   <div class="cliente-action-bar">
@@ -1232,6 +1266,11 @@
         <ion-icon slot="start" name="create-outline"></ion-icon>
         Firma
       </ion-button>
+
+      <div class="cliente-context-footnote" aria-label="Resumen de atención actual">
+        <span>Atención # {{idAtencion}}</span>
+        <span>Moneda {{miMoneda}}</span>
+      </div>
     </div>
 
     <div class="cliente-state-actions">
@@ -1273,17 +1312,24 @@
 
 
 
-<ion-modal #daModal id="daModal" class="persona" [isOpen]="showPersona">
+<ion-modal #daModal id="daModal" class="persona entry-modal" [isOpen]="showPersona">
   <ng-template>
-    <ion-content>
-      <ion-grid fixed>
+    <ion-header>
+      <ion-toolbar class="entry-modal-toolbar">
+        <ion-title>{{persona.TipoPersona == 2 ? 'Datos del testigo' : 'Datos del acompañante'}}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button aria-label="Cerrar sin agregar" (click)="closePersonaModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="entry-modal-content">
+      <ion-grid fixed class="entry-modal-grid">
         <ion-row>
           <!-- Datos del tercero -->  
           <ion-col size="12">
-            <ion-item  lines="none" style="--background: #7da1c4;" class="ion-no-padding  input">
-              <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos </ion-label>
-            </ion-item>
-            <ion-item  class="ion-no-padding transparent input">
+            <ion-item  class="ion-no-padding transparent input entry-modal-field">
               <ion-grid>
                 <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                   Nombre
@@ -1296,7 +1342,7 @@
               </ion-grid>
               
             </ion-item>
-            <ion-item  class="ion-no-padding transparent input">
+            <ion-item  class="ion-no-padding transparent input entry-modal-field">
               <ion-grid>
                 <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                   Teléfono
@@ -1308,7 +1354,7 @@
                 </ion-row>
               </ion-grid>
             </ion-item>
-            <ion-item  class="ion-no-padding transparent input">
+            <ion-item  class="ion-no-padding transparent input entry-modal-field">
               <ion-grid>
                 <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                   Dirección
@@ -1322,17 +1368,16 @@
             </ion-item>
           </ion-col>
 
-          <ion-col size="12">
-            <ion-col *ngIf="guardar"  size="6">
-              <ion-button style="color: white;" (click)="addPersona()" expand="block" shape="round">
+          <ion-col size="12" class="entry-modal-actions">
+              <ion-button fill="outline" class="entry-modal-cancel" (click)="closePersonaModal()" expand="block">
+                Regresar sin agregar
+              </ion-button>
+              <ion-button *ngIf="guardar" class="entry-modal-save" (click)="addPersona()" expand="block">
                 Agregar
               </ion-button>
-            </ion-col>
-            <ion-col *ngIf="editar"  size="6">
-              <ion-button style="color: white;" (click)="updatePersona()" expand="block" shape="round">
+              <ion-button *ngIf="editar" class="entry-modal-save" (click)="updatePersona()" expand="block">
                 Actualizar
               </ion-button>
-            </ion-col>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -1341,16 +1386,23 @@
 </ion-modal>
 
 
-  <ion-modal #modalLesion id="modalLesion" class="persona-lesion" [isOpen]="showPersonaLesion">
+  <ion-modal #modalLesion id="modalLesion" class="persona-lesion entry-modal" [isOpen]="showPersonaLesion">
   <ng-template>
-    <ion-content>
-      <ion-grid fixed>
+    <ion-header>
+      <ion-toolbar class="entry-modal-toolbar">
+        <ion-title>Datos del lesionado</ion-title>
+        <ion-buttons slot="end">
+          <ion-button aria-label="Cerrar sin agregar" (click)="closePersonaModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="entry-modal-content">
+      <ion-grid fixed class="entry-modal-grid">
         <ion-row>
           <ion-col size="12">
-            <ion-item  lines="none" style="--background: #7da1c4;" class="ion-no-padding  input">
-              <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos Lesionado</ion-label>
-            </ion-item>
-            <ion-item  class="ion-no-padding transparent input">
+            <ion-item  class="ion-no-padding transparent input entry-modal-field">
               <ion-grid>
                 <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                   Nombre
@@ -1363,7 +1415,7 @@
               </ion-grid>
               
             </ion-item>
-            <ion-item  class="ion-no-padding transparent input">
+            <ion-item  class="ion-no-padding transparent input entry-modal-field">
               <ion-grid>
                 <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                   Teléfono
@@ -1375,7 +1427,7 @@
                 </ion-row>
               </ion-grid>
             </ion-item>
-            <ion-item  class="ion-no-padding transparent input">
+            <ion-item  class="ion-no-padding transparent input entry-modal-field">
               <ion-grid>
                 <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                   Dirección
@@ -1388,7 +1440,7 @@
               </ion-grid>
             </ion-item>
 
-            <ion-item  class="ion-no-padding transparent input">
+            <ion-item  class="ion-no-padding transparent input entry-modal-field">
               <ion-grid>
                 <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                   Tipo de lesión
@@ -1401,7 +1453,7 @@
               </ion-grid>
             </ion-item>
 
-            <ion-item  class="ion-no-padding transparent input">
+            <ion-item  class="ion-no-padding transparent input entry-modal-field">
               <ion-grid>
                 <ion-row size="12" style="color: #7da1c4;font-size:1rem;">
                   Hospital o Clínica
@@ -1417,17 +1469,16 @@
           </ion-col>
           
 
-          <ion-col size="12">
-            <ion-col *ngIf="guardar"  size="6">
-              <ion-button style="color: white;" (click)="addPersona()" expand="block" shape="round">
+          <ion-col size="12" class="entry-modal-actions">
+              <ion-button fill="outline" class="entry-modal-cancel" (click)="closePersonaModal()" expand="block">
+                Regresar sin agregar
+              </ion-button>
+              <ion-button *ngIf="guardar" class="entry-modal-save" (click)="addPersona()" expand="block">
                 Agregar
               </ion-button>
-            </ion-col>
-            <ion-col *ngIf="editar"  size="6">
-              <ion-button style="color: white;" (click)="updatePersona()" expand="block" shape="round">
+              <ion-button *ngIf="editar" class="entry-modal-save" (click)="updatePersona()" expand="block">
                 Actualizar
               </ion-button>
-            </ion-col>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -1437,33 +1488,40 @@
 <!---->
 
 
-<ion-modal #propModal id="propModal" class="propiedad" [isOpen]="showPropiedad">
+<ion-modal #propModal id="propModal" class="propiedad entry-modal" [isOpen]="showPropiedad">
   <ng-template>
-    <ion-content>
-      <ion-grid fixed>
+    <ion-header>
+      <ion-toolbar class="entry-modal-toolbar">
+        <ion-title>Datos de propiedad</ion-title>
+        <ion-buttons slot="end">
+          <ion-button aria-label="Cerrar sin agregar" (click)="closePropiedadModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="entry-modal-content">
+      <ion-grid fixed class="entry-modal-grid">
         <ion-row>
           <!-- Datos del tercero -->  
           <ion-col size="12">
-            <ion-item  lines="none" style="--background: #7da1c4;" class="ion-no-padding  input">
-              <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos De la Propiedad</ion-label>
-            </ion-item>
-            <ion-item  class="ion-no-padding transparent input">
+            <ion-item  class="ion-no-padding transparent input entry-modal-field">
               <ion-label class="text-size-sm" position="floating">
                 Nombre del Bien</ion-label>
               <ion-input type="text" [(ngModel)]="propiedadPrivada.BienAfectado"></ion-input>
             </ion-item>
-            <ion-item  class="ion-no-padding transparent input">
+            <ion-item  class="ion-no-padding transparent input entry-modal-field">
               <ion-label class="text-size-sm" position="floating">
                 Nombre Propietario</ion-label>
               <ion-input type="text" [(ngModel)]="propiedadPrivada.NombrePropietario"></ion-input>
             </ion-item>
-            <ion-item  class="ion-no-padding transparent input">
+            <ion-item  class="ion-no-padding transparent input entry-modal-field">
               <ion-label class="text-size-sm" position="floating">
                 Telefono</ion-label>
               <ion-input type="number" [(ngModel)]="propiedadPrivada.Telefono"></ion-input>
             </ion-item>
 
-            <ion-item  class="ion-no-padding transparent input">
+            <ion-item  class="ion-no-padding transparent input entry-modal-field">
               <ion-label class="text-size-sm" position="floating">
                 Dirección</ion-label>
               <ion-input type="text" [(ngModel)]="propiedadPrivada.DireeccionPropietario"></ion-input>
@@ -1472,37 +1530,34 @@
           </ion-col>
           <!-- Datos del vehiculo -->
           <ion-col size="12">
-            <ion-item  style="--background: #7da1c4;" class="ion-no-padding  input">
-              <ion-label class="text-size-lg" style="color: white; padding-left: 5px;">Datos Daño</ion-label>
-            </ion-item>
-            <ion-item   class="ion-no-padding transparent input">
+            <div class="entry-modal-section-title">Datos del daño</div>
+            <ion-item   class="ion-no-padding transparent input entry-modal-field">
               <ion-label class="text-size-sm" position="floating">
                 Descripción del Bien</ion-label>
               <ion-input type="text" [(ngModel)]="propiedadPrivada.DescripcioDelBien"></ion-input>
             </ion-item>
-            <ion-item   class="ion-no-padding transparent input">
+            <ion-item   class="ion-no-padding transparent input entry-modal-field">
               <ion-label class="text-size-sm" position="floating">
                 Dirección del Bien</ion-label>
               <ion-input type="text" [(ngModel)]="propiedadPrivada.DireccionDelBien"></ion-input>
             </ion-item>
-            <ion-item   class="ion-no-padding transparent input">
+            <ion-item   class="ion-no-padding transparent input entry-modal-field">
               <ion-label class="text-size-sm" position="floating">
                 Descripción del Daño</ion-label>
                 <ion-input [(ngModel)]="propiedadPrivada.DescripcionDelDanio" label="input" placeholder="Describa el daño" [autoGrow]="true"></ion-input>
               <!--ion-input type="text" [(ngModel)]="propiedadPrivada.DescripcionDelDanio"></!--ion-input -->
             </ion-item>
           </ion-col>
-          <ion-col size="12">
-            <ion-col *ngIf="guardar"  size="6">
-              <ion-button style="color: white;" (click)="addPropiedad()" expand="block" shape="round">
+          <ion-col size="12" class="entry-modal-actions">
+              <ion-button fill="outline" class="entry-modal-cancel" (click)="closePropiedadModal()" expand="block">
+                Regresar sin agregar
+              </ion-button>
+              <ion-button *ngIf="guardar" class="entry-modal-save" (click)="addPropiedad()" expand="block">
                 Agregar
               </ion-button>
-            </ion-col>
-            <ion-col *ngIf="editar"  size="6">
-              <ion-button style="color: white;" (click)="updatePropiedad()" expand="block" shape="round">
+              <ion-button *ngIf="editar" class="entry-modal-save" (click)="updatePropiedad()" expand="block">
                 Actualizar
               </ion-button>
-            </ion-col>
           </ion-col>
         </ion-row>
       </ion-grid>

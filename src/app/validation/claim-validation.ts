@@ -68,7 +68,14 @@ export function isMissingValue(value: any): boolean {
       normalized === 'undefined' ||
       normalized === 'null' ||
       normalized === 'nan' ||
-      normalized === '[object object]'
+      normalized === '[object object]' ||
+      normalized === 'string' ||
+      normalized === 'nd' ||
+      normalized === 'n.d.' ||
+      normalized === 's/d' ||
+      normalized === 'sin dato' ||
+      normalized.includes('this.') ||
+      normalized.startsWith('1999-01-01')
     );
   }
 

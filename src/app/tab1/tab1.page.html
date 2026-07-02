@@ -167,14 +167,15 @@
               <div class="case-summary">
                 <div class="case-title">
                   <span class="panel-kicker">Atencion seleccionada</span>
-                  <h2 *ngIf="atIndexId == 0">Atencion #{{firstSegmentId}}</h2>
-                  <h2 *ngIf="atIndexId > 0">Atencion #{{atIndex}}</h2>
+                  <h2 *ngIf="!hasActiveAttentionSelected">Sin atencion activa</h2>
+                  <h2 *ngIf="hasActiveAttentionSelected && atIndexId == 0">Atencion #{{firstSegmentId}}</h2>
+                  <h2 *ngIf="hasActiveAttentionSelected && atIndexId > 0">Atencion #{{atIndex}}</h2>
                 </div>
                 <!--ion-badge class="status-badge" [ngStyle]="{'--background':elColorEstado}">
                   <ion-icon name="radio-button-on-outline"></ion-icon>
                   Estado
                 </!--ion-badge -->
-                <ion-badge class="status-badge" color="primary" (click)="verExpediente(atIndex)">
+                <ion-badge class="status-badge" color="primary" [class.is-disabled]="!hasActiveAttentionSelected" (click)="hasActiveAttentionSelected && verExpediente(atIndex)">
                   <ion-icon name="folder-open-outline"></ion-icon>
                   Exp
                 </ion-badge>
@@ -192,13 +193,20 @@
               </div>
 
               <div class="bulk-attempt-summary"
-                *ngIf="bulkAttemptService.hasVisibleIssue(getBulkAttemptFor(atIndex))">
+                *ngIf="hasActiveAttentionSelected && bulkAttemptService.hasVisibleIssue(getBulkAttemptFor(atIndex))">
                 <ion-icon [name]="getBulkAttemptFor(atIndex)?.pendingFailure ? 'alert-circle-outline' : 'repeat-outline'"></ion-icon>
-                <div>
+                <button type="button" class="bulk-attempt-summary-action" (click)="goBulkRetryFromHome(atIndex)" [disabled]="!hasActiveAttentionSelected">
                   <strong>{{ bulkAttemptService.getAttemptLabel(getBulkAttemptFor(atIndex)) }}</strong>
                   <span *ngIf="getBulkAttemptFor(atIndex)?.pendingFailure">Esta atención tuvo un fallo en el envío masivo y puede requerir reintento.</span>
                   <span *ngIf="!getBulkAttemptFor(atIndex)?.pendingFailure">Esta atención ya fue enviada después de uno o más reintentos.</span>
-                </div>
+                  <span class="bulk-attempt-last-error" *ngIf="getBulkAttemptFor(atIndex)?.lastError">
+                    Último error: {{ getBulkAttemptFor(atIndex)?.lastError }}
+                  </span>
+                  <span class="bulk-attempt-resend">
+                    <ion-icon name="send-outline"></ion-icon>
+                    Reenviar
+                  </span>
+                </button>
               </div>
 
               <div class="signature-section">
@@ -210,14 +218,14 @@
                   <div class="signature-tools">
                     <ion-badge class="signature-status" *ngIf="!firmaPrecargada || firmaPrecargada == '' || firmaPrecargada == null || firmaPrecargada == undefined || firmaPrecargada == emptySignatureWhite || firmaPrecargada == emptySignature">Pendiente</ion-badge>
                     <ion-badge class="signature-status ready" *ngIf="firmaPrecargada  && firmaPrecargada != '' && firmaPrecargada != null && firmaPrecargada != undefined && firmaPrecargada != emptySignatureWhite && firmaPrecargada != emptySignature">Guardada</ion-badge>
-                    <ion-button class="edit-signature-button" fill="clear" (click)="goESignature()" [disabled]="filtroAtenciones.length == 0">
+                    <ion-button class="edit-signature-button" fill="clear" (click)="goESignature()" [disabled]="!hasActiveAttentionSelected">
                       <ion-icon slot="icon-only" name="create-outline"></ion-icon>
                     </ion-button>
                   </div>
                 </div>
 
                 <div class="signature-preview" *ngIf="!firmaPrecargada || firmaPrecargada == '' || firmaPrecargada == null || firmaPrecargada == undefined || firmaPrecargada == emptySignatureWhite || firmaPrecargada == emptySignature">
-                  <ion-button class="signature-preview-action" fill="clear" (click)="goESignature()" [disabled]="filtroAtenciones.length == 0">
+                  <ion-button class="signature-preview-action" fill="clear" (click)="goESignature()" [disabled]="!hasActiveAttentionSelected">
                     <ion-icon class="signature-preview-icon" slot="icon-only" name="create-outline"></ion-icon>
                   </ion-button>
                   <span>Aun no se ha precargado una firma para el cliente.</span>
@@ -235,7 +243,7 @@
                       <ion-icon slot="start" name="save-outline"></ion-icon>
                       Guardar firma
                     </ion-button>
-                    <ion-button *ngIf="filtroAtenciones.length > 0" (click)="saveSignatureAsegurado(atIndex)">
+                    <ion-button *ngIf="hasActiveAttentionSelected" (click)="saveSignatureAsegurado(atIndex)">
                       <ion-icon slot="start" name="save-outline"></ion-icon>
                       Guardar firma
                     </ion-button>
@@ -245,17 +253,17 @@
               </div>
 
               <div class="case-actions">
-                <ion-button fill="outline" color="warning" (click)="grua()">
+                <ion-button fill="outline" color="warning" (click)="grua()" [disabled]="!hasActiveAttentionSelected">
                   <ion-icon slot="start" src="../../assets/img/remolque-de-camiones.svg"></ion-icon>
                   Grua
                 </ion-button>
                 
-                <ion-button fill="outline" (click)="goFotos()" [disabled]="filtroAtenciones.length == 0">
+                <ion-button fill="outline" (click)="goFotos()" [disabled]="!hasActiveAttentionSelected">
                   <ion-icon slot="start" name="camera-outline"></ion-icon>
                   Fotos
                 </ion-button>
                 
-                <ion-button (click)="verExpediente(atIndex)" [disabled]="filtroAtenciones.length == 0">
+                <ion-button (click)="verExpediente(atIndex)" [disabled]="!hasActiveAttentionSelected">
                   <ion-icon slot="start" name="folder-open-outline"></ion-icon>
                   Expediente
                 </ion-button>
@@ -502,7 +510,7 @@
     </ion-grid>
   
     <ion-fab id="gruaBoton" class="home-floating-action" style="position: fixed;margin-bottom: 12%;" vertical="bottom" horizontal="end">
-      <ion-fab-button (click)="grua()">
+      <ion-fab-button (click)="grua()" [disabled]="!hasActiveAttentionSelected">
         <ion-icon style="font-size: 2rem; color: white;" src="../../assets/img/remolque-de-camiones.svg"></ion-icon>
       </ion-fab-button>
     </ion-fab>
@@ -520,13 +528,13 @@
     </ion-fab>
 
     <ion-fab class="home-floating-action" *ngIf="isSearch == false && filtroAtenciones.length > 0" style="position: fixed;margin-bottom: 6%;" vertical="bottom" horizontal="end">
-      <ion-fab-button (click)="goFotos()">
+      <ion-fab-button (click)="goFotos()" [disabled]="!hasActiveAttentionSelected">
         <ion-icon name="camera"></ion-icon>
       </ion-fab-button>
     </ion-fab>
 
     <ion-fab class="home-floating-action" *ngIf="isSearch == false && filtroAtenciones.length > 0" style="position: fixed;" vertical="bottom" horizontal="end">
-      <ion-fab-button (click)="verExpediente(atIndex)">
+      <ion-fab-button (click)="verExpediente(atIndex)" [disabled]="!hasActiveAttentionSelected">
         <ion-icon name="chevron-forward"></ion-icon>
       </ion-fab-button>
     </ion-fab>
@@ -728,10 +736,10 @@
           <ion-label> Servicios </ion-label>
         </ion-item-divider>
 
-        <ion-item (click)="grua()">
+        <ion-item (click)="hasActiveAttentionSelected && grua()" [disabled]="!hasActiveAttentionSelected">
           <ion-avatar slot="start">
             <!--ion-icon style="font-size: 3rem;" src="../../assets/img/wheeled-crane.svg"></!--ion-icon -->
-            <img style="width: 60px; height:60px" src="../../assets/img/camion-grua-1.gif" alt="search" (click)="grua()"/>
+            <img style="width: 60px; height:60px" src="../../assets/img/camion-grua-1.gif" alt="search"/>
           </ion-avatar>
           <ion-label>
             <h2>Solicitar Grua</h2>

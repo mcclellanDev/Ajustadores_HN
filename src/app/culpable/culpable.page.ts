@@ -152,26 +152,64 @@ export class CulpablePage implements OnInit {
     return this.daniosSelectCulpa.some((danio) => Number(danio.Id) === Number(danioId));
   }
 
+  private currentAttentionStorageId(): string {
+    return (this.idAtencion || this.atencionId || localStorage.getItem('idAtencion') || '').toString();
+  }
+
+  private scopedKey(prefix: string, suffix?: any): string {
+    const attentionId = this.currentAttentionStorageId();
+    return suffix !== undefined && suffix !== null
+      ? `${prefix}-${attentionId}-${suffix}`
+      : `${prefix}-${attentionId}`;
+  }
+
+  private getScopedValue(key: string): string | null {
+    return localStorage.getItem(this.scopedKey(key));
+  }
+
+  private setScopedValue(key: string, value: any): void {
+    localStorage.setItem(this.scopedKey(key), value);
+  }
+
+  private isCurrentScopedKey(key: string | null, prefix: string): boolean {
+    const attentionId = this.currentAttentionStorageId();
+    return !!key && !!attentionId && key.indexOf(`${prefix}-${attentionId}`) === 0;
+  }
+
+  private removeCurrentScopedKeys(prefix: string): void {
+    const attentionId = this.currentAttentionStorageId();
+    const keysToRemove: string[] = [];
+
+    for (let index = 0; index < localStorage.length; index++) {
+      const key = localStorage.key(index);
+      if (key && attentionId && key.indexOf(`${prefix}-${attentionId}`) === 0) {
+        keysToRemove.push(key);
+      }
+    }
+
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
+  }
+
   private persistSelectedDamages() {
     const keysToRemove: string[] = [];
     for (let index = 0; index < localStorage.length; index++) {
       const key = localStorage.key(index);
-      if (key?.startsWith('daniosSelectCulpa-')) {
+      if (this.isCurrentScopedKey(key, 'daniosSelectCulpa')) {
         keysToRemove.push(key);
       }
     }
     keysToRemove.forEach((key) => localStorage.removeItem(key));
 
     this.daniosSelectCulpa.forEach((danio) => {
-      localStorage.setItem(`daniosSelectCulpa-${danio.Id}`, danio.Id.toString());
+      localStorage.setItem(this.scopedKey('daniosSelectCulpa', danio.Id), danio.Id.toString());
     });
-    localStorage.setItem('daniosSelectCulpa', JSON.stringify(this.daniosSelectCulpa));
+    localStorage.setItem(this.scopedKey('daniosSelectCulpa'), JSON.stringify(this.daniosSelectCulpa));
     this.contador = this.daniosSelectCulpa.length;
   }
 
   setReparacion(dannioId, tipo, i, origen){
-    localStorage.setItem('TipoReparacionCulpa-'+dannioId, tipo);
-    localStorage.setItem('TipoReparacionCulpaIndex-'+dannioId, i);
+    localStorage.setItem(this.scopedKey('TipoReparacionCulpa', dannioId), tipo);
+    localStorage.setItem(this.scopedKey('TipoReparacionCulpaIndex', dannioId), i);
 
     if (origen === 1) {
       if (tipo === 1) {
@@ -187,7 +225,7 @@ export class CulpablePage implements OnInit {
 
   clearStorageDanios(){
     for (var i = 0; i < localStorage.length; i++){
-      if (localStorage.key(i).indexOf('daniosSelectCulpa') == 0) {
+      if (this.isCurrentScopedKey(localStorage.key(i), 'daniosSelectCulpa')) {
           localStorage.removeItem(localStorage.key(i));
       }
     }
@@ -345,9 +383,9 @@ export class CulpablePage implements OnInit {
               ).subscribe(
                  async (res) =>{
                   console.dir(res);
-                  localStorage.removeItem('danioOtroCulpa-'+codigo);
-                  localStorage.removeItem('TipoReparacionX-'+danioInputId);
-                  localStorage.removeItem('TipoReparacionIndexX-'+danioInputId);
+                  localStorage.removeItem(this.scopedKey('danioOtroCulpa', codigo));
+                  localStorage.removeItem(this.scopedKey('TipoReparacionX', danioInputId));
+                  localStorage.removeItem(this.scopedKey('TipoReparacionIndexX', danioInputId));
     
                   setTimeout(() => {
                     this.recargarDaniosExtras();
@@ -364,8 +402,8 @@ export class CulpablePage implements OnInit {
   setReparacionX(dannioId, tipo, i, origen){
     // alert(dannioId+', '+tipo+', '+i+', '+origen);
      
-     localStorage.setItem('TipoReparacionX-'+dannioId, tipo);
-     localStorage.setItem('TipoReparacionIndexX-'+dannioId, i);
+     localStorage.setItem(this.scopedKey('TipoReparacionX', dannioId), tipo);
+     localStorage.setItem(this.scopedKey('TipoReparacionIndexX', dannioId), i);
  
      this.api.ActualizarTipoReparacion(dannioId, tipo, i).pipe( 
        finalize(async ()=>{
@@ -396,10 +434,10 @@ export class CulpablePage implements OnInit {
     this.daniosSelectCulpa = this.daniosSelectCulpa.filter(
       (danio) => Number(danio.Id) !== Number(danioInputId)
     );
-    localStorage.removeItem('TipoReparacionCulpa-'+danioInputId);
-    localStorage.removeItem('TipoReparacionCulpaIndex-'+danioInputId);
+    localStorage.removeItem(this.scopedKey('TipoReparacionCulpa', danioInputId));
+    localStorage.removeItem(this.scopedKey('TipoReparacionCulpaIndex', danioInputId));
     this.daniosSelectCulpa.forEach((danio, selectedIndex) => {
-      localStorage.setItem(`TipoReparacionCulpaIndex-${danio.Id}`, selectedIndex.toString());
+      localStorage.setItem(this.scopedKey('TipoReparacionCulpaIndex', danio.Id), selectedIndex.toString());
     });
     this.persistSelectedDamages();
     
@@ -566,8 +604,8 @@ export class CulpablePage implements OnInit {
              async (res) =>{
               this.daniosSelectOtroCulpa.push(elementOtro);
               localStorage.setItem('selectedIndex-xx' ,JSON.stringify(this.daniosIndex));
-              localStorage.setItem('daniosSelectOtroCulpa-'+(this.daniosIndex-1), this.daniosIndex);
-              localStorage.setItem('danioOtroCulpa-'+this.daniosIndex, JSON.stringify(elementOtro));
+              localStorage.setItem(this.scopedKey('daniosSelectOtroCulpa', this.daniosIndex-1), this.daniosIndex);
+              localStorage.setItem(this.scopedKey('danioOtroCulpa', this.daniosIndex), JSON.stringify(elementOtro));
 
               setTimeout(() => {
                 this.recargarDaniosExtras();
@@ -583,7 +621,7 @@ export class CulpablePage implements OnInit {
 
   listarDanios(){
     const selectedIds = new Set<number>();
-    const storedSelection = JSON.parse(localStorage.getItem('daniosSelectCulpa') || '[]') || [];
+    const storedSelection = JSON.parse(localStorage.getItem(this.scopedKey('daniosSelectCulpa')) || '[]') || [];
     storedSelection.forEach((danio) => selectedIds.add(Number(danio.Id)));
     let contenedor = document.getElementsByClassName('input-index');
     let contenedorDescripcion = document.getElementsByClassName('danio-descripcion-input');
@@ -591,7 +629,7 @@ export class CulpablePage implements OnInit {
     let kikiriki = $('.danio-descripcion-input').eq(0).val();
     
     for (var i = 0; i < localStorage.length; i++){
-      if (localStorage.key(i).indexOf('daniosSelectCulpa-') == 0) {
+      if (this.isCurrentScopedKey(localStorage.key(i), 'daniosSelectCulpa')) {
         let elCodigo = localStorage.getItem(localStorage.key(i));
         
         let daCode = parseInt(elCodigo);//.split('-')[1];
@@ -612,9 +650,9 @@ export class CulpablePage implements OnInit {
         }
 
         //console.dir(elCodigo.split('-')[1]);
-        let elTipo = localStorage.getItem('TipoReparacionCulpa-'+daCode);
+        let elTipo = localStorage.getItem(this.scopedKey('TipoReparacionCulpa', daCode));
         let daType = parseInt(elTipo);
-        let elIndex = localStorage.getItem('TipoReparacionCulpaIndex-'+daCode);
+        let elIndex = localStorage.getItem(this.scopedKey('TipoReparacionCulpaIndex', daCode));
         let daIndex = parseInt(elIndex);
 
         setTimeout(() => {
@@ -636,8 +674,7 @@ export class CulpablePage implements OnInit {
         }
       }
 
-      if (localStorage.key(i).indexOf('danioOtroCulpa-') == 0) {
-        let otroKey = parseInt(localStorage.key(i).split('-')[1]);
+      if (this.isCurrentScopedKey(localStorage.key(i), 'danioOtroCulpa')) {
         let otroVal = localStorage.getItem(localStorage.key(i));
         console.log('En listar ')
         console.dir(JSON.parse(otroVal));
@@ -813,125 +850,126 @@ export class CulpablePage implements OnInit {
 
   guardaCache(position){
     if (position == 0) {
-      localStorage.setItem('deuda-NombreCulpable', this.culpable.NombreCulpable);
+      this.setScopedValue('deuda-NombreCulpable', this.culpable.NombreCulpable);
     }
     if (position == 1) {
-      localStorage.setItem('deuda-culpableIdentidad', this.culpableIdentidad);
+      this.setScopedValue('deuda-culpableIdentidad', this.culpableIdentidad);
     }
     if (position == 2) {
-      localStorage.setItem('deuda-DireccionCulpable', this.culpable.DireccionCulpable);
+      this.setScopedValue('deuda-DireccionCulpable', this.culpable.DireccionCulpable);
     }
     if (position == 3) {
-      localStorage.setItem('deuda-TelefonoFijoCulpable', this.culpable.TelefonoFijoCulpable);
+      this.setScopedValue('deuda-TelefonoFijoCulpable', this.culpable.TelefonoFijoCulpable);
     }
     if (position == 4) {
-      localStorage.setItem('deuda-CelularCulpable', this.culpable.CelularCulpable);
+      this.setScopedValue('deuda-CelularCulpable', this.culpable.CelularCulpable);
     }
     if (position == 5) {
-      localStorage.setItem('deuda-EdadCulpable', this.EdadCulpable);
+      this.setScopedValue('deuda-EdadCulpable', this.EdadCulpable);
     }
     if (position == 6) {
-      localStorage.setItem('deuda-culpableCorreo', this.culpableCorreo);
+      this.setScopedValue('deuda-culpableCorreo', this.culpableCorreo);
     }
     if (position == 7) {
-      localStorage.setItem('deuda-culpableTrabajo', this.culpableTrabajo);
+      this.setScopedValue('deuda-culpableTrabajo', this.culpableTrabajo);
     }
     if (position == 8) {
       let daType:number = this.culpable.LicenciaTipoCulpable;
       
       this.TipoDeLicencia = this.tipoLicencia[daType-1].TipoLicencia;
-      localStorage.setItem('deuda-LicenciaTipoCulpable', this.culpable.LicenciaTipoCulpable.toString());
+      this.setScopedValue('deuda-LicenciaTipoCulpable', this.culpable.LicenciaTipoCulpable.toString());
     }
     if (position == 9) {
-      localStorage.setItem('deuda-NumeroLicenciaCulpable', this.culpable.NumeroLicenciaCulpable);
+      this.setScopedValue('deuda-NumeroLicenciaCulpable', this.culpable.NumeroLicenciaCulpable);
     }
     if (position == 10) {
-      localStorage.setItem('deuda-FechaVencimientoLicenciaCulpable', this.culpable.FechaVencimientoLicenciaCulpable.toString());
+      this.setScopedValue('deuda-FechaVencimientoLicenciaCulpable', this.culpable.FechaVencimientoLicenciaCulpable.toString());
     }
     if (position == 11) {
-      localStorage.setItem('deuda-MarcaCulpable', this.culpable.MarcaCulpable);
+      this.setScopedValue('deuda-MarcaCulpable', this.culpable.MarcaCulpable);
     }
     if (position == 12) {
-      localStorage.setItem('deuda-ModeloCulpable', this.culpable.ModeloCulpable);
+      this.setScopedValue('deuda-ModeloCulpable', this.culpable.ModeloCulpable);
     }
     if (position == 13) {
-      localStorage.setItem('deuda-AnioCulpable', this.culpable.AnioCulpable.toString());
+      this.setScopedValue('deuda-AnioCulpable', this.culpable.AnioCulpable.toString());
     }
     if (position == 14) {
-      localStorage.setItem('deuda-MotorNoCulpable', this.culpable.MotorNoCulpable);
+      this.setScopedValue('deuda-MotorNoCulpable', this.culpable.MotorNoCulpable);
     }
     if (position == 15) {
-      localStorage.setItem('deuda-Chasis', this.culpable.Chasis);
+      this.setScopedValue('deuda-Chasis', this.culpable.Chasis);
     }
     if (position == 16) {
-      localStorage.setItem('deuda-NoPlacaCulpable', this.culpable.NoPlacaCulpable);
+      this.setScopedValue('deuda-NoPlacaCulpable', this.culpable.NoPlacaCulpable);
     }
     if (position == 17) {
       if (this.culpableEsPropietario == true) {
-        localStorage.setItem('deuda-NombrePropietarioCulpable', this.culpable.NombreCulpable);  
+        this.setScopedValue('deuda-NombrePropietarioCulpable', this.culpable.NombreCulpable);  
       }else{
-        localStorage.setItem('deuda-NombrePropietarioCulpable', this.NombrePropietario);
+        this.setScopedValue('deuda-NombrePropietarioCulpable', this.NombrePropietario);
       }
     }
     if (position == 18) {
       if (this.culpableEsPropietario == true) {
-        localStorage.setItem('deuda-DireccionPropietarioCulpable', this.DireccionCulpable);
+        this.setScopedValue('deuda-DireccionPropietarioCulpable', this.DireccionCulpable);
       }else{
-        localStorage.setItem('deuda-DireccionPropietarioCulpable', this.DireccionPropietario);
+        this.setScopedValue('deuda-DireccionPropietarioCulpable', this.DireccionPropietario);
       }
       
     }
     if (position == 19) {
-      localStorage.setItem('deuda-CompromisoPago', this.culpable.CompromisoPago);
+      this.setScopedValue('deuda-CompromisoPago', this.culpable.CompromisoPago);
     }
     if (position == 20) {
-      localStorage.setItem('deuda-culpableContacto', this.culpableContacto);
+      this.setScopedValue('deuda-culpableContacto', this.culpableContacto);
     }
     if (position == 21) {
-      localStorage.setItem('deuda-culpableContactoNumero', this.culpableContactoNumero);
+      this.setScopedValue('deuda-culpableContactoNumero', this.culpableContactoNumero);
     }
     if (position == 22) {
-      localStorage.setItem('deuda-ObservacionesCulpable', this.culpable.ObservacionesCulpable);
+      this.setScopedValue('deuda-ObservacionesCulpable', this.culpable.ObservacionesCulpable);
     }
   }
 
   obtenerCache(){
     let storageKey:any; let storageKeyFix:any; let storageKeyIndex:any; let storageValue:any;
+    const deudaPrefix = this.scopedKey('deuda') + '-';
     for (var i = 0; i < localStorage.length; i++){
-      if (localStorage.key(i).indexOf('deuda-') == 0) {
-        storageKey = localStorage.key(i).split('-')[1];
+      if (localStorage.key(i).indexOf(deudaPrefix) == 0) {
+        storageKey = localStorage.key(i).replace(deudaPrefix, '');
         storageValue = localStorage.getItem(localStorage.key(i));
 
         this.culpable[storageKey] = storageValue;
       }
 
       if (i==(localStorage.length-1)) {
-        this.culpableIdentidad = localStorage.getItem('deuda-culpableIdentidad');
+        this.culpableIdentidad = this.getScopedValue('deuda-culpableIdentidad');
         if (this.culpableIdentidad == undefined || this.culpableIdentidad == null || this.culpableIdentidad == '' || this.culpableIdentidad == 'undefined') {
           console.log('culpableIdentidad no existe')
           this.culpableIdentidad = '';
         }
 
-        this.EdadCulpable = parseInt(localStorage.getItem('deuda-EdadCulpable'));
+        this.EdadCulpable = parseInt(this.getScopedValue('deuda-EdadCulpable'));
         if (this.EdadCulpable == undefined || this.EdadCulpable == null || this.EdadCulpable == '' || this.EdadCulpable == 'undefined' || isNaN(this.EdadCulpable)) {
           console.log('EdadCulpable no existe')
           this.EdadCulpable = 0;
           //this.EdadCulpable = '';
         }
 
-        this.culpableCorreo = localStorage.getItem('deuda-culpableCorreo');
+        this.culpableCorreo = this.getScopedValue('deuda-culpableCorreo');
         if (this.culpableCorreo == undefined || this.culpableCorreo == null || this.culpableCorreo == '' || this.culpableCorreo == 'undefined') {
           console.log('culpableCorreo no existe')
           this.culpableCorreo = '';
         }
 
-        this.culpableTrabajo = localStorage.getItem('deuda-culpableTrabajo');
+        this.culpableTrabajo = this.getScopedValue('deuda-culpableTrabajo');
         if (this.culpableTrabajo == undefined || this.culpableTrabajo == null || this.culpableTrabajo == '' || this.culpableTrabajo == 'undefined') {
           console.log('culpableTrabajo no existe')
           this.culpableTrabajo = '';
         }
 
-        this.culpable.LicenciaTipoCulpable = parseInt(localStorage.getItem('deuda-LicenciaTipoCulpable'));
+        this.culpable.LicenciaTipoCulpable = parseInt(this.getScopedValue('deuda-LicenciaTipoCulpable'));
         if (this.culpable.LicenciaTipoCulpable == undefined || this.culpable.LicenciaTipoCulpable == null) {
           console.log('culpable.LicenciaTipoCulpable no existe')
           //this.culpable.LicenciaTipoCulpable = '';
@@ -939,31 +977,31 @@ export class CulpablePage implements OnInit {
           //alert(this.culpable.LicenciaTipoCulpable+1)
         }
 
-        this.culpableContacto = localStorage.getItem('deuda-culpableContacto');
+        this.culpableContacto = this.getScopedValue('deuda-culpableContacto');
         if (this.culpableContacto == undefined || this.culpableContacto == null || this.culpableContacto == '' || this.culpableContacto == 'undefined') {
           console.log('culpableContacto no existe')
           this.culpableContacto = '';
         }
 
-        this.culpableContactoNumero = localStorage.getItem('deuda-culpableContactoNumero');
+        this.culpableContactoNumero = this.getScopedValue('deuda-culpableContactoNumero');
         if (this.culpableContactoNumero == undefined || this.culpableContactoNumero == null || this.culpableContactoNumero == '' || this.culpableContactoNumero == 'undefined') {
           console.log('culpableContactoNumero no existe')
           this.culpableContactoNumero = '';
         }
 
-        this.culpable.MarcaCulpable = localStorage.getItem('deuda-MarcaCulpable');
+        this.culpable.MarcaCulpable = this.getScopedValue('deuda-MarcaCulpable');
         if (this.culpable.MarcaCulpable == undefined || this.culpable.MarcaCulpable == null || this.culpable.MarcaCulpable == '' || this.culpable.MarcaCulpable == 'undefined') {
           console.log('culpable.MarcaCulpable no existe')
           //this.culpable.MarcaCulpable = '';
         }
         
-        let idLicenciaTipo:number = parseInt(localStorage.getItem('deuda-LicenciaTipoCulpable'));
+        let idLicenciaTipo:number = parseInt(this.getScopedValue('deuda-LicenciaTipoCulpable'));
         if (idLicenciaTipo == undefined || idLicenciaTipo == null) {
           console.log('idLicenciaTipo no existe')
           //idLicenciaTipo = '';
         }
 
-        let culpaEsPro = localStorage.getItem('deuda-culpableEsPropietario') === 'true';
+        let culpaEsPro = this.getScopedValue('deuda-culpableEsPropietario') === 'true';
         if (culpaEsPro == undefined || culpaEsPro == null) {
           console.log('culpaEsPro no existe');
           
@@ -973,8 +1011,8 @@ export class CulpablePage implements OnInit {
             this.CulpableNombre = this.culpable.NombreCulpable;
             this.CulpableDireccion = this.culpable.DireccionCulpable;
           }else{
-            this.NombrePropietario = localStorage.getItem('deuda-NombrePropietarioCulpable');
-            this.DireccionPropietario = localStorage.getItem('deuda-DireccionPropietarioCulpable');
+            this.NombrePropietario = this.getScopedValue('deuda-NombrePropietarioCulpable');
+            this.DireccionPropietario = this.getScopedValue('deuda-DireccionPropietarioCulpable');
             this.CulpableNombre = this.NombrePropietario;
             this.CulpableDireccion = this.DireccionPropietario;
           }
@@ -1012,7 +1050,7 @@ export class CulpablePage implements OnInit {
 
   cambiarPropietario(event){
     this.culpableEsPropietario = event.detail.checked;
-    localStorage.setItem('deuda-culpableEsPropietario', this.culpableEsPropietario.toString());
+    this.setScopedValue('deuda-culpableEsPropietario', this.culpableEsPropietario.toString());
     if (this.culpableEsPropietario == true) {
       this.CulpableNombre = this.culpable.NombreCulpable;
       this.CulpableDireccion = this.culpable.DireccionCulpable;
@@ -1050,11 +1088,9 @@ export class CulpablePage implements OnInit {
 ///////////////////////////////////////////////////////////////////
 
 
-      if(ahora.getFullYear() > anio){
-        this.vigente = false;
-      }else{
-        this.vigente = true;
-      }
+      ahora.setHours(0, 0, 0, 0);
+      fechaVigencia.setHours(0, 0, 0, 0);
+      this.vigente = fechaVigencia >= ahora;
 
       setTimeout(() => {
         if (this.vigente == false) {
@@ -1162,9 +1198,9 @@ export class CulpablePage implements OnInit {
     };
 
     try {
-      localStorage.setItem('deuda', JSON.stringify(this.reconocimientoDeuda));
-      localStorage.setItem('daniosSelectCulpa', JSON.stringify(this.mapCommonDamagesForDeuda(this.daniosSelectCulpa)));
-      localStorage.setItem('daniosSelectOtroCulpaDetalle', JSON.stringify(this.mapManualDamagesForDeuda(this.daniosSelectOtroCulpa)));
+      localStorage.setItem(this.scopedKey('deuda'), JSON.stringify(this.reconocimientoDeuda));
+      localStorage.setItem(this.scopedKey('daniosSelectCulpa'), JSON.stringify(this.mapCommonDamagesForDeuda(this.daniosSelectCulpa)));
+      localStorage.setItem(this.scopedKey('daniosSelectOtroCulpaDetalle'), JSON.stringify(this.mapManualDamagesForDeuda(this.daniosSelectOtroCulpa)));
       localStorage.setItem('poliza', expedienteActual.PolizaExterna || this.poliza || '');
       localStorage.setItem('datos-Poliza', expedienteActual.PolizaExterna || this.poliza || '');
       localStorage.setItem('telFijo', this.telFijo);
@@ -1217,7 +1253,10 @@ export class CulpablePage implements OnInit {
 
     this.colorVigente = true;
     const dater = new Date();
-    const time = 'T' + dater.getHours() + ':' + dater.getMinutes() + ':' + dater.getSeconds();
+    const time = 'T' +
+      String(dater.getHours()).padStart(2, '0') + ':' +
+      String(dater.getMinutes()).padStart(2, '0') + ':' +
+      String(dater.getSeconds()).padStart(2, '0');
     const dias = vDate.toString().substring(0, 2);
     const mes = vDate.toString().substring(3, 5);
     const anio = vDate.toString().substring(6, vDate.toString().length);

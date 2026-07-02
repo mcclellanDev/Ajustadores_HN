@@ -12,6 +12,7 @@ import { AlertController, LoadingController, ToastController, PopoverController,
 import { ApiService } from '../services/api.service';
 import { tiposTransmision } from '../environments/vehicles';
 import { finalize } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
 import SignaturePad from 'signature_pad';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { MaskitoElementPredicateAsync, MaskitoOptions } from '@maskito/core';
@@ -31,6 +32,7 @@ import {
   ficohsaBpmConfirmationRules,
   ficohsaBpmValidationRules
 } from '../validation/claim-validation.rules';
+import { normalizeChassis, normalizeParentescoCode, normalizePolicyNumber, resolveClaimCoordinates, resolveClaimDate } from '../utils/claim-payload-normalizer';
 import {
   AttentionBulkAttempt,
   AttentionBulkAttemptService
@@ -63,8 +65,8 @@ export class AjustadorhnPage implements OnInit {
     {
       text: 'Sí, Salir',
       cssClass: 'alert-button-confirm',
-      handler: () => {
-        window.location.reload();
+      handler: async () => {
+        await this.goExpedienteFromAjustador();
       }
     },
   ];
@@ -130,6 +132,7 @@ export class AjustadorhnPage implements OnInit {
   acompaniantes: any = [];  testigos: any = [];  lesionados: any = [];  propiedades: any = []; formularioCompleto:boolean=false;
   fechaInspeccionLocal: string;  clienteFiltroAju: any = [];  nullsIndexAju: any = [];
   mostrarPanelValidacion:boolean=false; validationPanelIsActive:boolean=false;
+  clientSignatureAttentionId: string | null = null;
   textoInfo = 'Validando ... Cuando todos los datos estén completos, se habilitará el botón de guardar.';
   textoInfoIncompleto = 'Faltan datos por completar. Por favor, revisa el formulario.';
   textoInfoDanios = 'Aún no se han seleccionado daños. Puedes guardar la atención, sin embargo no se reflejarán daños en los informes.';
@@ -146,7 +149,7 @@ export class AjustadorhnPage implements OnInit {
   daniosManualesCulpa: any = [];
   // Daños manuales ("Otros") del afiliado cargados desde el servidor.
   daniosManualesAju: any = [];
-  coberturas:any = [];  producto: string;  esConduceSeguro: boolean = false;
+  coberturas:any = []; causasPorCobertura:any = []; causaBpmCodigo:any; causaBpmDescripcion:any; producto: string;  esConduceSeguro: boolean = false;
 
   // INICIALIZACION
   constructor(private router: Router, private loading: LoadingController, private alert: AlertController,
@@ -214,7 +217,7 @@ export class AjustadorhnPage implements OnInit {
       this.fechaParrafo = this.dia+' de '+ meses[this.mes].mes+' de '+this.anio;
       this.fechaPie = (this.diaPie)+ ' días'+' del mes de '+ meses[this.mesPie].mes+' de '+this.anioPie;
 
-      this.firmaPrecargada = localStorage.getItem("dSignatureAsegurado");
+      this.firmaPrecargada = emptySignatureWhite;
 
       setTimeout(() => {
         
@@ -326,7 +329,7 @@ export class AjustadorhnPage implements OnInit {
             Modelo: this.elExpediente[0].Modelo, // de la info del asegurado
             Anio: this.elExpediente[0].Year, // de la info del asegurado
             Placa: this.elExpediente[0].NumeroPlaca, // de la info del asegurado
-            Chasis: this.elExpediente[0].Chasis, // de la info del asegurado
+            Chasis: normalizeChassis(this.elExpediente[0].Chasis), // de la info del asegurado
             Motor: this.elExpediente[0].Motor, // de la info del asegurado
       
             // variables desde inputs
@@ -518,6 +521,7 @@ export class AjustadorhnPage implements OnInit {
     
 
     ngOnInit() {
+      void this.bootstrapAjustadorRuntime();
       const nativeEl = this.accordionGroup;
       this.daniosSelectAju = [];
       //nativeEl.value = 'second';
@@ -709,12 +713,78 @@ export class AjustadorhnPage implements OnInit {
       });
     }
 
-    private extractBulkErrorMessage(error: any, fallback = 'Error al enviar datos'): string {
-      return error?.error?.Message || error?.message || fallback;
+    private normalizeClaimServerMessage(message: any): string {
+      return String(message || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
     }
 
-    private hasValidClientSignature(): boolean {
-      const signature = this.firmaPrecargada || localStorage.getItem('dSignatureAsegurado');
+    private translateClaimServerMessage(message: any, fallback = 'No es posible procesar esta solicitud en este momento. Recomendamos revisar los datos ingresados, intentar nuevamente o finalizar el proceso manualmente.'): string {
+      const rawMessage = message || fallback;
+      const normalized = this.normalizeClaimServerMessage(rawMessage);
+
+      if (
+        normalized.includes('ocurrio un error') ||
+        normalized.includes('ha ocurrido un error') ||
+        normalized.includes('occurred an error') ||
+        normalized.includes('an error has occurred') ||
+        normalized.includes('error has occurred') ||
+        normalized.includes('error occurred')
+      ) {
+        return 'No es posible procesar esta solicitud en este momento. Se recomienda revisar si la póliza está siendo renovada, o bien finalizar el proceso manualmente.';
+      }
+
+      if (
+        normalized.includes('certificado no valido') ||
+        normalized.includes('invalid certificate') ||
+        normalized.includes('certificate invalid')
+      ) {
+        return 'No es posible procesar esta solicitud en este momento. Recomendamos revisar número de chasis para saber si tiene cobertura, o bien finalizar el proceso manualmente.';
+      }
+
+      if (
+        normalized.includes('causa no corresponde') ||
+        normalized.includes('producto especificado') ||
+        normalized.includes('causa incorrecta') ||
+        normalized.includes('cause does not correspond') ||
+        normalized.includes('specified product') ||
+        normalized.includes('incorrect cause')
+      ) {
+        return 'No es posible procesar esta solicitud en este momento. Recomendamos revisar el tipo de cobertura seleccionada, o bien finalizar el proceso manualmente.';
+      }
+
+      return fallback;
+    }
+
+    private extractBulkErrorMessage(error: any, fallback = 'No es posible procesar esta solicitud en este momento. Recomendamos revisar los datos ingresados, intentar nuevamente o finalizar el proceso manualmente.'): string {
+      const rawMessage = error?.error?.Message || error?.message || error?.descripcion || fallback;
+      return this.translateClaimServerMessage(rawMessage, fallback);
+    }
+
+    private async presentClaimSendFailureAlert(message: string) {
+      const alert = await this.alert.create({
+        cssClass: 'form-choice-alert entry-validation-alert claim-send-failure-alert',
+        header: 'No se pudo enviar la solicitud',
+        message,
+        backdropDismiss: false,
+        buttons: [
+          {
+            text: 'Entendido',
+            role: 'cancel',
+            cssClass: 'form-choice-confirm'
+          }
+        ]
+      });
+
+      await alert.present();
+    }
+
+    hasValidClientSignature(): boolean {
+      const canUseCurrentSignature =
+        !!this.idAtencion &&
+        this.clientSignatureAttentionId === this.idAtencion.toString();
+      const signature = canUseCurrentSignature ? this.firmaPrecargada : null;
       return !!signature &&
         signature !== emptySignature &&
         signature !== emptySignatureWhite &&
@@ -723,9 +793,63 @@ export class AjustadorhnPage implements OnInit {
     }
 
     private refreshValidationFromLocalData(): void {
-      this.firmaPrecargada = localStorage.getItem('dSignatureAsegurado');
+      this.restoreClientSignatureForCurrentAttention();
       this.datosCompletados = this.collectAjustadorLocalData();
       this.completeAjustadorValidationReview();
+    }
+
+    private syncAttentionContext(): void {
+      const currentAttentionId = localStorage.getItem('idAtencion') || this.idAtencion;
+      if (!currentAttentionId) {
+        return;
+      }
+
+      if (this.idAtencion?.toString() !== currentAttentionId.toString()) {
+        this.clientSignatureAttentionId = null;
+        this.firmaPrecargada = emptySignatureWhite;
+        this.isSignature = false;
+      }
+
+      this.idAtencion = currentAttentionId;
+      this.atencionId = parseInt(this.idAtencion, 10);
+    }
+
+    private async bootstrapAjustadorRuntime(): Promise<void> {
+      this.syncAttentionContext();
+      this.restoreClientSignatureForCurrentAttention();
+      await this.firmar();
+    }
+
+    private restoreClientSignatureForCurrentAttention(): boolean {
+      if (!this.idAtencion) {
+        this.clientSignatureAttentionId = null;
+        this.firmaPrecargada = emptySignatureWhite;
+        this.isSignature = false;
+        return false;
+      }
+
+      const attentionId = this.idAtencion.toString();
+      const storedAttentionId = localStorage.getItem('dSignatureAseguradoAtencion');
+      const signatureByAttention = localStorage.getItem('dSignatureAsegurado-' + attentionId);
+      const canUseStoredSignature =
+        storedAttentionId === attentionId &&
+        !!signatureByAttention &&
+        signatureByAttention !== emptySignature &&
+        signatureByAttention !== emptySignatureWhite &&
+        signatureByAttention !== 'null' &&
+        signatureByAttention !== 'undefined';
+
+      if (canUseStoredSignature) {
+        this.firmaPrecargada = signatureByAttention;
+        this.clientSignatureAttentionId = attentionId;
+        this.isSignature = true;
+        return true;
+      }
+
+      this.clientSignatureAttentionId = null;
+      this.firmaPrecargada = emptySignatureWhite;
+      this.isSignature = false;
+      return false;
     }
 
     private resolveStoredFieldValue(item: { nombre: string; storageKey?: string }, datosAjustador: Record<string, any>): any {
@@ -904,9 +1028,11 @@ export class AjustadorhnPage implements OnInit {
       setTimeout(() => {
         this.eliminarDuplicadosEnvio(this.datosDeEnvio);
         const arregloParaEnviar = {}; let polizaTrunk:any;
-        
-        this.latitud = this.elExpediente[0].LatitudCliente;
-        this.longitud = this.elExpediente[0].LongitudCliente;
+        const expedienteActual = this.elExpediente?.[0] || {};
+        const coordenadasSiniestro = resolveClaimCoordinates(expedienteActual, this.idAtencion);
+        const fechaSiniestro = resolveClaimDate(expedienteActual, localStorage.getItem('datos-FechaHora'));
+        this.latitud = coordenadasSiniestro.Latitud;
+        this.longitud = coordenadasSiniestro.Longitud;
         for (let indexE = 0; indexE < this.datosDeEnvio.length; indexE++) {
           let element = this.datosDeEnvio[indexE];
 
@@ -938,14 +1064,20 @@ export class AjustadorhnPage implements OnInit {
             console.dir(arregloParaEnviar);
 
 
-            this.latitud = this.elExpediente[0].LatitudCliente;
-            this.longitud = this.elExpediente[0].LongitudCliente;
+            this.latitud = coordenadasSiniestro.Latitud;
+            this.longitud = coordenadasSiniestro.Longitud;
+            arregloParaEnviar['Latitud'] = coordenadasSiniestro.Latitud;
+            arregloParaEnviar['Longitud'] = coordenadasSiniestro.Longitud;
+            arregloParaEnviar['Poliza'] = normalizePolicyNumber(arregloParaEnviar['Poliza'] || expedienteActual.PolizaExterna);
+            arregloParaEnviar['ChasisVehiculo'] = normalizeChassis(arregloParaEnviar['ChasisVehiculo'] || expedienteActual.Chasis);
+            if (arregloParaEnviar['Chasis']) {
+              arregloParaEnviar['Chasis'] = normalizeChassis(arregloParaEnviar['Chasis']);
+            }
             let reserva:any = localStorage.getItem('bpmArray-ValorReserva');
                       this.valorReserva = reserva;
                       this.datos['valorReserva'] = reserva;
             
-            let fechaToString = localStorage.getItem('datos-FechaHora');
-                      let fechaSplit = fechaToString.split('T')[0];
+            let fechaSplit = (fechaSiniestro || '').split('T')[0];
 
             
 
@@ -962,17 +1094,14 @@ export class AjustadorhnPage implements OnInit {
                       }
                       
 
-                        if (this.elExpediente[0].PolizaExterna.indexOf('-') != -1) {
-                        polizaTrunk = this.elExpediente[0].PolizaExterna.split('-')[1];
-                      }else{
-                        polizaTrunk = this.elExpediente[0].PolizaExterna;
-                      }
+                        polizaTrunk = normalizePolicyNumber(this.elExpediente[0].PolizaExterna)
 
                       if (this.valorReserva == null || this.valorReserva == undefined) {
                         this.valorReserva = '0';
                       }
 
-                      let elParentesco = arregloParaEnviar['Parentesco'];
+                      let elParentesco = normalizeParentescoCode(arregloParaEnviar['Parentesco'], this.tipoParentescos, '0001');
+                      arregloParaEnviar['Parentesco'] = elParentesco;
 
 
                                console.log('He aqui la data siniestro');
@@ -1151,21 +1280,17 @@ export class AjustadorhnPage implements OnInit {
                       if (!this.nombreDelConductor) {
                         this.nombreDelConductor = localStorage.getItem('NombreConductor');
                       }
-                      let fechaToString = localStorage.getItem('datos-FechaHora');
-                      let fechaSplit = fechaToString.split('T')[0];
+                      let fechaSplit = (fechaSiniestro || '').split('T')[0];
 
                       let reserva:any = localStorage.getItem('bpmArray-ValorReserva');
                       this.valorReserva = reserva;
                       
                       this.inicialGenero = localStorage.getItem('inicialGenero');
 
-                      let elParentesco = arregloParaEnviar['Parentesco'];
+                      let elParentesco = normalizeParentescoCode(arregloParaEnviar['Parentesco'], this.tipoParentescos, '0001');
+                      arregloParaEnviar['Parentesco'] = elParentesco;
 
-                      if (this.elExpediente[0].PolizaExterna.indexOf('-') != -1) {
-                        polizaTrunk = this.elExpediente[0].PolizaExterna.split('-')[1];
-                      }else{
-                        polizaTrunk = this.elExpediente[0].PolizaExterna;
-                      }
+                      polizaTrunk = normalizePolicyNumber(this.elExpediente[0].PolizaExterna)
 
                       if (this.valorReserva == null || this.valorReserva == undefined) {
                         this.valorReserva = '0';
@@ -1173,20 +1298,20 @@ export class AjustadorhnPage implements OnInit {
 
 
                       this.dataBPM =  {
-                        Chasis: this.elExpediente[0].Chasis,
+                        Chasis: normalizeChassis(this.elExpediente[0].Chasis),
                         puntoServicio: valoresPredeterminados[0].puntoServicio, // Predeterminado : 504
                         Poliza: polizaTrunk, // 
                         Certificado: this.elExpediente[0].Certificado.toString(),//parseInt(this.elExpediente[0].Certificado), // Pendiente
                         NombreAsegurado: this.elExpediente[0].Cliente,
                         Sucursal: valoresPredeterminados[0].Sucursal, // Predeterminado : 0001
-                        Producto: this.producto, //valoresPredeterminados[0].Producto, // Predeterminado : AU01
+                        Producto: valoresPredeterminados[0].Producto,//this.producto, //valoresPredeterminados[0].Producto, // Predeterminado : AU01
                         Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
                         FechaOcurrencia: fechaSplit,//fechaSplit,//this.elExpediente[0].FechaRegistro, OJO
-                        Causa: valoresPredeterminados[0].Causa, // Pendiente
+                        Causa: this.getCodigoCausaBpm(), // Causa Ficohsa por cobertura
                         ValorReserva: this.coerceValorReservaParaEnvio(this.valorReserva).toString(), // Formulario (siempre numérico >= 0, nunca null)
                         UsuarioBPM: this.elUsuario.UsuarioBPM, // Login
-                        Latitud: this.latitud,//"14.0985125",//localStorage.getItem('latitud'), // Formulario
-                        Longitud: this.longitud,//"-87.1849219",//localStorage.getItem('longitud'), // Formulario
+                        Latitud: coordenadasSiniestro.Latitud,//"14.0985125",//localStorage.getItem('latitud'), // Formulario
+                        Longitud: coordenadasSiniestro.Longitud,//"-87.1849219",//localStorage.getItem('longitud'), // Formulario
                         NombreConductor: this.nombreDelConductor, // Formulario
                         Genero: this.inicialGenero, // Formulario
                         Parentesco: elParentesco, // Formulario
@@ -1274,15 +1399,13 @@ export class AjustadorhnPage implements OnInit {
                                             this.markBulkAttemptSucceeded();
                                             this.miLogRespuesta = res;
                                             console.dir(res);
-                                            setTimeout(() => {
-                                                this.switchButtons(1);
-                                              }, 6000);
+                                            await this.goResults();
                                           },
                                           async (error) => {
                                             this.isLoading = false;
                                             this.markBulkAttemptFailed(this.extractBulkErrorMessage(error));
                                             let errorKey = 'acsel';
-                                            let elError = error.error.Message;
+                                            let elError = error?.error?.Message || error?.message || '';
 
                                             setTimeout(() => {
                                                 this.switchButtons(2);
@@ -1290,12 +1413,12 @@ export class AjustadorhnPage implements OnInit {
 
                                             console.log('El resdultado del intento con el bpm es '+elError.toString().toLowerCase().includes(errorKey));
                                             console.log('El resdultado indexOf del intento con el bpm es '+elError.toString().toLowerCase().indexOf(errorKey));
-                                            console.dir(res);
+                                            console.dir(error);
                                             if (elError.toString().toLowerCase().includes(errorKey)) {
-                                              this.toaster.presentToast('Este chasis no está registrado en un programa de Seguros Ficohsa. Esta atención deberá ser procesada de diferente forma. Consulta a tu administrador de operaciones para una mejor resolución.', 'top', 'solicitante');  
+                                              await this.presentClaimSendFailureAlert('Este chasis no está registrado en un programa de Seguros Ficohsa. Esta atención deberá ser procesada de diferente forma. Consulta a tu administrador de operaciones para una mejor resolución.');  
                                             }else{
-                                              this.toaster.presentToast(res.error.Message, 'top', 'solicitante');
-                                              this.miLogRespuesta = res;
+                                              await this.presentClaimSendFailureAlert(this.extractBulkErrorMessage(error));
+                                              this.miLogRespuesta = error;
                                             }
                                             
                                           }
@@ -1306,23 +1429,24 @@ export class AjustadorhnPage implements OnInit {
                                                 this.switchButtons(2);
                                               }, 6000);
                                         this.isLoading = false;
-                                        this.markBulkAttemptFailed("Código :  "+resAtencion[0].codigo+', error :'+resAtencion[0].descripcion);
-                                        this.toaster.presentToastDataMissing("Código :  "+resAtencion[0].codigo+', error :'+resAtencion[0].descripcion, 'top', 'bpm');  
+                                        const bpmErrorMessage = this.translateClaimServerMessage(resAtencion[0].descripcion);
+                                        this.markBulkAttemptFailed(bpmErrorMessage);
+                                        await this.presentClaimSendFailureAlert(bpmErrorMessage);  
                                       }
                                       
                                     }else{
                                       setTimeout(() => {
                                                 this.switchButtons(2);
-                                              }, 6000);
+                                      }, 6000);
                                       this.isLoading = false;
                                       this.markBulkAttemptFailed(this.extractBulkErrorMessage(resAtencion));
-                                      this.toaster.presentToast(resAtencion.error.Message, 'top', 'solicitante');
+                                      await this.presentClaimSendFailureAlert(this.extractBulkErrorMessage(resAtencion));
                                     }
                                 },
                                 async (error) => {
                                   this.isLoading = false;
                                   this.markBulkAttemptFailed(this.extractBulkErrorMessage(error));
-                                  this.toaster.presentToast(error.error.Message, 'top', 'solicitante');
+                                  await this.presentClaimSendFailureAlert(this.extractBulkErrorMessage(error));
                                 }
                           
                               )
@@ -1332,7 +1456,7 @@ export class AjustadorhnPage implements OnInit {
                   async (error) => {
                     this.isLoading = false;
                     this.markBulkAttemptFailed(this.extractBulkErrorMessage(error));
-                    this.toaster.presentToast(this.extractBulkErrorMessage(error), 'top', 'solicitante');
+                    await this.presentClaimSendFailureAlert(this.extractBulkErrorMessage(error));
                   }
                 )
                   /**/
@@ -1346,9 +1470,10 @@ export class AjustadorhnPage implements OnInit {
       }, 1800);
     }
 
-    validarDatos(origen:any){
+    async validarDatos(origen:any){
 
       this.isLoading = true;
+      await this.bootstrapAjustadorRuntime();
       this.mostrarPanelValidacion = true;
       this.datosComunes = [];
       this.cacheCliente = [];
@@ -1514,9 +1639,20 @@ export class AjustadorhnPage implements OnInit {
 
     }
 
-    goResults(){
-      this.router.navigate(['./end-process'], { queryParams: { Id: this.atencionId, CodigoReclamoFicohsa: this.codigoReclamoFicohsa.toString(),
-        CodigoBPMFicohsa: this.codigoBPMFicohsa.toString() } });
+    async goResults(){
+      const attentionId = this.atencionId || Number(this.idAtencion) || Number(localStorage.getItem('idAtencion'));
+      const codigoReclamo = this.codigoReclamoFicohsa || localStorage.getItem('codigoReclamo') || '';
+      const codigoBpm = this.codigoBPMFicohsa || localStorage.getItem('codigoBPMF') || '';
+
+      await this.router.navigateByUrl('/tabs/tab1', { skipLocationChange: true });
+      await this.router.navigate(['/end-process'], {
+        queryParams: {
+          Id: attentionId,
+          CodigoReclamoFicohsa: codigoReclamo.toString(),
+          CodigoBPMFicohsa: codigoBpm.toString()
+        },
+        replaceUrl: true
+      });
     }
 
     goHome() {
@@ -1788,7 +1924,9 @@ export class AjustadorhnPage implements OnInit {
     }, 300);
   }
 
-  ionViewWillEnter(){
+  async ionViewWillEnter(){
+    await this.bootstrapAjustadorRuntime();
+
     // Al regresar de segmento-danio (u otro segmento) reconstruimos la lista de
     // "Daños vehículo afiliado". Si el catálogo aún no está cargado, getDanios()
     // disparará la reconstrucción al terminar.
@@ -1806,7 +1944,6 @@ export class AjustadorhnPage implements OnInit {
     this.cargarDaniosManualesCulpa();
     this.refreshBulkAttemptInfo();
     this.isLoading = false;
-    this.firmaPrecargada = localStorage.getItem('dSignatureAsegurado');
     this.refreshValidationFromLocalData();
 
     setTimeout(() => {
@@ -1892,18 +2029,23 @@ export class AjustadorhnPage implements OnInit {
     }
 
     const reconstruido: any[] = [];
+    const attentionId = (this.atencionId || this.idAtencion || localStorage.getItem('idAtencion') || '').toString();
+    const isCurrentCulpaKey = (key: string | null, prefix: string) => {
+      return !!key && !!attentionId && key.indexOf(`${prefix}-${attentionId}`) === 0;
+    };
+    const scopedCulpaKey = (prefix: string, suffix: any) => `${prefix}-${attentionId}-${suffix}`;
 
     for (var i = 0; i < localStorage.length; i++){
       const key = localStorage.key(i);
       // Prefijo exacto 'daniosSelectCulpa-' para no colisionar con el arreglo
       // 'daniosSelectCulpa', con 'daniosSelectOtroCulpa-' ni con el afiliado
       // 'daniosSelect-'.
-      if (key && key.indexOf('daniosSelectCulpa-') == 0) {
+      if (isCurrentCulpaKey(key, 'daniosSelectCulpa')) {
         let indexSelect = parseInt(localStorage.getItem(key));
         const elementD = this.danios.find((item) => Number(item.Id) === Number(indexSelect));
         if (elementD) {
           let tipo: any;
-          let tipoId = parseInt(localStorage.getItem('TipoReparacionCulpa-'+indexSelect));
+          let tipoId = parseInt(localStorage.getItem(scopedCulpaKey('TipoReparacionCulpa', indexSelect)));
           if (tipoId == 1) {tipo = 'Reparación';}else{tipo = 'Cambio';}
           reconstruido.push({Codigo: elementD.Codigo, Descripcion: elementD.Descripcion, Id: elementD.Id, tipo:tipo, tipoId:tipoId});
         }
@@ -1914,7 +2056,7 @@ export class AjustadorhnPage implements OnInit {
       // registrado en culpable.page.ts ({ DescripcionDeDanio, TipoReparacion, ... }).
       // Sirven para mostrarlos al instante antes de que responda el servidor.
       // El prefijo 'danioOtroCulpa-' NO colisiona con el afiliado 'danioOtro-'.
-      if (key && key.indexOf('danioOtroCulpa-') == 0) {
+      if (isCurrentCulpaKey(key, 'danioOtroCulpa')) {
         const manual = this.mapearDanioManual(localStorage.getItem(key));
         if (manual) {
           reconstruido.push(manual);
@@ -2018,8 +2160,34 @@ export class AjustadorhnPage implements OnInit {
     };
   }
 
-  ionViewDidEnter(){
+  getDanioDescripcion(danio: any): string {
+    if (!danio) {
+      return 'Daño seleccionado';
+    }
 
+    const descripcion = danio.DescripcionDeDanio ||
+      danio.DescripcionDanio ||
+      danio.Descripcion ||
+      danio.descripcionDeDanio ||
+      danio.descripcionDanio ||
+      danio.descripcion ||
+      danio.NombreDanio ||
+      danio.nombreDanio ||
+      danio.Nombre ||
+      danio.nombre ||
+      danio.Danio ||
+      danio.danio ||
+      danio.DESCRIPCION_DE_DANIO ||
+      danio.DESCRIPCION ||
+      danio.CODIGO ||
+      danio.Codigo ||
+      danio.Id;
+
+    const texto = descripcion !== null && descripcion !== undefined ? descripcion.toString().trim() : '';
+    return texto || 'Daño seleccionado';
+  }
+
+  ionViewDidEnter(){
     let polNum:any;
     let cerNum:any;
 
@@ -2280,10 +2448,16 @@ export class AjustadorhnPage implements OnInit {
     this.router.navigate(['./cargar-archivos']);
   }
 
-  goESignature(){
+  goESignature(event?: Event){
+    event?.preventDefault();
+    event?.stopPropagation();
     this.isEditSig = true;
+    const attentionId = this.idAtencion || this.atencionId || localStorage.getItem('idAtencion') || localStorage.getItem('atencionEnProceso') || '';
     localStorage.setItem('isEditSig', this.isEditSig.toString());
-    this.router.navigate(['./esignature']);
+    localStorage.setItem('idAtencion', attentionId.toString());
+    localStorage.setItem('elCliente', this.aseguradoNombre || this.elExpediente?.[0]?.Cliente || localStorage.getItem('elCliente') || '');
+    localStorage.setItem('signatureReturnTo', '/ajustadorhn');
+    this.navCtrl.navigateForward('/esignature');
   }
 
   goBeneficiario(){
@@ -2566,6 +2740,22 @@ export class AjustadorhnPage implements OnInit {
     //this.toaster.presentToastHome('Salir del forumulario? Los datos aun quedan en caché', 'middle', 'cliente');
   }
 
+  private async goExpedienteFromAjustador(): Promise<void> {
+    const attentionId = this.atencionId || this.idAtencion || localStorage.getItem('idAtencion') || localStorage.getItem('atencionEnProceso');
+    localStorage.setItem('idAtencion', attentionId?.toString() || '');
+
+    const topAlert = await this.alert.getTop();
+    await topAlert?.dismiss().catch(() => {});
+    const topModal = await this.thisModal.getTop();
+    await topModal?.dismiss().catch(() => {});
+
+    await this.router.navigateByUrl('/tabs/tab1', { skipLocationChange: true });
+    await this.router.navigate(['/expediente'], {
+      queryParams: { Id: attentionId, Source: 1 },
+      replaceUrl: true
+    });
+  }
+
   async alertaSalir() {
     const alert = await this.alert.create({
       cssClass: 'ajustador-form-alert',
@@ -2812,6 +3002,96 @@ export class AjustadorhnPage implements OnInit {
     this.tipoDeCobertura = event.target.value;
     localStorage.setItem('tipoCobertura', event.target.value);
     $("#TipoAcuerdoDisplay").text(this.tipoDeCobertura);
+    const codigoCobertura = this.resolveCoverageCode(event.target.value);
+    this.clearSelectedCause();
+    this.solicitarCausaPorCobertura(codigoCobertura);
+  }
+
+  private resolveCoverageCode(value: any): string {
+    const selected = (value || '').toString();
+    const localCoverage = this.coberturas?.find((item) =>
+      item?.cOBERTURAField?.toString() === selected ||
+      item?.COD_COBERTURA?.toString() === selected ||
+      item?.dESCRIPCIONField?.toString() === selected ||
+      item?.DESCRIPCION_COBE?.toString() === selected
+    );
+    return (localCoverage?.cOBERTURAField || localCoverage?.COD_COBERTURA || localStorage.getItem('coberturaId') || selected || '').toString();
+  }
+
+  private getCodigoCausaBpm(): string {
+    return (this.causaBpmCodigo || localStorage.getItem('codigoCausaBpm') || valoresPredeterminados[0].Causa || '').toString();
+  }
+
+  private async solicitarCausaPorCobertura(codigoCobertura: any): Promise<void> {
+    const codigo = (codigoCobertura || '').toString().trim();
+    if (!codigo) {
+      return;
+    }
+    this.isLoading = true;
+    this.api.ObtenerCausasPorCobertura(codigo).pipe(finalize(() => this.isLoading = false)).subscribe(
+      async (res: any) => {
+        this.causasPorCobertura = Array.isArray(res) ? res : [];
+        if (!this.causasPorCobertura.length) {
+          this.toaster.presentToastAlert('No se encontraron causas para la cobertura seleccionada.', 'top', 'warning', 5000);
+          return;
+        }
+        await this.presentarSelectorCausa();
+      },
+      async () => {
+        this.toaster.presentToastAlert('No fue posible obtener las causas para esta cobertura.', 'top', 'danger', 6000);
+      }
+    );
+  }
+
+  private async presentarSelectorCausa(): Promise<void> {
+    const alert = await this.alert.create({
+      cssClass: 'form-choice-alert',
+      header: this.getCauseSelectorHeader(),
+      subHeader: 'Selecciona una opción',
+      inputs: this.causasPorCobertura.map((causa) => ({
+        type: 'radio',
+        label: causa.DESCRIPCION_CAUS,
+        value: causa.COD_CAUSA,
+        checked: causa.COD_CAUSA === this.causaBpmCodigo || causa.COD_CAUSA === localStorage.getItem('codigoCausaBpm')
+      })),
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Seleccionar',
+          handler: (codigoCausa) => {
+            if (!codigoCausa) {
+              return false;
+            }
+            const seleccionada = this.causasPorCobertura.find((causa) => causa.COD_CAUSA === codigoCausa);
+            this.causaBpmCodigo = codigoCausa;
+            this.causaBpmDescripcion = seleccionada?.DESCRIPCION_CAUS || '';
+            localStorage.setItem('codigoCausaBpm', this.causaBpmCodigo || '');
+            localStorage.setItem('descripcionCausaBpm', this.causaBpmDescripcion || '');
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private clearSelectedCause(): void {
+    this.causaBpmCodigo = '';
+    this.causaBpmDescripcion = '';
+    localStorage.removeItem('codigoCausaBpm');
+    localStorage.removeItem('descripcionCausaBpm');
+  }
+
+  private getCauseSelectorHeader(): string {
+    const selected = (this.tipoDeCobertura || localStorage.getItem('datos-TipoAcuerdoFicohsa') || '').toString();
+    const localCoverage = this.coberturas?.find((item) =>
+      item?.cOBERTURAField?.toString() === selected ||
+      item?.COD_COBERTURA?.toString() === selected ||
+      item?.dESCRIPCIONField?.toString() === selected ||
+      item?.DESCRIPCION_COBE?.toString() === selected
+    );
+    const description = (localCoverage?.dESCRIPCIONField || localCoverage?.DESCRIPCION_COBE || selected).toString().trim();
+    const coverageHint = description.split(/\s+/).filter(Boolean).slice(0, 2).join(' ');
+    return coverageHint ? 'Causa del reclamo - ' + coverageHint : 'Causa del reclamo';
   }
 
   seleccionarMarca(idMarca){
@@ -2857,36 +3137,55 @@ export class AjustadorhnPage implements OnInit {
     this.esInspeccion = true;
   }
 
-  firmar(){
-    //let laImagen = this.imagen.nativeElement;
-    //this.imageHeight = this.imagen.nativeElement.offsetHeight;
+  async firmar(): Promise<void> {
     this.imageHeight = 200;
-    //this.firmaPrecargada = localStorage.getItem("dSignatureAsegurado");
-    this.api.obtenerFotoPorAtencion(this.idAtencion, 3).pipe(
-      finalize(async () => {
-        this.isLoading = false;
-      })
-    ).subscribe(
-      async (res) => {
-        console.log("Firmas para este usuario : " + res.length);
-        console.dir(res);
-        for (let index = 0; index < res.length; index++) {
-          const element = res[index];
-          if (index == (res.length - 1)) {
-            this.firmaPrecargada = imagePrefix + element.FotoFirma;
-            localStorage.setItem("dSignatureAsegurado", this.firmaPrecargada);
-            this.isSignature = true;
-          }
+    this.syncAttentionContext();
 
+    if (!this.idAtencion) {
+      this.restoreClientSignatureForCurrentAttention();
+      return;
+    }
+
+    try {
+      const res = await firstValueFrom(this.api.obtenerFotoPorAtencion(this.idAtencion, 3));
+      const firmas = Array.isArray(res) ? res : (res ? [res] : []);
+      console.log("Firmas para este usuario : " + firmas.length);
+      console.dir(firmas);
+
+      let latestSignature = null;
+      for (let index = 0; index < firmas.length; index++) {
+        const element = firmas[index];
+        if (element?.FotoFirma) {
+          latestSignature = element.FotoFirma;
         }
-      },
-      async (res) => {
-        this.firmaPrecargada = emptySignatureWhite;
+      }
+
+      if (latestSignature) {
+        this.firmaPrecargada = latestSignature.toString().startsWith('data:image') ? latestSignature : imagePrefix + latestSignature;
         localStorage.setItem("dSignatureAsegurado", this.firmaPrecargada);
+        localStorage.setItem("dSignatureAsegurado-" + this.idAtencion, this.firmaPrecargada);
+        localStorage.setItem("dSignatureAseguradoAtencion", this.idAtencion.toString());
+        this.clientSignatureAttentionId = this.idAtencion.toString();
+        this.isSignature = true;
+        return;
+      }
+
+      const restoredFromCurrentAttention = this.restoreClientSignatureForCurrentAttention();
+      if (!restoredFromCurrentAttention) {
+        localStorage.removeItem("dSignatureAsegurado-" + this.idAtencion);
+        if (localStorage.getItem("dSignatureAseguradoAtencion") === this.idAtencion.toString()) {
+          localStorage.removeItem("dSignatureAsegurado");
+          localStorage.removeItem("dSignatureAseguradoAtencion");
+        }
+        this.clientSignatureAttentionId = null;
+        this.firmaPrecargada = emptySignatureWhite;
         this.isSignature = false;
       }
-    );
-
+    } catch {
+      this.restoreClientSignatureForCurrentAttention();
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   //Debug:Firmax
@@ -3074,9 +3373,10 @@ validateEmail(status){
     this.isRefreshingCulpa = true;
     this.isLoading = true;
     $('#loaderContainer').fadeIn();
+    const attentionId = (this.atencionId || this.idAtencion || localStorage.getItem('idAtencion') || '').toString();
     for (var i = 0; i < localStorage.length; i++){
         
-        if (localStorage.key(i).indexOf('daniosSelectCulpa-') == 0) {
+        if (localStorage.key(i).indexOf('daniosSelectCulpa-'+attentionId+'-') == 0) {
 
           let indexSelect = parseInt(localStorage.getItem(localStorage.key(i)));//+1;
           for (let indexDanio = 0; indexDanio < this.danios.length; indexDanio++) {
@@ -3085,8 +3385,8 @@ validateEmail(status){
 
             if (indexSelect == elementD.Id) {
                 let tipo:any;
-                let tipoIndex = parseInt(localStorage.getItem('TipoReparacionCulpaIndex-'+indexSelect));
-                let tipoId = parseInt(localStorage.getItem('TipoReparacionCulpa-'+indexSelect));
+                let tipoIndex = parseInt(localStorage.getItem('TipoReparacionCulpaIndex-'+attentionId+'-'+indexSelect));
+                let tipoId = parseInt(localStorage.getItem('TipoReparacionCulpa-'+attentionId+'-'+indexSelect));
 
                 if (tipoId == 1) {tipo = 'Reparación';}else{tipo = 'Cambio';}
                 this.daniosSelectCulpa.push(elementD);
@@ -3112,11 +3412,12 @@ validateEmail(status){
     this.isRefreshing = true;
     console.log('Tengo esto en storage');
     console.dir(localStorage);
+    const attentionId = (this.atencionId || this.idAtencion || localStorage.getItem('idAtencion') || '').toString();
     setTimeout(() => {
       
       for (var i = 0; i < localStorage.length; i++){
         
-        if (localStorage.key(i).indexOf('daniosSelectCulpa-') == 0) {
+        if (localStorage.key(i).indexOf('daniosSelectCulpa-'+attentionId+'-') == 0) {
 
           let indexSelect = parseInt(localStorage.getItem(localStorage.key(i)));//+1;
           for (let indexDanio = 0; indexDanio < this.danios.length; indexDanio++) {

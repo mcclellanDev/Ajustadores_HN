@@ -15,7 +15,7 @@ export class FiniquitoSignaturePage implements AfterViewInit {
 
   signaturePad: SignaturePad;
   idAtencion = localStorage.getItem('idAtencion');
-  receiverName = localStorage.getItem('NombreQuienRecibe') || 'Beneficiario';
+  receiverName = this.getFiniquitoDraftValue('NombreQuienRecibe') || 'Beneficiario';
   fsLogo = logoFicohsa;
 
   constructor(
@@ -68,6 +68,16 @@ export class FiniquitoSignaturePage implements AfterViewInit {
 
   get signatureStorageKey(): string {
     return `finiquitoSignature-${this.idAtencion}`;
+  }
+
+  private finiquitoScopedKey(key: string): string {
+    const currentAttentionId = String(this.idAtencion || localStorage.getItem('idAtencion') || '').trim();
+    return currentAttentionId ? `finiquito-${currentAttentionId}-${key}` : `finiquito-${key}`;
+  }
+
+  private getFiniquitoDraftValue(key: string): string {
+    const value = localStorage.getItem(this.finiquitoScopedKey(key));
+    return value && value !== 'undefined' && value !== 'null' ? value : '';
   }
 
   clear() {
