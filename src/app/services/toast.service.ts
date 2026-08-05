@@ -120,6 +120,29 @@ export class ToastService {
     await toast.present();
   }
 
+  async presentToastDangerOk(message, position, clase) {
+    const currentToast = document.getElementsByTagName('ion-toast');
+
+    if(currentToast.length > 0){
+        this.toaster.dismiss();
+    }
+
+    const toast = await this.toaster.create({
+      message: message,
+      color: 'danger',
+      position: position,
+      cssClass: ['custom-toast', clase],
+      buttons: [
+        {
+          text: 'OK',
+          role: 'confirm',
+        }
+      ],
+    });
+  
+    await toast.present();
+  }
+
   /*
   
   */

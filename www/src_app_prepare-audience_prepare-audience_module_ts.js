@@ -110,6 +110,8 @@ let PrepareAudiencePage = class PrepareAudiencePage {
     this.isLoading = false;
     this.results = [];
     this.abogadosAudiencias = [];
+    this.canScheduleAudience = false;
+    this.missingClientDataMessage = 'No es posible agendar esta audiencia todavía. Primero se deben enviar los datos del formulario de cliente para generar la información base de la atención.';
     const state = this.router.getCurrentNavigation().extras.state;
     console.log(state.data);
     console.log(state.data[1]);
@@ -149,27 +151,25 @@ let PrepareAudiencePage = class PrepareAudiencePage {
         console.log('fin');
       }))).subscribe(res => {
         //alert('Este es el id de tabla de ajustador '+res.length);
-        if (res) {
+        if (Array.isArray(res) && res.length > 0 && res[0]?.IdAudiencia) {
           //alert('Este es el id de tabla de ajustador '+res);
-          if (res == null || res == undefined || res == '' || res == 0) {
-            jquery__WEBPACK_IMPORTED_MODULE_3__('#submitAudience').prop('disabled', true);
-            this.toaster.presentToastAlert('Esta solicitud aún no se ha completado. Para poder enviarla, es necesario que completes la solicitud BPM con los datos del formulario de cliente y el de ajustador.', 'top', 'danger', 10000);
-            return;
-          } else {
-            console.log('Este es el id de tabla de ajustador ');
-            console.dir(res);
-            //alert('Este es el id de tabla de ajustador '+res[0].IdAudiencia);
-            let disId = res[0].IdAudiencia.toString();
-            this.idTablaDeAjustador = res[0].IdAudiencia.toString(); //disId.replace(/,/g, '');
-            console.dir('Este es el id de tabla de ajustador ' + this.idTablaDeAjustador);
-            console.dir(this.idTablaDeAjustador);
-            /**/
-          }
+          console.log('Este es el id de tabla de ajustador ');
+          console.dir(res);
+          //alert('Este es el id de tabla de ajustador '+res[0].IdAudiencia);
+          this.canScheduleAudience = true;
+          jquery__WEBPACK_IMPORTED_MODULE_3__('#submitAudience').prop('disabled', false);
+          let disId = res[0].IdAudiencia.toString();
+          this.idTablaDeAjustador = res[0].IdAudiencia.toString(); //disId.replace(/,/g, '');
+          console.dir('Este es el id de tabla de ajustador ' + this.idTablaDeAjustador);
+          console.dir(this.idTablaDeAjustador);
+          /**/
+        } else {
+          this.blockAudienceScheduling();
         }
       }, error => {
         console.log('Este es el error ' + error);
         console.dir(error.error.Message);
-        this.toaster.presentToastAlert(error.error.Message, 'top', 'danger', 10000);
+        this.blockAudienceScheduling();
       });
     }, 1000);
     this.abogadoNombre = 'Seleccionar Abogado';
@@ -228,6 +228,10 @@ let PrepareAudiencePage = class PrepareAudiencePage {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   }
   audienceSave() {
+    if (!this.canScheduleAudience || !this.idTablaDeAjustador) {
+      this.blockAudienceScheduling();
+      return;
+    }
     let agente = localStorage.getItem('ajustadorActual');
     let agenteActual = JSON.parse(agente);
     //let idAgente = agenteActual.ProveedorAgenteId;
@@ -255,6 +259,13 @@ let PrepareAudiencePage = class PrepareAudiencePage {
       this.toaster.presentToastAlert(error.error.Message, 'top', 'danger', 10000);
       this.isLoading = false;
     });
+  }
+  blockAudienceScheduling() {
+    this.canScheduleAudience = false;
+    this.idTablaDeAjustador = null;
+    this.isLoading = false;
+    jquery__WEBPACK_IMPORTED_MODULE_3__('#submitAudience').prop('disabled', true);
+    this.toaster.presentToastDangerOk(this.missingClientDataMessage, 'middle', 'audiencia-pendiente');
   }
   static {
     this.ctorParameters = () => [{

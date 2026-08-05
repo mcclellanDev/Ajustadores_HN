@@ -4403,19 +4403,39 @@ let ToastService = class ToastService {
       yield toast.present();
     })();
   }
+  presentToastDangerOk(message, position, clase) {
+    var _this6 = this;
+    return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+      const currentToast = document.getElementsByTagName('ion-toast');
+      if (currentToast.length > 0) {
+        _this6.toaster.dismiss();
+      }
+      const toast = yield _this6.toaster.create({
+        message: message,
+        color: 'danger',
+        position: position,
+        cssClass: ['custom-toast', clase],
+        buttons: [{
+          text: 'OK',
+          role: 'confirm'
+        }]
+      });
+      yield toast.present();
+    })();
+  }
   /*
   
   */
   presentToastArrival(message, position, clase) {
-    var _this6 = this;
+    var _this7 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       const currentToast = document.getElementsByTagName('ion-toast');
       //console.log('Tengo estos toasters : ' + currentToast.length);
       if (currentToast.length > 0) {
-        _this6.toaster.dismiss();
+        _this7.toaster.dismiss();
       }
       //await this.toast.dismiss();
-      const toast = yield _this6.toaster.create({
+      const toast = yield _this7.toaster.create({
         message: message,
         color: 'success',
         duration: 360000,
@@ -4433,15 +4453,15 @@ let ToastService = class ToastService {
     })();
   }
   presentToast(message, position, clase) {
-    var _this7 = this;
+    var _this8 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       const currentToast = document.getElementsByTagName('ion-toast');
       //console.log('Tengo estos toasters : ' + currentToast.length);
       if (currentToast.length > 0) {
-        _this7.toaster.dismiss();
+        _this8.toaster.dismiss();
       }
       //await this.toast.dismiss();
-      const toast = yield _this7.toaster.create({
+      const toast = yield _this8.toaster.create({
         message: message,
         color: 'primary',
         duration: 45000,
@@ -4463,15 +4483,15 @@ let ToastService = class ToastService {
     })();
   }
   presentToastAdeuda(message, position, clase, atencionId) {
-    var _this8 = this;
+    var _this9 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       const currentToast = document.getElementsByTagName('ion-toast');
       //console.log('Tengo estos toasters : ' + currentToast.length);
       if (currentToast.length > 0) {
-        _this8.toaster.dismiss();
+        _this9.toaster.dismiss();
       }
       //await this.toast.dismiss();
-      const toast = yield _this8.toaster.create({
+      const toast = yield _this9.toaster.create({
         message: message,
         color: 'primary',
         duration: 30000,
@@ -4496,17 +4516,17 @@ let ToastService = class ToastService {
   }
   //presentToastSaveCliente
   presentToastSaveCliente(message, position, clase, idAtencion) {
-    var _this9 = this;
+    var _this10 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       const currentToast = document.getElementsByTagName('ion-toast');
       //console.log('Tengo estos toasters : ' + currentToast.length);
       //let laPlaca = data.NumeroPlaca;
       //let laAtencion = data.Id;
       if (currentToast.length > 0) {
-        _this9.toaster.dismiss();
+        _this10.toaster.dismiss();
       }
       //await this.toast.dismiss();
-      const toast = yield _this9.toaster.create({
+      const toast = yield _this10.toaster.create({
         message: message,
         color: 'primary',
         duration: 30000,
@@ -4519,7 +4539,7 @@ let ToastService = class ToastService {
           text: 'SALIR',
           role: 'reload',
           handler: () => {
-            _this9.router.navigate(['./expediente'], {
+            _this10.router.navigate(['./expediente'], {
               queryParams: {
                 Id: idAtencion
               }
@@ -4533,16 +4553,16 @@ let ToastService = class ToastService {
     })();
   }
   presentToastSiniestroGuardado(message, position, clase) {
-    var _this10 = this;
+    var _this11 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       const currentToast = document.getElementsByTagName('ion-toast');
       //console.log('Tengo estos toasters : ' + currentToast.length);
       //let idAtencion = data;
       if (currentToast.length > 0) {
-        _this10.toaster.dismiss();
+        _this11.toaster.dismiss();
       }
       //await this.toast.dismiss();
-      const toast = yield _this10.toaster.create({
+      const toast = yield _this11.toaster.create({
         message: message,
         color: 'primary',
         duration: 30000,
@@ -4558,17 +4578,17 @@ let ToastService = class ToastService {
     })();
   }
   presentToastSave(message, position, clase, data) {
-    var _this11 = this;
+    var _this12 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       const currentToast = document.getElementsByTagName('ion-toast');
       //console.log('Tengo estos toasters : ' + currentToast.length);
       let laPlaca = data.NumeroPlaca;
       let laAtencion = data.Id;
       if (currentToast.length > 0) {
-        _this11.toaster.dismiss();
+        _this12.toaster.dismiss();
       }
       //await this.toast.dismiss();
-      const toast = yield _this11.toaster.create({
+      const toast = yield _this12.toaster.create({
         message: message,
         color: clase,
         duration: 30000,
@@ -4589,14 +4609,14 @@ let ToastService = class ToastService {
     })();
   }
   presentToastHome(message, position, clase) {
-    var _this12 = this;
+    var _this13 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       const currentToast = document.getElementsByTagName('ion-toast');
       if (currentToast.length > 0) {
-        _this12.toaster.dismiss();
+        _this13.toaster.dismiss();
       }
       //await this.toast.dismiss();
-      const toast = yield _this12.toaster.create({
+      const toast = yield _this13.toaster.create({
         message: message,
         color: 'primary',
         duration: 30000,
@@ -4617,15 +4637,15 @@ let ToastService = class ToastService {
     })();
   }
   presentToastSavedDebt(message, position, clase) {
-    var _this13 = this;
+    var _this14 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       const currentToast = document.getElementsByTagName('ion-toast');
       //console.log('Tengo estos toasters : ' + currentToast.length);
       if (currentToast.length > 0) {
-        _this13.toaster.dismiss();
+        _this14.toaster.dismiss();
       }
       //await this.toast.dismiss();
-      const toast = yield _this13.toaster.create({
+      const toast = yield _this14.toaster.create({
         message: message,
         color: 'primary',
         duration: 30000,
@@ -4646,14 +4666,14 @@ let ToastService = class ToastService {
     })();
   }
   presentToastErrorConexion(message, position, clase) {
-    var _this14 = this;
+    var _this15 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       const currentToast = document.getElementsByTagName('ion-toast');
       //console.log('Tengo estos toasters : ' + currentToast.length);
       if (currentToast.length > 0) {
-        _this14.toaster.dismiss();
+        _this15.toaster.dismiss();
       }
-      const toast = yield _this14.toaster.create({
+      const toast = yield _this15.toaster.create({
         message: message,
         color: 'dark',
         duration: 30000,
@@ -4668,14 +4688,14 @@ let ToastService = class ToastService {
     })();
   }
   presentToastSiniestroCerrado(message, position, clase) {
-    var _this15 = this;
+    var _this16 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       const currentToast = document.getElementsByTagName('ion-toast');
       //console.log('Tengo estos toasters : ' + currentToast.length);
       if (currentToast.length > 0) {
-        _this15.toaster.dismiss();
+        _this16.toaster.dismiss();
       }
-      const toast = yield _this15.toaster.create({
+      const toast = yield _this16.toaster.create({
         message: message,
         color: 'danger',
         duration: 30000,
@@ -4690,14 +4710,14 @@ let ToastService = class ToastService {
     })();
   }
   presentToastSiniestroCancelado(message, position, clase) {
-    var _this16 = this;
+    var _this17 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       const currentToast = document.getElementsByTagName('ion-toast');
       //console.log('Tengo estos toasters : ' + currentToast.length);
       if (currentToast.length > 0) {
-        _this16.toaster.dismiss();
+        _this17.toaster.dismiss();
       }
-      const toast = yield _this16.toaster.create({
+      const toast = yield _this17.toaster.create({
         message: message,
         color: 'warning',
         duration: 30000,
@@ -4712,15 +4732,15 @@ let ToastService = class ToastService {
     })();
   }
   presentToastEditSig(message, position, clase) {
-    var _this17 = this;
+    var _this18 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       let editResponse;
       const currentToast = document.getElementsByTagName('ion-toast');
       //console.log('Tengo estos toasters : ' + currentToast.length);
       if (currentToast.length > 0) {
-        _this17.toaster.dismiss();
+        _this18.toaster.dismiss();
       }
-      const toast = yield _this17.toaster.create({
+      const toast = yield _this18.toaster.create({
         message: message,
         color: 'danger',
         duration: 30000,
@@ -4746,14 +4766,14 @@ let ToastService = class ToastService {
     })();
   }
   presentToastEmailInvalid(message, position, clase) {
-    var _this18 = this;
+    var _this19 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       const currentToast = document.getElementsByTagName('ion-toast');
       //console.log('Tengo estos toasters : ' + currentToast.length);
       if (currentToast.length > 0) {
-        _this18.toaster.dismiss();
+        _this19.toaster.dismiss();
       }
-      const toast = yield _this18.toaster.create({
+      const toast = yield _this19.toaster.create({
         message: message,
         color: 'danger',
         duration: 30000,
@@ -4768,14 +4788,14 @@ let ToastService = class ToastService {
     })();
   }
   presentToastDataMissing(message, position, clase) {
-    var _this19 = this;
+    var _this20 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       const currentToast = document.getElementsByTagName('ion-toast');
       //console.log('Tengo estos toasters : ' + currentToast.length);
       if (currentToast.length > 0) {
-        _this19.toaster.dismiss();
+        _this20.toaster.dismiss();
       }
-      const toast = yield _this19.toaster.create({
+      const toast = yield _this20.toaster.create({
         message: message,
         color: 'danger',
         duration: 30000,
@@ -4793,14 +4813,14 @@ let ToastService = class ToastService {
     })();
   }
   presentToastDataMissingExpediente(message, position, clase) {
-    var _this20 = this;
+    var _this21 = this;
     return (0,_Users_desarrolloporsalud_HELP_Ecosistema_HELP_Ajustadores_AjustadoresHN_Dev_210_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       const currentToast = document.getElementsByTagName('ion-toast');
       //console.log('Tengo estos toasters : ' + currentToast.length);
       if (currentToast.length > 0) {
-        _this20.toaster.dismiss();
+        _this21.toaster.dismiss();
       }
-      const toast = yield _this20.toaster.create({
+      const toast = yield _this21.toaster.create({
         message: message,
         color: 'danger',
         duration: 30000,

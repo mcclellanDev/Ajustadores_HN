@@ -16,7 +16,8 @@ export class PrepareAudiencePage implements OnInit {
   idAtencion: any; isLoading:boolean = false; results = []; abogadoNombre:string; lugarAudiencia:string;
   fechaAudiencia:any; formateadaAudiencia:any; idTablaDeAjustador:any;
   abogadosAudiencias = []; idAbogado: any;  laFecha: any;  formattedDate: any;
-  dateFormat: any;  timeFormat: any;  idAgente: any;
+  dateFormat: any;  timeFormat: any;  idAgente: any; canScheduleAudience:boolean = false;
+  private readonly missingClientDataMessage = 'No es posible agendar esta audiencia todavía. Primero se deben enviar los datos del formulario de cliente para generar la información base de la atención.';
   
   
   constructor(private router: Router, private alert: AlertController, private api:ApiService, private toaster:ToastService) { 
@@ -70,31 +71,27 @@ export class PrepareAudiencePage implements OnInit {
          (res) =>{
 
           //alert('Este es el id de tabla de ajustador '+res.length);
-          if (res) {
+          if (Array.isArray(res) && res.length > 0 && res[0]?.IdAudiencia) {
 
             //alert('Este es el id de tabla de ajustador '+res);
-            if (res == null || res == undefined || res == '' || res == 0) {
-              $('#submitAudience').prop('disabled', true);
-              this.toaster.presentToastAlert('Esta solicitud aún no se ha completado. Para poder enviarla, es necesario que completes la solicitud BPM con los datos del formulario de cliente y el de ajustador.', 'top', 'danger', 10000);
-              return;
-            }else{
-              console.log('Este es el id de tabla de ajustador ');
-              console.dir(res);
-              //alert('Este es el id de tabla de ajustador '+res[0].IdAudiencia);
-              
-              let disId = res[0].IdAudiencia.toString();
-              this.idTablaDeAjustador = res[0].IdAudiencia.toString();//disId.replace(/,/g, '');
-              console.dir('Este es el id de tabla de ajustador '+this.idTablaDeAjustador);
-              console.dir(this.idTablaDeAjustador);
-              /**/
-            }
-            
+            console.log('Este es el id de tabla de ajustador ');
+            console.dir(res);
+            //alert('Este es el id de tabla de ajustador '+res[0].IdAudiencia);
+            this.canScheduleAudience = true;
+            $('#submitAudience').prop('disabled', false);
+            let disId = res[0].IdAudiencia.toString();
+            this.idTablaDeAjustador = res[0].IdAudiencia.toString();//disId.replace(/,/g, '');
+            console.dir('Este es el id de tabla de ajustador '+this.idTablaDeAjustador);
+            console.dir(this.idTablaDeAjustador);
+            /**/
+          } else {
+            this.blockAudienceScheduling();
           }
 
          }, (error) => {
           console.log('Este es el error '+error);
           console.dir(error.error.Message);
-          this.toaster.presentToastAlert(error.error.Message, 'top', 'danger', 10000);
+          this.blockAudienceScheduling();
          }
 
         )
@@ -171,6 +168,10 @@ export class PrepareAudiencePage implements OnInit {
 }
 
   audienceSave(){
+    if (!this.canScheduleAudience || !this.idTablaDeAjustador) {
+      this.blockAudienceScheduling();
+      return;
+    }
     
     let agente:any = localStorage.getItem('ajustadorActual');
     let agenteActual:any = JSON.parse(agente);
@@ -206,6 +207,14 @@ export class PrepareAudiencePage implements OnInit {
        }
       )
 
+  }
+
+  private blockAudienceScheduling() {
+    this.canScheduleAudience = false;
+    this.idTablaDeAjustador = null;
+    this.isLoading = false;
+    $('#submitAudience').prop('disabled', true);
+    this.toaster.presentToastDangerOk(this.missingClientDataMessage, 'middle', 'audiencia-pendiente');
   }
 
 }
