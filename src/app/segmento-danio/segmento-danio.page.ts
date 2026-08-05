@@ -47,7 +47,6 @@ export class SegmentoDanioPage implements OnInit {
     this.segmentoTitulo = localStorage.getItem('segmentoTitulo');
     let elCompromiso = localStorage.getItem('elCompromisoPago');
     let oPago = localStorage.getItem('elCompromisoPagoObservacion');
-    //let reserva = localStorage.getItem('laReserva');
     let siniestro = localStorage.getItem('elTipoSiniestro');
     let descripcionDanios = localStorage.getItem('laDescripcion');
     let observaciones = localStorage.getItem('lasObservaciones');
@@ -85,6 +84,8 @@ export class SegmentoDanioPage implements OnInit {
       this.setObservacionCompromisoPago(this.datos.ObservacionCompromisoPago);
     }
 
+    this.restoreValorReservaFromCache();
+
     this.getDanios();
     this.loadSiniestros();
     
@@ -94,20 +95,12 @@ export class SegmentoDanioPage implements OnInit {
     void returnToAjustadorhnParent(this.navCtrl, this.router);
   }
 
+  ionViewWillEnter() {
+    this.restoreValorReservaFromCache();
+  }
+
   ionViewDidEnter(){
 
-    setTimeout(() => {
-      let reserva:any = localStorage.getItem('bpmArray-ValorReserva');
-
-      if (reserva === undefined || reserva === null || reserva === '') {
-        this.setReserva('0');
-      }else{
-        this.setReserva(reserva);
-      }
-      
-    }, 1300);
-    
-    
     this.api.Expediente(parseInt(this.idAtencion)).pipe( 
         finalize(async ()=>{
           this.isLoading = false;
@@ -586,9 +579,42 @@ export class SegmentoDanioPage implements OnInit {
 
     console.log('Soy el valor de reserva '+this.valorReserva)
     this.valorReserva = reservaCoercida;
-    localStorage.setItem('laReserva', this.idAtencion.toString()+'-'+reservaCoercida);
-    localStorage.setItem('bpmArray-ValorReserva', reservaCoercida.toString());
+    this.persistValorReserva(reservaCoercida);
 
+  }
+
+  private restoreValorReservaFromCache(): void {
+    const attentionId = this.idAtencion?.toString();
+    let cached: string | null = null;
+
+    const laReserva = localStorage.getItem('laReserva');
+    if (laReserva && attentionId && laReserva.startsWith(`${attentionId}-`)) {
+      cached = laReserva.substring(attentionId.length + 1);
+    }
+
+    if (cached === null || cached === '') {
+      const bpmReserva = localStorage.getItem('bpmArray-ValorReserva');
+      if (bpmReserva !== null && bpmReserva !== '') {
+        cached = bpmReserva;
+      }
+    }
+
+    if (cached === null || cached === '') {
+      this.valorReserva = 0;
+      this.reservaEsCero = true;
+      return;
+    }
+
+    const reservaCoercida = this.coerceReserva(cached);
+    this.valorReserva = reservaCoercida;
+    this.reservaEsCero = reservaCoercida === 0;
+    this.persistValorReserva(reservaCoercida);
+  }
+
+  private persistValorReserva(reservaCoercida: number): void {
+    const attentionId = this.idAtencion?.toString() || '';
+    localStorage.setItem('laReserva', `${attentionId}-${reservaCoercida}`);
+    localStorage.setItem('bpmArray-ValorReserva', reservaCoercida.toString());
   }
 
   private coerceReserva(valor: any): number {

@@ -3,6 +3,7 @@ import { Router, RouterOutlet, ActivationStart } from '@angular/router';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
+import { clearAllClientSignatureCache } from '../utils/client-signature-cache.util';
 
 @Component({
   selector: 'app-end-process',
@@ -130,6 +131,8 @@ export class EndProcessPage implements OnInit {
 
     localStorage.removeItem('coords-latitud');
     localStorage.removeItem('coords-longitud');
+
+    clearAllClientSignatureCache();
     
   }
 

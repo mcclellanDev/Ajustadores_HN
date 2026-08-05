@@ -1,0 +1,21 @@
+{
+  "Chasis": "ABC123",
+  "puntoServicio": "307",
+  "Poliza": "1000000332",
+  "Certificado": "1",
+  "NombreAsegurado": "JUAN PEREZ",
+  "Sucursal": "0001",
+  "Producto": "AU01",
+  "Cobertura": "AU01",
+  "Ramo": "0002",
+  "FechaOcurrencia": "2024-05-21",
+  "Causa": "A001",
+  "ValorReserva": "2500",
+  "UsuarioBPM": "HN15169",
+  "Latitud": "14.0723",
+  "Longitud": "-87.1921",
+  "NombreConductor": "JUAN PEREZ",
+  "Genero": "M",
+  "Parentesco": "0001",
+  "Observacion": "12345"
+}

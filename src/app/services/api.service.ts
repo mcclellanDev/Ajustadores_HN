@@ -1,5 +1,5 @@
 import { environment, environment_local } from 'src/environments/environment';
-import { ItemsData, cacheIndexArray } from './../environments/predeterminados';
+import { ItemsData, cacheIndexArray, valoresPredeterminados } from './../environments/predeterminados';
 import { User } from './../interfaces/user';
 import { helpFilesUrl } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
@@ -389,20 +389,154 @@ export class ApiService {
    )
    }
 
-   // GET /api/Proveedor/ObtenerCausasPorCobertura?codigoCobertura={codigoCobertura}
+   // POST /api/FicohsaHN/Consulta_Causas_HN
    ObtenerCausasPorCobertura(codigoCobertura:any): Observable<any> {
-    const codigo = encodeURIComponent((codigoCobertura || '').toString().trim());
-    return this.http.get(this.apiUrl + '/Proveedor/ObtenerCausasPorCobertura?codigoCobertura=' + codigo).pipe(
+    const cCodCobert = (codigoCobertura || '').toString().trim();
+    const body = {
+      pCodProd: (valoresPredeterminados[0]?.Producto || 'AU01').toString(),
+      cCodCobert
+    };
+    return this.http.post(`${this.apiUrl}/FicohsaHN/Consulta_Causas_HN`, body).pipe(
       switchMap((res: any) => {
-        if (!Array.isArray(res)) {
-          return of([]);
-        }
-        return from(Promise.all(res));
+        const causas = this.normalizeCausasPorCoberturaResponse(res);
+        return of(causas);
       }),
       tap(_ => {
         this.isAuthenticated.next(true);
       })
     )
+   }
+
+   private normalizeCausasPorCoberturaResponse(res: any): any[] {
+    const parsed = this.parsePossibleJsonResponse(res);
+    const items = this.extractCausasCollection(parsed);
+
+    return items
+      .map((item) => this.mapCausaPorCoberturaItem(item))
+      .filter((item) => !!item.COD_CAUSA || !!item.DESCRIPCION_CAUS);
+   }
+
+   private parsePossibleJsonResponse(value: any): any {
+    if (typeof value !== 'string') {
+      return value;
+    }
+
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return value;
+    }
+
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      return value;
+    }
+   }
+
+   private extractCausasCollection(res: any, depth = 0): any[] {
+    if (!res || depth > 5) {
+      return [];
+    }
+
+    const parsed = this.parsePossibleJsonResponse(res);
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+
+    if (typeof parsed !== 'object') {
+      return [];
+    }
+
+    const directKeys = [
+      'data', 'Data', 'result', 'Result', 'causas', 'Causas',
+      'lista', 'Lista', 'items', 'Items', 'table', 'Table',
+      'value', 'Value', '$values',
+      'Consulta_Causas_HN', 'consulta_Causas_HN',
+      'Consulta_Causas_HNResult', 'consulta_Causas_HNResult',
+      'NewDataSet'
+    ];
+
+    for (const key of directKeys) {
+      const candidate = parsed?.[key];
+      const nested = this.extractCausasCollection(candidate, depth + 1);
+      if (nested.length) {
+        return nested;
+      }
+    }
+
+    if (this.looksLikeCausaRow(parsed)) {
+      return [parsed];
+    }
+
+    for (const value of Object.values(parsed)) {
+      const nested = this.extractCausasCollection(value, depth + 1);
+      if (nested.length) {
+        return nested;
+      }
+    }
+
+    return [];
+   }
+
+   private looksLikeCausaRow(item: any): boolean {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+      return false;
+    }
+
+    return !!this.pickCausaField(item, 'code') || !!this.pickCausaField(item, 'description');
+   }
+
+   private mapCausaPorCoberturaItem(item: any): { COD_CAUSA: string; DESCRIPCION_CAUS: string } {
+    const codigo = this.pickCausaField(item, 'code');
+    const descripcion = this.pickCausaField(item, 'description');
+
+    return {
+      COD_CAUSA: codigo || descripcion,
+      DESCRIPCION_CAUS: descripcion || codigo,
+    };
+   }
+
+   private pickCausaField(item: any, kind: 'code' | 'description'): string {
+    if (!item || typeof item !== 'object') {
+      return '';
+    }
+
+    const explicitCodeKeys = [
+      'COD_CAUSA', 'Cod_Causa', 'cod_Causa', 'codigoCausa', 'CodigoCausa',
+      'cCodCaus', 'cCOD_CAUSA', 'cCAUSAField', 'cCodCausa', 'CCODCAUS',
+      'codCausa', 'CodCausa', 'cod_causa', 'Codigo_Causa', 'codigo_causa',
+      'cCodCausField', 'cOD_CAUSAField', 'Codigo', 'codigo', 'Code', 'code'
+    ];
+    const explicitDescKeys = [
+      'DESCRIPCION_CAUS', 'Descripcion_Caus', 'descripcion_Caus', 'descripcionCausa', 'DescripcionCausa',
+      'pDesCaus', 'pDESCRIPCION_CAUSA', 'dESCRIPCIONField', 'dESCRIPCION_CAUSAField',
+      'pDesCausa', 'descripcion', 'Descripcion', 'DESCRIPCION', 'nombreCausa', 'NombreCausa',
+      'pDescripcionCaus', 'dESCRIPCION_CAUSField', 'Nombre', 'nombre', 'Label', 'label'
+    ];
+
+    const keys = kind === 'code' ? explicitCodeKeys : explicitDescKeys;
+    for (const key of keys) {
+      const value = item?.[key];
+      if (value !== undefined && value !== null && String(value).trim() !== '') {
+        return String(value).trim();
+      }
+    }
+
+    for (const [key, value] of Object.entries(item)) {
+      if (value === undefined || value === null || String(value).trim() === '') {
+        continue;
+      }
+
+      const normalizedKey = key.toLowerCase();
+      if (kind === 'code' && /(cod|code).*(caus|causa)|^(causa|ccod)/.test(normalizedKey)) {
+        return String(value).trim();
+      }
+      if (kind === 'description' && /(desc|descripcion|nombre).*(caus|causa)|^pdes/.test(normalizedKey)) {
+        return String(value).trim();
+      }
+    }
+
+    return '';
    }
 
   //Guardar fotos
@@ -1698,7 +1832,7 @@ export class ApiService {
 //End list
   //https://gist.github.com/AnndresRodriguez/a4216e3f82f45fc4514dc954f967fe9a#file-models-json
 
-//POST /api/FicohsaHN/Carga_Reclamo_Sinau_BPM_Fico
+//POST /api/FicohsaHN/Carga_Reclamo_Sinau_BPM_FicoQA (temporal: WS QA Ficohsa hasta autorizacion de produccion)
 GuardarBPM(credentials:any): Observable<any> {
   console.log("Las credenciales que me envias son :");
   console.table(credentials); // hasta aqui funciona
@@ -1712,6 +1846,7 @@ GuardarBPM(credentials:any): Observable<any> {
     NombreAsegurado: " ROLVIN FERNANDO FIGUEROA ZEPEDA",
     Sucursal: "0001",
     Producto: "AU01",
+    Cobertura: "AU01",
     Ramo: "0002",
     FechaOcurrencia: "2024-05-21T16:39:36",
     Causa: "A001",
@@ -1736,6 +1871,7 @@ let misdatos ={
   NombreAsegurado: credentials.NombreAsegurado,
   Sucursal: credentials.Sucursal,
   Producto: credentials.Producto,
+  Cobertura: credentials.Cobertura,
   Ramo: credentials.Ramo,
   FechaOcurrencia: credentials.FechaOcurrencia,
   Causa: credentials.Causa,
@@ -1749,7 +1885,7 @@ let misdatos ={
   Observacion: credentials.Observacion
 }
 
-    return this.http.post(`${this.apiUrl}/FicohsaHN/Carga_Reclamo_Sinau_BPM_Fico`, misdatos).pipe(
+    return this.http.post(`${this.apiUrl}/FicohsaHN/Carga_Reclamo_Sinau_BPM_FicoQA`, misdatos).pipe(
     switchMap(( res: any  ) => {
       console.log('Respuesta de ingresar la nueva atencion ');
       console.dir(res);

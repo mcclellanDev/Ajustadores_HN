@@ -8,6 +8,12 @@ import { resolveAttentionCurrency } from '../utils/currency-display.util';
 import { normalizeChassis, normalizePolicyNumber, resolveClaimCoordinates, resolveClaimDate } from '../utils/claim-payload-normalizer';
 import * as $ from 'jquery';
 import { emptySignatureWhite, imagePrefix, errorImage, editarFirmaIcono } from '../environments/default-images';
+import {
+  clearAllClientSignatureCache,
+  isValidStoredClientSignature,
+  persistClientSignatureToCache,
+  resolveClientSignatureFromCache
+} from '../utils/client-signature-cache.util';
 import { AlertController, AnimationController, IonAccordionGroup, Platform, ToastController } from '@ionic/angular';
 import { valoresPredeterminados } from '../environments/predeterminados';
 import { abogadosAudiencias } from '../interfaces/arrays';
@@ -61,12 +67,9 @@ export class PrepareSendPage implements OnInit {
 
   constructor(private platform:Platform, private api: ApiService,
     private routeActive: ActivatedRoute, private router: Router, private toaster: ToastService,
-    private animationCtrl: AnimationController, private alert: AlertController, public bulkAttemptService: AttentionBulkAttemptService) { 
-    this.firmaPrecargada = localStorage.getItem("dSignatureAsegurado");
+    private animationCtrl: AnimationController, private alert: AlertController, public bulkAttemptService: AttentionBulkAttemptService) {
+    this.firmaPrecargada = emptySignatureWhite;
     this.sucessIcon = '../../assets/img/guardado.gif';
-    if (this.firmaPrecargada) {
-      console.log('Traigo una firma '+this.firmaPrecargada); 
-    }
 
 
     let porqueNo = localStorage.getItem('dataProcess-PorqueNoUsoServicioAsistencia');
@@ -190,42 +193,26 @@ export class PrepareSendPage implements OnInit {
     this.refreshBulkAttemptInfo();
   }
 
-  private signatureStorageKey(): string {
-    return this.idAtencion ? 'dSignatureAsegurado-' + this.idAtencion : 'dSignatureAsegurado';
-  }
-
   private isValidClientSignature(signature: any): boolean {
-    const value = (signature || '').toString();
-    return !!value &&
-      value !== this.errorImage &&
-      value !== this.emptySignatureWhite &&
-      value !== this.emptySignature &&
-      value !== 'null' &&
-      value !== 'undefined';
+    return isValidStoredClientSignature(signature);
   }
 
   private refreshClientSignature(): string {
-    const signatureByAttention = this.idAtencion ? localStorage.getItem(this.signatureStorageKey()) : null;
-    const genericSignature = localStorage.getItem('dSignatureAsegurado');
-    const signature = this.isValidClientSignature(signatureByAttention) ? signatureByAttention : genericSignature;
+    const signature = resolveClientSignatureFromCache(this.idAtencion);
 
-    this.firmaPrecargada = this.isValidClientSignature(signature) ? signature : this.emptySignatureWhite;
-    this.isSignature = this.isValidClientSignature(this.firmaPrecargada);
+    this.firmaPrecargada = signature ?? this.emptySignatureWhite;
+    this.isSignature = !!signature;
     this.invalidSignature = this.validationAttempted && !this.isSignature;
 
     return this.firmaPrecargada;
   }
 
   private persistClientSignature(signature: string): void {
-    if (!this.isValidClientSignature(signature)) {
+    if (!persistClientSignatureToCache(signature, this.idAtencion)) {
       return;
     }
 
     this.firmaPrecargada = signature;
-    localStorage.setItem('dSignatureAsegurado', signature);
-    if (this.idAtencion) {
-      localStorage.setItem(this.signatureStorageKey(), signature);
-    }
     this.isSignature = true;
     this.invalidSignature = false;
   }
@@ -411,6 +398,14 @@ export class PrepareSendPage implements OnInit {
 
   private getCodigoCausaBpm(): string {
     return (this.causaBpmCodigo || localStorage.getItem('codigoCausaBpm') || valoresPredeterminados[0].Causa || '').toString();
+  }
+
+  private getCodigoCoberturaBpmSinPoliza(): string {
+    return 'AU01';
+  }
+
+  private getCausaBpmSinPoliza(): string {
+    return 'A001';
   }
 
   private async solicitarCausaPorCobertura(codigoCobertura: any): Promise<void> {
@@ -1024,10 +1019,11 @@ export class PrepareSendPage implements OnInit {
               Certificado: this.cliente[0].Certificado.toString(),//parseInt(this.cliente[0].Certificado), // Pendiente
               NombreAsegurado: this.cliente[0].Cliente,
               Sucursal: valoresPredeterminados[0].Sucursal, // Predeterminado : 0001
-              Producto: valoresPredeterminados[0].Producto, // Predeterminado : AU01
+              Producto: valoresPredeterminados[0].Producto, // Siempre AU01
+              Cobertura: this.getCodigoCoberturaBpmSinPoliza(), // Vuelco común sin póliza
               Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
               FechaOcurrencia: fechaSiniestroBpm,//fechaSplit,//this.cliente[0].FechaRegistro, OJO
-              Causa: this.getCodigoCausaBpm(), // Causa Ficohsa por cobertura
+              Causa: this.getCausaBpmSinPoliza(), // Vuelco común sin póliza
               ValorReserva: '00.00', // Formulario
               UsuarioBPM: this.elUsuario.UsuarioBPM, // Login
               Latitud: coordenadasSiniestro.Latitud,//this.latitud,//"14.0985125",//localStorage.getItem('latitud'), // Formulario
@@ -1045,10 +1041,11 @@ export class PrepareSendPage implements OnInit {
               Certificado: this.cliente[0].Certificado.toString(),//parseInt(this.cliente[0].Certificado), // Pendiente
               NombreAsegurado: this.cliente[0].Cliente,
               Sucursal: valoresPredeterminados[0].Sucursal, // Predeterminado : 0001
-              Producto: valoresPredeterminados[0].Producto, // Predeterminado : AU01
+              Producto: valoresPredeterminados[0].Producto, // Siempre AU01
+              Cobertura: this.getCodigoCoberturaBpmSinPoliza(), // Vuelco común sin póliza
               Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
               FechaOcurrencia: fechaSiniestroBpm,//this.elExpediente[0].FechaRegistro,
-              Causa: this.getCodigoCausaBpm(), // Causa Ficohsa por cobertura
+              Causa: this.getCausaBpmSinPoliza(), // Vuelco común sin póliza
               ValorReserva: '00.00', // Formulario
               UsuarioBPM: this.elUsuario.UsuarioBPM, // Login
               Latitud: coordenadasSiniestro.Latitud,
@@ -1370,6 +1367,11 @@ export class PrepareSendPage implements OnInit {
 
     localStorage.removeItem('coords-latitud');
     localStorage.removeItem('coords-longitud');
+
+    clearAllClientSignatureCache();
+    this.firmaPrecargada = this.emptySignatureWhite;
+    this.isSignature = false;
+    this.invalidSignature = false;
 
   }
 

@@ -83,6 +83,7 @@ export const ficohsaBpmValidationRules: ValidationRule[] = [
   'NombreAsegurado',
   'Sucursal',
   'Producto',
+  'Cobertura',
   'Ramo',
   'FechaOcurrencia',
   'Causa',

@@ -33,6 +33,7 @@ import {
   ficohsaBpmValidationRules
 } from '../validation/claim-validation.rules';
 import { normalizeChassis, normalizeParentescoCode, normalizePolicyNumber, resolveClaimCoordinates, resolveClaimDate } from '../utils/claim-payload-normalizer';
+import { clearAllClientSignatureCache } from '../utils/client-signature-cache.util';
 import {
   AttentionBulkAttempt,
   AttentionBulkAttemptService
@@ -869,8 +870,7 @@ export class AjustadorhnPage implements OnInit {
       }
 
       if (item.nombre === 'ValorReserva') {
-        const reserva = localStorage.getItem('bpmArray-ValorReserva');
-        return reserva ?? '0';
+        return this.resolveValorReservaFromCache();
       }
 
       if (item.storageKey) {
@@ -1073,7 +1073,7 @@ export class AjustadorhnPage implements OnInit {
             if (arregloParaEnviar['Chasis']) {
               arregloParaEnviar['Chasis'] = normalizeChassis(arregloParaEnviar['Chasis']);
             }
-            let reserva:any = localStorage.getItem('bpmArray-ValorReserva');
+            let reserva:any = this.resolveValorReservaFromCache();
                       this.valorReserva = reserva;
                       this.datos['valorReserva'] = reserva;
             
@@ -1282,7 +1282,7 @@ export class AjustadorhnPage implements OnInit {
                       }
                       let fechaSplit = (fechaSiniestro || '').split('T')[0];
 
-                      let reserva:any = localStorage.getItem('bpmArray-ValorReserva');
+                      let reserva:any = this.resolveValorReservaFromCache();
                       this.valorReserva = reserva;
                       
                       this.inicialGenero = localStorage.getItem('inicialGenero');
@@ -1304,7 +1304,8 @@ export class AjustadorhnPage implements OnInit {
                         Certificado: this.elExpediente[0].Certificado.toString(),//parseInt(this.elExpediente[0].Certificado), // Pendiente
                         NombreAsegurado: this.elExpediente[0].Cliente,
                         Sucursal: valoresPredeterminados[0].Sucursal, // Predeterminado : 0001
-                        Producto: valoresPredeterminados[0].Producto,//this.producto, //valoresPredeterminados[0].Producto, // Predeterminado : AU01
+                        Producto: valoresPredeterminados[0].Producto, // Siempre AU01
+                        Cobertura: this.getCodigoCoberturaBpm(), // Cobertura Ficohsa seleccionada
                         Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
                         FechaOcurrencia: fechaSplit,//fechaSplit,//this.elExpediente[0].FechaRegistro, OJO
                         Causa: this.getCodigoCausaBpm(), // Causa Ficohsa por cobertura
@@ -1332,6 +1333,7 @@ export class AjustadorhnPage implements OnInit {
                                   this.toaster.presentToastDataMissing('Faltan datos para enviar BPM Ficohsa: '+missingBpm, 'top', 'bpm');
                                   return;
                                 }
+                                
                                 
                                 this.api.GuardarBPM(this.dataBPM).pipe(finalize(async ()=>{
                                   this.isBPMcomplete = true;
@@ -1450,6 +1452,7 @@ export class AjustadorhnPage implements OnInit {
                                 }
                           
                               )
+                              /**/
                       }, 6000);//this.randomize(3, 6));
                     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                   },
@@ -1705,6 +1708,16 @@ export class AjustadorhnPage implements OnInit {
       }
 
       return /^\d{5,}$/.test(possibleAttention) ? false : true;
+    }
+
+    private resolveValorReservaFromCache(): string {
+      const laReserva = localStorage.getItem('laReserva');
+      const currentAttention = this.idAtencion?.toString();
+      if (laReserva && currentAttention && laReserva.startsWith(`${currentAttention}-`)) {
+        return laReserva.substring(currentAttention.length + 1) || '0';
+      }
+
+      return localStorage.getItem('bpmArray-ValorReserva') ?? '0';
     }
 
     // Coerces a "Valor de Reserva" raw value into a non-negative number that is
@@ -3022,6 +3035,14 @@ export class AjustadorhnPage implements OnInit {
     return (this.causaBpmCodigo || localStorage.getItem('codigoCausaBpm') || valoresPredeterminados[0].Causa || '').toString();
   }
 
+  private getCodigoCoberturaBpm(): string {
+    return this.resolveCoverageCode(
+      this.tipoDeCobertura ||
+      localStorage.getItem('tipoCobertura') ||
+      localStorage.getItem('datos-TipoAcuerdoFicohsa')
+    ).toString();
+  }
+
   private async solicitarCausaPorCobertura(codigoCobertura: any): Promise<void> {
     const codigo = (codigoCobertura || '').toString().trim();
     if (!codigo) {
@@ -3791,8 +3812,10 @@ validateEmail(status){
         }
       }
 
-      localStorage.removeItem('coords-latitud');
-      localStorage.removeItem('coords-longitud');
+    localStorage.removeItem('coords-latitud');
+    localStorage.removeItem('coords-longitud');
+
+    clearAllClientSignatureCache();
 
     }
     
