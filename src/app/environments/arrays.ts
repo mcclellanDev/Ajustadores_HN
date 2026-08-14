@@ -1531,6 +1531,30 @@ export const masList = [
     SizeMb?:string;
     Size?:number;
     NombreFirmante?:string;
+    NombreOriginal?: string | null;
+    HashSha256Cliente?: string | null;
+    Extension?: string | null;
+    TamanoBytes?: number | null;
+    AnchoPixels?: number | null;
+    AltoPixels?: number | null;
+    OrientacionExif?: number | null;
+    TieneExif?: boolean | null;
+    FechaCapturaOriginal?: string | null;
+    OffsetCapturaOriginal?: string | null;
+    FuenteFechaCaptura?: string | null;
+    FechaUltimaModificacion?: string | null;
+    FechaSeleccionDispositivo?: string | null;
+    FabricanteDispositivo?: string | null;
+    ModeloDispositivo?: string | null;
+    SoftwareEdicion?: string | null;
+    Latitud?: number | null;
+    Longitud?: number | null;
+    AltitudExifMetros?: number | null;
+    PrecisionGpsExif?: number | null;
+    OrigenId?: number | null;
+    TipoFoto?: string | null;
+    AlgoritmoHash?: string | null;
+    MetadataJson?: string | null;
 }
 
 export interface video {
