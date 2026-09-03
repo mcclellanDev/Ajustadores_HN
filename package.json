@@ -1,6 +1,6 @@
 {
   "name": "help_ajustadores",
-  "version": "2.0.11",
+  "version": "2.1.0",
   "author": "Edwyn Omar McClellan para Por Salud",
   "contributors": [
     "OpenAI Codex <qa-editor-auditor>"
@@ -11,7 +11,7 @@
     "technicalSteward": "Edwyn Omar McClellan",
     "organization": "Por Salud",
     "qaEditorAudit": "OpenAI Codex - edicion, QA tecnico y auditoria colaborativa",
-    "release": "2.0.11"
+    "release": "2.1.0"
   },
   "scripts": {
     "ng": "ng",

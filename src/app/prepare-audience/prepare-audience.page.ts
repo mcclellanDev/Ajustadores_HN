@@ -4,6 +4,10 @@ import { AlertController } from '@ionic/angular';
 import { ApiService } from '../services/api.service';
 import { finalize } from 'rxjs';
 import { ToastService } from '../services/toast.service';
+import {
+  persistAudienceTableIdToCache,
+  resolveAudienceTableIdFromCache,
+} from '../utils/audience-table-cache.util';
 
 @Component({
   selector: 'app-prepare-audience',
@@ -28,6 +32,7 @@ export class PrepareAudiencePage implements OnInit {
   idAgente: any;
   lawyerSearchOpen = false;
   private expedienteFromState: any;
+  private navigationAudienceId: any;
 
   constructor(
     private router: Router,
@@ -35,23 +40,46 @@ export class PrepareAudiencePage implements OnInit {
     private api: ApiService,
     private toaster: ToastService
   ) {
-    const navigation = this.router.getCurrentNavigation();
-    const state = navigation?.extras?.state as { data?: any[] } | undefined;
-
-    this.idAtencion = state?.data?.[1]?.idAtencion || localStorage.getItem('idAtencion');
-    this.expedienteFromState = state?.data?.[0]?.forma;
-
-    const navigationAudienceId = state?.data?.[1]?.idTablaAjustador ||
-      state?.data?.[1]?.idAjusteAudiencia;
-    if (navigationAudienceId) {
-      localStorage.setItem('IdTablaAjustador', navigationAudienceId.toString());
-    }
+    this.syncAttentionContextFromNavigation();
   }
 
   ngOnInit() {
     this.idAgente = this.api.currentUser?.ProveedorAgenteId;
     this.loadAbogados();
+  }
+
+  ionViewWillEnter() {
+    this.syncAttentionContextFromNavigation();
     this.loadAudienceTableId();
+  }
+
+  private syncAttentionContextFromNavigation(): void {
+    const navigation = this.router.getCurrentNavigation();
+    const routerState = navigation?.extras?.state as { data?: any[] } | undefined;
+    const historyState = (window.history.state?.data ? window.history.state : undefined) as
+      | { data?: any[] }
+      | undefined;
+    const state = routerState ?? historyState;
+    const stateData = state?.data;
+
+    if (Array.isArray(stateData)) {
+      this.expedienteFromState = stateData[0]?.forma;
+      const attentionMeta = stateData[1];
+
+      if (attentionMeta?.idAtencion != null && attentionMeta?.idAtencion !== '') {
+        this.idAtencion = attentionMeta.idAtencion;
+        localStorage.setItem('idAtencion', this.idAtencion.toString());
+      }
+
+      this.navigationAudienceId =
+        attentionMeta?.idTablaAjustador ??
+        attentionMeta?.idAjusteAudiencia ??
+        null;
+    }
+
+    if (!this.idAtencion) {
+      this.idAtencion = localStorage.getItem('idAtencion');
+    }
   }
 
   goBack() {
@@ -88,7 +116,15 @@ export class PrepareAudiencePage implements OnInit {
   }
 
   private loadAudienceTableId() {
-    if (this.applyAudienceTableId(localStorage.getItem('IdTablaAjustador'))) {
+    const atencionId = parseInt(this.idAtencion, 10);
+    if (!Number.isFinite(atencionId)) {
+      console.warn('[prepare-audience] Invalid attention id:', this.idAtencion);
+      return;
+    }
+
+    this.idTablaDeAjustador = null;
+
+    if (this.applyAudienceTableId(this.navigationAudienceId, atencionId)) {
       return;
     }
 
@@ -96,19 +132,21 @@ export class PrepareAudiencePage implements OnInit {
       ? this.expedienteFromState[0]
       : this.expedienteFromState;
 
-    if (this.applyAudienceTableId(stateRecord)) {
+    if (this.recordMatchesAttention(stateRecord, atencionId) &&
+      this.applyAudienceTableId(stateRecord, atencionId)) {
       return;
     }
 
-    const atencionId = parseInt(this.idAtencion, 10);
-    if (!Number.isFinite(atencionId)) {
-      console.warn('[prepare-audience] Invalid attention id:', this.idAtencion);
+    const cachedId = resolveAudienceTableIdFromCache(atencionId);
+    if (this.applyAudienceTableId(cachedId, atencionId)) {
       return;
     }
 
     this.api.Expediente(atencionId).subscribe(
       (res) => {
-        if (this.applyAudienceTableId(res?.[0])) {
+        const record = Array.isArray(res) ? res[0] : res;
+        if (this.recordMatchesAttention(record, atencionId) &&
+          this.applyAudienceTableId(record, atencionId)) {
           return;
         }
         this.fetchAudienceTableIdFromAttentionData(atencionId);
@@ -121,7 +159,7 @@ export class PrepareAudiencePage implements OnInit {
     this.api.DatosDeAtencion(atencionId).subscribe(
       (res) => {
         const record = Array.isArray(res) ? res[0] : res;
-        if (this.applyAudienceTableId(record)) {
+        if (this.applyAudienceTableId(record, atencionId)) {
           return;
         }
         this.fetchAudienceTableIdFromApi(atencionId);
@@ -137,7 +175,7 @@ export class PrepareAudiencePage implements OnInit {
       })
     ).subscribe(
       (res) => {
-        if (this.applyAudienceTableId(res)) {
+        if (this.applyAudienceTableId(res, atencionId)) {
           return;
         }
         this.logAudienceLookupWarning(
@@ -152,6 +190,22 @@ export class PrepareAudiencePage implements OnInit {
         );
       }
     );
+  }
+
+  private recordMatchesAttention(record: any, atencionId: number): boolean {
+    if (!record || typeof record !== 'object') {
+      return true;
+    }
+
+    const refAtencionId = record.RefAtencionId ??
+      record.IdAtencion ??
+      record.idAtencion;
+
+    if (refAtencionId == null || refAtencionId === '') {
+      return true;
+    }
+
+    return parseInt(refAtencionId, 10) === atencionId;
   }
 
   private formatAudienceLookupError(message?: string): string {
@@ -169,15 +223,16 @@ export class PrepareAudiencePage implements OnInit {
     return message;
   }
 
-  private applyAudienceTableId(value: any): boolean {
+  private applyAudienceTableId(value: any, atencionId?: number): boolean {
     const id = this.extractAudienceTableId(value);
     if (!id) {
       return false;
     }
 
+    const attentionId = atencionId ?? parseInt(this.idAtencion, 10);
     this.idTablaDeAjustador = id;
-    localStorage.setItem('IdTablaAjustador', id);
-    console.log('[prepare-audience] Audience table id resolved:', id);
+    persistAudienceTableIdToCache(id, attentionId);
+    console.log('[prepare-audience] Audience table id resolved:', id, 'for attention:', attentionId);
     return true;
   }
 
@@ -257,8 +312,12 @@ export class PrepareAudiencePage implements OnInit {
   }
 
   audienceSave() {
+    const atencionId = parseInt(this.idAtencion, 10);
+
     if (!this.idTablaDeAjustador) {
       console.warn('[prepare-audience] Sending audience without resolved IdAjustadorAudiencia.');
+    } else if (Number.isFinite(atencionId)) {
+      persistAudienceTableIdToCache(this.idTablaDeAjustador, atencionId);
     }
 
     if (!this.idAbogado) {
@@ -288,8 +347,12 @@ export class PrepareAudiencePage implements OnInit {
       idAgente: this.idAgente
     };
 
+    console.log('[prepare-audience] jsonAudiencia for attention', this.idAtencion);
+    console.dir(jsonAudiencia);
+
     this.api.ActualizarAudicion(jsonAudiencia).pipe(
       finalize(() => {
+        this.isLoading = false;
         console.log('Audience update finished');
       })
     ).subscribe(
@@ -297,7 +360,6 @@ export class PrepareAudiencePage implements OnInit {
         if (res) {
           this.toaster.presentToastAlert('Audiencia actualizada exitosamente.', 'top', 'primary', 10000);
         }
-        this.isLoading = false;
       },
       (error) => {
         this.toaster.presentToastAlert(
@@ -306,7 +368,6 @@ export class PrepareAudiencePage implements OnInit {
           'danger',
           10000
         );
-        this.isLoading = false;
       }
     );
   }

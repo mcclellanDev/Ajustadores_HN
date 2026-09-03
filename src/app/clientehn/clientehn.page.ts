@@ -3878,8 +3878,14 @@ export class ClientehnPage implements OnInit {
 
   goESignature() {
     this.isEditSig = true;
+    const attentionId = this.idAtencion || localStorage.getItem('idAtencion') || localStorage.getItem('atencionEnProceso');
+    if (attentionId) {
+      localStorage.setItem('idAtencion', attentionId.toString());
+    }
+    localStorage.setItem('elCliente', this.cliente?.NombreCliente || this.cliente?.NombreConductor || localStorage.getItem('elCliente') || '');
+    localStorage.setItem('signatureReturnTo', '/clientehn');
     localStorage.setItem('isEditSig', this.isEditSig.toString());
-    this.router.navigate(['./esignature']);
+    this.router.navigate(['./esignature'], { state: { idAtencion: attentionId } });
   }
 
   goPrepare(idAtencion:any){
@@ -3903,7 +3909,6 @@ export class ClientehnPage implements OnInit {
           {'forma': this.expediente},
           {
             idAtencion,
-            idTablaAjustador: localStorage.getItem('IdTablaAjustador'),
             idAjusteAudiencia: this.expediente?.[0]?.IdAjusteAudiencia
           }
         ]

@@ -246,44 +246,56 @@ firmarInspectorNO(){
 
 async abrirCamara(){
   this.isLoading = true;
-  const img = await Camera.getPhoto({
-    quality: 90,
-    resultType: CameraResultType.Base64
-  });
-  this.img.IdTipo=2;
-  this.img.Tipo='Otro';
-  this.img.Foto= img.base64String//.split(',')[1];
-  this.fotos.push(this.img);
-  this.dataFoto.push(
-      {Fotografia:this.imagePrefix+this.img.Foto, IdAgente:this.user.ProveedorAgenteId}
-    )
-  this.img={};
-  
-  for (let index = 0; index < this.fotos.length; index++) {
-    const element = this.fotos[index];
-    
-    if (index == (this.fotos.length-1)) {
-      console.log("La foto del ajustador ");
-      console.dir(this.dataFoto)
-      
-      this.api.GuardarFotoAjustador(this.dataFoto).pipe( 
-        finalize(async ()=>{
-          this.tostador.presentToastNoButtons('Fotografía actualizada con éxito! Si tienes sesión abierta en otro dispositivo, deberás reiniciar la sesión para ver el cambio', 'top', 'foto');
-          this.user.Foto = this.imagePrefix+img.base64String;
-          document.getElementById('avatarPerfil').setAttribute('style', 'filter:none');
-          this.isLoading = false;
-        })
-      ).subscribe(
-         async (res) =>{
-            let codigo = res.status;
-            //alert(codigo)
-        },
-        async (res) => {
-          let codigo = res.status;
-        }
-      )
+  try {
+    const img = await Camera.getPhoto({
+      quality: 90,
+      resultType: CameraResultType.Base64
+    });
+
+    if (!img?.base64String) {
+      this.isLoading = false;
+      return;
     }
-    
+
+    this.img.IdTipo=2;
+    this.img.Tipo='Otro';
+    this.img.Foto= img.base64String//.split(',')[1];
+    this.fotos.push(this.img);
+    this.dataFoto.push(
+        {Fotografia:this.imagePrefix+this.img.Foto, IdAgente:this.user.ProveedorAgenteId}
+      )
+    this.img={};
+
+    for (let index = 0; index < this.fotos.length; index++) {
+      const element = this.fotos[index];
+
+      if (index == (this.fotos.length-1)) {
+        console.log("La foto del ajustador ");
+        console.dir(this.dataFoto)
+
+        this.api.GuardarFotoAjustador(this.dataFoto).pipe(
+          finalize(async ()=>{
+            this.isLoading = false;
+          })
+        ).subscribe(
+           async (res) =>{
+              let codigo = res.status;
+              this.tostador.presentToastNoButtons('Fotografía actualizada con éxito! Si tienes sesión abierta en otro dispositivo, deberás reiniciar la sesión para ver el cambio', 'top', 'foto');
+              this.user.Foto = this.imagePrefix+img.base64String;
+              document.getElementById('avatarPerfil')?.setAttribute('style', 'filter:none');
+              //alert(codigo)
+          },
+          async (res) => {
+            let codigo = res.status;
+            this.tostador.presentToastDataMissing('No fue posible actualizar la fotografía del ajustador.', 'top', 'foto');
+          }
+        )
+      }
+
+    }
+  } catch (error) {
+    console.log('Selección de fotografía cancelada o no completada', error);
+    this.isLoading = false;
   }
 }
 

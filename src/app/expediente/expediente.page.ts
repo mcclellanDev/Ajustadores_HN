@@ -850,7 +850,32 @@ export class ExpedientePage implements OnInit {
 
     try {
       const res: any = await firstValueFrom(this.api.obtenerCoordenadasPorAtencion(this.idAtencion, 'AJU_INI'));
-      return Array.isArray(res) && res.length > 0;
+      if (Array.isArray(res) && res.length > 0) {
+        return true;
+      }
+    } catch {
+      // Si el servidor tarda o falla momentaneamente, intentamos capturar la posicion actual.
+    }
+
+    try {
+      const coords = await this.resolveCurrentPosition();
+      const lat = coords.latitude;
+      const lng = coords.longitude;
+
+      if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat === 0 || lng === 0) {
+        return false;
+      }
+
+      this.latitudAju = lat.toString();
+      this.longitudAju = lng.toString();
+      this.proveedorLatitud = lat;
+      this.proveedorLongitud = lng;
+      localStorage.setItem('laLatitud', this.latitudAju);
+      localStorage.setItem('laLongitud', this.longitudAju);
+
+      this.saveInitialAdjusterPosition({ lat, lng });
+      void this.startLiveTracking(true);
+      return true;
     } catch {
       return this.hasLocalAdjusterPosition();
     }
@@ -2838,7 +2863,16 @@ export class ExpedientePage implements OnInit {
         this.toastr.dismissToast();
       }
       
-      await this.navigateFromExpedienteSafely(['./prepare-audience'])
+      const navigateExtras: NavigationExtras = 
+      {
+        state:{
+          data: [
+            {'forma': this.expediente},
+            {'idAtencion': this.idAtencion}
+          ]
+        }
+      }
+      await this.navigateFromExpedienteSafely(['./prepare-audience'], navigateExtras);
     }
 
     async goPrinter(){

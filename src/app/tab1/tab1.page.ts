@@ -438,9 +438,7 @@ export class Tab1Page implements OnInit, OnDestroy {
         this.store = 'https://portal.porsalud.net/Outer/AppRepositorio/HELP/NuevaVersion/HELP.apk';
         this.androidVersion = versionAndroid.versionCodigo;
 
-        let numbersDB = versionAndroid.versionCodigo.toString().replace(/[^0-9]/g,"");
-        let numbersDV = this.dbVersion.toString().replace(/[^0-9]/g,"");
-        if (numbersDB==numbersDV) {}else{
+        if (this.isRemoteVersionNewer(this.dbVersion, versionAndroid.versionCodigo)) {
           setTimeout(() => {
             $('#open-modal-update').click();  
           }, 3000);
@@ -465,6 +463,38 @@ export class Tab1Page implements OnInit, OnDestroy {
     }
 
     return value.toString().replace(/,/g, '').trim();
+  }
+
+  private isRemoteVersionNewer(remoteVersion: any, localVersion: any): boolean {
+    const remoteParts = this.parseVersionParts(remoteVersion);
+    const localParts = this.parseVersionParts(localVersion);
+    const length = Math.max(remoteParts.length, localParts.length);
+
+    for (let index = 0; index < length; index++) {
+      const remoteValue = remoteParts[index] || 0;
+      const localValue = localParts[index] || 0;
+
+      if (remoteValue > localValue) {
+        return true;
+      }
+
+      if (remoteValue < localValue) {
+        return false;
+      }
+    }
+
+    return false;
+  }
+
+  private parseVersionParts(value: any): number[] {
+    const normalized = this.normalizeVersionValue(value);
+    const matches = normalized.match(/\d+/g);
+
+    if (!matches || matches.length === 0) {
+      return [0];
+    }
+
+    return matches.map(part => Number(part));
   }
 
   openStore(store){

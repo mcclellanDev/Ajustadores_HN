@@ -34,6 +34,7 @@ import {
 } from '../validation/claim-validation.rules';
 import { normalizeChassis, normalizeParentescoCode, normalizePolicyNumber, resolveClaimCoordinates, resolveClaimDate } from '../utils/claim-payload-normalizer';
 import { clearAllClientSignatureCache } from '../utils/client-signature-cache.util';
+import { persistAudienceTableIdToCache } from '../utils/audience-table-cache.util';
 import {
   AttentionBulkAttempt,
   AttentionBulkAttemptService
@@ -45,6 +46,8 @@ import { Entidades } from '../interfaces/extras';
 import { error } from 'console';
 
 const USER_DATA = 'MY_USER_DATA';
+const AJUSTADOR_SCROLL_TOP_KEY = 'ajustadorhnScrollTopBeforeSegment';
+const AJUSTADOR_RESTORE_SCROLL_KEY = 'ajustadorhnShouldRestoreScroll';
 @Component({
   selector: 'app-ajustadorhn',
   templateUrl: './ajustadorhn.page.html',
@@ -495,7 +498,7 @@ export class AjustadorhnPage implements OnInit {
     }
     */
 
-    private focusValidationPanel(){
+  private focusValidationPanel(){
       const panel = document.getElementById('dataNullAju');
       if (!panel) {
         return;
@@ -505,13 +508,38 @@ export class AjustadorhnPage implements OnInit {
       this.validationPanelIsActive = true;
 
       setTimeout(() => {
-        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        this.ajustadorContent?.scrollToPoint(0, Math.max(panel.offsetTop - 10, 0), 450);
-      }, 80);
-
-      setTimeout(() => {
         this.validationPanelIsActive = false;
       }, 1800);
+    }
+
+    private async rememberAjustadorScrollPosition(): Promise<void> {
+      try {
+        const scrollEl = await this.ajustadorContent?.getScrollElement();
+        const scrollTop = scrollEl?.scrollTop || 0;
+        sessionStorage.setItem(AJUSTADOR_SCROLL_TOP_KEY, scrollTop.toString());
+        sessionStorage.setItem(AJUSTADOR_RESTORE_SCROLL_KEY, '1');
+      } catch (error) {
+        console.log('[ajustadorhn] No se pudo guardar la posicion del scroll:', error);
+      }
+    }
+
+    private restoreAjustadorScrollPosition(): void {
+      if (sessionStorage.getItem(AJUSTADOR_RESTORE_SCROLL_KEY) !== '1') {
+        return;
+      }
+
+      const savedScrollTop = Number(sessionStorage.getItem(AJUSTADOR_SCROLL_TOP_KEY) || '0');
+      if (Number.isNaN(savedScrollTop)) {
+        sessionStorage.removeItem(AJUSTADOR_RESTORE_SCROLL_KEY);
+        sessionStorage.removeItem(AJUSTADOR_SCROLL_TOP_KEY);
+        return;
+      }
+
+      setTimeout(() => {
+        void this.ajustadorContent?.scrollToPoint(0, savedScrollTop, 0);
+        sessionStorage.removeItem(AJUSTADOR_RESTORE_SCROLL_KEY);
+        sessionStorage.removeItem(AJUSTADOR_SCROLL_TOP_KEY);
+      }, 120);
     }
 
     closeAccordions(){
@@ -1349,7 +1377,7 @@ export class AjustadorhnPage implements OnInit {
                                         this.codigoReclamoFicohsa = resAtencion[0].numero_reclamo;
                                         this.elFiniquito.NumeroReclamo = resAtencion[0].numero_reclamo;
                                         
-                                        localStorage.setItem('IdTablaAjustador', this.idTablaAjustador);
+                                        persistAudienceTableIdToCache(this.idTablaAjustador, this.idAtencion);
                                         localStorage.setItem('codigoBPMF', this.codigoBPMFicohsa);
                                         localStorage.setItem('codigoReclamo', resAtencion[0].numero_reclamo);
                                         
@@ -1958,10 +1986,6 @@ export class AjustadorhnPage implements OnInit {
     this.refreshBulkAttemptInfo();
     this.isLoading = false;
     this.refreshValidationFromLocalData();
-
-    setTimeout(() => {
-      this.ajustadorContent?.scrollToTop(300);
-    }, 100);
   }
 
   // Navega a segmento-danio para agregar/quitar daños. Usa NavController (no
@@ -2201,6 +2225,8 @@ export class AjustadorhnPage implements OnInit {
   }
 
   ionViewDidEnter(){
+    this.restoreAjustadorScrollPosition();
+
     let polNum:any;
     let cerNum:any;
 
@@ -3333,7 +3359,7 @@ validateEmail(status){
   $('.segment-item-aju').eq(0).click();
 }
 
- setSegment(segmentInput, indexInput){
+ async setSegment(segmentInput, indexInput){
   let daIndex = indexInput;
   if (segmentInput == 'beneficiario') {
     console.log('Datos para finiquito');
@@ -3347,6 +3373,7 @@ validateEmail(status){
   // Use Ionic's NavController so the ion-router-outlet stack is managed correctly.
   // Plain router.navigate() to a page already in the stack throws
   // "Cannot activate an already activated outlet" on the first tap (and only works on the second).
+  await this.rememberAjustadorScrollPosition();
   if (segmentInput == 'culpable') {
     this.navCtrl.navigateForward(['/'+segmentInput], { queryParams: { pageSource: './ajustadorhn' } });
   }else{

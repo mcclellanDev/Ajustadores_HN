@@ -14,6 +14,7 @@ import {
   persistClientSignatureToCache,
   resolveClientSignatureFromCache
 } from '../utils/client-signature-cache.util';
+import { persistAudienceTableIdToCache } from '../utils/audience-table-cache.util';
 import { AlertController, AnimationController, IonAccordionGroup, Platform, ToastController } from '@ionic/angular';
 import { valoresPredeterminados } from '../environments/predeterminados';
 import { abogadosAudiencias } from '../interfaces/arrays';
@@ -528,9 +529,13 @@ export class PrepareSendPage implements OnInit {
   }
 
   goESignature() {
+    const attentionId = this.idAtencion || localStorage.getItem('idAtencion') || localStorage.getItem('atencionEnProceso');
+    if (attentionId) {
+      localStorage.setItem('idAtencion', attentionId.toString());
+    }
     localStorage.setItem('signatureReturnTo', '/prepare-send');
     localStorage.setItem('origin', '/prepare-send');
-    this.router.navigate(['./esignature']);
+    this.router.navigate(['./esignature'], { state: { idAtencion: attentionId } });
   }
 
   firmar() {
@@ -1087,7 +1092,7 @@ export class PrepareSendPage implements OnInit {
                               this.codigoReclamoFicohsa = resAtencion[0].numero_reclamo;
                               //alert(this.codigoReclamoFicohsa);
                               
-                              localStorage.setItem('IdTablaAjustador', this.idTablaAjustador);
+                              persistAudienceTableIdToCache(this.idTablaAjustador, this.idAtencion);
                               localStorage.setItem('codigoBPMF', this.codigoBPMFicohsa);
                               localStorage.setItem('codigoReclamo', resAtencion[0].numero_reclamo);
                               

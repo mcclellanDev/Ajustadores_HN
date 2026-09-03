@@ -33,7 +33,7 @@ export class EsignaturePage implements OnInit {
   constructor(private platform:Platform, private navController:NavController, private api:ApiService, private tostador:ToastService,
     private router: Router, private deviceService: DeviceService) { 
       this.fsLogo = logoFicohsa
-    this.idAtencion = localStorage.getItem('idAtencion');
+    this.idAtencion = this.resolveAttentionIdForSignature();
     this.elCliente = localStorage.getItem('elCliente');
     const platformWidth = this.platform.width();
     const platformHeight = this.platform.height();
@@ -63,23 +63,71 @@ export class EsignaturePage implements OnInit {
     this.sig.dotSize = 3;
   }
 
+  ionViewWillEnter() {
+    this.idAtencion = this.resolveAttentionIdForSignature();
+    this.elCliente = localStorage.getItem('elCliente') || this.elCliente || '';
+  }
+
+  private resolveAttentionIdForSignature(): number | null {
+    const navigationState: any = this.router.getCurrentNavigation()?.extras?.state || history.state || {};
+    const stateData = Array.isArray(navigationState?.data) ? navigationState.data : [];
+    const stateAttention = stateData.find((item) => item?.idAtencion || item?.IdAtencion || item?.RefAtencionId);
+
+    const candidates = [
+      navigationState?.idAtencion,
+      navigationState?.IdAtencion,
+      navigationState?.RefAtencionId,
+      stateAttention?.idAtencion,
+      stateAttention?.IdAtencion,
+      stateAttention?.RefAtencionId,
+      localStorage.getItem('idAtencion'),
+      localStorage.getItem('atencionEnProceso'),
+      localStorage.getItem('currentAtencion'),
+      localStorage.getItem('RefAtencionId'),
+      this.idAtencion
+    ];
+
+    for (const candidate of candidates) {
+      const parsed = parseInt(String(candidate || '').trim(), 10);
+      if (Number.isFinite(parsed) && parsed > 0) {
+        localStorage.setItem('idAtencion', parsed.toString());
+        return parsed;
+      }
+    }
+
+    return null;
+  }
+
   scrollToElement() {
     $('#ele').animate({scrollTop:600}, 5000);
   }
 
   saveSignatureAsegurado(idAtencion) {
-    idAtencion = parseInt(this.idAtencion);
+    idAtencion = this.resolveAttentionIdForSignature();
     this.isLoading = true;this.sig.backgroundColor = "rgb(255, 255, 255)";this.sig.minWidth = 1;this.sig.maxWidth = 1.5;
     this.sig.dotSize = 3; const mySignature = this.sig.toDataURL("image/jpeg"); console.log(mySignature);
+
+    if (!idAtencion) {
+      this.tostador.presentToastDataMissing("No se pudo identificar el número de atención para guardar la firma. Regresa al expediente e intenta nuevamente.", 'top', 'firma');
+      this.isLoading = false;
+      return;
+    }
       
-    if (mySignature != emptySignature && mySignature != emptySignatureWhite) {
+    if (!this.sig.isEmpty() && mySignature != emptySignature && mySignature != emptySignatureWhite) {
         this.firmaPrecargada = this.sig.toDataURL("image/jpeg");
+        const firmaBase64 = this.firmaPrecargada.split(',')[1] || '';
+
+        if (!firmaBase64.trim()) {
+          this.tostador.presentToastNoButtons("Necesitas escribir una firma para guardarla.", "top", "firma");
+          this.isLoading = false;
+          return;
+        }
         //console.dir(this.firmasAsegurados);
 
         const firmaPayload = [{
           IdAtencion: idAtencion,
           RefTipoFotoId: 3,
-          Foto: this.firmaPrecargada.split(',')[1],
+          Foto: firmaBase64,
           NombreFirmante: this.elCliente,
           FechaFirma: this.hoy
         }];

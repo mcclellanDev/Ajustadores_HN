@@ -1832,7 +1832,7 @@ export class ApiService {
 //End list
   //https://gist.github.com/AnndresRodriguez/a4216e3f82f45fc4514dc954f967fe9a#file-models-json
 
-//POST /api/FicohsaHN/Carga_Reclamo_Sinau_BPM_FicoQA (temporal: WS QA Ficohsa hasta autorizacion de produccion)
+//POST /api/FicohsaHN/Carga_Reclamo_Sinau_BPM_Fico (produccion: pruebas controladas)
 GuardarBPM(credentials:any): Observable<any> {
   console.log("Las credenciales que me envias son :");
   console.table(credentials); // hasta aqui funciona
@@ -1885,7 +1885,7 @@ let misdatos ={
   Observacion: credentials.Observacion
 }
 
-    return this.http.post(`${this.apiUrl}/FicohsaHN/Carga_Reclamo_Sinau_BPM_FicoQA`, misdatos).pipe(
+    return this.http.post(`${this.apiUrl}/FicohsaHN/Carga_Reclamo_Sinau_BPM_Fico`, misdatos).pipe(
     switchMap(( res: any  ) => {
       console.log('Respuesta de ingresar la nueva atencion ');
       console.dir(res);

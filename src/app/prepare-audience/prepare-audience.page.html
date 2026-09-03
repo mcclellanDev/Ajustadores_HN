@@ -1,7 +1,6 @@
 <ion-header>
-  <div class="audience-loading" *ngIf="isLoading">
-    <ion-spinner color="primary" name="lines"></ion-spinner>
-  </div>
+  <ion-spinner color="primary" name="lines" *ngIf="isLoading"></ion-spinner>
+  <div id="spinFooter" *ngIf="isLoading"></div>
 
   <ion-toolbar>
     <ion-buttons slot="start">
@@ -97,7 +96,7 @@
 
 <ion-footer class="audience-footer" *ngIf="!lawyerSearchOpen">
   <ion-toolbar>
-    <ion-button id="submitAudience" expand="block" (click)="audienceSave()">
+    <ion-button id="submitAudience" expand="block" [disabled]="isLoading" (click)="audienceSave()">
       Enviar audiencia
       <ion-icon slot="end" name="chevron-forward"></ion-icon>
     </ion-button>
