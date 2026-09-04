@@ -28,6 +28,12 @@ export class Tab2Page implements OnInit{
   atenciones:Atenciones[] | undefined;  imagenes:any=[];  public results: Atenciones[] = [];  public resultsView: Array<{ atencion: Atenciones; status: AttentionStatusView; index: number }> = [];
   idAtencion:any;  elColorEstado:any;  isKeyboard: boolean | undefined;  esClienteCompleto:boolean | undefined;  isLoading: boolean | undefined;  searchInterval:any;
   timer:number=0;  busca:string="";  laImg: any;  printUrl:any; isPrint:boolean=true;  public iconos = printerIcons;  dateAt:number= Date.now();
+  fechaDesde: string; fechaHasta: string; nombreAsegurado = ''; searchSummary = '';
+  isDateSearchModalOpen = false;
+  isAffiliateSearchModalOpen = false;
+  isFilteredView = false;
+  private readonly defaultPageSize = 100;
+  private readonly defaultRecentCount = 25;
 
   @ViewChild("searchCase", { static: true }) inputS: any;
   datosDeAtencion: any;
@@ -45,6 +51,7 @@ export class Tab2Page implements OnInit{
     }
   ngOnInit() {
     let origin = localStorage.getItem('origin');
+    this.initializeDefaultDateRange();
     
     this.platform.ready().then(() => {
       Keyboard.addListener('keyboardDidShow', info => {
@@ -65,7 +72,6 @@ export class Tab2Page implements OnInit{
     });
 
     this.getAtenciones();
-    //alert(window.location.pathname+', '+origin)
     //alert(parseInt(localStorage.getItem('atencionesCount'))+1)
     //this.isLoading  = true;
     let atencionesCounter:any = parseInt(localStorage.getItem('atencionesCount') || '0');
@@ -112,22 +118,16 @@ export class Tab2Page implements OnInit{
   }
 
   async getAtenciones(){
+    this.isFilteredView = false;
+    this.searchSummary = `Ultimas ${this.defaultRecentCount} atenciones`;
     this.isLoading = true;
     this.api.MisAtenciones(this.api.currentUser.ProveedorAgenteId).pipe(
       switchMap((res) => this.enrichAttentionsWithClaimCodes(res)),
       finalize(async ()=>{console.log('fin')})
     ).subscribe(
       async (res) =>{
-        console.log(res);
-        this.results = res;
-        this.atenciones = res;
+        this.applySearchResults(res, { displayLimit: this.defaultRecentCount });
         this.isLoading = false;
-
-        localStorage.setItem('atenciones-ajustador', JSON.stringify(this.atenciones));
-
-        this.atenciones?.sort((a,b)=> b.IdAtencion-a.IdAtencion);
-        this.results = [...(this.atenciones || [])];
-        this.rebuildResultsView();
       },
       async (res) => {
         this.isLoading = false;
@@ -141,6 +141,160 @@ export class Tab2Page implements OnInit{
         await alert.present();
       }
     )
+  }
+
+  buscarPorPeriodo() {
+    if (!this.validateDateRange()) {
+      return;
+    }
+
+    this.closeDateSearchModal();
+    this.runAttentionSearch({
+      FechaDesde: this.toStartOfDayIso(this.fechaDesde),
+      FechaHasta: this.toEndOfDayIso(this.fechaHasta),
+      NombreAsegurado: '',
+    }, `Periodo ${this.formatDisplayDate(this.fechaDesde)} - ${this.formatDisplayDate(this.fechaHasta)}`);
+  }
+
+  openDateSearchModal() {
+    this.isDateSearchModalOpen = true;
+  }
+
+  closeDateSearchModal() {
+    this.isDateSearchModalOpen = false;
+  }
+
+  openAffiliateSearchModal() {
+    this.isAffiliateSearchModalOpen = true;
+  }
+
+  closeAffiliateSearchModal() {
+    this.isAffiliateSearchModalOpen = false;
+  }
+
+  buscarPorNombre() {
+    const name = this.nombreAsegurado?.trim();
+    if (!name) {
+      void this.tostador.presentToastAlert(
+        'Indica el nombre del afiliado para buscar.',
+        'top',
+        'warning',
+        5000
+      );
+      return;
+    }
+
+    this.closeAffiliateSearchModal();
+    this.runAttentionSearch({
+      NombreAsegurado: name,
+    }, `Afiliado: ${name}`);
+  }
+
+  restablecerBusqueda() {
+    this.nombreAsegurado = '';
+    this.initializeDefaultDateRange();
+    this.closeDateSearchModal();
+    this.closeAffiliateSearchModal();
+    void this.getAtenciones();
+  }
+
+  private runAttentionSearch(
+    criteria: {
+      FechaDesde?: string | null;
+      FechaHasta?: string | null;
+      NombreAsegurado?: string | null;
+    },
+    summary: string
+  ) {
+    this.isLoading = true;
+    this.api.BuscarMisAtenciones({
+      IdProveedorAgente: this.api.currentUser.ProveedorAgenteId,
+      FechaDesde: criteria.FechaDesde ?? null,
+      FechaHasta: criteria.FechaHasta ?? null,
+      NombreAsegurado: criteria.NombreAsegurado ?? '',
+      Offset: 0,
+      PageSize: this.defaultPageSize,
+    }).pipe(
+      switchMap((res) => this.enrichAttentionsWithClaimCodes(res)),
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe(
+      async (res) => {
+        this.isFilteredView = true;
+        this.searchSummary = summary;
+        this.applySearchResults(res);
+      },
+      async (error) => {
+        const alert = await this.alert.create({
+          header: 'HELP',
+          message: error?.error?.Message || 'No fue posible buscar atenciones.',
+          buttons: ['Ok']
+        });
+        await alert.present();
+      }
+    );
+  }
+
+  private applySearchResults(res: Atenciones[], options?: { displayLimit?: number }) {
+    console.log(res);
+    this.atenciones = res;
+    localStorage.setItem('atenciones-ajustador', JSON.stringify(this.atenciones));
+    const sorted = [...(this.atenciones || [])].sort((a, b) => b.IdAtencion - a.IdAtencion);
+    this.results = options?.displayLimit ? sorted.slice(0, options.displayLimit) : sorted;
+    this.rebuildResultsView();
+  }
+
+  private initializeDefaultDateRange() {
+    const today = new Date();
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    this.fechaDesde = monthStart.toISOString();
+    this.fechaHasta = today.toISOString();
+  }
+
+  private validateDateRange(): boolean {
+    if (!this.fechaDesde || !this.fechaHasta) {
+      void this.tostador.presentToastAlert(
+        'Selecciona la fecha inicial y final del periodo.',
+        'top',
+        'warning',
+        5000
+      );
+      return false;
+    }
+
+    if (new Date(this.fechaDesde) > new Date(this.fechaHasta)) {
+      void this.tostador.presentToastAlert(
+        'La fecha inicial no puede ser mayor que la fecha final.',
+        'top',
+        'warning',
+        5000
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  private toStartOfDayIso(value: string): string {
+    const date = new Date(value);
+    date.setHours(0, 0, 0, 0);
+    return date.toISOString();
+  }
+
+  private toEndOfDayIso(value: string): string {
+    const date = new Date(value);
+    date.setHours(23, 59, 59, 999);
+    return date.toISOString();
+  }
+
+  private formatDisplayDate(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return date.toLocaleDateString('es-HN');
   }
 
   getAttentionStatus(atencion: Atenciones): AttentionStatusView {
@@ -306,16 +460,8 @@ export class Tab2Page implements OnInit{
     )
   }
 
-  handleInput(event:any){
-    const query = event.target.value.toLowerCase();
-    this.results = this.atenciones?.filter((d) => 
-      d.Cliente.toLowerCase().indexOf(query) > -1 ||
-      d.Fecha.toString().toLowerCase().indexOf(query) > -1 ||
-      d.IdAtencion.toString().toLowerCase().indexOf(query) > -1 ||
-      this.getAttentionStatus(d).label.toLowerCase().indexOf(query) > -1 ||
-      (this.getAttentionStatus(d).claimCode || '').toLowerCase().indexOf(query) > -1
-    ) || [];
-    this.rebuildResultsView();
+  goPrinters(){
+    this.router.navigate(['./printer'])
   }
 
   imprimirPDF(tipo:any, indexPrinter:any){
@@ -327,12 +473,6 @@ export class Tab2Page implements OnInit{
 
     window.open(this.printUrl, '_blank');
   }
-
-  goPrinters(){
-    this.router.navigate(['./printer'])
-  }
-
-  
 
   /*
   getfondo(atencionId) {

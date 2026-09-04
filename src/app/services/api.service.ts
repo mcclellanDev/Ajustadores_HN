@@ -147,6 +147,93 @@ export class ApiService {
     })
   )
   }
+  BuscarMisAtenciones(criteria: {
+    IdProveedorAgente?: number;
+    FechaDesde?: string | null;
+    FechaHasta?: string | null;
+    NombreAsegurado?: string | null;
+    Offset?: number;
+    PageSize?: number;
+  }): Observable<any> {
+    const idProveedorAgente = this.resolveProveedorAgenteId(criteria.IdProveedorAgente);
+    if (!idProveedorAgente) {
+      return throwError(() => ({
+        error: { Message: 'No se encontró el IdProveedorAgente de la sesión activa.' }
+      }));
+    }
+
+    const jsonBuscar = {
+      IdProveedorAgente: idProveedorAgente,
+      FechaDesde: criteria.FechaDesde ?? null,
+      FechaHasta: criteria.FechaHasta ?? null,
+      NombreAsegurado: criteria.NombreAsegurado?.trim() || '',
+      Offset: criteria.Offset ?? 0,
+      PageSize: criteria.PageSize && criteria.PageSize > 0 ? criteria.PageSize : 100,
+    };
+
+    console.log('[BuscarMisAtenciones] payload', jsonBuscar);
+
+    return this.http.post(`${this.apiUrl}/Proveedor/BuscarMisAtenciones`, jsonBuscar).pipe(
+      switchMap((res: any) => {
+        const payload = this.extractBuscarMisAtencionesItems(res);
+        return from(Promise.all(payload));
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    );
+  }
+
+  private extractBuscarMisAtencionesItems(res: any): any[] {
+    if (Array.isArray(res)) {
+      return res;
+    }
+
+    if (!res || typeof res !== 'object') {
+      return [];
+    }
+
+    if (Array.isArray(res.Items)) {
+      return res.Items;
+    }
+
+    if (Array.isArray(res.items)) {
+      return res.items;
+    }
+
+    if (Array.isArray(res.Data)) {
+      return res.Data;
+    }
+
+    if (Array.isArray(res.data)) {
+      return res.data;
+    }
+
+    return [];
+  }
+
+  private resolveProveedorAgenteId(explicitId?: any): number {
+    const candidates: any[] = [explicitId, this.currentUser?.ProveedorAgenteId];
+
+    try {
+      const storedUser = localStorage.getItem('ajustadorActual');
+      if (storedUser) {
+        candidates.push(JSON.parse(storedUser)?.ProveedorAgenteId);
+      }
+    } catch (error) {
+      console.warn('[ApiService] No se pudo leer ajustadorActual:', error);
+    }
+
+    for (const candidate of candidates) {
+      const parsed = Number(candidate);
+      if (Number.isFinite(parsed) && parsed > 0) {
+        return parsed;
+      }
+    }
+
+    return 0;
+  }
+
   MisAtencionesActivas(credentials:any): Observable<any> {
     console.log(credentials);
 

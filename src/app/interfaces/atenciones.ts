@@ -28,3 +28,19 @@ export interface ResponseAtenciones{
     Mensaje:string;
     Data?: Atenciones[] | null;
 }
+
+export interface BuscarMisAtencionesRequest {
+    IdProveedorAgente: number;
+    FechaDesde?: string | null;
+    FechaHasta?: string | null;
+    NombreAsegurado?: string | null;
+    Offset?: number;
+    PageSize?: number;
+}
+
+export interface BuscarMisAtencionesResponse {
+    Offset?: number;
+    PageSize?: number;
+    Count?: number;
+    Items?: Atenciones[] | null;
+}

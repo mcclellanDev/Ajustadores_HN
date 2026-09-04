@@ -1,14 +1,29 @@
 <ion-header>
   <ion-toolbar class="search-toolbar">
     <div class="search-shell">
-      <div class="search-title">
-        <span class="panel-kicker">Busqueda</span>
-        <h1>Atenciones</h1>
-      </div>
+      <div class="search-heading-row">
+        <div class="search-title">
+          <span class="panel-kicker">Busqueda</span>
+          <h1>Atenciones</h1>
+        </div>
 
-      <ion-searchbar animated="true" placeholder="Buscar fecha, atencion o asegurado" show-clear-button="focus"
-        show-cancel-button="never" cancel-button-text="Cancelar" cancel-button-icon="trash-bin" [debounce]="400"
-        (ionChange)="handleInput($event)" class="custom" mode="ios"></ion-searchbar>
+        <div class="search-actions">
+          <ion-button fill="outline" size="small" class="period-action" (click)="openDateSearchModal()"
+            [disabled]="isLoading">
+            <ion-icon slot="start" name="calendar-outline"></ion-icon>
+            Periodo
+          </ion-button>
+          <ion-button fill="outline" size="small" class="period-action" (click)="openAffiliateSearchModal()"
+            [disabled]="isLoading">
+            <ion-icon slot="start" name="person-outline"></ion-icon>
+            Afiliado
+          </ion-button>
+          <ion-button fill="clear" size="small" class="reset-action" *ngIf="isFilteredView"
+            (click)="restablecerBusqueda()" [disabled]="isLoading">
+            Ver recientes
+          </ion-button>
+        </div>
+      </div>
     </div>
   </ion-toolbar>
 </ion-header>
@@ -24,11 +39,19 @@
         <div>
           <span class="panel-kicker">Listado</span>
           <h2>Resultados</h2>
+          <p class="search-summary" *ngIf="searchSummary">{{ searchSummary }}</p>
         </div>
         <ion-badge class="count-badge">{{resultsView.length || 0}}</ion-badge>
       </div>
 
-      <ion-list class="results-list" [inset]="true">
+      <ion-card class="empty-state-card" *ngIf="!isLoading && resultsView.length === 0">
+        <ion-card-content>
+          <h3>Sin resultados</h3>
+          <p>Prueba otro periodo o nombre de afiliado.</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-list class="results-list" [inset]="true" *ngIf="resultsView.length > 0">
         <ion-item *ngFor="let item of resultsView" class="result-item"
           [style.--status-color]="item.status.stripColor"
           (click)="verExpedienteBusqueda(item.atencion.IdAtencion, item.index)">
@@ -66,3 +89,74 @@
     </div>
   </section>
 </ion-content>
+
+<ion-modal [isOpen]="isDateSearchModalOpen" (didDismiss)="closeDateSearchModal()" class="date-search-modal">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Busqueda por periodo</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeDateSearchModal()">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="date-modal-content">
+      <section class="date-modal-panel">
+        <span class="panel-kicker">Opcion 1</span>
+        <h3>Periodo de atencion</h3>
+        <p class="date-modal-help">Selecciona el rango historico que deseas consultar.</p>
+
+        <div class="date-range">
+          <div class="date-field">
+            <ion-label>Desde</ion-label>
+            <ion-datetime presentation="date" [preferWheel]="true" locale="es-HN" [firstDayOfWeek]="1"
+              size="cover" [(ngModel)]="fechaDesde" [disabled]="isLoading"></ion-datetime>
+          </div>
+          <div class="date-field">
+            <ion-label>Hasta</ion-label>
+            <ion-datetime presentation="date" [preferWheel]="true" locale="es-HN" [firstDayOfWeek]="1"
+              size="cover" [(ngModel)]="fechaHasta" [disabled]="isLoading"></ion-datetime>
+          </div>
+        </div>
+
+        <ion-button expand="block" class="filter-action" (click)="buscarPorPeriodo()" [disabled]="isLoading">
+          Buscar por periodo
+        </ion-button>
+      </section>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-modal [isOpen]="isAffiliateSearchModalOpen" (didDismiss)="closeAffiliateSearchModal()" class="affiliate-search-modal">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Busqueda por afiliado</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeAffiliateSearchModal()">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="date-modal-content">
+      <section class="date-modal-panel">
+        <span class="panel-kicker">Opcion 2</span>
+        <h3>Nombre del afiliado</h3>
+        <p class="date-modal-help">Escribe el nombre del asegurado para buscar en el historico.</p>
+
+        <ion-input fill="outline" label="Afiliado" labelPlacement="stacked" placeholder="Nombre del asegurado"
+          [(ngModel)]="nombreAsegurado" [disabled]="isLoading" (keyup.enter)="buscarPorNombre()"></ion-input>
+
+        <ion-button expand="block" fill="outline" class="filter-action" (click)="buscarPorNombre()"
+          [disabled]="isLoading">
+          Buscar por afiliado
+        </ion-button>
+      </section>
+    </ion-content>
+  </ng-template>
+</ion-modal>

@@ -15,21 +15,121 @@
 }
 
 .search-shell {
-  align-items: center;
   display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(160px, 0.32fr) minmax(260px, 1fr);
+  gap: 12px;
   margin: 0 auto;
   max-width: 1180px;
+  padding-bottom: 10px;
   width: 100%;
 }
 
+.search-actions {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.search-heading-row {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+
 .search-title h1,
-.panel-heading h2 {
+.panel-heading h2,
+.date-modal-panel h3 {
   color: var(--blue-ink);
   font-weight: 800;
   letter-spacing: 0;
   line-height: 1.15;
+  margin: 0;
+}
+
+.date-modal-panel h3 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.date-modal-help {
+  color: var(--muted-text);
+  font-size: 0.82rem;
+  line-height: 1.35;
+  margin: 0 0 12px;
+}
+
+.date-modal-panel {
+  background: #ffffff;
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(15, 45, 82, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px;
+  padding: 16px;
+}
+
+.date-modal-content {
+  --background: #f4f7fb;
+}
+
+.date-range {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.date-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.date-field ion-label {
+  color: var(--muted-text);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.date-field ion-datetime {
+  border: 1px solid #dce5ef;
+  border-radius: 10px;
+  max-width: 100%;
+}
+
+.filter-action {
+  margin-top: 4px;
+}
+
+.reset-action,
+.period-action {
+  --color: #0058cb;
+}
+
+.search-summary {
+  color: var(--muted-text);
+  font-size: 0.82rem;
+  margin: 6px 0 0;
+}
+
+.empty-state-card {
+  border: 1px dashed #cfd9e6;
+  box-shadow: none;
+  margin-top: 14px;
+}
+
+.empty-state-card h3 {
+  color: var(--blue-ink);
+  margin: 0 0 6px;
+}
+
+.empty-state-card p {
+  color: var(--muted-text);
   margin: 0;
 }
 
@@ -74,7 +174,7 @@ ion-searchbar.custom {
   box-shadow: 0 8px 24px rgba(15, 45, 82, 0.08);
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 116px);
+  height: calc(100vh - 150px);
   margin: 0 auto;
   max-width: 1180px;
   min-height: 0;
@@ -266,13 +366,17 @@ ion-searchbar.custom {
 }
 
 @media (max-width: 760px) {
-  .search-shell {
+  .search-heading-row {
     align-items: stretch;
+    flex-direction: column;
+  }
+
+  .date-range {
     grid-template-columns: 1fr;
   }
 
   .results-panel {
     height: auto;
-    min-height: calc(100vh - 150px);
+    min-height: calc(100vh - 220px);
   }
 }
