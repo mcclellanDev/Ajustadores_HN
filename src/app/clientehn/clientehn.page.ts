@@ -32,6 +32,7 @@ import {
 } from '../validation/inter-auto-chassis.validation';
 import { Keyboard } from '@capacitor/keyboard';
 import { resolveAttentionCurrency } from '../utils/currency-display.util';
+import { parseStoredJson } from '../utils/attention-details.util';
 import * as $ from 'jquery';
 import { WebElement } from 'protractor';
 
@@ -311,23 +312,26 @@ export class ClientehnPage implements OnInit {
     private menuController: MenuController, private interAutoVehicleCache: InterAutoVehicleCacheService) {
 
     let datAtencion:any = localStorage.getItem('datosDeAtencion');
-    this.DatosDeAtencion = JSON.parse(datAtencion);
+    this.DatosDeAtencion = parseStoredJson(datAtencion, []);
     console.log('datAtencion'); console.dir(this.DatosDeAtencion);
-    this.identidadDelCliente = this.DatosDeAtencion[6].value;
+    this.identidadDelCliente = this.DatosDeAtencion?.[6]?.value;
     //self.alert(this.identidadDelCliente)
   
     let exped:any = localStorage.getItem('elExpediente'); let numPol:any;
     console.log('Expediente en cliente : '+exped);
-    this.laExpediente = JSON.parse(exped);
-    console.log('El nombre del cliente : '+this.laExpediente[0].Cliente);
-    numPol = this.laExpediente[0].PolizaExterna.split('-')[1];
-    localStorage.setItem('nNumpol', numPol);
-    localStorage.setItem('nNumCer', this.laExpediente[0].Certificado);
+    const parsedExpediente = parseStoredJson(exped, []);
+    this.laExpediente = Array.isArray(parsedExpediente) ? parsedExpediente : parsedExpediente ? [parsedExpediente] : [];
+    if (this.laExpediente[0]) {
+      console.log('El nombre del cliente : '+this.laExpediente[0].Cliente);
+      numPol = this.laExpediente[0].PolizaExterna?.split?.('-')?.[1];
+      if (numPol) {
+        localStorage.setItem('nNumpol', numPol);
+      }
+      localStorage.setItem('nNumCer', this.laExpediente[0].Certificado);
 
-    
-
-    this.clienteLatitud = this.laExpediente[0].LatitudCliente;
-    this.clienteLongitud = this.laExpediente[0].LongitudCliente;
+      this.clienteLatitud = this.laExpediente[0].LatitudCliente;
+      this.clienteLongitud = this.laExpediente[0].LongitudCliente;
+    }
 
     //self.alert(this.clienteLongitud);
 
@@ -398,7 +402,7 @@ export class ClientehnPage implements OnInit {
           this.applyCorrectedCoordinatesFromNavigation(navParams?.data?.[1]?.latitud, navParams?.data?.[2]?.longitud);
         }
 
-        if (!this.getCorrectedCoordinatesForAttention()) {
+        if (!this.getCorrectedCoordinatesForAttention() && this.laExpediente?.[0]) {
           this.cliente.Latitud = this.laExpediente[0].LatitudCliente;
           this.cliente.Longitud = this.laExpediente[0].LongitudCliente;
           this.clienteLatitud = this.laExpediente[0].LatitudCliente;
@@ -407,7 +411,7 @@ export class ClientehnPage implements OnInit {
           localStorage.setItem('dataProcess-Longitud', this.cliente.Longitud);
         }
 
-        if (this.laExpediente) {
+        if (this.laExpediente?.[0]) {
           //self.alert('Hay expediente '+this.cliente.Latitud)
           localStorage.setItem('dataProcess-Nombre', this.laExpediente[0].Cliente);
 

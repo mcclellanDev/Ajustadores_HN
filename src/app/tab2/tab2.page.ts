@@ -14,8 +14,14 @@ import { TabsPage } from '../tabs/tabs.page';
 import {
   AttentionStatusView,
   attentionNeedsClaimLookup,
+  normalizeAttentionColor,
   resolveAttentionStatus
 } from '../utils/attention-status.util';
+import {
+  getAttentionDetailRecord,
+  persistDatosDeAtencion,
+  persistExpediente
+} from '../utils/attention-details.util';
 import * as $ from 'jquery';
 
 @Component({
@@ -394,39 +400,58 @@ export class Tab2Page implements OnInit{
   }
 
   verExpedienteBusqueda(idAtencion: number, indexInput:any) {
-    setTimeout(() => {
-      console.log('idAtencion: '+idAtencion+', indexInput: '+indexInput);
-      console.dir(this.results);
-      this.elColorEstado = this.results[indexInput].ColorEstado;
-      
-      localStorage.setItem('elColorEstado', this.elColorEstado);
-      localStorage.setItem('idAtencion', idAtencion.toString());
-      localStorage.setItem('indexAtencion-2', indexInput.toString());
-      this.obtenerCacheCliente(idAtencion);
+    const atencion = this.results?.find((item) => item.IdAtencion === idAtencion)
+      || this.results?.[indexInput];
 
-      this.api.DatosDeAtencion(idAtencion).pipe(
-        finalize(async () => {
-        })
-      ).subscribe(
-        async (res) => {
-          this.datosDeAtencion  = res;
-          let identidadAsegurado = res[0].IdentidadCliente;
-          localStorage.setItem('datosDeAtencion', this.datosDeAtencion);
-          localStorage.setItem('identidadAsegurado', identidadAsegurado);
-        },
-        async (res) => {}
-      )
-      this.router.navigate(['./expediente'], { queryParams: { Id: idAtencion, Source:2 } });
-    }, 300);
-    
+    if (!atencion || !idAtencion) {
+      void this.tostador.presentToastAlert(
+        'No se pudo abrir esta atención.',
+        'top',
+        'warning',
+        5000
+      );
+      return;
+    }
+
+    this.idAtencion = idAtencion;
+    this.elColorEstado = normalizeAttentionColor(atencion.ColorEstado) || atencion.ColorEstado;
+    localStorage.setItem('elColorEstado', this.elColorEstado || '');
+    localStorage.setItem('idAtencion', idAtencion.toString());
+    localStorage.setItem('indexAtencion-2', String(indexInput ?? ''));
+    localStorage.setItem('elCliente', atencion.Cliente || '');
+    this.obtenerCacheCliente(idAtencion);
+
+    this.isLoading = true;
+    forkJoin({
+      expediente: this.api.Expediente(idAtencion).pipe(catchError(() => of(null))),
+      detalle: this.api.DatosDeAtencion(idAtencion).pipe(catchError(() => of(null))),
+    }).pipe(
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe({
+      next: ({ expediente, detalle }) => {
+        persistExpediente(expediente);
+        const record = getAttentionDetailRecord(detalle);
+        if (record) {
+          this.datosDeAtencion = persistDatosDeAtencion(record);
+          const color = normalizeAttentionColor(record.ColorEstado) || this.elColorEstado;
+          if (color) {
+            this.elColorEstado = color;
+            localStorage.setItem('elColorEstado', color);
+          }
+        }
+
+        this.router.navigate(['./expediente'], { queryParams: { Id: idAtencion, Source: 2 } });
+      },
+      error: () => {
+        this.router.navigate(['./expediente'], { queryParams: { Id: idAtencion, Source: 2 } });
+      }
+    });
   }
 
   obtenerCacheCliente(AtencionId:any){
-    this.api.ObtenercacheCliente(this.idAtencion).pipe(
-      finalize(async () => {
-        this.isLoading = false;
-      })
-    ).subscribe(
+    this.api.ObtenercacheCliente(AtencionId).subscribe(
       async (res) => {
         
 

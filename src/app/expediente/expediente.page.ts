@@ -23,6 +23,13 @@ import { meses } from '../environments/calendario';
 import { DeviceService } from '../services/device.service';
 import * as L from 'leaflet';
 import { ExpedienteInfoModalComponent } from './expediente-info-modal.component';
+import { normalizeAttentionColor } from '../utils/attention-status.util';
+import {
+  getAttentionDetailRecord,
+  persistDatosDeAtencion,
+  persistExpediente,
+  parseStoredJson
+} from '../utils/attention-details.util';
 
 @Component({
   selector: 'app-expediente',
@@ -155,9 +162,13 @@ export class ExpedientePage implements OnInit {
    
 
       setTimeout(() => {
-      let exped:any = localStorage.getItem('elExpediente'); let numPol:any;
-      this.laExpediente = JSON.parse(exped);
-      polNum = this.laExpediente[0].PolizaExterna.split('-')[1];
+      let exped:any = localStorage.getItem('elExpediente');
+      const parsedExpediente = parseStoredJson(exped, this.expediente || []);
+      this.laExpediente = Array.isArray(parsedExpediente) ? parsedExpediente : [];
+      if (!this.laExpediente[0]) {
+        return;
+      }
+      polNum = this.laExpediente[0].PolizaExterna?.split?.('-')?.[1];
       cerNum = this.laExpediente[0].Certificado;
 
       const cobertura = {
@@ -247,9 +258,15 @@ export class ExpedientePage implements OnInit {
             console.log("Detalles de audiencia en ver expediente: " + res.length);
             console.dir(res);
             if (res) {
-              this.identidadAsegurado = res[0].IdentidadCliente;
-              this.bpmFicohsa = res[0].CodigoBPMFicohsa;
-              localStorage.setItem('identidadAsegurado', this.identidadAsegurado);  
+              const record = getAttentionDetailRecord(res);
+              if (record) {
+                persistDatosDeAtencion(record);
+                this.identidadAsegurado = record.IdentidadCliente;
+                this.bpmFicohsa = record.CodigoBPMFicohsa;
+                if (this.identidadAsegurado) {
+                  localStorage.setItem('identidadAsegurado', this.identidadAsegurado);
+                }
+              }
             }
             
           }
@@ -299,6 +316,7 @@ export class ExpedientePage implements OnInit {
   async handleForward(){
     this.isLoading = true;
     try {
+      this.persistExpedienteForForms();
       await this.refreshCacheClienteForNavigation();
 
       if (this.hasNoPolicyCache == true) {
@@ -617,6 +635,7 @@ export class ExpedientePage implements OnInit {
         }
 
         localStorage.setItem('elFiniquito', JSON.stringify(this.elFiniquito));
+        persistExpediente(res);
         
 
         if (this.platform.is('android')) {
@@ -796,6 +815,7 @@ export class ExpedientePage implements OnInit {
     await this.Torval();
     await this.dismissTopOverlaysSafe();
     this.openModal = false;
+    this.persistExpedienteForForms();
     localStorage.setItem('atencionEnProceso', this.idAtencion);
     localStorage.setItem('dataProcess-AseguradoUsoPoliza', '2');
 
@@ -813,12 +833,12 @@ export class ExpedientePage implements OnInit {
 
   async goCliente(){
     //this.Torval();
-    this.elColorEstado = localStorage.getItem('elColorEstado');
+    this.elColorEstado = this.resolveAttentionColor();
     //alert(this.elColorEstado)
-    if (this.elColorEstado == 'green') {
+    if (this.canContinueToForms()) {
       //this.presentToast(this.message, this.position, this.class);
       //alert(this.idAtencion)
-      const hasInitialPosition = await this.hasInitialAdjusterPosition();
+      const hasInitialPosition = this.isHistoricalSource() || await this.hasInitialAdjusterPosition();
       if (hasInitialPosition) {
         await this.navigateToCliente();
       }else{
@@ -826,8 +846,7 @@ export class ExpedientePage implements OnInit {
         //$('#trackButton').attr('style', 'border: 1px solid red');
         this.toastr.presentToastNoButtonsRed('Aun no has activado la geolocalización en vivo. Presiona el botón de ruta e intenta nuevamente tomar la atención.', 'top', 'ruta');
       }
-    }else{
-      
+      return;
     }
 
     if (this.elColorEstado == 'red'){
@@ -892,6 +911,7 @@ export class ExpedientePage implements OnInit {
     await this.dismissTopOverlaysSafe();
     this.openModal = false;
     this.toastr.dismissToast();
+    this.persistExpedienteForForms();
     localStorage.setItem('idAtencion', this.idAtencion);
     const navigateExtras: NavigationExtras = 
     {
@@ -934,17 +954,17 @@ export class ExpedientePage implements OnInit {
   }
 
   async ajustadorHn(){
-    this.elColorEstado = localStorage.getItem('elColorEstado');
+    this.elColorEstado = this.resolveAttentionColor();
     //alert(this.elColorEstado)
     await this.Torval();
-    if (this.elColorEstado == 'green') {
+    if (this.canContinueToForms()) {
       
       this.openModal = false;
       await this.dismissTopOverlaysSafe();
+      this.persistExpedienteForForms();
       localStorage.setItem('idAtencion', this.idAtencion);
       await this.navigateFromExpedienteSafely(['./ajustadorhn'])
-    }else{
-      
+      return;
     }
 
     if (this.elColorEstado == 'red'){
@@ -954,6 +974,25 @@ export class ExpedientePage implements OnInit {
       this.toastr.presentToastSiniestroCancelado("Este registro ya fue anulado o cancelado. Para mayor información, contacte a su administrador de sistema", 'middle', 'expediente');
     }
     
+  }
+
+  private persistExpedienteForForms(): void {
+    persistExpediente(this.expediente || this.laExpediente);
+    localStorage.setItem('idAtencion', this.idAtencion);
+  }
+
+  private isHistoricalSource(): boolean {
+    return String(this.source) === '2';
+  }
+
+  private resolveAttentionColor(): string {
+    return normalizeAttentionColor(localStorage.getItem('elColorEstado') || this.elColorEstado);
+  }
+
+  private canContinueToForms(): boolean {
+    const color = this.resolveAttentionColor();
+    this.elColorEstado = color;
+    return color === 'green' || this.isHistoricalSource();
   }
 
   private async dismissTopModalSafe(): Promise<void> {
