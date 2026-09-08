@@ -202,7 +202,7 @@ export function isInterAutoManualEntryMode(
   }
 
   if (validation.mode === 'crossed_swap') {
-    return false;
+    return !!manualChasisEntryActive;
   }
 
   return (

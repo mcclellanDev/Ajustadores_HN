@@ -1,3 +1,6 @@
+import { hasValidVehicleIdentifier } from '../validation/inter-auto-chassis.validation';
+import { isInterAutoManualChassisReadyForClaim } from './inter-auto-manual-chassis.util';
+
 export interface ParentescoOption {
   CODIGO?: string | number;
   codigo?: string | number;
@@ -38,6 +41,91 @@ export function normalizeChassis(value: any): string {
   }
 
   return text;
+}
+
+export function readInterAutoDraftFromLocalStorage(attentionId?: any): {
+  chasis: string;
+  motor: string;
+  poliza: string;
+} | null {
+  const id = String(attentionId ?? localStorage.getItem('idAtencion') ?? '').trim();
+  if (!id) {
+    return null;
+  }
+
+  try {
+    const raw = localStorage.getItem(`interAutoDraft-${id}`);
+    if (!raw) {
+      return null;
+    }
+
+    const draft = JSON.parse(raw);
+    return {
+      chasis: normalizeChassis(draft?.chasis),
+      motor: normalizeChassis(draft?.motor),
+      poliza: cleanText(draft?.poliza)
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function resolveClaimVehicleIdentifiers(
+  record: any,
+  attentionId?: any
+): { Chasis: string; Motor: string } {
+  const expedienteChasis = normalizeChassis(record?.Chasis);
+  const expedienteMotor = normalizeChassis(record?.Motor);
+
+  if (!isInterAutoManualChassisReadyForClaim(attentionId)) {
+    return { Chasis: expedienteChasis, Motor: expedienteMotor };
+  }
+
+  const draft = readInterAutoDraftFromLocalStorage(attentionId);
+  const Chasis = pickValidChassis([
+    draft?.chasis,
+    localStorage.getItem('dataProcess-ChasisVehiculo'),
+    localStorage.getItem('datos-ChasisVehiculo'),
+    record?.ChasisVehiculo
+  ]);
+
+  if (!Chasis) {
+    return { Chasis: expedienteChasis, Motor: expedienteMotor };
+  }
+
+  const Motor = pickPreferredMotor([
+    draft?.motor,
+    localStorage.getItem('dataProcess-Motor'),
+    expedienteMotor
+  ], Chasis) || expedienteMotor;
+
+  return { Chasis, Motor };
+}
+
+export function applyResolvedVehicleIdentifiers(record: any, attentionId?: any): { Chasis: string; Motor: string } {
+  const resolved = resolveClaimVehicleIdentifiers(record, attentionId);
+  if (record && isInterAutoManualChassisReadyForClaim(attentionId)) {
+    if (resolved.Chasis) {
+      record.Chasis = resolved.Chasis;
+    }
+    if (resolved.Motor) {
+      record.Motor = resolved.Motor;
+    }
+  }
+
+  return resolved;
+}
+
+function pickValidChassis(candidates: Array<string | null | undefined>): string {
+  return candidates.map((value) => normalizeChassis(value)).find((value) => hasValidVehicleIdentifier(value)) || '';
+}
+
+function pickPreferredMotor(candidates: Array<string | null | undefined>, selectedChasis: string): string {
+  const normalized = candidates
+    .map((value) => normalizeChassis(value))
+    .filter((value) => value && value !== selectedChasis);
+
+  return normalized[0] || '';
 }
 
 export function normalizeCoordinate(value: any): string {

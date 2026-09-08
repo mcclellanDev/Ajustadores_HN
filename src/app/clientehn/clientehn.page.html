@@ -411,7 +411,8 @@
                 [idAtencion]="idAtencion"
                 [chassisValidation]="chassisValidation"
                 [chasis]="laExpediente[0].Chasis"
-                [manualEntryActive]="interAutoManualChasisEntryActive || allowManualChasisInput()">
+                [manualEntryActive]="interAutoManualChasisEntryActive || allowManualChasisInput()"
+                (certificateStateChange)="onInterAutoCertificateStateChange($event)">
               </app-inter-auto-registration-certificate>
               <ion-item class="ion-no-padding  input">
                 <ion-grid>

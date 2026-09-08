@@ -48,4 +48,15 @@ describe('InterAutoVehicleCacheService', () => {
     expect(expediente.Motor).toBe('MOTOR-1234567890');
     expect(expediente.PolizaExterna).toBe('POL-1');
   });
+
+  it('commits a manual chassis only when the certificate was uploaded', () => {
+    registrationCertificate.isManualEntry.and.returnValue(true);
+    registrationCertificate.isRegistrationCertificateUploaded.and.returnValue(false);
+
+    expect(service.isReadyToCommitManualChassis(293506, '3N6CD33B1ZK379285')).toBeFalse();
+
+    registrationCertificate.isRegistrationCertificateUploaded.and.returnValue(true);
+    expect(service.isReadyToCommitManualChassis(293506, '3N6CD33B1ZK379285')).toBeTrue();
+    expect(service.isReadyToCommitManualChassis(293506, 'YD25666033P')).toBeFalse();
+  });
 });

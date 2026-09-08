@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { ApiService } from '../services/api.service';
 import { resolveAttentionCurrency } from '../utils/currency-display.util';
-import { normalizeChassis, normalizePolicyNumber, resolveClaimCoordinates, resolveClaimDate } from '../utils/claim-payload-normalizer';
+import { normalizePolicyNumber, resolveClaimCoordinates, resolveClaimDate, resolveClaimVehicleIdentifiers } from '../utils/claim-payload-normalizer';
 import * as $ from 'jquery';
 import { emptySignatureWhite, imagePrefix, errorImage, editarFirmaIcono } from '../environments/default-images';
 import {
@@ -891,7 +891,8 @@ export class PrepareSendPage implements OnInit {
       const fechaSiniestroBpm = (fechaSiniestro || '').split('T')[0];
       const coordenadasSiniestro = resolveClaimCoordinates(expedienteActual, this.idAtencion);
       const polizaSiniestro = normalizePolicyNumber(expedienteActual?.PolizaExterna);
-      const chasisSiniestro = normalizeChassis(expedienteActual?.Chasis);
+      const vehicleIds = resolveClaimVehicleIdentifiers(expedienteActual, this.idAtencion);
+      const chasisSiniestro = vehicleIds.Chasis;
       const ownerRelationshipCode = this.getOwnerRelationshipCode();
 
     setTimeout(() => {

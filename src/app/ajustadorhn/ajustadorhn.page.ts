@@ -32,7 +32,7 @@ import {
   ficohsaBpmConfirmationRules,
   ficohsaBpmValidationRules
 } from '../validation/claim-validation.rules';
-import { normalizeChassis, normalizeParentescoCode, normalizePolicyNumber, resolveClaimCoordinates, resolveClaimDate } from '../utils/claim-payload-normalizer';
+import { normalizeChassis, normalizeParentescoCode, normalizePolicyNumber, resolveClaimCoordinates, resolveClaimDate, resolveClaimVehicleIdentifiers } from '../utils/claim-payload-normalizer';
 import { clearAllClientSignatureCache } from '../utils/client-signature-cache.util';
 import { persistAudienceTableIdToCache } from '../utils/audience-table-cache.util';
 import {
@@ -1097,9 +1097,16 @@ export class AjustadorhnPage implements OnInit {
             arregloParaEnviar['Latitud'] = coordenadasSiniestro.Latitud;
             arregloParaEnviar['Longitud'] = coordenadasSiniestro.Longitud;
             arregloParaEnviar['Poliza'] = normalizePolicyNumber(arregloParaEnviar['Poliza'] || expedienteActual.PolizaExterna);
-            arregloParaEnviar['ChasisVehiculo'] = normalizeChassis(arregloParaEnviar['ChasisVehiculo'] || expedienteActual.Chasis);
+            const vehicleIds = resolveClaimVehicleIdentifiers({
+              ...expedienteActual,
+              ChasisVehiculo: arregloParaEnviar['ChasisVehiculo']
+            }, this.idAtencion);
+            arregloParaEnviar['ChasisVehiculo'] = vehicleIds.Chasis;
             if (arregloParaEnviar['Chasis']) {
-              arregloParaEnviar['Chasis'] = normalizeChassis(arregloParaEnviar['Chasis']);
+              arregloParaEnviar['Chasis'] = vehicleIds.Chasis;
+            }
+            if (vehicleIds.Motor) {
+              arregloParaEnviar['Motor'] = vehicleIds.Motor;
             }
             let reserva:any = this.resolveValorReservaFromCache();
                       this.valorReserva = reserva;
@@ -1324,9 +1331,10 @@ export class AjustadorhnPage implements OnInit {
                         this.valorReserva = '0';
                       }
 
+                      const vehicleIdsBpm = resolveClaimVehicleIdentifiers(this.elExpediente[0], this.idAtencion);
 
                       this.dataBPM =  {
-                        Chasis: normalizeChassis(this.elExpediente[0].Chasis),
+                        Chasis: vehicleIdsBpm.Chasis,
                         puntoServicio: valoresPredeterminados[0].puntoServicio, // Predeterminado : 504
                         Poliza: polizaTrunk, // 
                         Certificado: this.elExpediente[0].Certificado.toString(),//parseInt(this.elExpediente[0].Certificado), // Pendiente

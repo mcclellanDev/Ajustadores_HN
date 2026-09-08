@@ -61,16 +61,19 @@ export class InterAutoVehicleCacheService {
     return this.readJson<InterAutoVehicleSnapshot>(this.snapshotKey(idAtencion));
   }
 
+  isReadyToCommitManualChassis(idAtencion: number, chasis: unknown): boolean {
+    return (
+      this.registrationCertificate.isRegistrationCertificateUploaded(idAtencion) &&
+      this.registrationCertificate.isManualEntry(idAtencion) &&
+      hasValidVehicleIdentifier(chasis)
+    );
+  }
+
   async saveDraft(
     idAtencion: number,
     draft: { chasis?: unknown; motor?: unknown; poliza?: unknown }
   ): Promise<void> {
     const snapshot = await this.loadServerSnapshot(idAtencion);
-    if (hasValidVehicleIdentifier(snapshot?.chasis)) {
-      await this.clearDraft(idAtencion);
-      return;
-    }
-
     const payload: InterAutoVehicleDraft = {
       chasis: normalizeVehicleIdentifier(draft.chasis),
       motor: normalizeVehicleIdentifier(draft.motor),
@@ -80,6 +83,12 @@ export class InterAutoVehicleCacheService {
         this.registrationCertificate.isRegistrationCertificateUploaded(idAtencion),
       updatedAt: new Date().toISOString()
     };
+
+    const isManualCorrection = !!payload.chasis && payload.chasis !== (snapshot?.chasis || '');
+    if (hasValidVehicleIdentifier(snapshot?.chasis) && !isManualCorrection) {
+      await this.clearDraft(idAtencion);
+      return;
+    }
 
     if (!payload.chasis && !payload.motor && !payload.poliza) {
       await this.clearDraft(idAtencion);
@@ -134,9 +143,15 @@ export class InterAutoVehicleCacheService {
   mirrorDraftToLocalStorage(idAtencion: number, draft: InterAutoVehicleDraft): void {
     localStorage.setItem('datos-ChasisVehiculo', draft.chasis || '');
     localStorage.setItem('datos-Poliza', draft.poliza || '');
-    localStorage.setItem('dataProcess-ChasisVehiculo', draft.chasis || '');
-    localStorage.setItem('dataProcess-Motor', draft.motor || '');
     localStorage.setItem(`interAutoDraft-${idAtencion}`, JSON.stringify(draft));
+
+    if (
+      draft.registrationCertificateUploaded ||
+      this.registrationCertificate.isRegistrationCertificateUploaded(idAtencion)
+    ) {
+      localStorage.setItem('dataProcess-ChasisVehiculo', draft.chasis || '');
+      localStorage.setItem('dataProcess-Motor', draft.motor || '');
+    }
   }
 
   private clearDraftLocalStorage(idAtencion: number): void {

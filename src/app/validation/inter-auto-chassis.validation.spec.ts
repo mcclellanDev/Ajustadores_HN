@@ -107,5 +107,13 @@ describe('inter-auto-chassis.validation', () => {
         false
       )
     ).toBeFalse();
+    expect(isInterAutoManualEntryMode(crossedSwap, true)).toBeTrue();
+    expect(
+      requiresInterAutoRegistrationCertificate(
+        crossedSwap,
+        crossedSwap.chasis,
+        true
+      )
+    ).toBeTrue();
   });
 });

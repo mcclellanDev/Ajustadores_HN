@@ -5,6 +5,10 @@ import { firstValueFrom } from 'rxjs';
 import { imagePrefix } from '../environments/arrays';
 import { ApiService } from './api.service';
 import { ToastService } from './toast.service';
+import {
+  interAutoManualEntryFlagKey,
+  interAutoUploadedFlagKey
+} from '../utils/inter-auto-manual-chassis.util';
 
 /** Revisión Superior — tarjeta de circulación Inter Auto. */
 export const INTER_AUTO_REGISTRATION_CERT_REF_TIPO_FOTO_ID = 36;
@@ -264,10 +268,10 @@ export class InterAutoRegistrationCertificateService {
   }
 
   private manualEntryFlagKey(idAtencion: number): string {
-    return `interAutoManualEntry-${idAtencion}`;
+    return interAutoManualEntryFlagKey(idAtencion);
   }
 
   private uploadedFlagKey(idAtencion: number): string {
-    return `interAutoRegistrationCertificateUploaded-${idAtencion}`;
+    return interAutoUploadedFlagKey(idAtencion);
   }
 }
