@@ -16,6 +16,7 @@ import { finalize } from 'rxjs/operators';
 import { Network, ConnectionStatus } from '@capacitor/network';
 import { ScreenlockService } from '../services/screenlock.service';
 import { ToastService } from '../services/toast.service';
+import { presentHelpAlert } from '../utils/help-alert.util';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import SignaturePad from 'signature_pad';
 import { FormBuilder, Validators } from '@angular/forms';
@@ -881,11 +882,7 @@ export class Tab1Page implements OnInit, OnDestroy {
       ).subscribe(
         (res) => {},
         async (res) => {
-          const alert = await this.alert.create({
-            header: 'HELP',
-            message: res.error.Message,
-            buttons: ['Ok']});
-          await alert.present();
+          await presentHelpAlert(this.alert, res);
         }
       )
     }
@@ -2006,12 +2003,7 @@ permitirGPS(){
         }
       },
       async (res) => {
-        const alert = await this.alert.create({
-          header: 'HELP',
-          message: res.error.Message,
-          buttons: ['Ok']
-        });
-        await alert.present();
+        await presentHelpAlert(this.alert, res);
       }
     )
     
@@ -2163,12 +2155,7 @@ permitirGPS(){
         this.tipoLicencia = res;
       },
       async (res) => {
-        const alert = await this.alert.create({
-          header: 'HELP',
-          message: res.error.Message,
-          buttons: ['Ok']
-        });
-        await alert.present();
+        await presentHelpAlert(this.alert, res);
       }
     )
   }

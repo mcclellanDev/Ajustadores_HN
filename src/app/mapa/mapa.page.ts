@@ -7,6 +7,7 @@ import { Expedientes } from './../interfaces/expedientes';
 import { Formulario} from '../interfaces/formulario';
 import { Geolocation } from '@capacitor/geolocation';
 import { ApiService } from '../services/api.service';
+import { presentHelpAlert } from '../utils/help-alert.util';
 import { iconColors } from '../environments/mapas';
 import { GoogleMap } from '@capacitor/google-maps';
 import { finalize } from 'rxjs/operators';
@@ -151,6 +152,11 @@ export class MapaPage implements OnInit {
     this.platform.ready().then(() => {
     });
   }
+
+  ionViewWillLeave() {
+    void this.Torval();
+    void this.alertController.dismiss().catch(() => undefined);
+  }
   ionViewDidEnter(){
     this.configureCorrectionMode();
     this.isLoading = true;
@@ -286,13 +292,7 @@ export class MapaPage implements OnInit {
            (res) =>{
           },
           async (res) => {
-            const alert = await this.alertController.create({
-              header:'HELP',
-              message:res.error.Message,
-              buttons:['Ok']
-              
-            });
-            await alert.present();
+            await presentHelpAlert(this.alertController, res);
           }
         )
       }

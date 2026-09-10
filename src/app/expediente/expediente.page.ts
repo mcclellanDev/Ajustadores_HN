@@ -13,7 +13,9 @@ import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
 import { ModalController } from '@ionic/angular';
 import { ToastService } from '../services/toast.service';
 import { ConnectionStatus } from '@capacitor/network';
-import { Geolocation } from '@capacitor/geolocation';
+import { Geolocation, PositionOptions } from '@capacitor/geolocation';
+import { describeHttpFailure } from '../utils/http-network.util';
+import { presentHelpAlert } from '../utils/help-alert.util';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { NativeGeocoder} from '@ionic-native/native-geocoder/ngx';
 import { GoogleMap } from '@capacitor/google-maps';
@@ -66,9 +68,20 @@ export class ExpedientePage implements OnInit {
   bounds: google.maps.LatLngBounds;  marcadorAju: any; routeString:any; ajustadorId:any; watcher:any;  geoloc: Geolocation;  distanciaConvert: string;  distanciaString: string;
   private liveTrackingWatchId: string | null = null;
   private lastSyncedPosition: { lat: number; lng: number } | null = null;
+  private liveTrackingHasFix = false;
+  private liveSyncErrorNotified = false;
+  private viewActive = true;
   private lastRouteUpdateAt = 0;
   private lastRouteOriginPosition: { lat: number; lng: number } | null = null;
   private readonly LIVE_TRACKING_SYNC_MS = 12000;
+  private readonly LIVE_POSITION_OPTIONS: PositionOptions = {
+    enableHighAccuracy: true,
+    maximumAge: 1000,
+    timeout: 30000,
+    interval: 5000,
+    minimumUpdateInterval: 5000,
+    enableLocationFallback: true
+  };
   private readonly LIVE_ROUTE_UPDATE_MS = 10000;
   private readonly LIVE_ROUTE_MIN_DISTANCE_METERS = 50;
   private agentAnimationFrame: number | null = null;
@@ -144,11 +157,19 @@ export class ExpedientePage implements OnInit {
 
     ionViewWillEnter(){
       console.log("ionViewWillEnter")
+      this.viewActive = true;
       const preflightMoneda = applyStoredPreflightCurrency(this.idAtencion);
       if (preflightMoneda) {
         this.miMoneda = preflightMoneda;
         this.moneda = preflightMoneda;
       }
+  }
+
+  ionViewWillLeave() {
+    this.viewActive = false;
+    void this.stopLiveTracking();
+    this.clearIntervals();
+    void this.alert.dismiss().catch(() => undefined);
   }
 
   ionViewDidEnter(){
@@ -297,13 +318,7 @@ export class ExpedientePage implements OnInit {
       async (res) => {
         
         this.router.navigate(['./tabs'])
-        const alert = await this.alert.create({
-          header:'HELP',
-          message:res.error.Message,
-          buttons:['Ok']
-          
-        });
-        await alert.present();
+        await this.presentExpedienteAlert(res);
       }
     )
 
@@ -672,13 +687,7 @@ export class ExpedientePage implements OnInit {
       async (res) => {
         
         this.router.navigate(['./tabs'])
-        const alert = await this.alert.create({
-          header:'HELP',
-          message:res.error.Message,
-          buttons:['Ok']
-          
-        });
-        await alert.present();
+        await this.presentExpedienteAlert(res);
       }
     )
   }
@@ -1057,12 +1066,7 @@ export class ExpedientePage implements OnInit {
       },
       async (res) => {
         this.router.navigate(['./tabs'])
-        const alert = await this.alert.create({
-          header:'HELP',
-          message:res.error.Message,
-          buttons:['Ok']
-        });
-        await alert.present();
+        await this.presentExpedienteAlert(res);
       }
     )
   }
@@ -1561,12 +1565,7 @@ export class ExpedientePage implements OnInit {
          (res) =>{
         },
         async (res) => {
-          const alert = await this.alert.create({
-            header:'HELP',
-            message:res.error.Message,
-            buttons:['Ok']
-          });
-          await alert.present();
+          await this.presentExpedienteAlert(res);
         }
       );
     });
@@ -1879,13 +1878,16 @@ export class ExpedientePage implements OnInit {
       });
   }
 
+  private async presentExpedienteAlert(error: any, fallback = ''): Promise<void> {
+    if (!this.viewActive) {
+      return;
+    }
+    await presentHelpAlert(this.alert, error, fallback);
+  }
+
   private async resolveCurrentPosition(): Promise<GeolocationPosition['coords']> {
     await Geolocation.requestPermissions();
-    const position = await Geolocation.getCurrentPosition({
-      enableHighAccuracy: true,
-      maximumAge: 0,
-      timeout: 15000
-    });
+    const position = await Geolocation.getCurrentPosition(this.LIVE_POSITION_OPTIONS);
     return position.coords;
   }
 
@@ -1893,6 +1895,8 @@ export class ExpedientePage implements OnInit {
     this.cancelAgentMarkerAnimation();
     this.lastRouteOriginPosition = null;
     this.lastRouteUpdateAt = 0;
+    this.liveTrackingHasFix = false;
+    this.liveSyncErrorNotified = false;
 
     if (this.liveTrackingWatchId) {
       try {
@@ -1960,6 +1964,10 @@ export class ExpedientePage implements OnInit {
   }
 
   private syncLivePositionToServer(): void {
+    if (!this.viewActive || !this.liveTrackingHasFix) {
+      return;
+    }
+
     const lat = this.lastSyncedPosition?.lat ?? Number(localStorage.getItem('moveLatitide'));
     const lng = this.lastSyncedPosition?.lng ?? Number(localStorage.getItem('moveLongitude'));
 
@@ -1983,12 +1991,16 @@ export class ExpedientePage implements OnInit {
     ).subscribe(
       () => {},
       async (res) => {
-        const alert = await this.alert.create({
-          header: 'HELP',
-          message: res.error?.Message || 'No fue posible sincronizar la posición en vivo.',
-          buttons: ['Ok']
-        });
-        await alert.present();
+        console.error('Live tracking sync failed', res);
+        if (this.liveSyncErrorNotified) {
+          return;
+        }
+        this.liveSyncErrorNotified = true;
+        this.toastr.presentToastErrorConexion(
+          describeHttpFailure(res, 'No fue posible sincronizar la posición en vivo.'),
+          'top',
+          'conectividad'
+        );
       }
     );
   }
@@ -2006,27 +2018,32 @@ export class ExpedientePage implements OnInit {
       // Continue and let watchPosition surface the permission error.
     }
 
-    this.liveTrackingWatchId = await Geolocation.watchPosition(
-      {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 15000
-      },
-      (position, err) => {
-        if (err || !position) {
-          console.error('Live tracking error', err);
-          return;
-        }
+    try {
+      this.liveTrackingWatchId = await Geolocation.watchPosition(
+        this.LIVE_POSITION_OPTIONS,
+        (position, err) => {
+          if (err || !position) {
+            console.error('Live tracking error', err);
+            return;
+          }
 
-        this.handleLivePosition(position.coords.latitude, position.coords.longitude);
-      }
-    );
+          const firstFix = !this.liveTrackingHasFix;
+          this.liveTrackingHasFix = true;
+          this.handleLivePosition(position.coords.latitude, position.coords.longitude);
+          if (firstFix) {
+            this.syncLivePositionToServer();
+          }
+        }
+      );
+    } catch (err) {
+      console.error('Live tracking watch failed', err);
+      return;
+    }
 
     if (this.trackInterval) {
       clearInterval(this.trackInterval);
     }
 
-    this.syncLivePositionToServer();
     this.trackInterval = setInterval(() => {
       this.syncLivePositionToServer();
     }, this.LIVE_TRACKING_SYNC_MS);
@@ -2181,25 +2198,13 @@ export class ExpedientePage implements OnInit {
                           
                         },
                         async (res) => {
-                          const alert = await this.alert.create({
-                            header:'HELP',
-                            message:res.error.Message,
-                            buttons:['Ok']
-                            
-                          });
-                          await alert.present();
+                          await this.presentExpedienteAlert(res);
                         }
                       )
                       
                     },
                     async (res) => {
-                      const alert = await this.alert.create({
-                        header:'HELP',
-                        message:res.error.Message,
-                        buttons:['Ok']
-                        
-                      });
-                      await alert.present();
+                      await this.presentExpedienteAlert(res);
                     }
                   )
                 }
@@ -2299,25 +2304,13 @@ export class ExpedientePage implements OnInit {
                     
                   },
                   async (res) => {
-                    const alert = await this.alert.create({
-                      header:'HELP',
-                      message:res.error.Message,
-                      buttons:['Ok']
-                      
-                    });
-                    await alert.present();
+                    await this.presentExpedienteAlert(res);
                   }
                 )
                 
               },
               async (res) => {
-                const alert = await this.alert.create({
-                  header:'HELP',
-                  message:res.error.Message,
-                  buttons:['Ok']
-                  
-                });
-                await alert.present();
+                await this.presentExpedienteAlert(res);
               }
             )
 
@@ -2378,13 +2371,7 @@ export class ExpedientePage implements OnInit {
            (res) =>{
           },
           async (res) => {
-            const alert = await this.alert.create({
-              header:'HELP',
-              message:res.error.Message,
-              buttons:['Ok']
-              
-            });
-            await alert.present();
+            await this.presentExpedienteAlert(res);
           }
         )
   
@@ -2479,25 +2466,13 @@ export class ExpedientePage implements OnInit {
                     
                   },
                   async (res) => {
-                    const alert = await this.alert.create({
-                      header:'HELP',
-                      message:res.error.Message,
-                      buttons:['Ok']
-                      
-                    });
-                    await alert.present();
+                    await this.presentExpedienteAlert(res);
                   }
                 )
                 
               },
               async (res) => {
-                const alert = await this.alert.create({
-                  header:'HELP',
-                  message:res.error.Message,
-                  buttons:['Ok']
-                  
-                });
-                await alert.present();
+                await this.presentExpedienteAlert(res);
               }
             )
 /**/

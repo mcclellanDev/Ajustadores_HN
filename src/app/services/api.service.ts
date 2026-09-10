@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { tap, switchMap, finalize, catchError, timeout } from 'rxjs/operators';
+import { tap, switchMap, finalize, catchError, timeout, map } from 'rxjs/operators';
 import { BehaviorSubject, from, Observable, of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { Capacitor, CapacitorHttp, HttpResponse } from '@capacitor/core';
@@ -22,6 +22,7 @@ import { SavedLoginSessionsService } from './saved-login-sessions.service';
 import { BpmClaimValidationResponse } from '../interfaces/bpm-claim-validation';
 import {
   HTTP_TIMEOUT_BPM_MS,
+  HTTP_TIMEOUT_DEFAULT_MS,
   HTTP_TIMEOUT_PHOTOS_MS,
   HTTP_TIMEOUT_SINIESTRO_MS,
   NETWORK_NO_RESPONSE_MESSAGE,
@@ -100,6 +101,15 @@ export class ApiService {
       return [];
     }
     return Array.isArray(res) ? res : [res];
+  }
+
+  private unwrapHttpList(source$: Observable<any>): Observable<any> {
+    return source$.pipe(
+      map((res: any) => this.normalizeListResponse(unwrapCapacitorHttpData(res))),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    );
   }
 
   private authHeaders(): Record<string, string> {
@@ -205,17 +215,9 @@ export class ApiService {
   }
   MisAtenciones(credentials:any): Observable<any> {
     console.log(credentials);
-
-    // 3912
-   return this.http.get(`${this.apiUrl}/Proveedor/ObtenerMisAtenciones?IdProveedorAgente=${credentials}`).pipe(
-    //switchMap((tokens: {accessToken, refreshToken }) => {
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-  )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/Proveedor/ObtenerMisAtenciones?IdProveedorAgente=${credentials}`)
+    );
   }
   BuscarMisAtenciones(criteria: {
     IdProveedorAgente?: number;
@@ -712,16 +714,13 @@ export class ApiService {
 
    //Envio de token push
   SendToken(credentials:any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Proveedor/TokenPushOneSignal?IdProveedorAgente=${credentials.IdProveedorAgente}&TokenPush=${credentials.TokenPush}`,{}).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
-   }
+    return this.postForSend(
+      `${this.apiUrl}/Proveedor/TokenPushOneSignal?IdProveedorAgente=${credentials.IdProveedorAgente}&TokenPush=${credentials.TokenPush}`,
+      {},
+      HTTP_TIMEOUT_DEFAULT_MS,
+      true
+    );
+  }
   //Guardar Siniestros
   GuardarSiniestro(credentials:any): Observable<any> {
     return this.postForSend(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`, credentials, HTTP_TIMEOUT_SINIESTRO_MS);
@@ -1503,14 +1502,9 @@ export class ApiService {
   //Omar McClellan, 11 de Septiembre de 2023
   //Tipo licencia cambia a un solo endpoint llamado TipoDeLicencia y recibe id de pais 3 para Honduras, 4 para Guatemala
   TipoDeLicencia(paisId:any) : Observable<any> {
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeLicencia?IdPais=${paisId}`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeLicencia?IdPais=${paisId}`)
+    );
   }
 
   TipoDeVehiculo(paisId:any) : Observable<any> {
@@ -1593,42 +1587,20 @@ export class ApiService {
 
   // GET /api/Proveedor/VectorGpsAtencion
   obtenerCoordenadasPorAtencion(atencionId:any, Tipo:any) : Observable<any> {
-    let body:any = {
-      IdAtencion:atencionId,
-      Tipo:Tipo
-    }
-    // ?IdAtencion=${atencionId}&TipoFotoFirma=${TipoFotoFirma}
-    return this.http.get(`${this.apiUrl}/Proveedor/VectorGpsAtencion?IdAtencion=${atencionId}&Tipo=${Tipo}`, {}).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/Proveedor/VectorGpsAtencion?IdAtencion=${atencionId}&Tipo=${Tipo}`)
+    );
   }
 
   // POST /api/Proveedor/ActualizarCordenadasAjustador
   // ?IdTablaAjustador=${credentials.IdTablaAjustador}&CodigoBPMFicohsa=${credentials.CodigoBPMFicohsa}&CodigoReclamoFicohsa=${credentials.CodigoReclamoFicohsa}
   setAjuPosition(credentials:any): Observable<any> {
-    const jsonPosition = {
-      Latitud: credentials.Latitud,
-      Longitud: credentials.Longitud,
-      RefUsuarioId: credentials.RefUsuarioId,
-      Contador: credentials.Contador
-    }
-    
-    return this.http.post(`${this.apiUrl}/Proveedor/ActualizarCordenadasAjustador?Longitud=${credentials.Longitud}&Latitud=${credentials.Latitud}&IdProveedorAgente=${credentials.RefUsuarioId}`, {}).pipe(
-      switchMap(( res: any  ) => {
-        console.log('Respuesta de insertar coordenadas del ajustador inicialmente');
-        console.dir(res);
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
-
+    return this.postForSend(
+      `${this.apiUrl}/Proveedor/ActualizarCordenadasAjustador?Longitud=${credentials.Longitud}&Latitud=${credentials.Latitud}&IdProveedorAgente=${credentials.RefUsuarioId}`,
+      {},
+      HTTP_TIMEOUT_DEFAULT_MS,
+      true
+    );
   }
 
 
@@ -1642,19 +1614,14 @@ export class ApiService {
       Tipo: credentials.Tipo,
       FechaRegistro: new Date().toISOString(),
       Contador: credentials.Contador
-    }
-    return this.http.post(`${this.apiUrl}/Proveedor/InsertarCoordenadasAtencionAgenteProveedor`, jsonPosition).pipe(
-    switchMap(( res: any  ) => {
-      console.log('Respuesta de insertar coordenadas ');
-      console.dir(res);
-    return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-  )
-  /**/
-}
+    };
+    return this.postForSend(
+      `${this.apiUrl}/Proveedor/InsertarCoordenadasAtencionAgenteProveedor`,
+      jsonPosition,
+      HTTP_TIMEOUT_DEFAULT_MS,
+      true
+    );
+  }
 
 
   // POST /api/Proveedor/InsertarConvenioReparacionTaller

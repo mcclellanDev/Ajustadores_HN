@@ -7,6 +7,7 @@ import { Atenciones } from '../interfaces/atenciones';
 import { ApiService } from '../services/api.service';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { ToastService } from '../services/toast.service';
+import { presentHelpAlert } from '../utils/help-alert.util';
 import { BpmClaimPreflightService } from '../services/bpm-claim-preflight.service';
 import { finalize, switchMap, map, catchError } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
@@ -78,41 +79,10 @@ export class Tab2Page implements OnInit{
 
         
     });
+  }
 
+  ionViewWillEnter() {
     this.getAtenciones();
-    //alert(parseInt(localStorage.getItem('atencionesCount'))+1)
-    //this.isLoading  = true;
-    let atencionesCounter:any = parseInt(localStorage.getItem('atencionesCount') || '0');
-    //alert(atencionesCounter)
-    if (atencionesCounter == 0) {
-//      this.router.navigate(['./tab1']);
-      //window.location.reload();
-      /*
-      setTimeout(() => {
-        this.tabsator.navigateTab1();  
-      }, 3000);
-      */
-      
-    }else{
-      /*
-      this.platform.ready().then(() => {
-        setTimeout(() => {
-          this.isLoading = false;
-
-          if (origin == 'tab2') {
-            this.isPrint = true;
-            this.router.navigate(['./printer'])
-          }else{
-            this.isPrint = false;
-            this.router.navigate(['./tabs/tab1'])
-          }
-          
-        }, 500);
-      });
-      */
-    }
-    
-    
   }
 
   searchSequence(){
@@ -140,13 +110,7 @@ export class Tab2Page implements OnInit{
       async (res) => {
         this.isLoading = false;
         console.log(res);
-        const alert = await this.alert.create({
-          header:'Help',
-          message:res.Mensaje,
-          buttons:['Ok']
-          
-        });
-        await alert.present();
+        await presentHelpAlert(this.alert, res, 'No fue posible cargar las atenciones.');
       }
     )
   }
@@ -234,12 +198,7 @@ export class Tab2Page implements OnInit{
         this.applySearchResults(res);
       },
       async (error) => {
-        const alert = await this.alert.create({
-          header: 'HELP',
-          message: error?.error?.Message || 'No fue posible buscar atenciones.',
-          buttons: ['Ok']
-        });
-        await alert.present();
+        await presentHelpAlert(this.alert, error, 'No fue posible buscar atenciones.');
       }
     );
   }
@@ -390,7 +349,7 @@ export class Tab2Page implements OnInit{
         }
       );
 
-      this.router.navigate(['./expediente'], { queryParams: { Id: atencionId } });
+      this.router.navigate(['./expediente'], { queryParams: { Id: atencionId, Source: 2 } });
     } else {
       this.tostador.presentToastNoButtonsRed('Esta atención ya no puede editarse. Para mayor detalle, consulta a tu administrador de sistema.', 'top', 'search-case');
     }
