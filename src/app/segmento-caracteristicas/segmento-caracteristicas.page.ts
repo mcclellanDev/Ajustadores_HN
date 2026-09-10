@@ -217,11 +217,10 @@ export class SegmentoCaracteristicasPage implements OnInit {
           this.elExpediente = res;
           localStorage.setItem('disExpediente', JSON.stringify(res));
 
-          this.moneda = this.elExpediente[0].Moneda;
+          this.miMoneda = resolveAttentionCurrency(this.elExpediente[0]);
+          this.moneda = this.miMoneda;
           this.ciudad = this.elExpediente[0].Ciudad;
           localStorage.setItem('ciudadAtencion', this.ciudad ? this.ciudad.toString() : '');
-          
-          this.miMoneda = resolveAttentionCurrency(this.elExpediente[0]);
 
           this.getTalleres();
         }

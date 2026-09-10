@@ -7,9 +7,10 @@ import { finalize } from 'rxjs/operators';
 import { AjustadorhnPage } from '../ajustadorhn/ajustadorhn.page';
 import { emptySignature, emptySignatureWhite, firmaDemoAjustador } from '../environments/signatures';
 import { ApiService } from '../services/api.service';
-import { NavigationExtras, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { logoFicohsa } from '../environments/default-images';
 import { DeviceService } from '../services/device.service';
+import { persistAttentionId, resolveAttentionIdFromSources } from '../utils/attention-id.util';
 
 @Component({
   selector: 'app-esignature',
@@ -31,7 +32,7 @@ export class EsignaturePage implements OnInit {
   wait: any;
   fsLogo: string;
   constructor(private platform:Platform, private navController:NavController, private api:ApiService, private tostador:ToastService,
-    private router: Router, private deviceService: DeviceService) { 
+    private router: Router, private route: ActivatedRoute, private deviceService: DeviceService) { 
       this.fsLogo = logoFicohsa
     this.idAtencion = this.resolveAttentionIdForSignature();
     this.elCliente = localStorage.getItem('elCliente');
@@ -64,38 +65,30 @@ export class EsignaturePage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.idAtencion = this.resolveAttentionIdForSignature();
+    const resolved = this.resolveAttentionIdForSignature(this.idAtencion);
+    if (resolved) {
+      this.idAtencion = resolved;
+    }
     this.elCliente = localStorage.getItem('elCliente') || this.elCliente || '';
   }
 
-  private resolveAttentionIdForSignature(): number | null {
-    const navigationState: any = this.router.getCurrentNavigation()?.extras?.state || history.state || {};
-    const stateData = Array.isArray(navigationState?.data) ? navigationState.data : [];
-    const stateAttention = stateData.find((item) => item?.idAtencion || item?.IdAtencion || item?.RefAtencionId);
+  private resolveAttentionIdForSignature(...preferred: unknown[]): number | null {
+    const navigationState: any = this.router.getCurrentNavigation()?.extras?.state || {};
+    const historyState: any = typeof history !== 'undefined' ? history.state : {};
+    const queryId = this.route.snapshot.queryParamMap.get('Id')
+      || this.route.snapshot.queryParamMap.get('idAtencion');
 
-    const candidates = [
-      navigationState?.idAtencion,
-      navigationState?.IdAtencion,
-      navigationState?.RefAtencionId,
-      stateAttention?.idAtencion,
-      stateAttention?.IdAtencion,
-      stateAttention?.RefAtencionId,
+    return persistAttentionId(resolveAttentionIdFromSources([
+      ...preferred,
+      this.idAtencion,
       localStorage.getItem('idAtencion'),
       localStorage.getItem('atencionEnProceso'),
+      queryId,
+      navigationState,
+      historyState,
       localStorage.getItem('currentAtencion'),
-      localStorage.getItem('RefAtencionId'),
-      this.idAtencion
-    ];
-
-    for (const candidate of candidates) {
-      const parsed = parseInt(String(candidate || '').trim(), 10);
-      if (Number.isFinite(parsed) && parsed > 0) {
-        localStorage.setItem('idAtencion', parsed.toString());
-        return parsed;
-      }
-    }
-
-    return null;
+      localStorage.getItem('RefAtencionId')
+    ]));
   }
 
   scrollToElement() {
@@ -103,15 +96,17 @@ export class EsignaturePage implements OnInit {
   }
 
   saveSignatureAsegurado(idAtencion) {
-    idAtencion = this.resolveAttentionIdForSignature();
+    const attentionId = this.resolveAttentionIdForSignature(idAtencion);
     this.isLoading = true;this.sig.backgroundColor = "rgb(255, 255, 255)";this.sig.minWidth = 1;this.sig.maxWidth = 1.5;
     this.sig.dotSize = 3; const mySignature = this.sig.toDataURL("image/jpeg"); console.log(mySignature);
 
-    if (!idAtencion) {
+    if (!attentionId) {
       this.tostador.presentToastDataMissing("No se pudo identificar el número de atención para guardar la firma. Regresa al expediente e intenta nuevamente.", 'top', 'firma');
       this.isLoading = false;
       return;
     }
+
+    this.idAtencion = attentionId;
       
     if (!this.sig.isEmpty() && mySignature != emptySignature && mySignature != emptySignatureWhite) {
         this.firmaPrecargada = this.sig.toDataURL("image/jpeg");
@@ -122,10 +117,9 @@ export class EsignaturePage implements OnInit {
           this.isLoading = false;
           return;
         }
-        //console.dir(this.firmasAsegurados);
 
         const firmaPayload = [{
-          IdAtencion: idAtencion,
+          IdAtencion: attentionId,
           RefTipoFotoId: 3,
           Foto: firmaBase64,
           NombreFirmante: this.elCliente,
@@ -138,8 +132,8 @@ export class EsignaturePage implements OnInit {
           (res) => {
             console.log(res, 'token respuesta');
             localStorage.setItem('dSignatureAsegurado', this.firmaPrecargada);
-            localStorage.setItem('dSignatureAsegurado-' + idAtencion, this.firmaPrecargada);
-            localStorage.setItem('dSignatureAseguradoAtencion', idAtencion.toString());
+            localStorage.setItem('dSignatureAsegurado-' + attentionId, this.firmaPrecargada);
+            localStorage.setItem('dSignatureAseguradoAtencion', attentionId.toString());
             localStorage.setItem('signatureSavedAt', new Date().toISOString());
             this.tostador.presentToastNoButtons("Firma guardada exitosamente! Ya puedes reutilizarla cuando sea necesario.", "top", "firma");
             const element = document.getElementById('cardAsegurado');
@@ -149,8 +143,7 @@ export class EsignaturePage implements OnInit {
             this.goBack();
           },
           async (res) => {
-            this.tostador.presentToastDataMissing(res.error.Message, 'top', 'firma');
-            //this.isSignature = false;
+            this.tostador.presentToastDataMissing(res?.error?.Message || 'No se pudo guardar la firma. Intenta nuevamente.', 'top', 'firma');
             this.isLoading = false;
 
           }
@@ -160,7 +153,6 @@ export class EsignaturePage implements OnInit {
         this.tostador.presentToastNoButtons("Necesitas escribir una firma para guardarla.", "top", "firma");
         this.isLoading = false;
       }
-      /**/
   }
 
   clear() {
@@ -168,12 +160,9 @@ export class EsignaturePage implements OnInit {
   }
 
   goBack(){
-    //$('#trackButton').attr('style', 'border: none');
     const returnTo = localStorage.getItem('signatureReturnTo');
     localStorage.removeItem('signatureReturnTo');
     this.router.navigate([returnTo || './clientehn']);
-              
-    //this.navController.back();
   }
 
 }

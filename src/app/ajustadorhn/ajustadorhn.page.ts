@@ -33,6 +33,8 @@ import {
   ficohsaBpmValidationRules
 } from '../validation/claim-validation.rules';
 import { normalizeChassis, normalizeParentescoCode, normalizePolicyNumber, resolveClaimCoordinates, resolveClaimDate, resolveClaimVehicleIdentifiers } from '../utils/claim-payload-normalizer';
+import { applyBpmPreflightCorrections, applyStoredPreflightCurrency, evaluateValorReservaLimit } from '../utils/bpm-claim-preflight.util';
+import { resolveAttentionCurrency } from '../utils/currency-display.util';
 import { clearAllClientSignatureCache } from '../utils/client-signature-cache.util';
 import { persistAudienceTableIdToCache } from '../utils/audience-table-cache.util';
 import {
@@ -397,6 +399,12 @@ export class AjustadorhnPage implements OnInit {
           }else{ 
             this.miMoneda = this.moneda;
           }
+          this.miMoneda = resolveAttentionCurrency(this.elExpediente[0]);
+          const preflightMoneda = applyStoredPreflightCurrency(this.idAtencion);
+          if (preflightMoneda) {
+            this.miMoneda = preflightMoneda;
+          }
+          this.moneda = this.miMoneda;
 
 
 
@@ -1304,9 +1312,10 @@ export class AjustadorhnPage implements OnInit {
 
                     
                       setTimeout(() => {
+                        try {
                         $('#camButtonAju').fadeIn();
-                        if (!this.elExpediente[0].NombreConductor) {
-                        this.elExpediente.NombreConductor = this.nombreDelConductor;
+                        if (this.elExpediente?.[0] && !this.elExpediente[0].NombreConductor) {
+                        this.elExpediente[0].NombreConductor = this.nombreDelConductor;
                       }
 
 
@@ -1325,20 +1334,20 @@ export class AjustadorhnPage implements OnInit {
                       let elParentesco = normalizeParentescoCode(arregloParaEnviar['Parentesco'], this.tipoParentescos, '0001');
                       arregloParaEnviar['Parentesco'] = elParentesco;
 
-                      polizaTrunk = normalizePolicyNumber(this.elExpediente[0].PolizaExterna)
+                      polizaTrunk = normalizePolicyNumber(this.elExpediente?.[0]?.PolizaExterna)
 
                       if (this.valorReserva == null || this.valorReserva == undefined) {
                         this.valorReserva = '0';
                       }
 
-                      const vehicleIdsBpm = resolveClaimVehicleIdentifiers(this.elExpediente[0], this.idAtencion);
+                      const vehicleIdsBpm = resolveClaimVehicleIdentifiers(this.elExpediente?.[0] || {}, this.idAtencion);
 
                       this.dataBPM =  {
                         Chasis: vehicleIdsBpm.Chasis,
                         puntoServicio: valoresPredeterminados[0].puntoServicio, // Predeterminado : 504
                         Poliza: polizaTrunk, // 
-                        Certificado: this.elExpediente[0].Certificado.toString(),//parseInt(this.elExpediente[0].Certificado), // Pendiente
-                        NombreAsegurado: this.elExpediente[0].Cliente,
+                        Certificado: (this.elExpediente?.[0]?.Certificado ?? '').toString(),//parseInt(this.elExpediente[0].Certificado), // Pendiente
+                        NombreAsegurado: this.elExpediente?.[0]?.Cliente,
                         Sucursal: valoresPredeterminados[0].Sucursal, // Predeterminado : 0001
                         Producto: valoresPredeterminados[0].Producto, // Siempre AU01
                         Cobertura: this.getCodigoCoberturaBpm(), // Cobertura Ficohsa seleccionada
@@ -1353,6 +1362,12 @@ export class AjustadorhnPage implements OnInit {
                         Genero: this.inicialGenero, // Formulario
                         Parentesco: elParentesco, // Formulario
                         Observacion: this.idTablaAjustador // Guardar Siniestro
+                      }
+                      applyBpmPreflightCorrections(this.dataBPM, this.idAtencion);
+
+                      const reservaLimit = evaluateValorReservaLimit(this.dataBPM.ValorReserva, null, this.idAtencion);
+                      if (!reservaLimit.ok) {
+                        this.toaster.presentToastAlert(reservaLimit.message, 'top', 'warning', 7000);
                       }
 
                                 console.log('He aqui la data BPM');
@@ -1377,17 +1392,19 @@ export class AjustadorhnPage implements OnInit {
                                 ).subscribe(
                                   async (resAtencion) =>{
                                     console.log("Estoy guardando la data ");
-                                    if(resAtencion){
+                                    const bpmRows = Array.isArray(resAtencion) ? resAtencion : (resAtencion ? [resAtencion] : []);
+                                    const bpmResult = bpmRows[0];
+                                    if(bpmResult){
                                       console.dir(resAtencion);
-                                      if (resAtencion[0].codigo == 0 || resAtencion[0].codigo == "0") {
-                                        this.toaster.presentToastNoButtons(resAtencion[0].descripcion, 'top', 'bpm');
-                                        this.codigoBPMFicohsa = resAtencion[0].solicitud_bpm;
-                                        this.codigoReclamoFicohsa = resAtencion[0].numero_reclamo;
-                                        this.elFiniquito.NumeroReclamo = resAtencion[0].numero_reclamo;
+                                      if (bpmResult.codigo == 0 || bpmResult.codigo == "0") {
+                                        this.toaster.presentToastNoButtons(bpmResult.descripcion, 'top', 'bpm');
+                                        this.codigoBPMFicohsa = bpmResult.solicitud_bpm;
+                                        this.codigoReclamoFicohsa = bpmResult.numero_reclamo;
+                                        this.elFiniquito.NumeroReclamo = bpmResult.numero_reclamo;
                                         
                                         persistAudienceTableIdToCache(this.idTablaAjustador, this.idAtencion);
                                         localStorage.setItem('codigoBPMF', this.codigoBPMFicohsa);
-                                        localStorage.setItem('codigoReclamo', resAtencion[0].numero_reclamo);
+                                        localStorage.setItem('codigoReclamo', bpmResult.numero_reclamo);
                                         
               
                                         let dataBPMupdate = 
@@ -1467,7 +1484,7 @@ export class AjustadorhnPage implements OnInit {
                                                 this.switchButtons(2);
                                               }, 6000);
                                         this.isLoading = false;
-                                        const bpmErrorMessage = this.translateClaimServerMessage(resAtencion[0].descripcion);
+                                        const bpmErrorMessage = this.translateClaimServerMessage(bpmResult.descripcion);
                                         this.markBulkAttemptFailed(bpmErrorMessage);
                                         await this.presentClaimSendFailureAlert(bpmErrorMessage);  
                                       }
@@ -1488,6 +1505,13 @@ export class AjustadorhnPage implements OnInit {
                                 }
                           
                               )
+                        } catch (error) {
+                          this.isLoading = false;
+                          this.estaCompleto = false;
+                          const bpmBuildError = this.extractBulkErrorMessage(error);
+                          this.markBulkAttemptFailed(bpmBuildError);
+                          void this.presentClaimSendFailureAlert(bpmBuildError);
+                        }
                               /**/
                       }, 6000);//this.randomize(3, 6));
                     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -1595,7 +1619,8 @@ export class AjustadorhnPage implements OnInit {
     evaluarDanios(){
       console.log('Los daños seleccionados son ');
       console.dir(this.daniosSelectAju);
-      if (this.daniosSelectAju.length == 0) {
+      const hayDaniosAfiliado = this.hasAffiliateDamages();
+      if (!hayDaniosAfiliado) {
         this.danioMessage = 'No se han seleccionado daños';
         this.danioPosition = 'top';
         this.danioClass = 'danioToast';
@@ -1607,7 +1632,7 @@ export class AjustadorhnPage implements OnInit {
           const element = this.daniosSelectAju[index];
           let codigoDanio = element.Id;
           let elTipo = localStorage.getItem('TipoReparacion-'+codigoDanio);
-          if (index == (this.daniosSelectAju.lenght-1)) {
+          if (index == (this.daniosSelectAju.length-1)) {
             localStorage.setItem('daniosSeleccionados', JSON.stringify(this.daniosSelectAju));
           }
         }
@@ -2158,13 +2183,14 @@ export class AjustadorhnPage implements OnInit {
       finalize(async () => {})
     ).subscribe(
       async (res) => {
-        const lista = Array.isArray(res) ? res : [];
+        const lista = Array.isArray(res) ? res : (res ? [res] : []);
         console.log('[ajustadorhn] Daños manuales AFILIADO desde ObtenerDaniosExtras:');
         console.dir(lista);
         this.daniosManualesAju = lista
           .map((item) => this.mapearDanioManualObjeto(item))
           .filter((item) => !!item);
         this.reconstruirSeleccionDanios();
+        this.mergeExtraDamagesIntoAju();
       },
       async (err) => {
         console.log('[ajustadorhn] Error ObtenerDaniosExtras AFILIADO:', err);
@@ -2203,6 +2229,47 @@ export class AjustadorhnPage implements OnInit {
       tipoId: tipoId,
       esManual: true
     };
+  }
+
+  private hasAffiliateDamages(): boolean {
+    if ((this.daniosSelectAju || []).some((danio) => !!this.getDanioDescripcion(danio) && this.getDanioDescripcion(danio) !== 'Daño seleccionado')) {
+      return true;
+    }
+    if ((this.seleccionDeDanios || []).length > 0) {
+      return true;
+    }
+    return this.collectStoredExtraDamages().length > 0;
+  }
+
+  private collectStoredExtraDamages(): any[] {
+    const extras: any[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key || key.indexOf('danioOtro-') !== 0) {
+        continue;
+      }
+      const mapped = this.mapearDanioManual(localStorage.getItem(key));
+      if (mapped) {
+        extras.push(mapped);
+      }
+    }
+    if (this.daniosManualesAju && this.daniosManualesAju.length) {
+      extras.push(...this.daniosManualesAju);
+    }
+    return this.dedupDaniosVisibles(extras);
+  }
+
+  private mergeExtraDamagesIntoAju() {
+    const extras = this.collectStoredExtraDamages();
+    for (const extra of extras) {
+      const descripcion = this.getDanioDescripcion(extra).toUpperCase();
+      const yaEsta = (this.daniosSelectAju || []).some((item) =>
+        this.getDanioDescripcion(item).toUpperCase() === descripcion
+      );
+      if (!yaEsta) {
+        this.daniosSelectAju = [...(this.daniosSelectAju || []), extra];
+      }
+    }
   }
 
   getDanioDescripcion(danio: any): string {
@@ -2504,7 +2571,10 @@ export class AjustadorhnPage implements OnInit {
     localStorage.setItem('idAtencion', attentionId.toString());
     localStorage.setItem('elCliente', this.aseguradoNombre || this.elExpediente?.[0]?.Cliente || localStorage.getItem('elCliente') || '');
     localStorage.setItem('signatureReturnTo', '/ajustadorhn');
-    this.navCtrl.navigateForward('/esignature');
+    this.navCtrl.navigateForward(['/esignature'], {
+      queryParams: attentionId ? { Id: attentionId } : {},
+      state: { idAtencion: attentionId }
+    });
   }
 
   goBeneficiario(){
@@ -3470,7 +3540,7 @@ validateEmail(status){
     console.dir(localStorage);
     const attentionId = (this.atencionId || this.idAtencion || localStorage.getItem('idAtencion') || '').toString();
     setTimeout(() => {
-      
+      try {
       for (var i = 0; i < localStorage.length; i++){
         
         if (localStorage.key(i).indexOf('daniosSelectCulpa-'+attentionId+'-') == 0) {
@@ -3510,28 +3580,22 @@ validateEmail(status){
             }
           }
         }
+      }
 
-        if (localStorage.key(i).indexOf('danioOtro-') == 0) {
-          let otroKey = parseInt(localStorage.key(i).split('-')[1]);
-          let otroVal = localStorage.getItem(localStorage.key(i));
-          console.log('En listar ')
-          console.dir(JSON.parse(otroVal));
-          
-        }
+      this.mergeExtraDamagesIntoAju();
 
-        if (i == (localStorage.length-1)) {
-          this.isRefreshing = false;
-
-
-          this.eliminarDuplicadosDanios(this.daniosSelectAju, 1);
-          localStorage.setItem('daniosSelectAju', JSON.stringify(this.daniosSelectAju));
-        }
+      this.isRefreshing = false;
+      this.eliminarDuplicadosDanios(this.daniosSelectAju, 1);
+      localStorage.setItem('daniosSelectAju', JSON.stringify(this.daniosSelectAju));
+      } catch (error) {
+        console.log('Error al listar daños', error);
+        this.isRefreshing = false;
       }
     }, 3000);
   }
 
   insertarConvenioReparacion(){
-    this.daniosSelectAju = [];
+    const catalogoDanios: any[] = [];
 
     
     for (var i = 0; i < localStorage.length; i++){
@@ -3540,7 +3604,7 @@ validateEmail(status){
         for (let indexDanio = 0; indexDanio < this.danios.length; indexDanio++) {
           const elementD = this.danios[indexDanio];
           if (indexSelect == elementD.Id) {
-            this.daniosSelectAju.push(elementD);
+            catalogoDanios.push(elementD);
             console.dir(elementD);
           } 
         }
@@ -3548,10 +3612,10 @@ validateEmail(status){
     }
 
     setTimeout(() => {
-      for (let index = 0; index < this.daniosSelectAju.length; index++) {
-      const element = this.daniosSelectAju[index];
+      for (let index = 0; index < catalogoDanios.length; index++) {
+      const element = catalogoDanios[index];
 
-      let elTipoReparacion = localStorage.getItem('TipoReparacion-'+element.Codigo);
+      let elTipoReparacion = localStorage.getItem('TipoReparacion-'+element.Codigo) || localStorage.getItem('TipoReparacion-'+element.Id);
 
         let reparaArray = {
           codigoDanio : element.Codigo,
@@ -3568,16 +3632,13 @@ validateEmail(status){
         console.dir(reparaArray);
 
         
-        this.api.insertarConvenioReparacion(reparaArray).pipe( 
-          
-          finalize(async ()=>{
-            this.isLoading = false;
-          })
+        this.api.insertarConvenioReparacion(reparaArray).pipe(
+          finalize(async ()=>{})
         ).subscribe(
            async (res) =>{
             console.log(res);
             console.log("Convenio guardado");
-            if (index == (this.daniosSelectAju.length-1)) {
+            if (index == (catalogoDanios.length-1)) {
               this.api.EnviarNotificacionEmail(this.idAtencion);
             }
             
@@ -3588,7 +3649,7 @@ validateEmail(status){
     
         )
         /**/
-        if (index == (this.daniosSelectAju.length-1)) {
+        if (index == (catalogoDanios.length-1)) {
           this.eliminarDuplicadosDanios(this.daniosSelectAju, 4);
         }
       }

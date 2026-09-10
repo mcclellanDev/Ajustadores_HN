@@ -8,6 +8,7 @@ import { firstValueFrom } from 'rxjs';
 import { Expedientes } from '../interfaces/expedientes';
 import { ApiService } from '../services/api.service';
 import { resolveAttentionCurrency } from '../utils/currency-display.util';
+import { applyStoredPreflightCurrency } from '../utils/bpm-claim-preflight.util';
 import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
 import { ModalController } from '@ionic/angular';
 import { ToastService } from '../services/toast.service';
@@ -143,7 +144,11 @@ export class ExpedientePage implements OnInit {
 
     ionViewWillEnter(){
       console.log("ionViewWillEnter")
-      
+      const preflightMoneda = applyStoredPreflightCurrency(this.idAtencion);
+      if (preflightMoneda) {
+        this.miMoneda = preflightMoneda;
+        this.moneda = preflightMoneda;
+      }
   }
 
   ionViewDidEnter(){
@@ -563,6 +568,11 @@ export class ExpedientePage implements OnInit {
 
 //alert(this.moneda)
         this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
+        const preflightMoneda = applyStoredPreflightCurrency(this.idAtencion);
+        if (preflightMoneda) {
+          this.miMoneda = preflightMoneda;
+        }
+        this.moneda = this.miMoneda;
         
         this.latitud = this.expediente[0].LatitudCliente;
         this.longitud = this.expediente[0].LongitudCliente;

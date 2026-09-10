@@ -7,6 +7,7 @@ import { Atenciones } from '../interfaces/atenciones';
 import { ApiService } from '../services/api.service';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { ToastService } from '../services/toast.service';
+import { BpmClaimPreflightService } from '../services/bpm-claim-preflight.service';
 import { finalize, switchMap, map, catchError } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 import { printerIcons } from '../environments/printer-center';
@@ -45,7 +46,8 @@ export class Tab2Page implements OnInit{
   datosDeAtencion: any;
 
   constructor(private router: Router,    private alert: AlertController,    private api: ApiService,    private platform:Platform,
-    private so: ScreenOrientation,    private tostador: ToastService, private tabsator:TabsPage) {
+    private so: ScreenOrientation,    private tostador: ToastService, private tabsator:TabsPage,
+    private bpmPreflight: BpmClaimPreflightService) {
       this.tostador.dismissToast();
       //this.searchInterval = setInterval(()=>{this.searchSequence()} ,  1000);
       this.idAtencion = localStorage.getItem('idAtencion');
@@ -442,7 +444,11 @@ export class Tab2Page implements OnInit{
           }
         }
 
-        this.router.navigate(['./expediente'], { queryParams: { Id: idAtencion, Source: 2 } });
+        const expedienteRecord = Array.isArray(expediente) ? expediente[0] : expediente;
+
+        this.router.navigate(['./expediente'], { queryParams: { Id: idAtencion, Source: 2 } }).then(() => {
+          void this.bpmPreflight.validateAndPrompt(idAtencion, expedienteRecord);
+        });
       },
       error: () => {
         this.router.navigate(['./expediente'], { queryParams: { Id: idAtencion, Source: 2 } });

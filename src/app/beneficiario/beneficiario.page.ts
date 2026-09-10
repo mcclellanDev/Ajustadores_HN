@@ -159,10 +159,8 @@ aFavorDe:any;  idAtencion: string;  atencionId: number;  expediente: any;  moned
          (res) =>{
           console.log(res, 'respuesta');
           this.expediente= res;
-          this.moneda = this.expediente[0].Moneda;
-
-          //alert(this.moneda)
           this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
+          this.moneda = this.miMoneda;
           
          }
       )

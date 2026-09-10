@@ -208,8 +208,8 @@ export class SegmentoSolicitantePage implements OnInit {
           localStorage.setItem('disExpediente', JSON.stringify(res));
 
           this.nombreCliente = this.elExpediente[0].Cliente;
-          this.moneda = this.elExpediente[0].Moneda;
           this.miMoneda = resolveAttentionCurrency(this.elExpediente[0]);
+          this.moneda = this.miMoneda;
 
           localStorage.setItem('datos-Nombre', this.nombreCliente);
           localStorage.setItem('datos-NombreConductor', this.nombreCliente);
@@ -338,8 +338,8 @@ export class SegmentoSolicitantePage implements OnInit {
           localStorage.setItem('disExpediente', JSON.stringify(res));
 
           this.nombreCliente = this.elExpediente[0].Cliente;
-          this.moneda = this.elExpediente[0].Moneda;
           this.miMoneda = resolveAttentionCurrency(this.elExpediente[0]);
+          this.moneda = this.miMoneda;
         }
       )
 

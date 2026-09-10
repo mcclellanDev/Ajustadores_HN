@@ -51,7 +51,11 @@ export class InterAutoVehicleCacheService {
     });
 
     if (hasValidVehicleIdentifier(snapshot.chasis)) {
-      await this.clearDraft(idAtencion);
+      const draft = await this.loadDraft(idAtencion);
+      const keepsManualCorrection = !!draft?.chasis && draft.chasis !== snapshot.chasis;
+      if (!keepsManualCorrection) {
+        await this.clearDraft(idAtencion);
+      }
     }
 
     return snapshot;

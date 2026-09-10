@@ -18,6 +18,7 @@ import {
   InterAutoChassisValidationState,
   normalizeVehicleIdentifier
 } from '../validation/inter-auto-chassis.validation';
+import { applyRecoveredVehicleIdentifiers, resolveRecoveredVehicleIdentifiers } from '../utils/bpm-claim-preflight.util';
 import { InterAutoRegistrationCertificateState } from '../services/inter-auto-registration-certificate.service';
 
 @Component({
@@ -178,6 +179,7 @@ export class SegmentoVehiculoPage implements OnInit {
 
           this.moneda = this.elExpediente[0].Moneda;
           this.miMoneda = resolveAttentionCurrency(this.elExpediente[0]);
+          this.moneda = this.miMoneda;
         }
       )
     }, 1500);
@@ -392,19 +394,28 @@ export class SegmentoVehiculoPage implements OnInit {
       Motor: expediente.Motor,
       PolizaExterna: expediente.PolizaExterna
     };
-    this.interAutoManualChasisEntryActive = this.interAutoVehicleCache.shouldRecoverDraft(expediente.Chasis);
+    const draft = await this.interAutoVehicleCache.loadDraft(idAtencion);
+    const recovered = resolveRecoveredVehicleIdentifiers(idAtencion, expediente.Chasis, draft);
+    this.interAutoManualChasisEntryActive =
+      recovered?.source === 'manual' || this.interAutoVehicleCache.shouldRecoverDraft(expediente.Chasis);
 
-    if (this.interAutoManualChasisEntryActive) {
-      const draft = await this.interAutoVehicleCache.loadDraft(idAtencion);
-      if (draft) {
-        this.interAutoVehicleCache.applyDraftToExpediente(expediente, draft);
-        this.elChasisAsegurado = expediente.Chasis;
-        this.elMotorAsegurado = expediente.Motor;
-        this.elExpedienteSerie = expediente.Chasis;
-        this.laPolizaExternaAsegurado = expediente.PolizaExterna;
-        this.applyInterAutoChassisValidation(true);
-        return;
-      }
+    if (recovered) {
+      applyRecoveredVehicleIdentifiers(expediente, recovered);
+      this.elChasisAsegurado = expediente.Chasis;
+      this.elMotorAsegurado = expediente.Motor;
+      this.elExpedienteSerie = expediente.Chasis;
+      this.applyInterAutoChassisValidation(true);
+      return;
+    }
+
+    if (this.interAutoManualChasisEntryActive && draft) {
+      this.interAutoVehicleCache.applyDraftToExpediente(expediente, draft);
+      this.elChasisAsegurado = expediente.Chasis;
+      this.elMotorAsegurado = expediente.Motor;
+      this.elExpedienteSerie = expediente.Chasis;
+      this.laPolizaExternaAsegurado = expediente.PolizaExterna;
+      this.applyInterAutoChassisValidation(true);
+      return;
     }
 
     this.applyInterAutoChassisValidation();
@@ -447,7 +458,7 @@ export class SegmentoVehiculoPage implements OnInit {
       }, preserveManualEntry))
     );
 
-    if (validation.swappedValues || !preserveManualEntry) {
+    if (!preserveManualEntry) {
       this.elChasisAsegurado = validation.chasis;
       this.elMotorAsegurado = validation.motor;
       this.elExpedienteSerie = validation.chasis;

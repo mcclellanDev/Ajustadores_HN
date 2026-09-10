@@ -29,6 +29,7 @@ import {
   AttentionBulkAttempt,
   AttentionBulkAttemptService
 } from '../services/attention-bulk-attempt.service';
+import { BpmClaimPreflightService } from '../services/bpm-claim-preflight.service';
 
 import * as $ from 'jquery';
 import { datosAtencionKeys } from '../environments/predeterminados';
@@ -92,7 +93,7 @@ export class Tab1Page implements OnInit, OnDestroy {
     private tostador: ToastService,private actionSheetCtrl: ActionSheetController,private platform: Platform,private toaster: ToastController,private so: ScreenOrientation,
     private geo: NativeGeocoder,private locateIt: LocateService,private alertController: AlertController,private call: CallNumber, private myModal: ModalController, 
     private countryService:CountrydataService, private storageService:StorageService, private deviceService: DeviceService,
-    public bulkAttemptService: AttentionBulkAttemptService) {
+    public bulkAttemptService: AttentionBulkAttemptService, private bpmPreflight: BpmClaimPreflightService) {
       
       // console.log(window.location.pathname);
       
@@ -432,6 +433,7 @@ export class Tab1Page implements OnInit, OnDestroy {
   }
 
   updateIntent(){
+    //alert('Vamos a checar si hay una nueva versión de la app. Si existe, se te pedirá actualizarla para continuar usando la app. Si no actualizas, no podrás usar la app hasta que lo hagas.');
     this.api.GetAppVersion('android').pipe(finalize(async ()=>{})).subscribe(async (res) =>{
       this.dbVersion = this.normalizeVersionValue(res);
       if (versionAndroid.versionCodigo) {
@@ -1444,7 +1446,10 @@ export class Tab1Page implements OnInit, OnDestroy {
     }
     localStorage.setItem('elCliente', this.elCliente || localStorage.getItem('elCliente') || '');
     localStorage.setItem('signatureReturnTo', '/tabs/tab1');
-    this.router.navigate(['./esignature']);
+    this.router.navigate(['./esignature'], {
+      queryParams: idAtencion ? { Id: idAtencion } : {},
+      state: { idAtencion }
+    });
   }
 
   abrirExpediente(){
@@ -1975,12 +1980,14 @@ permitirGPS(){
     ).subscribe(
       async (res) => {
         this.elExpediente = res;
+        const expedienteRecord = Array.isArray(res) ? res[0] : res;
+        void this.bpmPreflight.validateAndPrompt(this.atIndex, expedienteRecord);
 
         let laLatitud = localStorage.getItem('laLatitud');
         let estaLatitud = parseFloat(laLatitud);
-        this.latitud = this.elExpediente[0].LatitudCliente;
-        this.longitud = this.elExpediente[0].LongitudCliente;
-        this.FechaSiniestro = this.elExpediente[0].FechaRegistro;
+        this.latitud = expedienteRecord?.LatitudCliente;
+        this.longitud = expedienteRecord?.LongitudCliente;
+        this.FechaSiniestro = expedienteRecord?.FechaRegistro;
         localStorage.setItem('FechaRegistro', this.FechaSiniestro);
         if (this.platform.is('android')) {
           this.geo.reverseGeocode(this.latitud, this.longitud).then((result: NativeGeocoderResult[]) => {

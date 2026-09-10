@@ -33,6 +33,7 @@ import {
 import { InterAutoRegistrationCertificateState } from '../services/inter-auto-registration-certificate.service';
 import { Keyboard } from '@capacitor/keyboard';
 import { resolveAttentionCurrency } from '../utils/currency-display.util';
+import { applyStoredPreflightCurrency, applyRecoveredVehicleIdentifiers, resolveRecoveredVehicleIdentifiers } from '../utils/bpm-claim-preflight.util';
 import { parseStoredJson } from '../utils/attention-details.util';
 import * as $ from 'jquery';
 import { WebElement } from 'protractor';
@@ -102,7 +103,7 @@ export class ClientehnPage implements OnInit {
   miPais: any;  miPaisNombre: any;  miPaisLocalidad: any;  miPaisLocalidadSub: any;  miPaisBandera: any;  paisId: number | undefined;  datoIndex: number = 0;  paisIdentidad: any;
   nombreDelConductor: any;  generoConductor: any;  audienciaId: any;  tipoVehiculo: any;  tipoDeVehiculo: any;  vigencia: boolean = false; identidadAsegurado:any;clientCompleteArray:any=[]
   moneda: any;  expediente: any;  miMoneda: string | undefined; isFormSaved:boolean=false; indexUpdate:number | undefined; isVence:boolean=false;
-  vigenciaErrorMessage = 'La fecha de vencimiento es obligatoria. Selecciona una fecha válida desde el calendario (hoy o posterior).'; uPoli:any; datosAtencion:any=[];
+  vigenciaErrorMessage = 'La fecha de vencimiento es obligatoria. Selecciona una fecha válida desde el calendario.'; uPoli:any; datosAtencion:any=[];
   edad: number | undefined; esCacheCliente:boolean=false;  nombreAtribuye: string | undefined; esMenor:boolean=false; elTipoDeConductor:any; elTipoDeParentesco:any;
   elTipoDeLicencia: any;  daType: any;  conductorEsAfiliado: boolean = false;
   nombreConductor: any;  daTipoConductor: any;  daNombreConductor: any;  daIdentidadConductor: any;  identidad: any; daTelefonoFijoConductor:any;
@@ -111,7 +112,7 @@ export class ClientehnPage implements OnInit {
   segmentoTitulo: string = 'Formulario del cliente'; clientFormOpen: boolean = false;
   readonly birthDateMin = '1900-01-01';
   readonly birthDateMax = new Date().toISOString().split('T')[0];
-  readonly licenseExpirationMin = new Date().toISOString().split('T')[0];
+  readonly licenseExpirationMin = '1900-01-01';
   readonly licenseExpirationMax = `${new Date().getFullYear() + 20}-12-31`;
   driverTypeSelectOptions = {
     cssClass: 'form-choice-alert',
@@ -1475,12 +1476,14 @@ export class ClientehnPage implements OnInit {
          (res) =>{
           console.log(res, 'respuesta');
           this.expediente= res;
-          this.moneda = this.expediente[0].Moneda;
+          this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
+          const preflightMoneda = applyStoredPreflightCurrency(this.idAtencion);
+          if (preflightMoneda) {
+            this.miMoneda = preflightMoneda;
+          }
+          this.moneda = this.miMoneda;
 
           void this.initializeInterAutoVehicleFields(this.expediente[0]);
-
-          //alert(this.moneda)
-          this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
           
          }
       )
@@ -2482,7 +2485,7 @@ export class ClientehnPage implements OnInit {
     this.formateadaVigencia = null;
     this.formateadaVigenciaPicker = null;
     this.isVence = false;
-    this.vigenciaErrorMessage = 'La fecha de vencimiento es obligatoria. Selecciona una fecha válida desde el calendario (hoy o posterior).';
+    this.vigenciaErrorMessage = 'La fecha de vencimiento es obligatoria. Selecciona una fecha válida desde el calendario.';
     delete this.dataProcess?.Vigencia;
     if (this.dataProcess) {
       delete this.dataProcess['Vigencia'];
@@ -2496,12 +2499,7 @@ export class ClientehnPage implements OnInit {
   private applyVigenciaFromRaw(rawValue: any): boolean {
     const normalized = normalizeLicenseExpirationDate(rawValue);
     if (!normalized) {
-      this.vigenciaErrorMessage = 'La fecha de vencimiento es obligatoria. Selecciona una fecha válida desde el calendario (hoy o posterior).';
-      return false;
-    }
-
-    if (normalized.storageValue < this.licenseExpirationMin) {
-      this.vigenciaErrorMessage = 'La fecha de vencimiento no puede ser anterior a hoy.';
+      this.vigenciaErrorMessage = 'La fecha de vencimiento es obligatoria. Selecciona una fecha válida desde el calendario.';
       return false;
     }
 
@@ -2512,7 +2510,7 @@ export class ClientehnPage implements OnInit {
     this.laExpediente[0].Vigencia = normalized.isoValue;
     localStorage.setItem('dataProcess-Vigencia', normalized.storageValue);
     this.isVence = true;
-    this.entraLicenciaEstadoCalculado(1);
+    this.entraLicenciaEstadoCalculado(this.getLicenseStatusFromExpiration(normalized.storageValue));
     return true;
   }
 
@@ -2542,6 +2540,12 @@ export class ClientehnPage implements OnInit {
     if (!this.applyVigenciaFromRaw(fecha)) {
       this.clearVigenciaValue();
     }
+  }
+
+  private getLicenseStatusFromExpiration(storageValue: string): 1 | 2 {
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    return storageValue < today ? 2 : 1;
   }
 
   entraLicenciaEstado(event:any){
@@ -3226,15 +3230,13 @@ export class ClientehnPage implements OnInit {
     const vigenciaNormalizada = normalizeLicenseExpirationDate(
       clienteValidationData.Vigencia || localStorage.getItem('dataProcess-Vigencia')
     );
-    if (vigenciaNormalizada && vigenciaNormalizada.storageValue >= this.licenseExpirationMin) {
+    if (vigenciaNormalizada) {
       clienteValidationData.Vigencia = vigenciaNormalizada.isoValue;
       this.applyVigenciaFromRaw(vigenciaNormalizada.storageValue);
     } else {
       delete clienteValidationData.Vigencia;
       this.isVence = false;
-      this.vigenciaErrorMessage = vigenciaNormalizada
-        ? 'La fecha de vencimiento no puede ser anterior a hoy.'
-        : 'La fecha de vencimiento es obligatoria. Selecciona una fecha válida desde el calendario (hoy o posterior).';
+      this.vigenciaErrorMessage = 'La fecha de vencimiento es obligatoria. Selecciona una fecha válida desde el calendario.';
     }
 
     const validationResult = validateClaimStage(clienteValidationData, clienteScreenValidationRules);
@@ -3894,7 +3896,10 @@ export class ClientehnPage implements OnInit {
     localStorage.setItem('elCliente', this.cliente?.NombreCliente || this.cliente?.NombreConductor || localStorage.getItem('elCliente') || '');
     localStorage.setItem('signatureReturnTo', '/clientehn');
     localStorage.setItem('isEditSig', this.isEditSig.toString());
-    this.router.navigate(['./esignature'], { state: { idAtencion: attentionId } });
+    this.router.navigate(['./esignature'], {
+      queryParams: attentionId ? { Id: attentionId } : {},
+      state: { idAtencion: attentionId }
+    });
   }
 
   goPrepare(idAtencion:any){
@@ -4186,18 +4191,28 @@ export class ClientehnPage implements OnInit {
 
     const snapshot = await this.interAutoVehicleCache.loadServerSnapshot(idAtencion);
     const serverChasis = serverSource?.Chasis ?? snapshot?.chasis ?? this.interAutoServerIdentifiers?.Chasis;
-    this.interAutoManualChasisEntryActive = this.interAutoVehicleCache.shouldRecoverDraft(serverChasis);
+    const draft = await this.interAutoVehicleCache.loadDraft(idAtencion);
+    const recovered = resolveRecoveredVehicleIdentifiers(idAtencion, serverChasis, draft);
 
-    if (this.interAutoManualChasisEntryActive) {
-      const draft = await this.interAutoVehicleCache.loadDraft(idAtencion);
-      if (draft) {
-        this.interAutoVehicleCache.applyDraftToExpediente(expediente, draft);
-        if (this.elExpediente?.[0]) {
-          this.interAutoVehicleCache.applyDraftToExpediente(this.elExpediente[0], draft);
-        }
-        this.applyInterAutoChassisValidation(true);
-        return;
+    this.interAutoManualChasisEntryActive =
+      recovered?.source === 'manual' || this.interAutoVehicleCache.shouldRecoverDraft(serverChasis);
+
+    if (recovered) {
+      applyRecoveredVehicleIdentifiers(expediente, recovered);
+      if (this.elExpediente?.[0]) {
+        applyRecoveredVehicleIdentifiers(this.elExpediente[0], recovered);
       }
+      this.applyInterAutoChassisValidation(true);
+      return;
+    }
+
+    if (this.interAutoManualChasisEntryActive && draft) {
+      this.interAutoVehicleCache.applyDraftToExpediente(expediente, draft);
+      if (this.elExpediente?.[0]) {
+        this.interAutoVehicleCache.applyDraftToExpediente(this.elExpediente[0], draft);
+      }
+      this.applyInterAutoChassisValidation(true);
+      return;
     }
 
     this.applyInterAutoChassisValidation();
@@ -4234,7 +4249,7 @@ export class ClientehnPage implements OnInit {
       buildInterAutoValidationInput(this.getInterAutoValidationSource(expediente, preserveManualEntry))
     );
 
-    if (validation.swappedValues || !preserveManualEntry) {
+    if (!preserveManualEntry) {
       expediente.Chasis = validation.chasis;
       expediente.Motor = validation.motor;
       if (this.elExpediente?.[0]) {

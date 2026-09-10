@@ -1,6 +1,6 @@
 export const versionAndroid = {
-    versionNumero: '2.1.2',
-    versionCodigo: '2.1.2',
+    versionNumero: '2.1.5',
+    versionCodigo: '2.1.5',
 }
 
 export const versionIOS = {

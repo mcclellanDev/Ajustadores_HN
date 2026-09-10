@@ -221,7 +221,8 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
          (res) =>{
           console.log(res, 'respuesta');
           this.expediente= res;
-          this.moneda = this.expediente[0].Moneda;
+          this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
+          this.moneda = this.miMoneda;
 
           console.log('Asi está armado el acuerdo');
           console.dir(this.expediente[0])
@@ -239,6 +240,7 @@ fsLogo:any;now:any;diaPie :any;mesPie :any;anioPie:any;dia :any;mes :any;anio:an
           console.dir(this.acuerdoDeuda);
           this.isLoading = false;
           this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
+          this.moneda = this.miMoneda;
          },
          () => {
           this.isLoading = false;

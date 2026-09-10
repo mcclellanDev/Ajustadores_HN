@@ -19,6 +19,7 @@ import { ToastService } from './toast.service';
 import { error } from 'console';
 import { versionAndroid } from '../interfaces/variables';
 import { SavedLoginSessionsService } from './saved-login-sessions.service';
+import { BpmClaimValidationResponse } from '../interfaces/bpm-claim-validation';
 //Constantes
 const ACCESS_TOKEN_KEY = 'MY_ACCESS_CODE' //this change maybe later
 const USER_DATA = 'MY_USER_DATA' // CHANGE LATER TOO
@@ -84,6 +85,13 @@ export class ApiService {
       this.isAuthenticated.next(false);
       return false;
     }
+  }
+
+  private normalizeListResponse(res: any): any[] {
+    if (res == null) {
+      return [];
+    }
+    return Array.isArray(res) ? res : [res];
   }
 
   async hasAppVersionChanged(): Promise<boolean> {
@@ -261,10 +269,7 @@ export class ApiService {
 
     // 3912
    return this.http.get(`${this.apiUrl}/Proveedor/ContarOtrosDanios`).pipe(
-    //switchMap((tokens: {accessToken, refreshToken }) => {
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-    }),
+      switchMap(( res: any  ) => of(this.normalizeListResponse(res))),
     tap(_ => {
       this.isAuthenticated.next(true);
     })
@@ -1050,10 +1055,7 @@ export class ApiService {
    // post /api/Proveedor/ObtenerDaniosExtras
    ObtenerDaniosExtras(IdAtencion:any, TipoEntidad:string): Observable<any> {
     return this.http.post(`${this.apiUrl}/Proveedor/ObtenerDaniosExtras?RefAtencionId=${IdAtencion}&TipoEntidad=${TipoEntidad}`,{}).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
+       switchMap(( res: any  ) => of(this.normalizeListResponse(res))),
      tap(_ => {
        this.isAuthenticated.next(true);
      })
@@ -1684,7 +1686,7 @@ export class ApiService {
     switchMap(( res: any  ) => {
       console.log('Respuesta de ingresar la Convenio Taller Extra ');
       console.dir(res);
-    return from(Promise.all(res));
+      return of(this.normalizeListResponse(res));
     }),
     tap(_ => {
       this.isAuthenticated.next(true);
@@ -1976,12 +1978,25 @@ let misdatos ={
     switchMap(( res: any  ) => {
       console.log('Respuesta de ingresar la nueva atencion ');
       console.dir(res);
-    return from(Promise.all(res));
+      return of(this.normalizeListResponse(res));
     }),
     tap(_ => {
       this.isAuthenticated.next(true);
     })
   )
+}
+
+//POST /api/FicohsaHN/ValidarDatosReclamoBpm
+ValidarDatosReclamoBpm(payload: { IdAtencion: number; Chasis: string }): Observable<BpmClaimValidationResponse> {
+  return this.http.post<BpmClaimValidationResponse>(`${this.apiUrl}/FicohsaHN/ValidarDatosReclamoBpm`, {
+    IdAtencion: payload.IdAtencion,
+    Chasis: payload.Chasis
+  }).pipe(
+    switchMap((res: any) => of(Array.isArray(res) ? res[0] : res)),
+    tap(_ => {
+      this.isAuthenticated.next(true);
+    })
+  );
 }
 
 //POST /api/Proveedor/ActualizarCodigoBPMAjustador

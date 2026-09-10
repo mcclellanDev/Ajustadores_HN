@@ -197,6 +197,9 @@
                     <ion-col id="noReservaTexto" *ngIf="reservaEsCero" size="12" class="zero-value-warning">
                       El valor de reserva está en 0. Debe cambiarse por un valor diferente de cero para evitar guardar una reserva vacía.
                     </ion-col>
+                    <ion-col *ngIf="reservaLimitWarning" size="12" class="zero-value-warning">
+                      {{ reservaLimitWarning }}
+                    </ion-col>
                   </ion-row>
                 </ion-grid>
               </ion-item>

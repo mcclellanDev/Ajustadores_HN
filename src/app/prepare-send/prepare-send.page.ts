@@ -6,6 +6,7 @@ import { finalize } from 'rxjs/operators';
 import { ApiService } from '../services/api.service';
 import { resolveAttentionCurrency } from '../utils/currency-display.util';
 import { normalizePolicyNumber, resolveClaimCoordinates, resolveClaimDate, resolveClaimVehicleIdentifiers } from '../utils/claim-payload-normalizer';
+import { applyBpmPreflightCorrections } from '../utils/bpm-claim-preflight.util';
 import * as $ from 'jquery';
 import { emptySignatureWhite, imagePrefix, errorImage, editarFirmaIcono } from '../environments/default-images';
 import {
@@ -170,15 +171,13 @@ export class PrepareSendPage implements OnInit {
       console.log('Mi cliente');
       console.dir(this.cliente)
 
-      this.moneda = this.cliente[0].Moneda;
+      this.miMoneda = resolveAttentionCurrency(this.cliente[0]);
+      this.moneda = this.miMoneda;
 
       let fechaExpediente = this.cliente[0].FechaRegistro;
       console.log(fechaExpediente)
       this.formateadaSiniestro = fechaExpediente.split('T')[0];
       console.log(this.formateadaSiniestro)
-
-      //alert(this.moneda)
-      this.miMoneda = resolveAttentionCurrency(this.cliente[0]);
 
       this.identidadAsegurado = localStorage.getItem('identidadAsegurado');
   }
@@ -535,7 +534,10 @@ export class PrepareSendPage implements OnInit {
     }
     localStorage.setItem('signatureReturnTo', '/prepare-send');
     localStorage.setItem('origin', '/prepare-send');
-    this.router.navigate(['./esignature'], { state: { idAtencion: attentionId } });
+    this.router.navigate(['./esignature'], {
+      queryParams: attentionId ? { Id: attentionId } : {},
+      state: { idAtencion: attentionId }
+    });
   }
 
   firmar() {
@@ -1039,6 +1041,7 @@ export class PrepareSendPage implements OnInit {
               Parentesco: ownerRelationshipCode, // Formulario
               Observacion: this.idTablaAjustador // Guardar Siniestro
             }
+            applyBpmPreflightCorrections(this.dataBPM, this.idAtencion);
   
             let dataBPMlocal =  {
               Chasis: chasisSiniestro,
@@ -1061,6 +1064,7 @@ export class PrepareSendPage implements OnInit {
               Parentesco: ownerRelationshipCode, // Formulario
               Observacion: this.idTablaAjustador // Guardar Siniestro
             }
+            applyBpmPreflightCorrections(dataBPMlocal, this.idAtencion);
   
             if (this.platform.is('android')) {
               this.bpmArray = this.dataBPM;

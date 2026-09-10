@@ -2,6 +2,8 @@ import {
   formatAttentionCurrency,
   isDollarAttentionCurrency,
   normalizeAttentionCurrency,
+  persistAttentionCurrencyOverride,
+  resolveAttentionCurrency,
   syncAttentionCurrency
 } from './currency-display.util';
 
@@ -26,5 +28,16 @@ describe('currency-display.util', () => {
     expect(syncAttentionCurrency('dolares')).toBe('DOLARES');
     expect(localStorage.getItem('miMoneda')).toBe('DOLARES');
     expect(formatAttentionCurrency(localStorage.getItem('miMoneda'))).toBe('Dólares');
+  });
+
+  it('keeps the Web Service currency even if expediente still has the old value', () => {
+    localStorage.setItem('idAtencion', '294048');
+    localStorage.setItem('elExpediente', JSON.stringify([{ Moneda: 'LEMPIRAS' }]));
+    persistAttentionCurrencyOverride(294048, 'DOLARES');
+
+    const expediente = { Moneda: 'LEMPIRAS' };
+    expect(resolveAttentionCurrency(expediente)).toBe('DOLARES');
+    expect(expediente.Moneda).toBe('DOLARES');
+    expect(JSON.parse(localStorage.getItem('elExpediente') || '[]')[0].Moneda).toBe('DOLARES');
   });
 });

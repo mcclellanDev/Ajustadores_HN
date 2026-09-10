@@ -1,0 +1,157 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Validación Interamericana</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ng-container *ngIf="mode === 'recovery'">
+    <p class="bpm-preflight__intro">
+      No se encontró el asegurado con el chasis consultado. El proceso no se detiene.
+      Revise los datos del expediente y, si hace falta, contraste con la Hoja de Revisión Vehicular.
+    </p>
+
+    <article class="bpm-preflight__item bpm-preflight__item--alert">
+      <h2>Resultado de la consulta</h2>
+      <p><strong>Mensaje:</strong> {{ recovery.message || 'Asegurado no encontrado' }}</p>
+      <p><strong>Chasis consultado:</strong> {{ recovery.consultedChassis || 'N/D' }}</p>
+    </article>
+
+    <article class="bpm-preflight__item">
+      <h2>Datos del expediente</h2>
+      <p><strong>Campo Chasis:</strong> {{ recovery.expedienteChasis || 'N/D' }}</p>
+      <p><strong>Campo Motor:</strong> {{ recovery.expedienteMotor || 'N/D' }}</p>
+      <p *ngIf="recovery.likelySwapped" class="bpm-preflight__hint">
+        Estos valores parecen cruzados: el motor tiene formato de chasis y el chasis no.
+        Aun así, el chasis del expediente puede ser antiguo. Confirme contra la boleta.
+      </p>
+    </article>
+
+    <article class="bpm-preflight__item">
+      <h2>¿Qué chasis vamos a consultar?</h2>
+      <ion-radio-group
+        class="bpm-preflight__choices"
+        [ngModel]="source"
+        (ngModelChange)="onSourceChange($event)">
+        <ion-item *ngIf="recovery.expedienteMotor" lines="none" class="bpm-preflight__choice">
+          <ion-label class="ion-text-wrap">
+            Corregir con el del expediente
+            <span>Usar el valor que hoy está en Motor</span>
+          </ion-label>
+          <ion-radio slot="start" value="swap"></ion-radio>
+        </ion-item>
+        <ion-item lines="none" class="bpm-preflight__choice">
+          <ion-label class="ion-text-wrap">
+            Ingresar manualmente
+            <span>Escribir el chasis de la Hoja de Revisión</span>
+          </ion-label>
+          <ion-radio slot="start" value="manual"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+
+      <p *ngIf="source === 'swap'" class="bpm-preflight__note">
+        Se consultará este chasis (hoy está en Motor): <strong>{{ chassisToQuery }}</strong>
+      </p>
+
+      <div *ngIf="source === 'manual'" class="bpm-preflight__field">
+        <div class="bpm-preflight__field-label">Chasis de la boleta</div>
+        <ion-input
+          class="required-data"
+          [(ngModel)]="manualChasis"
+          placeholder="Ingrese el chasis"
+          autocapitalize="characters"
+          (ionChange)="retryFailed = false">
+        </ion-input>
+      </div>
+    </article>
+
+    <article class="bpm-preflight__item" *ngIf="source">
+      <h2>Hoja de Revisión Vehicular</h2>
+      <p class="bpm-preflight__hint">
+        Compare el chasis con la boleta de registro vehicular. Si el del expediente (incluso ya cruzado)
+        no coincide con la boleta, use ingreso manual.
+      </p>
+      <ion-item lines="none" class="bpm-preflight__check">
+        <ion-checkbox slot="start" [(ngModel)]="verifiedAgainstSheet"></ion-checkbox>
+        <ion-label class="ion-text-wrap">Ya contrasté este chasis con la Hoja de Revisión Vehicular</ion-label>
+      </ion-item>
+    </article>
+
+    <p *ngIf="retryFailed" class="bpm-preflight__error">{{ retryMessage }}</p>
+  </ng-container>
+
+  <ng-container *ngIf="mode === 'mismatches'">
+    <p class="bpm-preflight__intro">
+      Hay diferencias entre el expediente e Interamericana. El proceso no se detiene.
+      Sucursal y moneda se sustituyen automáticamente con el Web Service. En los demás campos,
+      indique si desea usar ese valor al enviar el BPM.
+    </p>
+
+    <article
+      class="bpm-preflight__item"
+      [class.bpm-preflight__item--auto]="item.autoApply"
+      *ngFor="let item of mismatches">
+      <h2>{{ item.etiqueta }}</h2>
+      <p *ngIf="item.autoApply" class="bpm-preflight__auto-badge">Sustitución automática</p>
+      <p><strong>Expediente:</strong> {{ item.valorExpediente }}</p>
+      <p><strong>Web Service:</strong> {{ item.valorWebService }}</p>
+      <p *ngIf="item.observacion" class="bpm-preflight__note">{{ item.observacion }}</p>
+      <p *ngIf="item.hint" class="bpm-preflight__hint">{{ item.hint }}</p>
+
+      <ng-container *ngIf="!item.autoApply">
+        <div class="bpm-preflight__field-label">¿Usar valor de Interamericana?</div>
+        <ion-radio-group
+          class="bpm-preflight__choices bpm-preflight__choices--inline"
+          [ngModel]="item.correct === true ? 'yes' : item.correct === false ? 'no' : null"
+          (ngModelChange)="chooseFromEvent(item, $event)">
+          <ion-item lines="none" class="bpm-preflight__choice">
+            <ion-label>Sí</ion-label>
+            <ion-radio slot="start" value="yes"></ion-radio>
+          </ion-item>
+          <ion-item lines="none" class="bpm-preflight__choice">
+            <ion-label>No</ion-label>
+            <ion-radio slot="start" value="no"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ng-container>
+    </article>
+  </ng-container>
+</ion-content>
+
+<ion-footer class="bpm-preflight__footer">
+  <ion-toolbar>
+    <ion-button
+      expand="block"
+      fill="outline"
+      class="bpm-preflight__secondary"
+      [disabled]="isRetrying"
+      (click)="later()">
+      Más tarde
+    </ion-button>
+    <ion-button
+      *ngIf="mode === 'recovery'"
+      expand="block"
+      class="bpm-preflight__primary"
+      [disabled]="!canResend"
+      (click)="resend()">
+      {{ isRetrying ? 'Consultando…' : 'Reenviar consulta' }}
+    </ion-button>
+    <ion-button
+      *ngIf="mode === 'recovery'"
+      expand="block"
+      fill="clear"
+      class="bpm-preflight__text"
+      [disabled]="isRetrying"
+      (click)="continueWithoutInteramericana()">
+      Continuar sin Interamericana
+    </ion-button>
+    <ion-button
+      *ngIf="mode === 'mismatches'"
+      expand="block"
+      class="bpm-preflight__primary"
+      [disabled]="!allAnswered"
+      (click)="continue()">
+      Continuar
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

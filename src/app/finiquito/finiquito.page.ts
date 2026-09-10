@@ -182,7 +182,8 @@ export class FiniquitoPage implements OnInit {
          (res) =>{
           console.log(res, 'respuesta');
           this.expediente= res;
-          this.moneda = this.expediente[0].Moneda;
+          this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
+          this.moneda = this.miMoneda;
           this.fechaSiniestro = this.expediente[0].FechaRegistro;
 
           console.log('Obtengamos la fecha pues ');
@@ -215,9 +216,8 @@ export class FiniquitoPage implements OnInit {
           this.CodigoReclamo = this.datosAtencion[0].CodigoReclamoFicohsa;
           this.TipoCoberturaFicohsa = this.datosAtencion[0].TipoAcuerdoFicohsa;
 
-          //alert(this.moneda)
           this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
-          
+          this.moneda = this.miMoneda;
          }
       )
     }

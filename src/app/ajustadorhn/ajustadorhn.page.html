@@ -151,7 +151,7 @@
         <img *ngIf="validacionCompleta" src="../../assets/img/aprobar.svg" class="validation-success-icon" alt="Validación completada" />
         {{textoInfo}}
         <span id="infoIncompleto" class="warning-text" [style.display]="cantidadNulos > 0 ? 'block' : 'none'">{{textoInfoIncompleto}}</span>
-        <span *ngIf="daniosSelectAju.length == 0" class="soft-warning">{{textoInfoDanios}}</span>
+        <span *ngIf="daniosSelectAju.length == 0 && seleccionDeDanios.length == 0" class="soft-warning">{{textoInfoDanios}}</span>
         <span *ngIf="daniosSelectCulpa.length == 0" class="soft-warning">{{textoInfoDaniosCulpa}}</span>
         <span *ngIf="fotosEnviadas == false" class="soft-warning">{{textoFotos}}</span>
       </p>

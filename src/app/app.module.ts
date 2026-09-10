@@ -16,6 +16,7 @@ import {Maskito} from '@maskito/core';
 import { MaskitoModule } from '@maskito/angular';
 import { CommonModule } from '@angular/common';
 import { IonLabel } from '@ionic/angular';
+import { ModalBpmPreflightModule } from './Modales/modal-bpm-preflight/modal-bpm-preflight.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,7 +24,8 @@ import { IonLabel } from '@ionic/angular';
             IonicModule.forRoot({backButtonText: '' }), 
             AppRoutingModule, 
             HttpClientModule,
-            MaskitoModule
+            MaskitoModule,
+            ModalBpmPreflightModule
           ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

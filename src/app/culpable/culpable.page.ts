@@ -290,10 +290,8 @@ export class CulpablePage implements OnInit {
          (res) =>{
           console.log(res, 'respuesta');
           this.expediente= res;
-          this.moneda = this.expediente[0].Moneda;
-
-          //alert(this.moneda)
           this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
+          this.moneda = this.miMoneda;
           
          }
       )
@@ -579,9 +577,9 @@ export class CulpablePage implements OnInit {
       })
     ).subscribe(
        async (res) =>{
-        console.log('Conteo de Otros : '+res[0].Mensaje);
-        let othersCount = parseInt(res[0].Mensaje);
-        this.daniosIndex = othersCount+1;
+        const countPayload = Array.isArray(res) ? res[0] : res;
+        const othersCount = parseInt(countPayload?.Mensaje ?? countPayload?.mensaje ?? countPayload, 10);
+        this.daniosIndex = (Number.isFinite(othersCount) ? othersCount : 0) + 1;
 
         if (danio) {
           let elementOtro = {
@@ -590,7 +588,7 @@ export class CulpablePage implements OnInit {
             "FechaRegistro": new Date().toISOString(),
             "UsuarioId": this.api.currentUser.ProveedorAgenteId,
             "TipoEntidad": Entidades[1].tipoEntidad,
-            "TipoReparacion": 0,
+            "TipoReparacion": 1,
             "CodigoDanioVehiculo": this.daniosIndex,
             "indexFront": indexFront
           }

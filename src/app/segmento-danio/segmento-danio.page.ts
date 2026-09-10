@@ -2,6 +2,7 @@ import { ToastService } from '../services/toast.service';
 import { ajustadorHn, Formulario } from '../interfaces/formulario';
 import { ApiService } from '../services/api.service';
 import { readStoredAttentionCurrency, resolveAttentionCurrency } from '../utils/currency-display.util';
+import { applyStoredPreflightCurrency, evaluateValorReservaLimit } from '../utils/bpm-claim-preflight.util';
 import { Entidades } from '../interfaces/extras';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertController, AnimationController, IonAccordionGroup, ToastController, NavController } from '@ionic/angular';
@@ -24,6 +25,7 @@ export class SegmentoDanioPage implements OnInit {
   danios:any=[]; daniosExtras: any = []; daniosSelect:any=[];  danioResults:any=[];  daniosOtros:any=[]; danioSearchable:any=[]; isLoading:boolean=false;
   daniosIndex: any;  contador: number = 0; datos:any=[];  selectedIndex: any=[]; selectedExtra: any=[];  valorReserva:any = 0;
   reservaEsCero: boolean = true;
+  reservaLimitWarning = '';
   elTipoSiniestro:any; tipoSiniestros:any=[];  elTipoDeSiniestro: any; formulario: Formulario= {}; danioMessage:string; 
   danioPosition:string; danioClass:string; ssucessIconRecycle:any; danioOtro:any=[]; TipoReparacion:any; daniosSeleccionados: any[];
   daniosSelectOtro: any = []; isXOpen:boolean=false;
@@ -44,6 +46,11 @@ export class SegmentoDanioPage implements OnInit {
     this.idAtencion = localStorage.getItem('idAtencion');
     let dIdAtencion = parseInt(this.idAtencion);
     this.miMoneda = readStoredAttentionCurrency();
+    const preflightMoneda = applyStoredPreflightCurrency(this.idAtencion);
+    if (preflightMoneda) {
+      this.miMoneda = preflightMoneda;
+    }
+    this.moneda = this.miMoneda;
     this.segmentoTitulo = localStorage.getItem('segmentoTitulo');
     let elCompromiso = localStorage.getItem('elCompromisoPago');
     let oPago = localStorage.getItem('elCompromisoPagoObservacion');
@@ -109,12 +116,23 @@ export class SegmentoDanioPage implements OnInit {
          (res) =>{
           console.log(res, 'respuesta');
           this.expediente= res;
-          this.moneda = this.expediente[0].Moneda;
+          this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
+          const preflightMoneda = applyStoredPreflightCurrency(this.idAtencion);
+          if (preflightMoneda) {
+            this.miMoneda = preflightMoneda;
+          }
+          this.moneda = this.miMoneda;
          }
         )
 
         setTimeout(() => {
-          this.miMoneda = resolveAttentionCurrency(this.expediente[0]);
+          this.miMoneda = resolveAttentionCurrency(this.expediente?.[0]);
+          const preflightMoneda = applyStoredPreflightCurrency(this.idAtencion);
+          if (preflightMoneda) {
+            this.miMoneda = preflightMoneda;
+          }
+          this.moneda = this.miMoneda;
+          this.refreshReservaLimitWarning(this.coerceReserva(this.valorReserva));
         }, 900);
   }
 
@@ -294,7 +312,10 @@ export class SegmentoDanioPage implements OnInit {
   }
 
   entraDanioOtro(danio){
-    //alert(danio)
+    const descripcion = (danio || '').toString().trim();
+    if (!descripcion) {
+      return;
+    }
 
     let indexFront = this.daniosSelectOtro.length;
     
@@ -304,44 +325,51 @@ export class SegmentoDanioPage implements OnInit {
       })
     ).subscribe(
        async (res) =>{
-        console.log('Conteo de Otros : '+res[0].Mensaje);
-        let othersCount = parseInt(res[0].Mensaje);
-        this.daniosIndex = othersCount+1;
-        //alert(this.daniosIndex)
-        if (danio) {
-          let elementOtro = {
-            "RefAtencionId": this.idAtencion,
-            "DescripcionDeDanio": danio.toUpperCase(),
-            "FechaRegistro": new Date().toISOString(),
-            "UsuarioId": this.api.currentUser.ProveedorAgenteId,
-            "TipoEntidad": Entidades[0].tipoEntidad,
-            "TipoReparacion": 0,
-            "CodigoDanioVehiculo": this.daniosIndex,
-            "indexFront": indexFront
-          }
-          console.dir(elementOtro)
+        const countPayload = Array.isArray(res) ? res[0] : res;
+        const othersCount = parseInt(countPayload?.Mensaje ?? countPayload?.mensaje ?? countPayload, 10);
+        this.daniosIndex = (Number.isFinite(othersCount) ? othersCount : 0) + 1;
+        let elementOtro = {
+          "RefAtencionId": this.idAtencion,
+          "DescripcionDeDanio": descripcion.toUpperCase(),
+          "FechaRegistro": new Date().toISOString(),
+          "UsuarioId": this.api.currentUser.ProveedorAgenteId,
+          "TipoEntidad": Entidades[0].tipoEntidad,
+          "TipoReparacion": 1,
+          "CodigoDanioVehiculo": this.daniosIndex,
+          "indexFront": indexFront
+        }
+        console.dir(elementOtro)
 
-          this.api.InsertarConvenioReparacionTallerExtra(elementOtro).pipe( 
-            finalize(async ()=>{
-              this.isLoading = false;
-            })
-          ).subscribe(
-             async (res) =>{
-              this.daniosSelectOtro.push(elementOtro);
-              localStorage.setItem('selectedIndex-x' ,JSON.stringify(this.daniosIndex));
-              localStorage.setItem('daniosSelectOtro-'+(this.daniosIndex-1), this.daniosIndex);
-              localStorage.setItem('danioOtro-'+this.daniosIndex, JSON.stringify(elementOtro));
+        this.api.InsertarConvenioReparacionTallerExtra(elementOtro).pipe( 
+          finalize(async ()=>{
+            this.isLoading = false;
+          })
+        ).subscribe(
+           async (res) =>{
+            const inserted = Array.isArray(res) ? res[0] : res;
+            if (inserted?.Id) {
+              elementOtro['Id'] = inserted.Id;
+            }
+            this.daniosSelectOtro.push(elementOtro);
+            localStorage.setItem('selectedIndex-x' ,JSON.stringify(this.daniosIndex));
+            localStorage.setItem('daniosSelectOtro-'+(this.daniosIndex-1), this.daniosIndex.toString());
+            localStorage.setItem('danioOtro-'+this.daniosIndex, JSON.stringify(elementOtro));
 
-              setTimeout(() => {
-                this.recargarDaniosExtras();
-              }, 300);
-             }
-          )
-        }else{}
+            setTimeout(() => {
+              this.recargarDaniosExtras();
+            }, 300);
+           },
+           async (error) => {
+            this.isLoading = false;
+            this.toaster.presentToast(error?.error?.Message || 'No se pudo guardar el daño extra.', 'top', 'danios');
+           }
+        )
+       },
+       async (error) => {
+        this.isLoading = false;
+        this.toaster.presentToast(error?.error?.Message || 'No se pudo registrar el daño extra.', 'top', 'danios');
        }
     )
-    /**/
-    
   }
 
   recargarDaniosExtras(){
@@ -580,6 +608,7 @@ export class SegmentoDanioPage implements OnInit {
     console.log('Soy el valor de reserva '+this.valorReserva)
     this.valorReserva = reservaCoercida;
     this.persistValorReserva(reservaCoercida);
+    this.refreshReservaLimitWarning(reservaCoercida);
 
   }
 
@@ -609,6 +638,7 @@ export class SegmentoDanioPage implements OnInit {
     this.valorReserva = reservaCoercida;
     this.reservaEsCero = reservaCoercida === 0;
     this.persistValorReserva(reservaCoercida);
+    this.refreshReservaLimitWarning(reservaCoercida);
   }
 
   private persistValorReserva(reservaCoercida: number): void {
@@ -633,6 +663,14 @@ export class SegmentoDanioPage implements OnInit {
     }
 
     return parseado;
+  }
+
+  private refreshReservaLimitWarning(valor: number): void {
+    const result = evaluateValorReservaLimit(valor, null, this.idAtencion);
+    this.reservaLimitWarning = result.ok ? '' : result.message;
+    if (!result.ok) {
+      this.toaster.presentToastAlert(result.message, 'top', 'warning', 6000);
+    }
   }
 
   loadSiniestros(){

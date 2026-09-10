@@ -1270,7 +1270,7 @@
 
       <div class="cliente-context-footnote" aria-label="Resumen de atención actual">
         <span>Atención # {{idAtencion}}</span>
-        <span>Moneda {{miMoneda}}</span>
+        <app-attention-currency-badge [currency]="miMoneda" variant="toolbar" [showLabel]="true"></app-attention-currency-badge>
       </div>
     </div>
 
@@ -1621,7 +1621,7 @@
     </ion-header>
     <ion-content class="birth-date-modal-content">
       <div class="birth-date-guidance">
-        Selecciona día, mes y año. La fecha debe ser hoy o posterior.
+        Selecciona día, mes y año. Puedes registrar una fecha vencida.
       </div>
       <ion-datetime presentation="date" [preferWheel]="true" locale="es-HN" [firstDayOfWeek]="1"
       [min]="licenseExpirationMin" [max]="licenseExpirationMax" [showDefaultButtons]="true"
