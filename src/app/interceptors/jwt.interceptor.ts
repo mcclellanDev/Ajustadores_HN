@@ -1,153 +1,67 @@
 import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError, of, from } from 'rxjs';
+import { Observable, throwError, from } from 'rxjs';
 import { ApiService } from '../services/api.service';
-import {
-  catchError,
-  finalize,
-  switchMap,
-  filter,
-  take,
-} from 'rxjs/operators';
-import { ToastController, LoadingController } from '@ionic/angular';
+import { catchError, switchMap } from 'rxjs/operators';
+import { SESSION_EXPIRED_MESSAGE, isNetworkStatusZero, toNetworkHttpError } from '../utils/http-network.util';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-
-
-  constructor(private apiService: ApiService, private toastCtrl: ToastController, private loading: LoadingController) { }
+  constructor(private apiService: ApiService) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
     if (this.isInBlockedList(request.url)) {
       return next.handle(request);
-    } else {
-      return next.handle(this.addToken(request)).pipe(
-        catchError(err => {
-          if (err instanceof HttpErrorResponse) {
-            console.log(err, 'estado')
-            switch (err.status) {
-             // case 400:
-            //    return this.handle400Error(err);
-               case 401:
-                 return this.handle401Error(request, next);
+    }
 
-                case 0: 
-                  return this.handle401Error();
-              default:
-                return throwError(err);
-            }
-          } else {
-            return throwError(err);
+    return next.handle(this.addToken(request)).pipe(
+      catchError(err => {
+        if (err instanceof HttpErrorResponse) {
+          if (isNetworkStatusZero(err) || err.statusText === 'Timeout') {
+            return throwError(() => toNetworkHttpError(err, request.url));
           }
-        })
-      );
-    }
+
+          if (err.status === 401) {
+            return this.handle401Error(request, next);
+          }
+        }
+
+        return throwError(() => err);
+      })
+    );
   }
 
-  private isInBlockedList(url: string): Boolean {
-    if (url == `${environment.api_url}/Login/Autenticacion` || this.apiService.whiteList.includes(url)) {
-      return true;
-    } else {
-      return false;
-    }
+  private isInBlockedList(url: string): boolean {
+    return url === `${environment.api_url}/Login/Autenticacion` || this.apiService.whiteList.includes(url);
   }
 
-  
   private addToken(req: HttpRequest<any>) {
     if (this.apiService.currentAccessToken) {
       return req.clone({
         headers: new HttpHeaders({
-          Authorization: this.apiService.currentAccessToken//`Bearer ${this.apiService.currentAccessToken}`
+          Authorization: this.apiService.currentAccessToken
         })
       });
-      
-    } else {
-      return req;
-    }
-  }
-private async handle400Error(err) {
-    const loading= await this.loading.create();
-    loading.dismiss();
-    const toast = await this.toastCtrl.create({
-      message: err.error.Message,
-      duration: 2000
-    });
-    toast.present();
-   // this.apiService.logout();
-    return of(err.error.Message);
-  }
-  // private async handle401Error(){
-  //   const toast = await this.toastCtrl.create({
-  //     message:'Su sesión ha caducado',
-  //     duration:2000
-  //   });
-  //   toast.present();
-  //   this.apiService.logout();
-  //   return of(null);
-  // }
-  private handle401Error(request?: HttpRequest<any>, next?: HttpHandler): Observable<HttpEvent<any>> {
-    if (!request || !next) {
-      return of(null);
     }
 
+    return req;
+  }
+
+  private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return from(this.apiService.refreshSessionSilently()).pipe(
       switchMap((sessionRefreshed) => {
         if (sessionRefreshed) {
           return next.handle(this.addToken(request));
         }
 
-        return of(null);
+        return throwError(() => new HttpErrorResponse({
+          status: 401,
+          statusText: 'Unauthorized',
+          url: request.url,
+          error: { Message: SESSION_EXPIRED_MESSAGE }
+        }));
       })
     );
   }
-// private handle401Error(request: HttpRequest < any >, next: HttpHandler): Observable < any > {
-//    // Check if another call is already using the refresh logic
-//     // if(!this.isRefreshingToken) {
-
-//     //   // Set to null so other requests will wait
-//     //   // until we got a new token!
-//     //   this.tokenSubject.next(null);
-//     //   this.isRefreshingToken = true;
-//     //   this.apiService.currentAccessToken = null;
-
-//     //   // First, get a new access token
-//     //   return this.apiService.getNewAccessToken().pipe(
-//     //     switchMap((token: any) => {
-//     //       if (token) {
-//     //         // Store the new token
-//     //         const accessToken = token.accessToken;
-//     //         return this.apiService.storeAccessToken(accessToken).pipe(
-//     //           switchMap(_ => {
-//     //             // Use the subject so other calls can continue with the new token
-//     //             this.tokenSubject.next(accessToken);
-
-//     //             // Perform the initial request again with the new token
-//     //             return next.handle(this.addToken(request));
-//     //           })
-//     //         );
-//     //       } else {
-//     //         // No new token or other problem occurred
-//     //         return of(null);
-//     //       }
-//     //     }),
-//     //     finalize(() => {
-//     //       // Unblock the token reload logic when everything is done
-//     //       this.isRefreshingToken = false;
-//     //     })
-//     //   );
-//     // } else {
-//     //   // "Queue" other calls while we load a new token
-//     //   return this.tokenSubject.pipe(
-//     //     filter(token => token !== null),
-//     //     take(1),
-//     //     switchMap(token => {
-//     //       // Perform the request again now that we got a new token!
-//     //       return next.handle(this.addToken(request));
-//     //     })
-//     //   );
-//     // }
-// }
-
 }

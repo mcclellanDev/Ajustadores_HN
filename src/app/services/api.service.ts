@@ -6,10 +6,10 @@ import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { tap, switchMap, finalize, catchError } from 'rxjs/operators';
+import { tap, switchMap, finalize, catchError, timeout } from 'rxjs/operators';
 import { BehaviorSubject, from, Observable, of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { CapacitorHttp, HttpResponse } from '@capacitor/core';
+import { Capacitor, CapacitorHttp, HttpResponse } from '@capacitor/core';
 import { firmaDemoAjustador, emptySignature, emptySignatureWhite } from '../environments/signatures';
 import { RequestOptions } from 'https';
 import { promise } from 'protractor';
@@ -20,6 +20,14 @@ import { error } from 'console';
 import { versionAndroid } from '../interfaces/variables';
 import { SavedLoginSessionsService } from './saved-login-sessions.service';
 import { BpmClaimValidationResponse } from '../interfaces/bpm-claim-validation';
+import {
+  HTTP_TIMEOUT_BPM_MS,
+  HTTP_TIMEOUT_PHOTOS_MS,
+  HTTP_TIMEOUT_SINIESTRO_MS,
+  NETWORK_NO_RESPONSE_MESSAGE,
+  toNetworkHttpError,
+  unwrapCapacitorHttpData
+} from '../utils/http-network.util';
 //Constantes
 const ACCESS_TOKEN_KEY = 'MY_ACCESS_CODE' //this change maybe later
 const USER_DATA = 'MY_USER_DATA' // CHANGE LATER TOO
@@ -92,6 +100,60 @@ export class ApiService {
       return [];
     }
     return Array.isArray(res) ? res : [res];
+  }
+
+  private authHeaders(): Record<string, string> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json, text/plain, */*'
+    };
+    if (this.currentAccessToken) {
+      headers.Authorization = this.currentAccessToken;
+    }
+    return headers;
+  }
+
+  private postForSend(url: string, body: any, timeoutMs: number, normalizeList = false): Observable<any> {
+    const request$ = Capacitor.isNativePlatform()
+      ? from(this.postWithCapacitorHttp(url, body, timeoutMs))
+      : this.http.post(url, body).pipe(timeout(timeoutMs));
+
+    return request$.pipe(
+      switchMap((res: any) => {
+        const payload = unwrapCapacitorHttpData(res);
+        return of(normalizeList ? this.normalizeListResponse(payload) : payload);
+      }),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    );
+  }
+
+  private async postWithCapacitorHttp(url: string, body: any, timeoutMs: number): Promise<any> {
+    try {
+      const response = await CapacitorHttp.post({
+        url,
+        headers: this.authHeaders(),
+        data: body,
+        connectTimeout: Math.min(timeoutMs, HTTP_TIMEOUT_SINIESTRO_MS),
+        readTimeout: timeoutMs
+      });
+      const data = unwrapCapacitorHttpData(response);
+      if (typeof response?.status === 'number' && response.status >= 400) {
+        throw new HttpErrorResponse({
+          status: response.status,
+          statusText: 'Error',
+          url,
+          error: data || { Message: NETWORK_NO_RESPONSE_MESSAGE }
+        });
+      }
+      return data;
+    } catch (error) {
+      if (error instanceof HttpErrorResponse) {
+        throw error;
+      }
+      throw toNetworkHttpError(error, url);
+    }
   }
 
   async hasAppVersionChanged(): Promise<boolean> {
@@ -634,34 +696,18 @@ export class ApiService {
   //Guardar fotos
   GuardarFotos(credentials:any): Observable<any> {
     const body = this.normalizeImageUploadPayload(credentials);
-    return this.http.post(`${this.apiUrl}/Proveedor/SubirFotosSiniestro`, body).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.postForSend(`${this.apiUrl}/Proveedor/SubirFotosSiniestro`, body, HTTP_TIMEOUT_PHOTOS_MS, true);
    }
 
    // POST /api/Proveedor/SubirFotografiaAjustador
-   GuardarFotoAjustador(credentials:any): Observable<any> {
+  GuardarFotoAjustador(credentials:any): Observable<any> {
     let body = {
       Fotografia: credentials[0].Fotografia,
       IdAgente: credentials[0].IdAgente
     }
     console.log("body en el envio de la fotografia del ajustador ");
     console.dir(credentials)
-    return this.http.post(`${this.apiUrl}/Proveedor/SubirFotografiaAjustador`,body).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.postForSend(`${this.apiUrl}/Proveedor/SubirFotografiaAjustador`, body, HTTP_TIMEOUT_PHOTOS_MS, true);
    }
 
    //Envio de token push
@@ -678,15 +724,7 @@ export class ApiService {
    }
   //Guardar Siniestros
   GuardarSiniestro(credentials:any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`,credentials).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-      switchMap(( res: any  ) => {
-        return of(res);
-      }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.postForSend(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`, credentials, HTTP_TIMEOUT_SINIESTRO_MS);
    }
 
    // POST /api/Proveedor/GuardarCacheCliente
@@ -757,29 +795,14 @@ export class ApiService {
    GuardarSiniestroHN(envioData:any): Observable<any> {
   console.log('Siniestro en api');
   console.dir(envioData)
-    return this.http.post(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`,envioData).pipe(
-      switchMap(( res: any  ) => {
-        return of(res);
-      }
-    ),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.postForSend(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`, envioData, HTTP_TIMEOUT_SINIESTRO_MS);
    }
 
    GuardarSiniestroHN_Sin_Poliza(siniestroData:any): Observable<any> {
     //alert('Aqui voy otra vez');
     console.log('Soy un feliz envío sin póliza =) '); console.dir(siniestroData);
 
-    return this.http.post(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`,siniestroData).pipe(
-      switchMap(( res: any  ) => {
-        return of(res);
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.postForSend(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`, siniestroData, HTTP_TIMEOUT_SINIESTRO_MS);
    }
 
    GuardarInformeAjustador(credentials:any): Observable<any> {
@@ -800,15 +823,7 @@ export class ApiService {
       
     }
     
-    return this.http.post(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`,siniestroData).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-      switchMap(( res: any  ) => {
-        return of(res);
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.postForSend(`${this.apiUrl}/Proveedor/GuardarInformeSiniestros_HN`, siniestroData, HTTP_TIMEOUT_SINIESTRO_MS);
    }
 
    /*
@@ -1974,16 +1989,7 @@ let misdatos ={
   Observacion: credentials.Observacion
 }
 
-    return this.http.post(`${this.apiUrl}/FicohsaHN/Carga_Reclamo_Sinau_BPM_Fico`, misdatos).pipe(
-    switchMap(( res: any  ) => {
-      console.log('Respuesta de ingresar la nueva atencion ');
-      console.dir(res);
-      return of(this.normalizeListResponse(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-  )
+    return this.postForSend(`${this.apiUrl}/FicohsaHN/Carga_Reclamo_Sinau_BPM_Fico`, misdatos, HTTP_TIMEOUT_BPM_MS, true);
 }
 
 //POST /api/FicohsaHN/ValidarDatosReclamoBpm

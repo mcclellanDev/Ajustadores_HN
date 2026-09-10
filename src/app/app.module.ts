@@ -9,6 +9,7 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { JwtInterceptor } from './interceptors/jwt.interceptor';
+import { HttpTimeoutInterceptor } from './interceptors/http-timeout.interceptor';
 import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { NativeGeocoder, NativeGeocoderOptions, NativeGeocoderResult } from '@ionic-native/native-geocoder/ngx';
@@ -28,6 +29,7 @@ import { ModalBpmPreflightModule } from './Modales/modal-bpm-preflight/modal-bpm
             ModalBpmPreflightModule
           ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: HTTP_INTERCEPTORS, useClass: HttpTimeoutInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     OneSignal,
     OneSignalPlugin,

@@ -16,6 +16,7 @@ import {
   resolveClientSignatureFromCache
 } from '../utils/client-signature-cache.util';
 import { persistAudienceTableIdToCache } from '../utils/audience-table-cache.util';
+import { describeHttpFailure } from '../utils/http-network.util';
 import { AlertController, AnimationController, IonAccordionGroup, Platform, ToastController } from '@ionic/angular';
 import { valoresPredeterminados } from '../environments/predeterminados';
 import { abogadosAudiencias } from '../interfaces/arrays';
@@ -303,7 +304,7 @@ export class PrepareSendPage implements OnInit {
   }
 
   private extractBulkErrorMessage(error: any, fallback = 'No es posible procesar esta solicitud en este momento. Recomendamos revisar los datos ingresados, intentar nuevamente o finalizar el proceso manualmente.'): string {
-    const rawMessage = error?.error?.Message || error?.message || error?.descripcion || fallback;
+    const rawMessage = describeHttpFailure(error, fallback);
     return this.translateClaimServerMessage(rawMessage, fallback);
   }
 
