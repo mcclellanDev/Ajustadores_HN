@@ -285,7 +285,10 @@ export class AppComponent {
     if (permissionResult.location === 'granted') {
       //alert('Hey Geo')
       // El usuario ha dado permisos de geolocalización
-      const coordenadas=  await Geolocation.getCurrentPosition();
+      const coordenadas=  await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 15000
+      });
       localStorage.setItem('lasCoordenadas', JSON.stringify(coordenadas));
       console.log('Coordenadas en app')
       console.dir(coordenadas);
@@ -301,7 +304,10 @@ export class AppComponent {
       const permissionResult = await Geolocation.requestPermissions();
       if (permissionResult.location === 'granted') {
         // El usuario ha otorgado los permisos de geolocalización
-        const coordenadas=  await Geolocation.getCurrentPosition();
+        const coordenadas=  await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000
+        });
         localStorage.setItem('lasCoordenadas', JSON.stringify(coordenadas));
         console.log('Coordenadas en app')
         console.dir(coordenadas);

@@ -18,7 +18,7 @@ export class LocateService {
   async getCountry(){
     this.coordinates = await Geolocation.getCurrentPosition({
       enableHighAccuracy: true,
-      timeout: 1000
+      timeout: 15000
     });
     console.log("Tengo unas coordenadas ");
     console.dir(this.coordinates);  

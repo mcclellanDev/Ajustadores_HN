@@ -272,7 +272,10 @@ export class FormularioPage implements OnInit {
   // Mapa capacitor
   async createMap() {
 
-      const coordinates = await Geolocation.getCurrentPosition();
+      const coordinates = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 15000
+      });
       console.log(coordinates);
        let coodernadas;
       if (this.formulario.Longitud  && this.formulario.Latitud){
@@ -283,7 +286,10 @@ export class FormularioPage implements OnInit {
         if(permisosGeo.location === "denied"){
           const getPermisos = await Geolocation.requestPermissions();
         }
-        const coordinates = await Geolocation.getCurrentPosition();
+        const coordinates = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000
+        });
         console.log(coordinates);
         coodernadas = coordinates.coords;
       }
