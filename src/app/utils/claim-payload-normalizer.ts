@@ -203,6 +203,77 @@ export function resolveClaimDate(record: any, preferred?: any): string {
   return firstValid ? normalizeDateString(firstValid) : '';
 }
 
+const HONDURAS_TIME_ZONE = 'America/Tegucigalpa';
+const DATE_ONLY_PATTERN = /^(\d{4}-\d{2}-\d{2})/;
+const EXPLICIT_TZ_PATTERN = /Z$/i;
+const EXPLICIT_OFFSET_PATTERN = /[+-]\d{2}:?\d{2}$/;
+
+export function toClaimOccurrenceDate(value: any): string {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return formatHondurasCalendarDate(value);
+  }
+
+  const text = cleanText(value);
+  if (!text) {
+    return '';
+  }
+
+  const dateOnlyMatch = text.match(DATE_ONLY_PATTERN);
+  const hasExplicitTz = EXPLICIT_TZ_PATTERN.test(text) || EXPLICIT_OFFSET_PATTERN.test(text);
+
+  if (dateOnlyMatch && !hasExplicitTz) {
+    return dateOnlyMatch[1];
+  }
+
+  const parsed = new Date(text);
+  if (!Number.isNaN(parsed.getTime())) {
+    return formatHondurasCalendarDate(parsed);
+  }
+
+  return dateOnlyMatch ? dateOnlyMatch[1] : '';
+}
+
+export function resolveClaimOccurrenceDate(record: any): string {
+  const candidates = [
+    record?.FechaRegistro,
+    record?.FechaAccidente,
+    record?.FechaSiniestro,
+    record?.FechaOcurrencia,
+    record?.FechaHoraSiniestro,
+    record?.FechaInicio,
+    record?.fechaInicio,
+    record?.Inicio,
+    record?.FechaCreacion
+  ];
+
+  const source = candidates.find((candidate) => isUsefulDate(candidate))
+    || candidates.find((candidate) => isValidDate(candidate));
+
+  return toClaimOccurrenceDate(source);
+}
+
+function formatHondurasCalendarDate(date: Date): string {
+  try {
+    const formatted = new Intl.DateTimeFormat('en-CA', {
+      timeZone: HONDURAS_TIME_ZONE,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(date);
+    if (DATE_ONLY_PATTERN.test(formatted)) {
+      return formatted;
+    }
+  } catch {
+    // WebView without the IANA zone: Honduras is UTC-6 year-round.
+  }
+
+  const honduras = new Date(date.getTime() - (6 * 60 * 60 * 1000));
+  const year = honduras.getUTCFullYear();
+  const month = String(honduras.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(honduras.getUTCDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function normalizeNumericCode(value: any): string {
   const text = cleanText(value);
   if (!/^\d+$/.test(text)) {

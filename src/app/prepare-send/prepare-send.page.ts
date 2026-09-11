@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { ApiService } from '../services/api.service';
 import { resolveAttentionCurrency } from '../utils/currency-display.util';
-import { normalizePolicyNumber, resolveClaimCoordinates, resolveClaimDate, resolveClaimVehicleIdentifiers } from '../utils/claim-payload-normalizer';
+import { normalizePolicyNumber, resolveClaimCoordinates, resolveClaimDate, resolveClaimOccurrenceDate, resolveClaimVehicleIdentifiers } from '../utils/claim-payload-normalizer';
 import { applyBpmPreflightCorrections } from '../utils/bpm-claim-preflight.util';
 import * as $ from 'jquery';
 import { emptySignatureWhite, imagePrefix, errorImage, editarFirmaIcono } from '../environments/default-images';
@@ -891,7 +891,7 @@ export class PrepareSendPage implements OnInit {
 
       const expedienteActual = this.cliente && this.cliente.length > 0 ? this.cliente[0] : {};
       const fechaSiniestro = resolveClaimDate(expedienteActual);
-      const fechaSiniestroBpm = (fechaSiniestro || '').split('T')[0];
+      const fechaSiniestroBpm = resolveClaimOccurrenceDate(expedienteActual);
       const coordenadasSiniestro = resolveClaimCoordinates(expedienteActual, this.idAtencion);
       const polizaSiniestro = normalizePolicyNumber(expedienteActual?.PolizaExterna);
       const vehicleIds = resolveClaimVehicleIdentifiers(expedienteActual, this.idAtencion);
@@ -1031,7 +1031,7 @@ export class PrepareSendPage implements OnInit {
               Producto: valoresPredeterminados[0].Producto, // Siempre AU01
               Cobertura: this.getCodigoCoberturaBpmSinPoliza(), // Vuelco común sin póliza
               Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
-              FechaOcurrencia: fechaSiniestroBpm,//fechaSplit,//this.cliente[0].FechaRegistro, OJO
+              FechaOcurrencia: fechaSiniestroBpm,
               Causa: this.getCausaBpmSinPoliza(), // Vuelco común sin póliza
               ValorReserva: '00.00', // Formulario
               UsuarioBPM: this.elUsuario.UsuarioBPM, // Login
@@ -1054,7 +1054,7 @@ export class PrepareSendPage implements OnInit {
               Producto: valoresPredeterminados[0].Producto, // Siempre AU01
               Cobertura: this.getCodigoCoberturaBpmSinPoliza(), // Vuelco común sin póliza
               Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
-              FechaOcurrencia: fechaSiniestroBpm,//this.elExpediente[0].FechaRegistro,
+              FechaOcurrencia: fechaSiniestroBpm,
               Causa: this.getCausaBpmSinPoliza(), // Vuelco común sin póliza
               ValorReserva: '00.00', // Formulario
               UsuarioBPM: this.elUsuario.UsuarioBPM, // Login

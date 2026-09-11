@@ -32,7 +32,7 @@ import {
   ficohsaBpmConfirmationRules,
   ficohsaBpmValidationRules
 } from '../validation/claim-validation.rules';
-import { normalizeChassis, normalizeParentescoCode, normalizePolicyNumber, resolveClaimCoordinates, resolveClaimDate, resolveClaimVehicleIdentifiers } from '../utils/claim-payload-normalizer';
+import { normalizeChassis, normalizeParentescoCode, normalizePolicyNumber, resolveClaimCoordinates, resolveClaimOccurrenceDate, resolveClaimVehicleIdentifiers } from '../utils/claim-payload-normalizer';
 import { applyBpmPreflightCorrections, applyStoredPreflightCurrency, evaluateValorReservaLimit } from '../utils/bpm-claim-preflight.util';
 import { resolveAttentionCurrency } from '../utils/currency-display.util';
 import { clearAllClientSignatureCache } from '../utils/client-signature-cache.util';
@@ -1067,7 +1067,7 @@ export class AjustadorhnPage implements OnInit {
         const arregloParaEnviar = {}; let polizaTrunk:any;
         const expedienteActual = this.elExpediente?.[0] || {};
         const coordenadasSiniestro = resolveClaimCoordinates(expedienteActual, this.idAtencion);
-        const fechaSiniestro = resolveClaimDate(expedienteActual, localStorage.getItem('datos-FechaHora'));
+        const fechaOcurrenciaBpm = resolveClaimOccurrenceDate(expedienteActual);
         this.latitud = coordenadasSiniestro.Latitud;
         this.longitud = coordenadasSiniestro.Longitud;
         for (let indexE = 0; indexE < this.datosDeEnvio.length; indexE++) {
@@ -1121,7 +1121,7 @@ export class AjustadorhnPage implements OnInit {
                       this.valorReserva = reserva;
                       this.datos['valorReserva'] = reserva;
             
-            let fechaSplit = (fechaSiniestro || '').split('T')[0];
+            let fechaSplit = fechaOcurrenciaBpm;
 
             
 
@@ -1325,7 +1325,7 @@ export class AjustadorhnPage implements OnInit {
                       if (!this.nombreDelConductor) {
                         this.nombreDelConductor = localStorage.getItem('NombreConductor');
                       }
-                      let fechaSplit = (fechaSiniestro || '').split('T')[0];
+                      let fechaSplit = fechaOcurrenciaBpm;
 
                       let reserva:any = this.resolveValorReservaFromCache();
                       this.valorReserva = reserva;
@@ -1353,7 +1353,7 @@ export class AjustadorhnPage implements OnInit {
                         Producto: valoresPredeterminados[0].Producto, // Siempre AU01
                         Cobertura: this.getCodigoCoberturaBpm(), // Cobertura Ficohsa seleccionada
                         Ramo: valoresPredeterminados[0].Ramo, // Predeterminado : 0002
-                        FechaOcurrencia: fechaSplit,//fechaSplit,//this.elExpediente[0].FechaRegistro, OJO
+                        FechaOcurrencia: fechaOcurrenciaBpm,
                         Causa: this.getCodigoCausaBpm(), // Causa Ficohsa por cobertura
                         ValorReserva: this.coerceValorReservaParaEnvio(this.valorReserva).toString(), // Formulario (siempre numérico >= 0, nunca null)
                         UsuarioBPM: this.elUsuario.UsuarioBPM, // Login
