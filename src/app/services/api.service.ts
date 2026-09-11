@@ -112,6 +112,21 @@ export class ApiService {
     );
   }
 
+  private unwrapHttpPayload(source$: Observable<any>): Observable<any> {
+    return source$.pipe(
+      map((res: any) => unwrapCapacitorHttpData(res)),
+      tap(_ => {
+        this.isAuthenticated.next(true);
+      })
+    );
+  }
+
+  private postForAction(url: string, body: any = {}): Observable<any> {
+    return this.postForSend(url, body, HTTP_TIMEOUT_DEFAULT_MS).pipe(
+      map((res) => (res == null ? 'yes' : res))
+    );
+  }
+
   private authHeaders(): Record<string, string> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -245,40 +260,35 @@ export class ApiService {
 
     console.log('[BuscarMisAtenciones] payload', jsonBuscar);
 
-    return this.http.post(`${this.apiUrl}/Proveedor/BuscarMisAtenciones`, jsonBuscar).pipe(
-      switchMap((res: any) => {
-        const payload = this.extractBuscarMisAtencionesItems(res);
-        return from(Promise.all(payload));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
+    return this.postForSend(`${this.apiUrl}/Proveedor/BuscarMisAtenciones`, jsonBuscar, HTTP_TIMEOUT_DEFAULT_MS).pipe(
+      map((res: any) => this.extractBuscarMisAtencionesItems(res))
     );
   }
 
   private extractBuscarMisAtencionesItems(res: any): any[] {
-    if (Array.isArray(res)) {
-      return res;
+    const payload = unwrapCapacitorHttpData(res);
+    if (Array.isArray(payload)) {
+      return payload;
     }
 
-    if (!res || typeof res !== 'object') {
+    if (!payload || typeof payload !== 'object') {
       return [];
     }
 
-    if (Array.isArray(res.Items)) {
-      return res.Items;
+    if (Array.isArray(payload.Items)) {
+      return payload.Items;
     }
 
-    if (Array.isArray(res.items)) {
-      return res.items;
+    if (Array.isArray(payload.items)) {
+      return payload.items;
     }
 
-    if (Array.isArray(res.Data)) {
-      return res.Data;
+    if (Array.isArray(payload.Data)) {
+      return payload.Data;
     }
 
-    if (Array.isArray(res.data)) {
-      return res.data;
+    if (Array.isArray(payload.data)) {
+      return payload.data;
     }
 
     return [];
@@ -330,12 +340,9 @@ export class ApiService {
   ContarOtrosDanios(): Observable<any> {
 
     // 3912
-   return this.http.get(`${this.apiUrl}/Proveedor/ContarOtrosDanios`).pipe(
-      switchMap(( res: any  ) => of(this.normalizeListResponse(res))),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-  )
+   return this.unwrapHttpList(
+    this.http.get(`${this.apiUrl}/Proveedor/ContarOtrosDanios`)
+   );
   }
 
   // post /api/Proveedor/GuardarTiposPersonasSiniestros
@@ -472,20 +479,15 @@ export class ApiService {
       pNumEndoso: cobertura.pNumEndoso,
       pNumAsegurado: cobertura.pNumAsegurado
     }
-    return this.http.post(`${this.apiUrl}/FicohsaHN/Valida_Lista_Coberturas`,body).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-        if (res.length == 0) {
+    return this.postForSend(`${this.apiUrl}/FicohsaHN/Valida_Lista_Coberturas`, body, HTTP_TIMEOUT_DEFAULT_MS, true).pipe(
+      tap((res: any) => {
+        if (!res?.length) {
           this.toaster.presentToastAlert('Esta póliza no cuenta con cobertura para servicios legales. Consulte con su proveedor de servicios. ', 'top', 'danger', 10000);
-        }else{
+        } else {
           localStorage.setItem('coberturas', JSON.stringify(res));
         }
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+      })
+    );
    }
 
    // POST /api/FicohsaHN/Consulta_Causas_HN
@@ -507,7 +509,7 @@ export class ApiService {
    }
 
    private normalizeCausasPorCoberturaResponse(res: any): any[] {
-    const parsed = this.parsePossibleJsonResponse(res);
+    const parsed = this.parsePossibleJsonResponse(unwrapCapacitorHttpData(res));
     const items = this.extractCausasCollection(parsed);
 
     return items
@@ -689,14 +691,7 @@ export class ApiService {
       }
     }
 
-    return this.http.post(`${this.apiUrl}/Proveedor/GuardarCacheCliente`,cacheData).pipe(
-      switchMap(( res: any  ) => {
-        return of(res);
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.postForSend(`${this.apiUrl}/Proveedor/GuardarCacheCliente`, cacheData, HTTP_TIMEOUT_DEFAULT_MS);
    }
 
    handleSiniestroData(siniestroData:any) {
@@ -817,16 +812,7 @@ export class ApiService {
 
   //Datos tipos de siniestros
   tipoDeSiniestros(): Observable<any> {
-   return this.http.post(`${this.apiUrl}/Proveedor/TiposDeSiniestroFicohsa`,{}).pipe(
-    //switchMap((tokens: {accessToken, refreshToken }) => {
-      switchMap(( res: any  ) => {
-        
-      return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-   )
+   return this.postForSend(`${this.apiUrl}/Proveedor/TiposDeSiniestroFicohsa`, {}, HTTP_TIMEOUT_DEFAULT_MS, true);
   }
 
   // POST /api/Proveedor/ActualizarFiniquito
@@ -845,19 +831,7 @@ export class ApiService {
     let finiquitoData = {
       agenteId: agenteId
     }
-   return this.http.post(`${this.apiUrl}/Proveedor/ObtenerAgenteProveedor?agenteId=${agenteId}}`,finiquitoData).pipe(
-    //switchMap((tokens: {accessToken, refreshToken }) => {
-      switchMap(( res: any  ) => {
-        console.log(res)
-        if (res=== null){
-          res = "yes"
-        }
-      return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-   )
+   return this.postForAction(`${this.apiUrl}/Proveedor/ObtenerAgenteProveedor?agenteId=${agenteId}}`, finiquitoData);
   }
 
   // POST /api/Proveedor/ObtenerFiniquito
@@ -865,231 +839,106 @@ export class ApiService {
     let finiquitoData = {
       RefAtencionId: RefAtencionId
     }
-   return this.http.post(`${this.apiUrl}/Proveedor/ObtenerFiniquito?RefAtencionId=${RefAtencionId}}`,finiquitoData).pipe(
-    //switchMap((tokens: {accessToken, refreshToken }) => {
-      switchMap(( res: any  ) => {
-        console.log(res)
-        if (res=== null){
-          res = "yes"
-        }
-      return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-   )
+   return this.postForAction(`${this.apiUrl}/Proveedor/ObtenerFiniquito?RefAtencionId=${RefAtencionId}}`, finiquitoData);
   }
 
   //Cambio de estado de expediente
   cambiarEstadoOrden(credentials:any): Observable<any> {
     console.log(credentials);
-   return this.http.post(`${this.apiUrl}/Proveedor/TomarORCancelarAtencion?IdAtencion=${credentials.id}&Estado=${credentials.estado}`,{}).pipe(
-    //switchMap((tokens: {accessToken, refreshToken }) => {
-      switchMap(( res: any  ) => {
-        console.log(res)
-        if (res=== null){
-          res = "yes"
-        }
-      return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-   )
+   return this.postForAction(`${this.apiUrl}/Proveedor/TomarORCancelarAtencion?IdAtencion=${credentials.id}&Estado=${credentials.estado}`);
   }
 
   // POST /api/Proveedor/ActualizaLogAtencion
   ActualizaLogAtencion(credentials:any): Observable<any> {
     console.log('Para actualizar el estado de '+credentials)
     console.log(credentials);
-   return this.http.post(`${this.apiUrl}/Proveedor/ActualizaLogAtencion?IdAtencion=${credentials}`,{}).pipe(
-    //switchMap((tokens: {accessToken, refreshToken }) => {
-      switchMap(( res: any  ) => {
-        console.log(res)
-        if (res=== null){
-          res = "yes"
-        }
-      return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-   )
+   return this.postForAction(`${this.apiUrl}/Proveedor/ActualizaLogAtencion?IdAtencion=${credentials}`);
   }
 
   // Retomar lista de ajutadores para reasignar 
   Ajustadores(credentials:any): Observable<any> {
-    return this.http.get(`${this.apiUrl}/Proveedor/ListadoAjustadores?IdPais=${credentials}`).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/Proveedor/ListadoAjustadores?IdPais=${credentials}`)
+    );
    }
 
    // get /api/Proveedor/ListadoAbogados
    Abogados(credentials:any): Observable<any> {
-    return this.http.get(`${this.apiUrl}/Proveedor/ListadoAbogados?IdPais=${credentials}`).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/Proveedor/ListadoAbogados?IdPais=${credentials}`)
+    );
    }
 
 
   // Hacer cambio de asignacion asignar a otro.
   Reasignar(credentials:any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Proveedor/ReAsignarExpediente?IdAtencion=${credentials.IdAtencion}&IdAgenteProveedor=${credentials.IdAgenteProveedor}`,{}).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.postForAction(`${this.apiUrl}/Proveedor/ReAsignarExpediente?IdAtencion=${credentials.IdAtencion}&IdAgenteProveedor=${credentials.IdAgenteProveedor}`);
    }
 
   //Datos de expedientes
   Expediente(credentials:any): Observable<any> {
-   return this.http.get(`${this.apiUrl}/Proveedor/ObtenerDatosExpedientes?IdAtencion=${credentials}`).pipe(
-    //switchMap((tokens: {accessToken, refreshToken }) => {
-      switchMap(( res: any  ) => {
-        localStorage.setItem('elExpediente', JSON.stringify(res));
-
-      return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
+   return this.unwrapHttpList(
+    this.http.get(`${this.apiUrl}/Proveedor/ObtenerDatosExpedientes?IdAtencion=${credentials}`)
+   ).pipe(
+    tap((res: any) => {
+      localStorage.setItem('elExpediente', JSON.stringify(res));
     })
-  )
+   );
   }
 
   //get /api/Proveedor/ObtenerDatosDeAtencion 
   DatosDeAtencion(credentials:any): Observable<any> {
-    return this.http.get(`${this.apiUrl}/Proveedor/ObtenerDatosDeAtencion?IdAtencion=${credentials}`).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-        console.log("Hasta este punto, todo bien : "+ res.length);
-        //console.dir(res[0]);
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/Proveedor/ObtenerDatosDeAtencion?IdAtencion=${credentials}`)
+    );
    }
 
    //GET /api/Proveedor/ObtenerCacheCliente
   ObtenercacheCliente(credentials:any): Observable<any> {
-    return this.http.get(`${this.apiUrl}/Proveedor/ObtenerCacheCliente?IdAtencion=${credentials}`).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-        console.log("Datos del caché del cliente : "+ res.length);
-        //console.dir(res[0]);
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/Proveedor/ObtenerCacheCliente?IdAtencion=${credentials}`)
+    );
    }
 
    // post /api/Proveedor/ObtenerDaniosExtras
    ObtenerDaniosExtras(IdAtencion:any, TipoEntidad:string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Proveedor/ObtenerDaniosExtras?RefAtencionId=${IdAtencion}&TipoEntidad=${TipoEntidad}`,{}).pipe(
-       switchMap(( res: any  ) => of(this.normalizeListResponse(res))),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.postForSend(
+      `${this.apiUrl}/Proveedor/ObtenerDaniosExtras?RefAtencionId=${IdAtencion}&TipoEntidad=${TipoEntidad}`,
+      {},
+      HTTP_TIMEOUT_DEFAULT_MS,
+      true
+    );
    }
 
    // post /api/Proveedor/ActualizarTipoReparacion
    ActualizarTipoReparacion(Id:number, Tipo:any, indexFront:number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Proveedor/ActualizarTipoReparacion?Id=${Id}&Tipo=${Tipo}&indexFront=${indexFront}`,{}).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.postForAction(`${this.apiUrl}/Proveedor/ActualizarTipoReparacion?Id=${Id}&Tipo=${Tipo}&indexFront=${indexFront}`);
    }
 
 
    // post /api/Proveedor/ActualizarIndexFront
    ActualizarIndexFront(Id:number, indexFront:number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Proveedor/ActualizarIndexFront?Id=${Id}&indexFront=${indexFront}`,{}).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-    )
+    return this.postForAction(`${this.apiUrl}/Proveedor/ActualizarIndexFront?Id=${Id}&indexFront=${indexFront}`);
    }
 
    // post /api/Proveedor/ActualizarEstadoDanioExtraAtencion
    ActualizarEstadoDanioExtraAtencion(RefAtencionId:number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Proveedor/ActualizarEstadoDanioExtraAtencion?Id=${RefAtencionId}`,{}).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-    )
+    return this.postForAction(`${this.apiUrl}/Proveedor/ActualizarEstadoDanioExtraAtencion?Id=${RefAtencionId}`);
    }
 
    // post /api/Proveedor/EliminaDanioExtra
    EliminaDanioExtra(Id:number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Proveedor/EliminaDanioExtra?Id=${Id}`,{}).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.postForAction(`${this.apiUrl}/Proveedor/EliminaDanioExtra?Id=${Id}`);
    }
 
    // POST /api/Proveedor/GuardarIdTablaAjustador
    GuardarIdTablaAjustador(IdAtencion:any, IdAgenteProveedor:any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Proveedor/GuardarIdTablaAjustador?IdAtencion=${IdAtencion}&IdTablaAjustador=${IdAgenteProveedor}`,{}).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.postForAction(`${this.apiUrl}/Proveedor/GuardarIdTablaAjustador?IdAtencion=${IdAtencion}&IdTablaAjustador=${IdAgenteProveedor}`);
    }
 
    // post /api/Proveedor/ActualizarAudicion
    ActualizarAudicion(audicion): Observable<any> {
-
-    return this.http.post(`${this.apiUrl}/Proveedor/ActualizarAudicion?IdAjustadorAudiencia=${audicion.IdAjustadorAudiencia}&RefProveedorAgenteAbogadoId=${audicion.RefProveedorAgenteAbogadoId}
-      &AgendarAudiencia=${audicion.AgendarAudiencia}&FechaHora=${audicion.FechaHora}&Fecha=${audicion.Fecha}&Hora=${audicion.Hora}&Lugar=${audicion.Lugar}&idAgente=${audicion.idAgente}`,{audicion}).pipe(
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.postForAction(`${this.apiUrl}/Proveedor/ActualizarAudicion?IdAjustadorAudiencia=${audicion.IdAjustadorAudiencia}&RefProveedorAgenteAbogadoId=${audicion.RefProveedorAgenteAbogadoId}&AgendarAudiencia=${audicion.AgendarAudiencia}&FechaHora=${audicion.FechaHora}&Fecha=${audicion.Fecha}&Hora=${audicion.Hora}&Lugar=${audicion.Lugar}&idAgente=${audicion.idAgente}`, {audicion});
    }
 
    ObtenerIdTablaAjustador(IdAtencion:any): Observable<any> {
@@ -1098,29 +947,22 @@ export class ApiService {
       IdAtencion: atencionId,
       RefAtencionId: atencionId
     };
-   return this.http.post(
+   return this.postForSend(
     `${this.apiUrl}/Proveedor/ObtenerIdTablaAjustador?RefAtencionId=${atencionId}&IdAtencion=${atencionId}`,
-    payload
-   ).pipe(
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-  )
+    payload,
+    HTTP_TIMEOUT_DEFAULT_MS,
+    true
+   );
   }
 
   // POST /api/Proveedor/ObtenerEstadoLog
   ObtenerEstadoLog(IdAtencion:any): Observable<any> {
-   return this.http.post(`${this.apiUrl}/Proveedor/ObtenerEstadoLog?IdAtencion=${IdAtencion}`,{}).pipe(
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-  )
+   return this.postForSend(
+    `${this.apiUrl}/Proveedor/ObtenerEstadoLog?IdAtencion=${IdAtencion}`,
+    {},
+    HTTP_TIMEOUT_DEFAULT_MS,
+    true
+   );
   }
 
 
@@ -1128,17 +970,9 @@ export class ApiService {
   recuperarContrasena(credentials:any): Observable<any> {
     console.log(credentials);
     this.whiteList.push(`${this.apiUrl}/Login/RecuperarPassword?user=${credentials}`)
-   return this.http.post(`${this.apiUrl}/Login/RecuperarPassword?user=${credentials}`,credentials).pipe(
-    //switchMap((tokens: {accessToken, refreshToken }) => {
-      switchMap(( res: any  ) => {
-        console.log(res)
-      return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-   )
+   return this.postForSend(`${this.apiUrl}/Login/RecuperarPassword?user=${credentials}`, credentials, HTTP_TIMEOUT_DEFAULT_MS);
   }
+
   //cambiar password
   cambiarPassword(credentials:any): Observable<any> {
     console.log(credentials);
@@ -1294,16 +1128,13 @@ export class ApiService {
 
   // POST /api/Login/EnviarNotificacionAccidente
   EnviarNotificacionEmail(credentials:any): Observable<any> {
-    return this.http.get(`${this.apiUrl}/Login/EnviarNotificacionAccidente?IdAtencion=${credentials}`).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-         localStorage.setItem('Email enviado', res);
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.unwrapHttpPayload(
+      this.http.get(`${this.apiUrl}/Login/EnviarNotificacionAccidente?IdAtencion=${credentials}`)
+    ).pipe(
+      tap((res: any) => {
+        localStorage.setItem('Email enviado', typeof res === 'string' ? res : JSON.stringify(res ?? ''));
+      })
+    );
    }
 
    // POST /api/Login/GetAppVersion
@@ -1327,98 +1158,55 @@ export class ApiService {
 
 // GET ALL LIST
   ListTiposDeFotografia(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeFotografia`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeFotografia`)
+    );
   }
   ListTipoSiniestroFicohsa(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TiposDeSiniestroFicohsa`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/TiposDeSiniestroFicohsa`)
+    );
   }
   ListTipoConductor(): Observable<any> {
-//    console.log("Aqui llamo a los tipos de conductor");
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeConductor`).pipe(
-      switchMap(( res: any  ) => {
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeConductor`)
+    ).pipe(
+      tap((res: any) => {
         localStorage.setItem('tiposDeConductor', JSON.stringify(res));
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
       })
-    )
+    );
   }
   ListTipoGenero(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeGenero`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeGenero`)
+    );
   }
   //GET /api/SeleccionMultiple/TiposDeParentescoFicohsa
   ListTipoParentesco(idPais:any): Observable<any> {
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TiposDeParentescoFicohsa?IdPais=${idPais}`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/TiposDeParentescoFicohsa?IdPais=${idPais}`)
+    );
   }
   //GET /api/SeleccionMultiple/TiposDeSiniestroFicohsa
   ListTipoSiniestro(idPais:any): Observable<any> {
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TiposDeSiniestroFicohsa?IdPais=${idPais}`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/TiposDeSiniestroFicohsa?IdPais=${idPais}`)
+    );
   }
   ListTipoDeAudiencia(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeAudiencia`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeAudiencia`)
+    );
   }
   ListTipoCombustible(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeCombustible`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeCombustible`)
+    );
   }
   ListTipoFoto(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/SeleccionMultiple/TipoDeFotografia`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeFotografia`)
+    );
   }
 
   //Omar McClellan, 11 de Septiembre de 2023
@@ -1430,50 +1218,30 @@ export class ApiService {
   }
 
   TipoDeVehiculo(paisId:any) : Observable<any> {
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TiposDeVehiculosFicohsa?IdPais=${paisId}`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/TiposDeVehiculosFicohsa?IdPais=${paisId}`)
+    );
   }
 
   // Lista de los 100 daños más comunes
   //GET /api/SeleccionMultiple/ListadoDanioAlVehiculoFicohsa
   listDanios(): Observable<any>{
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/ListadoDanioAlVehiculoFicohsa`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/ListadoDanioAlVehiculoFicohsa`)
+    );
   }
   // GET /api/SeleccionMultiple/ListadoTalleresFicohsa
   ListTalleres() : Observable<any>{
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/ListadoTalleresFicohsa`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/ListadoTalleresFicohsa`)
+    );
   }
 
   // GET /api/Proveedor/ListaTipoAcuerdos
   ListarTiposAcuerdo(): Observable<any>{
-    return this.http.get(`${this.apiUrl}/Proveedor/ListaTipoAcuerdos`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/Proveedor/ListaTipoAcuerdos`)
+    );
   }
 
   //GET /api/Proveedor/ListaFotografiasFirmasAtencion
@@ -1552,16 +1320,7 @@ export class ApiService {
         FechaRegistro: new Date().toISOString(),
       }
       
-      return this.http.post(`${this.apiUrl}/Proveedor/InsertarConvenioReparacionTaller`, jsonRepara).pipe(
-      switchMap(( res: any  ) => {
-        console.log('Respuesta de ingresar la Convenio Taller ');
-        console.dir(res);
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+      return this.postForSend(`${this.apiUrl}/Proveedor/InsertarConvenioReparacionTaller`, jsonRepara, HTTP_TIMEOUT_DEFAULT_MS);
     /**/
   }
 
@@ -1579,16 +1338,7 @@ export class ApiService {
       indexFront: credentials.indexFront
     }
     
-    return this.http.post(`${this.apiUrl}/Proveedor/InsertarConvenioReparacionTallerExtra`, jsonRepara).pipe(
-    switchMap(( res: any  ) => {
-      console.log('Respuesta de ingresar la Convenio Taller Extra ');
-      console.dir(res);
-      return of(this.normalizeListResponse(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-  )
+    return this.postForSend(`${this.apiUrl}/Proveedor/InsertarConvenioReparacionTallerExtra`, jsonRepara, HTTP_TIMEOUT_DEFAULT_MS, true);
   /**/
 }
 
@@ -1667,16 +1417,7 @@ export class ApiService {
       Motor: credentials.Motor
     }
     
-    return this.http.post(`${this.apiUrl}/Proveedor/InsertarFiniquitoManual`, jsonFiniquito).pipe(
-    switchMap(( res: any  ) => {
-      console.log('Respuesta de ingresar el finiquito ');
-      console.dir(res);
-    return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-  )
+    return this.postForSend(`${this.apiUrl}/Proveedor/InsertarFiniquitoManual`, jsonFiniquito, HTTP_TIMEOUT_DEFAULT_MS);
   /**/
 }
 
@@ -1723,17 +1464,7 @@ export class ApiService {
         RefTipoFotografiaIdBeneficiario:credentials.RefTipoFotografiaIdBeneficiario
       }
       
-      return this.http.post(`${this.apiUrl}/Proveedor/InsertarReconocimientoDeDeuda`, jsonDeuda).pipe(
-//      return this.http.post(`${this.apiUrl}/Proveedor/InsertarReconocimientoDeDeuda?IdTablaAjustador=${credentials.IdTablaAjustador}&CodigoBPMFicohsa=${credentials.CodigoBPMFicohsa}&CodigoReclamoFicohsa=${credentials.CodigoReclamoFicohsa}`, {}).pipe(
-      switchMap(( res: any  ) => {
-        console.log('Respuesta de ingresar la deuda ');
-        console.dir(res);
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+      return this.postForSend(`${this.apiUrl}/Proveedor/InsertarReconocimientoDeDeuda`, jsonDeuda, HTTP_TIMEOUT_DEFAULT_MS);
   }
 
   /*
@@ -1771,46 +1502,26 @@ export class ApiService {
   }
   */
   ListTipoDeEntidadComunicativa(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeEntidadComunicativa`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeEntidadComunicativa`)
+    );
   }
 
   // GET /api/Proveedor/ListaVehiculosFicohsa
   ListMarcasVehiculosFicohsa(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/Proveedor/ListaVehiculosFicohsa`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/Proveedor/ListaVehiculosFicohsa`)
+    );
   }
   ListTipoDeSolicitanteInformeAjuste(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeSolicitanteInformeAjuste`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDeSolicitanteInformeAjuste`)
+    );
   }
   ListTipoDePersonaSiniestro(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDePersonaSiniestro`).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.unwrapHttpList(
+      this.http.get(`${this.apiUrl}/SeleccionMultiple/TipoDePersonaSiniestro`)
+    );
   }
 
   
@@ -1876,14 +1587,11 @@ let misdatos ={
 
 //POST /api/FicohsaHN/ValidarDatosReclamoBpm
 ValidarDatosReclamoBpm(payload: { IdAtencion: number; Chasis: string }): Observable<BpmClaimValidationResponse> {
-  return this.http.post<BpmClaimValidationResponse>(`${this.apiUrl}/FicohsaHN/ValidarDatosReclamoBpm`, {
+  return this.postForSend(`${this.apiUrl}/FicohsaHN/ValidarDatosReclamoBpm`, {
     IdAtencion: payload.IdAtencion,
     Chasis: payload.Chasis
-  }).pipe(
-    switchMap((res: any) => of(Array.isArray(res) ? res[0] : res)),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
+  }, HTTP_TIMEOUT_DEFAULT_MS).pipe(
+    map((res: any) => (Array.isArray(res) ? res[0] : res))
   );
 }
 
@@ -1912,22 +1620,8 @@ setPushToken(push: string){
 //POST /api/Proveedor/InsertarLesionesHospitalizacion
 insertarHospitalizacion(credentials:any): Observable<any> {
   console.log("Las credenciales para actualizar son :");
-  console.table(credentials); // hasta aqui funciona
-    const jsonUpdate = {
-      IdAjustadorAudiencia: credentials.IdAjustadorAudiencia,
-      TipoLesionesTercerosAfectados: credentials.TipoLesionesTercerosAfectados,
-      NombreHospital: credentials.NombreHospital
-    }
-    return this.http.post(`${this.apiUrl}/Proveedor/InsertarLesionesHospitalizacion?IdAjustadorAudiencia=${credentials.IdAjustadorAudiencia}&TipoLesionesTercerosAfectados=${credentials.TipoLesionesTercerosAfectados}&NombreHospital=${credentials.NombreHospital}`, {}).pipe(
-    switchMap(( res: any  ) => {
-      console.log('Respuesta de ingresar la nueva atencion ');
-      console.dir(res);
-    return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-  )
+  console.table(credentials);
+    return this.postForAction(`${this.apiUrl}/Proveedor/InsertarLesionesHospitalizacion?IdAjustadorAudiencia=${credentials.IdAjustadorAudiencia}&TipoLesionesTercerosAfectados=${credentials.TipoLesionesTercerosAfectados}&NombreHospital=${credentials.NombreHospital}`);
 }
 
 
