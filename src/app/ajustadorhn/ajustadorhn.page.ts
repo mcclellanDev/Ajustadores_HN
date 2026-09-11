@@ -38,6 +38,7 @@ import { resolveAttentionCurrency } from '../utils/currency-display.util';
 import { clearAllClientSignatureCache } from '../utils/client-signature-cache.util';
 import { persistAudienceTableIdToCache } from '../utils/audience-table-cache.util';
 import { describeHttpFailure } from '../utils/http-network.util';
+import { extractBpmClaimResult, isBpmClaimSuccess } from '../utils/bpm-claim-response.util';
 import {
   AttentionBulkAttempt,
   AttentionBulkAttemptService
@@ -1393,11 +1394,10 @@ export class AjustadorhnPage implements OnInit {
                                 ).subscribe(
                                   async (resAtencion) =>{
                                     console.log("Estoy guardando la data ");
-                                    const bpmRows = Array.isArray(resAtencion) ? resAtencion : (resAtencion ? [resAtencion] : []);
-                                    const bpmResult = bpmRows[0];
+                                    console.dir(resAtencion);
+                                    const bpmResult = extractBpmClaimResult(resAtencion);
                                     if(bpmResult){
-                                      console.dir(resAtencion);
-                                      if (bpmResult.codigo == 0 || bpmResult.codigo == "0") {
+                                      if (isBpmClaimSuccess(bpmResult)) {
                                         this.toaster.presentToastNoButtons(bpmResult.descripcion, 'top', 'bpm');
                                         this.codigoBPMFicohsa = bpmResult.solicitud_bpm;
                                         this.codigoReclamoFicohsa = bpmResult.numero_reclamo;

@@ -3,7 +3,7 @@ import { emptySignature, emptySignatureWhite } from './../environments/signature
 import { imagePrefix, banderaPais, fondos } from '../environments/default-images';
 import { LocateService } from './../services/locate.service';
 import { ApiService } from './../services/api.service';
-import { ActionSheetController, AlertController, LoadingController, ToastController, ModalController, Platform} from '@ionic/angular';
+import { ActionSheetController, AlertController, LoadingController, ToastController, ModalController, Platform, IonModal} from '@ionic/angular';
 import { Atenciones } from './../interfaces/atenciones';
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CallNumber } from '@awesome-cordova-plugins/call-number/ngx';
@@ -56,7 +56,7 @@ export class Tab1Page implements OnInit, OnDestroy {
   atenciones?: Atenciones[];public results = [];
   tipoFotos: tipofotos[]=[];canvasAseguradoWidth: any = 0;openFoto = false;foto:string='';cardWidth: any;canvasInterval: any;firma: any = []; idAtencion:any;
   hoy: any;firmaObtenida: any = [];tipoLicencia: any = [];lasFirmas: any = [];search: string = "";  elCliente: string = "";elServicio: string = "";
-  elColorEstado: string = "";textoEmergente1: string = "";textoEmergente2: string = ""; androidVersion:any; canDismiss:boolean=false; updateIcon:any;
+  elColorEstado: string = "";textoEmergente1: string = "";textoEmergente2: string = ""; androidVersion:any; canDismiss:boolean=true; updateIcon:any;
   firmaPrecargada: any;firmaPrecargadaAjustador: any;firmaDemo: any;firmaDemoAjustador: any = "";isSign: boolean = false;esAjustador: boolean = true;
   esClienteCompleto: boolean = false; esAjustadorCompleto: boolean = false;isLogout: boolean = false;address: any;laFecha: any;laImg: any;imagen:any;laImg2: any;laImg3: any;user: any = null;
   atIndex: any;atIndexId: any = 0;atIndexInit: any;laAtencion: any;firstInterval: any;geoInterval: any;email: any;isSignature: boolean = false;conexion?: ConnectionStatus;
@@ -70,11 +70,14 @@ export class Tab1Page implements OnInit, OnDestroy {
   //Firma
   @ViewChild("canvas2", { static: true }) canvas?: ElementRef;
   @ViewChild(RouterOutlet) outlet?: RouterOutlet;
+  @ViewChild('modalUpdate') modalUpdate?: IonModal;
   sig?: SignaturePad;
   wait: any;  dataSiniestro: any;  elExpediente: any;  datosDeAtencion: any;  firstSegmentId: any;
   dbVersion: any;  store: string | undefined;  atencionEnProcesoId: string | undefined;  idTabla: any;  ateIndex: string | undefined;
   indexAtencion?: number; isKeyboard: boolean = false; isCacheClear: boolean = false;
   private sessionRecoveryAlertOpen = false;
+  private updatePromptShown = false;
+  updateModalOpen = false;
 
   emptySignatureWhite = emptySignatureWhite;
   conectividadStat: string | undefined;  estadoConexion: string | undefined;  estadoConexionGPS: string | undefined; 
@@ -357,7 +360,6 @@ export class Tab1Page implements OnInit, OnDestroy {
     void this.bootstrapTabData();
 
     this.androidVersion = versionAndroid.versionCodigo;
-    this.updateIntent();
   }
 
   private async ensureSessionReady(): Promise<boolean> {
@@ -434,21 +436,70 @@ export class Tab1Page implements OnInit, OnDestroy {
   }
 
   updateIntent(){
-    //alert('Vamos a checar si hay una nueva versión de la app. Si existe, se te pedirá actualizarla para continuar usando la app. Si no actualizas, no podrás usar la app hasta que lo hagas.');
-    this.api.GetAppVersion('android').pipe(finalize(async ()=>{})).subscribe(async (res) =>{
-      this.dbVersion = this.normalizeVersionValue(res);
-      if (versionAndroid.versionCodigo) {
-        this.store = 'https://portal.porsalud.net/Outer/AppRepositorio/HELP/NuevaVersion/HELP.apk';
+    this.androidVersion = versionAndroid.versionCodigo;
+    this.store = 'https://portal.porsalud.net/Outer/AppRepositorio/HELP/NuevaVersion/HELP.apk';
+
+    this.api.GetAppVersion('android').subscribe(
+      async (res) => {
+        this.dbVersion = this.normalizeVersionValue(res);
         this.androidVersion = versionAndroid.versionCodigo;
 
-        if (this.isRemoteVersionNewer(this.dbVersion, versionAndroid.versionCodigo)) {
-          setTimeout(() => {
-            $('#open-modal-update').click();  
-          }, 3000);
+        if (!this.isRemoteVersionNewer(this.dbVersion, this.androidVersion)) {
+          return;
         }
-      }
 
-    }, async (res) => {})
+        await this.presentUpdateModal();
+      },
+      async (error) => {
+        console.error('GetAppVersion failed', error);
+      }
+    );
+  }
+
+  closeUpdateModal() {
+    this.updateModalOpen = false;
+    void this.modalUpdate?.dismiss().catch(() => undefined);
+  }
+
+  private async presentUpdateModal() {
+    if (this.updatePromptShown) {
+      return;
+    }
+
+    this.updatePromptShown = true;
+    this.updateModalOpen = true;
+
+    await new Promise((resolve) => setTimeout(resolve, 350));
+
+    if (this.modalUpdate) {
+      return;
+    }
+
+    this.updateModalOpen = false;
+    await this.presentUpdateAlert();
+  }
+
+  private async presentUpdateAlert() {
+    const alert = await this.alertController.create({
+      cssClass: 'update-info-alert',
+      header: 'Nueva versión disponible',
+      message: `Tienes ${this.androidVersion || 'N/D'}. Hay ${this.dbVersion || 'N/D'} lista para instalar.`,
+      backdropDismiss: true,
+      buttons: [
+        {
+          text: 'Ahora no',
+          role: 'cancel'
+        },
+        {
+          text: 'Actualizar',
+          handler: () => {
+            this.openStore(this.store);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   private normalizeVersionValue(value: any): string {
@@ -532,6 +583,7 @@ export class Tab1Page implements OnInit, OnDestroy {
 }
 
   ionViewDidEnter() {
+    this.updateIntent();
     const permissionResult = Geolocation.checkPermissions();
     const gpsOn = localStorage.getItem('conectividad');
 

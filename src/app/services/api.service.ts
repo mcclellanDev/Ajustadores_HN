@@ -311,10 +311,8 @@ export class ApiService {
 
     return this.http.get(`${this.apiUrl}/Proveedor/ObtenerMisAtencionesActivas?IdProveedorAgente=${credentials}`).pipe(
       switchMap((res: any) => {
-        if (!Array.isArray(res)) {
-          return of([]);
-        }
-        return from(Promise.all(res));
+        const payload = unwrapCapacitorHttpData(res);
+        return of(Array.isArray(payload) ? payload : []);
       }),
       catchError((error: HttpErrorResponse) => {
         if (error.status === 400) {
@@ -352,15 +350,7 @@ export class ApiService {
       RefAjustadorAudienciaId: credentials.RefAjustadorAudienciaId
     }
 
-    return this.http.post(`${this.apiUrl}/Proveedor/GuardarTiposPersonasSiniestros`,body).pipe(
-      //switchMap((tokens: {accessToken, refreshToken }) => {
-        switchMap(( res: any  ) => {
-        return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.postForSend(`${this.apiUrl}/Proveedor/GuardarTiposPersonasSiniestros`, body, HTTP_TIMEOUT_DEFAULT_MS, true);
 
   }
 
@@ -377,15 +367,7 @@ export class ApiService {
       RefAjustadorAudienciaId: credentials.RefAjustadorAudienciaId
     }
 
-    return this.http.post(`${this.apiUrl}/Proveedor/GuardarTiposPersonasSiniestros`,body).pipe(
-      //switchMap((tokens: {accessToken, refreshToken }) => {
-        switchMap(( res: any  ) => {
-        return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.postForSend(`${this.apiUrl}/Proveedor/GuardarTiposPersonasSiniestros`, body, HTTP_TIMEOUT_DEFAULT_MS, true);
 
   }
 
@@ -418,26 +400,11 @@ export class ApiService {
     }
 
     
-    return this.http.post(`${this.apiUrl}/Proveedor/GuardarTercerosReclamo`,body).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.postForSend(`${this.apiUrl}/Proveedor/GuardarTercerosReclamo`, body, HTTP_TIMEOUT_DEFAULT_MS, true);
    }
   //Guardar Propiedad 
   GuardarPropiedadTercero(credentials:any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/Proveedor/GuardarPropiedadDaniadaSiniestro_HN`,credentials).pipe(
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.postForSend(`${this.apiUrl}/Proveedor/GuardarPropiedadDaniadaSiniestro_HN`, credentials, HTTP_TIMEOUT_DEFAULT_MS, true);
    }
 
   private normalizeImageUploadPayload(credentials: any): any[] {
@@ -472,15 +439,7 @@ export class ApiService {
   //Guardar Firmas
   GuardarFirmaAsegurado(credentials:any): Observable<any> {
     const body = this.normalizeImageUploadPayload(credentials);
-    return this.http.post(`${this.apiUrl}/Proveedor/SubirFirmas`, body).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.postForSend(`${this.apiUrl}/Proveedor/SubirFirmas`, body, HTTP_TIMEOUT_PHOTOS_MS, true);
    }
 
    //POST /api/Proveedor/SubirFirmaAjustador
@@ -489,15 +448,7 @@ export class ApiService {
       FotoFirma: credentials.Firma,
       IdAgente: credentials.IdAgente
     }
-    return this.http.post(`${this.apiUrl}/Proveedor/SubirFirmaAjustador`,body).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.postForSend(`${this.apiUrl}/Proveedor/SubirFirmaAjustador`, body, HTTP_TIMEOUT_PHOTOS_MS, true);
    }
 
    // POST /api/FicohsaHN/Subir_Archivos_WSFH
@@ -507,15 +458,7 @@ export class ApiService {
       CodigoSolicitud_BPM: credentials.CodigoSolicitud_BPM,
       NombreTipoExtensionFile: credentials.NombreTipoExtensionFile
     }
-    return this.http.post(`${this.apiUrl}/FicohsaHN/Subir_Archivos_WSFH`,body).pipe(
-     //switchMap((tokens: {accessToken, refreshToken }) => {
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-     }),
-     tap(_ => {
-       this.isAuthenticated.next(true);
-     })
-   )
+    return this.postForSend(`${this.apiUrl}/FicohsaHN/Subir_Archivos_WSFH`, body, HTTP_TIMEOUT_PHOTOS_MS, true);
    }
 
    // POST /api/FicohsaHN/Valida_Lista_Coberturas
@@ -889,19 +832,12 @@ export class ApiService {
   // POST /api/Proveedor/ActualizarFiniquito
   ActualizarFiniquito(credentials:any): Observable<any> {
     console.log(credentials);
-   return this.http.post(`${this.apiUrl}/Proveedor/ActualizarFiniquito?RefAtencionId=${credentials.RefAtencionId}&NumeroReclamo=${credentials.NumeroReclamo}&TipoCoberturaFicohsa=${credentials.TipoCoberturaFicohsa}`,{}).pipe(
-    //switchMap((tokens: {accessToken, refreshToken }) => {
-      switchMap(( res: any  ) => {
-        console.log(res)
-        if (res=== null){
-          res = "yes"
-        }
-      return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-   )
+   return this.postForSend(
+    `${this.apiUrl}/Proveedor/ActualizarFiniquito?RefAtencionId=${credentials.RefAtencionId}&NumeroReclamo=${credentials.NumeroReclamo}&TipoCoberturaFicohsa=${credentials.TipoCoberturaFicohsa}`,
+    {},
+    HTTP_TIMEOUT_DEFAULT_MS,
+    true
+   );
   }
 
   // post /api/Proveedor/ObtenerAgenteProveedor
@@ -1376,14 +1312,7 @@ export class ApiService {
     let versionData = {
       plataforma:credentials
     }
-    return this.http.post(`${this.apiUrl}/Login/GetAppVersion?plataforma=${credentials}`,versionData).pipe(
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.postForSend(`${this.apiUrl}/Login/GetAppVersion?plataforma=${credentials}`, versionData, HTTP_TIMEOUT_DEFAULT_MS);
    }
 
 
@@ -1391,14 +1320,7 @@ export class ApiService {
     let versionData = {
       plataforma:credentials
     }
-    return this.http.post(`${this.apiUrl}/Login/GetAppVersion?plataforma=${credentials}`,versionData).pipe(
-       switchMap(( res: any  ) => {
-       return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.postForSend(`${this.apiUrl}/Login/GetAppVersion?plataforma=${credentials}`, versionData, HTTP_TIMEOUT_DEFAULT_MS);
    }
 
 
@@ -1562,14 +1484,7 @@ export class ApiService {
       TipoFotoFirma:TipoFotoFirma
     }
     // ?IdAtencion=${atencionId}&TipoFotoFirma=${TipoFotoFirma}
-    return this.http.post(`${this.apiUrl}/Proveedor/ListaFotografiasFirmasAtencion`, body).pipe(
-      switchMap(( res: any  ) => {
-      return from(Promise.all(res));
-      }),
-      tap(_ => {
-        this.isAuthenticated.next(true);
-      })
-    )
+    return this.postForSend(`${this.apiUrl}/Proveedor/ListaFotografiasFirmasAtencion`, body, HTTP_TIMEOUT_DEFAULT_MS, true);
   }
 
   obtenerFotoPorAtencionRaw(atencionId:any, TipoFotoFirma:any) : Observable<any> {
@@ -1981,16 +1896,12 @@ ActualizarBPM(credentials:any): Observable<any> {
       CodigoBPMFicohsa: credentials.CodigoBPMFicohsa,
       CodigoReclamoFicohsa: credentials.CodigoReclamoFicohsa
     }
-    return this.http.post(`${this.apiUrl}/Proveedor/ActualizarCodigoBPMAjustador?IdTablaAjustador=${credentials.IdTablaAjustador}&CodigoBPMFicohsa=${credentials.CodigoBPMFicohsa}&CodigoReclamoFicohsa=${credentials.CodigoReclamoFicohsa}`, {jsonUpdate}).pipe(
-    switchMap(( res: any  ) => {
-      console.log('Respuesta de ingresar la nueva atencion ');
-      console.dir(res);
-    return from(Promise.all(res));
-    }),
-    tap(_ => {
-      this.isAuthenticated.next(true);
-    })
-  )
+    return this.postForSend(
+      `${this.apiUrl}/Proveedor/ActualizarCodigoBPMAjustador?IdTablaAjustador=${credentials.IdTablaAjustador}&CodigoBPMFicohsa=${credentials.CodigoBPMFicohsa}&CodigoReclamoFicohsa=${credentials.CodigoReclamoFicohsa}`,
+      { jsonUpdate },
+      HTTP_TIMEOUT_DEFAULT_MS,
+      true
+    );
 }
 
 setPushToken(push: string){

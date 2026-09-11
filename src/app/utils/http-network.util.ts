@@ -78,12 +78,33 @@ export function describeHttpFailure(error: any, fallback: string): string {
   return error?.error?.Message || error?.message || error?.descripcion || fallback;
 }
 
+export function parseJsonPayload(value: any): any {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  const text = value.trim();
+  if (!text) {
+    return value;
+  }
+
+  if (text.startsWith('{') || text.startsWith('[')) {
+    try {
+      return JSON.parse(text);
+    } catch {
+      return value;
+    }
+  }
+
+  return value;
+}
+
 export function unwrapCapacitorHttpData(response: any): any {
   if (response == null) {
     return response;
   }
   if (typeof response === 'object' && 'data' in response && ('status' in response || 'headers' in response)) {
-    return response.data;
+    return parseJsonPayload(response.data);
   }
-  return response;
+  return parseJsonPayload(response);
 }

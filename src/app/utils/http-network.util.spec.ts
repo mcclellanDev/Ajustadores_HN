@@ -37,4 +37,12 @@ describe('http-network.util', () => {
     expect(unwrapCapacitorHttpData(40129)).toBe(40129);
     expect(unwrapCapacitorHttpData([{ codigo: 0 }])).toEqual([{ codigo: 0 }]);
   });
+
+  it('parses JSON string bodies returned by CapacitorHttp', () => {
+    expect(unwrapCapacitorHttpData({
+      data: '{"codigo":0,"descripcion":"PROCESO EXITOSO EN EL SERVIDOR"}',
+      status: 200,
+      headers: {}
+    })).toEqual({ codigo: 0, descripcion: 'PROCESO EXITOSO EN EL SERVIDOR' });
+  });
 });

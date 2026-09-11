@@ -17,6 +17,7 @@ import {
 } from '../utils/client-signature-cache.util';
 import { persistAudienceTableIdToCache } from '../utils/audience-table-cache.util';
 import { describeHttpFailure } from '../utils/http-network.util';
+import { extractBpmClaimResult, isBpmClaimSuccess } from '../utils/bpm-claim-response.util';
 import { AlertController, AnimationController, IonAccordionGroup, Platform, ToastController } from '@ionic/angular';
 import { valoresPredeterminados } from '../environments/predeterminados';
 import { abogadosAudiencias } from '../interfaces/arrays';
@@ -1090,17 +1091,18 @@ export class PrepareSendPage implements OnInit {
                       ).subscribe(
                         async (resAtencion) =>{
                           console.log("Estoy guardando la data ");
-                          if(resAtencion){
-                            console.dir(resAtencion);
-                            if (resAtencion[0].codigo == 0 || resAtencion[0].codigo == "0") {
-                              this.toaster.presentToastNoButtons(resAtencion[0].descripcion, 'top', 'bpm');
-                              this.codigoBPMFicohsa = resAtencion[0].solicitud_bpm;
-                              this.codigoReclamoFicohsa = resAtencion[0].numero_reclamo;
+                          console.dir(resAtencion);
+                          const bpmResult = extractBpmClaimResult(resAtencion);
+                          if(bpmResult){
+                            if (isBpmClaimSuccess(bpmResult)) {
+                              this.toaster.presentToastNoButtons(bpmResult.descripcion, 'top', 'bpm');
+                              this.codigoBPMFicohsa = bpmResult.solicitud_bpm;
+                              this.codigoReclamoFicohsa = bpmResult.numero_reclamo;
                               //alert(this.codigoReclamoFicohsa);
                               
                               persistAudienceTableIdToCache(this.idTablaAjustador, this.idAtencion);
                               localStorage.setItem('codigoBPMF', this.codigoBPMFicohsa);
-                              localStorage.setItem('codigoReclamo', resAtencion[0].numero_reclamo);
+                              localStorage.setItem('codigoReclamo', bpmResult.numero_reclamo);
                               
     
                               let dataBPMupdate = 
@@ -1154,7 +1156,7 @@ export class PrepareSendPage implements OnInit {
                               )
                             }else{
                               this.isLoading = false;
-                              const bpmErrorMessage = this.translateClaimServerMessage(resAtencion[0].descripcion);
+                              const bpmErrorMessage = this.translateClaimServerMessage(bpmResult.descripcion);
                               this.markBulkAttemptFailed(bpmErrorMessage);
                               await this.presentClaimSendFailureAlert(bpmErrorMessage);  
                             }

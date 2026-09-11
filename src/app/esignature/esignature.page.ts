@@ -11,6 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { logoFicohsa } from '../environments/default-images';
 import { DeviceService } from '../services/device.service';
 import { persistAttentionId, resolveAttentionIdFromSources } from '../utils/attention-id.util';
+import { describeHttpFailure } from '../utils/http-network.util';
 
 @Component({
   selector: 'app-esignature',
@@ -143,7 +144,11 @@ export class EsignaturePage implements OnInit {
             this.goBack();
           },
           async (res) => {
-            this.tostador.presentToastDataMissing(res?.error?.Message || 'No se pudo guardar la firma. Intenta nuevamente.', 'top', 'firma');
+            this.tostador.presentToastDataMissing(
+              describeHttpFailure(res, 'No se pudo guardar la firma. Intenta nuevamente.'),
+              'top',
+              'firma'
+            );
             this.isLoading = false;
 
           }
